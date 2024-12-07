@@ -27,8 +27,8 @@ const product_model = sequelize.define("product", {
         }
     },
     season_product: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING(45),
+        allowNull: true
     },
     calification_product: { 
         type: DataTypes.INTEGER,
@@ -40,18 +40,12 @@ const product_model = sequelize.define("product", {
         }
     },
     type_product: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(45),
         allowNull: false,
-        validate: {
-            isIn: {
-                args: [['electronico', 'electrodomestico', 'comida', 'bebida', 'fruta', 'vegetal','semilla', 'pan', 'pescado', 'marisco', 'construccion', 'herramientas', 'servicios', 'otros']], 
-                msg: 'Tipo de producto inválido'
-            }
-        }
     },
     stock_product: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         defaultValue: 0
     },
     info_product: {

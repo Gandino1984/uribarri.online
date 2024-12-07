@@ -61,13 +61,14 @@ const LoginRegisterForm = () => {
               </h2>
               <form onSubmit={handleFormSubmit} className={styles.formContent}>
                   <div className={styles.formField}>
-                      <label htmlFor="username">1. Escribe tu nombre de usuario</label>
+                      {/* <label htmlFor="username">1. Escribe tu nombre de usuario</label> */}
                       <input
                           id="username"
                           type="text"
                           value={username}
                           onChange={handleUsernameChange}
                           className={usernameError ? styles.inputError : ''}
+                          placeholder='Escribe tu nombre aquí'
                           required
                       />
                     {usernameError && <div className={styles.errorText}>{usernameError}</div>}
