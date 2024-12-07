@@ -10,7 +10,8 @@ DROP SCHEMA IF EXISTS `DB_gestionPedidosOnline_2024`;
 -- -----------------------------------------------------
 -- Schema DB_gestionPedidosOnline_2024
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `DB_gestionPedidosOnline_2024` DEFAULT CHARACTER SET utf8;
+CREATE SCHEMA IF NOT EXISTS `DB_gestionPedidosOnline_2024` DEFAULT CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 USE `DB_gestionPedidosOnline_2024`;
 
 -- -----------------------------------------------------
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `type_user` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`product`
@@ -54,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   UNIQUE INDEX `id_product_UNIQUE` (`id_product` ASC) VISIBLE,
   CHECK (`calification_product` BETWEEN 0 AND 5),
   CHECK (`discount_product` BETWEEN 0 AND 100)
-) ENGINE = InnoDB;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`provider`
@@ -66,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`provider` (
   `pass_provider` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id_provider`),
   UNIQUE INDEX `id_provider_UNIQUE` (`id_provider` ASC) VISIBLE
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`shop`
@@ -83,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
   PRIMARY KEY (`id_shop`),
   UNIQUE INDEX `id_shop_UNIQUE` (`id_shop` ASC) VISIBLE,
   CHECK (`calification_shop` BETWEEN 0 AND 5)
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`orders`
@@ -96,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`orders` (
   `finished` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_order`),
   CHECK (`finished` IN (0,1))
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`sales`
@@ -108,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`sales` (
   `id_product` INT UNSIGNED NOT NULL,
   `sale_date` DATETIME NOT NULL,
   PRIMARY KEY (`id_sales`)
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`buys`
@@ -118,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
   `id_shop` INT UNSIGNED NOT NULL,
   `id_provider` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id_buys`)
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`produce`
@@ -128,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`produce` (
   `id_provider` INT UNSIGNED NOT NULL,
   `id_product` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id_produce`)
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

@@ -1,16 +1,20 @@
 import product_model from "../../models/product_model.js";
 import { Op } from "sequelize";
+import { correctEncoding } from '../../../back-end/config/encodingCorrections.js';
 
 async function getAll() {
     try {
-        const products = await product_model.findAll();
-        console.log("Retrieved products:", products);
-        return { data: products };
+      const products = await product_model.findAll();
+      const correctedProducts = products.map(product => {
+        const plainProduct = product.get({ plain: true });
+        return correctEncoding(plainProduct);
+      });
+      return { data: correctedProducts };
     } catch (error) {
-        console.error("Error in getAll:", error);
-        return { error: error.message };
+      console.error("Error in getAll:", error);
+      return { error: error.message };
     }
-}
+  }
 
 async function getById(id) {
     try {
@@ -20,16 +24,13 @@ async function getById(id) {
         if (!product) {
             console.log("product not found with id:", id);
             return { error: "product not found" };
-        }
-        
+        }  
         return { data: product };
     } catch (error) {
         console.error("Error in getById:", error);
         return { error: error.message };
     }
 }
-
-
 
 async function create(productData) {
     try {

@@ -12,7 +12,14 @@ const sequelize = new Sequelize(
         dialect: "mysql",
         define: {
             timestamps: false,
-            freezeTableName: true
+            freezeTableName: true,
+        },
+        // Add these new configuration options
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+        dialectOptions: {
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
         }
     }
 );
@@ -21,6 +28,9 @@ async function initialize() {
     try {
         await sequelize.authenticate();
         console.log('******* SEQUELIZE: Connection has been established successfully ********');
+        
+        // Optional: Sync character set for the connection
+        await sequelize.query('SET NAMES utf8mb4');
         
     } catch (error) {
         console.error('!!!! SEQUELIZE: Unable to connect to the database !!!!!', error);

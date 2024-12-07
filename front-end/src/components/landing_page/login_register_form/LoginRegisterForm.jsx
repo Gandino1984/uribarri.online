@@ -61,7 +61,7 @@ const LoginRegisterForm = () => {
               </h2>
               <form onSubmit={handleFormSubmit} className={styles.formContent}>
                   <div className={styles.formField}>
-                      {/* <label htmlFor="username">1. Escribe tu nombre de usuario</label> */}
+                      
                       <input
                           id="username"
                           type="text"

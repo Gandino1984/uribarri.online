@@ -17,4 +17,4 @@ INSERT INTO `shop` (name_shop, location_shop, type_shop, subtype_shop, descripti
 
 -- Insert Products for the Shop
 INSERT INTO `product` (name_product, price_product, discount_product, season_product, calification_product, type_product, stock_product, info_product, id_shop) VALUES
-('Doner Kebab', 7.50, 0, 'Todo el Año', 0, 'Menu',  0, 'Doner Kebab, patatas y refresco.', 1),
+('Doner Kebab', 7.50, 0, 'Todo el Año', 0, 'Menu',  0, 'Doner Kebab, patatas y refresco.', 1);

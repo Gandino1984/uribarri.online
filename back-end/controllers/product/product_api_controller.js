@@ -12,8 +12,8 @@ async function getById(req, res) {
 }
 
 async function create(req, res) {
-    const {name_product, price_product, discount_product, season_product } = req.query;
-    const {error, data} = await productController.create({name_product, pass_product, location_product});
+    const { name_product, price_product, discount_product, season_product, calification_product, type_product, stock_product, info_product, id_shop } = req.body;
+    const {error, data} = await productController.create({name_product, price_product, discount_product, season_product, calification_product, type_product, stock_product, info_product, id_shop});
     res.json({error, data});
 }
 
