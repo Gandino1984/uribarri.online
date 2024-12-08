@@ -21,13 +21,9 @@ const sales_model = sequelize.define("sales", {
     id_user: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
-    },
-    // sale_date: {
-    //     type: DataTypes.DATE,
-    //     allowNull: false
-    // }
+    }
 }, {
-    timestamps: true,
+    timestamps : false,
     freezeTableName: true
 });
 

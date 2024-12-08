@@ -23,8 +23,8 @@ const provider_model = sequelize.define("provider", {
         allowNull: false
     }
 }, {
-    timestamps: true,
+    timestamps : false,
     freezeTableName: true
 });
 
-export default provider_model
+export default provider_model;

@@ -9,8 +9,8 @@ const RESET_HOURS = parseInt(process.env.RESET_HOURS) || 24;
 
 
 router.get("/", userApiController.getAll);
-router.get("/:id", userApiController.getById);
-router.get("/:id/update", userApiController.update);
+// router.get("/:id", userApiController.getById);
+// router.get("/:id/update", userApiController.update);
 router.get('/ip/check', async (req, res) => {
     const ip = req.ip || req.connection.remoteAddress;
     try {
