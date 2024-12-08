@@ -17,21 +17,15 @@ const user_model = sequelize.define("user", {
         allowNull: false
     },
     location_user: {
-        type: DataTypes.STRING(45),
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     type_user: {
         type: DataTypes.STRING(45),
         allowNull: false,
-        validate: {
-            isIn: {
-                args: [['admin', 'user', 'seller', 'provider']], 
-                msg: 'Tipo de usuario inválido'
-            }
-        }
-    }
+    },
 }, {
-    timestamps: true,
+    timestamps: false,
     freezeTableName: true
 });
 

@@ -52,12 +52,6 @@ const product_model = sequelize.define("product", {
     subtype_product: {
         type: DataTypes.STRING(45),
         allowNull: false,
-        validate: {
-            isIn: {
-                args: [['general','especial']], 
-                msg: 'Tipo de tienda inválido'
-            }
-        }
     },
     stock_product: {
         type: DataTypes.INTEGER,
@@ -67,13 +61,9 @@ const product_model = sequelize.define("product", {
     info_product: {
         type: DataTypes.TEXT,
         allowNull: true
-    },
-    // id_shop: { 
-    //     type: DataTypes.INTEGER.UNSIGNED,
-    //     allowNull: false,
-    // },
+    }
 }, {
-    timestamps: true,
+    timestamps : false,
     freezeTableName: true
 });
 

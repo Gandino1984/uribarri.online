@@ -17,17 +17,13 @@ const orders_model = sequelize.define("orders", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    // delivery_date: {
-    //     type: DataTypes.DATE,
-    //     allowNull: false
-    // },
     finished: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     }
 }, {
-    timestamps: true,
+    timestamps : false,
     freezeTableName: true
 });
 

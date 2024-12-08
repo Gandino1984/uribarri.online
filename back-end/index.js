@@ -31,7 +31,7 @@ async function initializeDatabase() {
     setupAssociations();
 
     // Synchronize models with database
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: true });
     console.log('Database models synchronized successfully');
   } catch (error) {
     console.error('Failed to initialize database:', error);
