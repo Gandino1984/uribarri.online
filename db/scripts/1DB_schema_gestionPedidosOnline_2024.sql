@@ -44,12 +44,12 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   `name_product` VARCHAR(100) NOT NULL,
   `price_product` DECIMAL(10,2) NOT NULL DEFAULT 0.0,
   `discount_product` INT NULL DEFAULT 0,
-  `season_product` VARCHAR(255) NOT NULL,
+  `season_product` VARCHAR(45) NOT NULL,
   `calification_product` INT NOT NULL DEFAULT 0,
-  `type_product` VARCHAR(255) NOT NULL,
+  `type_product` VARCHAR(45) NOT NULL,
+  `subtype_product` VARCHAR(45) NOT NULL,
   `stock_product` INT NOT NULL DEFAULT 0,
   `info_product` TEXT,
-  `id_shop` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id_product`),
   UNIQUE INDEX `id_product_UNIQUE` (`id_product` ASC) VISIBLE,
   CHECK (`calification_product` BETWEEN 0 AND 5),
@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
   `name_shop` VARCHAR(100) NOT NULL,
   `location_shop` VARCHAR(45) NOT NULL,
   `type_shop` VARCHAR(45) NOT NULL,
+  `subtype_shop` VARCHAR(45) NOT NULL,
   `id_user` INT UNSIGNED NOT NULL,
   `calification_shop` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_shop`),
@@ -90,7 +91,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`orders` (
   `id_order` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` INT UNSIGNED NOT NULL,
   `id_product` INT UNSIGNED NOT NULL,
-  `delivery_date` DATETIME NOT NULL,
   `finished` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_order`),
   CHECK (`finished` IN (0,1))
@@ -104,18 +104,18 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`sales` (
   `id_shop` INT UNSIGNED NOT NULL,
   `id_user` INT UNSIGNED NOT NULL,
   `id_product` INT UNSIGNED NOT NULL,
-  `sale_date` DATETIME NOT NULL,
   PRIMARY KEY (`id_sales`)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`buys`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
-  `id_buys` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`inventory` (
+  `id_inventory` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_shop` INT UNSIGNED NOT NULL,
   `id_provider` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id_buys`)
+  `id_product` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_inventory`)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------

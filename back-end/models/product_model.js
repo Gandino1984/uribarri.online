@@ -40,12 +40,22 @@ const product_model = sequelize.define("product", {
         }
     },
     type_product: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(45),
         allowNull: false,
         validate: {
             isIn: {
                 args: [['electronico', 'electrodomestico', 'comida', 'bebida', 'fruta', 'vegetal','semilla', 'pan', 'pescado', 'marisco', 'construccion', 'herramientas', 'servicios', 'otros']], 
                 msg: 'Tipo de producto inválido'
+            }
+        }
+    },
+    subtype_product: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+        validate: {
+            isIn: {
+                args: [['general','especial']], 
+                msg: 'Tipo de tienda inválido'
             }
         }
     },
@@ -58,12 +68,12 @@ const product_model = sequelize.define("product", {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    id_shop: { 
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-    },
+    // id_shop: { 
+    //     type: DataTypes.INTEGER.UNSIGNED,
+    //     allowNull: false,
+    // },
 }, {
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true
 });
 

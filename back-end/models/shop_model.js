@@ -27,10 +27,20 @@ const shop_model = sequelize.define("shop", {
             }
         }
     },
-    id_user: { 
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false
+    subtype_shop: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+        validate: {
+            isIn: {
+                args: [['general', 'turca', 'italiana', 'china', 'peruana', 'especial']], 
+                msg: 'Tipo de tienda inválido'
+            }
+        }
     },
+    // id_user: { 
+    //     type: DataTypes.INTEGER.UNSIGNED,
+    //     allowNull: false
+    // },
     calification_shop: { 
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -41,7 +51,7 @@ const shop_model = sequelize.define("shop", {
         }
     }
 }, {
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true
 });
 

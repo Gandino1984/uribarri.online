@@ -3,7 +3,7 @@ import product_model from './product_model.js';
 import shop_model from './shop_model.js';
 import sales_model from './sales_model.js';
 import orders_model from './orders_model.js';
-import buys_model from './buys_model.js';
+import inventory_model from './inventory_model.js';
 import provider_model from './provider_model.js';
 import produce_model from './produce_model.js';
 
@@ -31,9 +31,9 @@ function setupAssociations() {
         as: 'shophasmanysales'
     });
 
-    shop_model.hasMany(buys_model, {
-        as: 'shophasmanybuys'
-    });
+    // shop_model.hasMany(inventory_model, {
+    //     as: 'shophasmanybuys'
+    // });
 
     // Product Model Associations
     product_model.belongsToMany(user_model, { 
@@ -71,13 +71,13 @@ function setupAssociations() {
         as: 'producebelongstoproduct'
     });
 
-    // Buys Model Associations
-    buys_model.belongsTo(shop_model, { 
-        as: 'buysbelongstoshop' 
+    // inventory Model Associations
+    inventory_model.belongsTo(shop_model, { 
+        as: 'inventorybelongstoshop' 
     });
 
-    buys_model.belongsTo(provider_model, { 
-        as: 'buysbelongstoprovider' 
+    inventory_model.belongsTo(provider_model, { 
+        as: 'inventorybelongstoprovider' 
       });
 }
 

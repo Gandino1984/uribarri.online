@@ -23,7 +23,7 @@ const provider_model = sequelize.define("provider", {
         allowNull: false
     }
 }, {
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true
 });
 
