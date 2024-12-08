@@ -250,7 +250,7 @@ async function createSellerWithShop(userData, shopData) {
     }
     if (!shopValidation.isValid) {
         return { 
-            error: "Validación de tienda fallida",
+            error: "Validación de negocio fallida",
             details: shopValidation.errors 
         };
     }
@@ -290,12 +290,12 @@ async function createSellerWithShop(userData, shopData) {
         });
         return { 
             data: result,
-            message: "Seller and shop created successfully" 
+            message: "Registro exitoso" 
         };
     } catch (error) {
         console.error("Error in createSellerWithShop:", error);
         return { 
-            error: "Error creando seller y tienda",
+            error: "Error creando vendedor y tienda",
             details: error.message 
         };
     }
