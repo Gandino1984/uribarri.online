@@ -23,7 +23,7 @@ const sales_model = sequelize.define("sales", {
         allowNull: false
     }
 }, {
-    timestamps : false,
+    timestamps: true,
     freezeTableName: true
 });
 

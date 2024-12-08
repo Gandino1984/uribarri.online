@@ -31,6 +31,44 @@ async function create(req, res) {
     res.json({error, data});
 }
 
+async function createSellerWithShop(req, res) {
+    const { 
+        // User data
+        name_user, 
+        pass_user, 
+        location_user, 
+
+        // Shop data
+        name_shop, 
+        location_shop, 
+        type_shop, 
+        subtype_shop 
+    } = req.body;
+
+    const userData = {
+        name_user, 
+        pass_user, 
+        location_user,
+        type_user: 'seller'
+    };
+
+    const shopData = {
+        name_shop, 
+        location_shop, 
+        type_shop, 
+        subtype_shop,
+        calification_shop: 0 // Default initial rating
+    };
+
+    const { error, data, message } = await userController.createSellerWithShop(userData, shopData);
+
+    if (error) {
+        return res.status(400).json({ error, message });
+    }
+
+    res.status(201).json({ data, message });
+}
+
 async function register(req, res) {
     const {name_user, pass_user, location_user, type_user } = req.body;
     const {error, data} = await userController.register({name_user, pass_user, location_user, type_user});
@@ -62,7 +100,8 @@ export {
     removeById,
     login,
     register,
-    getByUserName
+    getByUserName,
+    createSellerWithShop
 }
 
 export default {
@@ -73,5 +112,6 @@ export default {
     removeById,
     login,
     register,
-    getByUserName
+    getByUserName,
+    createSellerWithShop
 }

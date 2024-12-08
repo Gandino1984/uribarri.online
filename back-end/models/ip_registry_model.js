@@ -20,7 +20,7 @@ const IpRegistry = sequelize.define('ip_registry', {
     }
 }, {
     tableName: 'ip_registry',
-    timestamps: false
+    timestamps: true
 });
 
 export default IpRegistry;

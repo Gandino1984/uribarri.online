@@ -31,7 +31,7 @@ const shop_model = sequelize.define("shop", {
         defaultValue: 0,
     }
 }, {
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true
 });
 

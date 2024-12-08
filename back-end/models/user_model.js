@@ -25,7 +25,7 @@ const user_model = sequelize.define("user", {
         allowNull: false,
     },
 }, {
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true
 });
 

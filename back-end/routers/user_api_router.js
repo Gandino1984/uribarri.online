@@ -57,9 +57,10 @@ router.get('/ip/check', async (req, res) => {
     }
 });
 router.post("/login", userApiController.login);
+// to create any type of user
 router.post("/create", userApiController.create);
 router.post("/remove", userApiController.removeById);
-
+// to register a user without an associated shop
 router.post('/register', async (req, res) => {
     console.log('Register endpoint hit');  
     const ip = req.ip || req.connection.remoteAddress;
@@ -89,8 +90,40 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ error: 'Error en el registro' });
     }
 });
-
 router.post("/details", userApiController.getByUserName);
 
+// route for creating a seller with a shop
+router.post('/seller/create', async (req, res) => {
+    console.log('Seller creation endpoint hit');  
+    const ip = req.ip || req.connection.remoteAddress;
+    try {
+        const [ipRecord, created] = await IpRegistry.findOrCreate({
+            where: { ip_address: ip },
+            defaults: {
+                registration_count: 0,
+                last_attempt: new Date()
+            }
+        });
+        const hoursSinceLastAttempt = created ? 0 : (Date.now() - new Date(ipRecord.last_attempt).getTime()) / (1000 * 60 * 60);
+        
+        if (!created && hoursSinceLastAttempt < RESET_HOURS && ipRecord.registration_count >= MAX_REGISTRATIONS) {
+            return res.status(429).json({ 
+                error: 'Has excedido el límite de registros permitidos.' 
+            });
+        }
+        
+        // Update registration count
+        await ipRecord.update({
+            registration_count: hoursSinceLastAttempt >= RESET_HOURS ? 1 : ipRecord.registration_count + 1,
+            last_attempt: new Date()
+        });
+        
+        // Proceed with seller and shop creation
+        await userApiController.createSellerWithShop(req, res);
+    } catch (error) {
+        console.error('Seller creation error:', error);
+        res.status(500).json({ error: 'Error en la creación del seller' });
+    }
+});
 
 export default router;
