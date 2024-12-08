@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/sequelize.js";
 
+// table for the use of user type clients
 const orders_model = sequelize.define("orders", {
     id_order: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -16,17 +17,17 @@ const orders_model = sequelize.define("orders", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    delivery_date: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
+    // delivery_date: {
+    //     type: DataTypes.DATE,
+    //     allowNull: false
+    // },
     finished: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     }
 }, {
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true
 });
 

@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/sequelize.js";
 
+// table for the use of provider type clients
 const produce_model = sequelize.define("produce", {
     id_produce: {
         type: DataTypes.INTEGER.UNSIGNED,
