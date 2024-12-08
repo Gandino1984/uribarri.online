@@ -2,7 +2,7 @@
     "folder-customization.folders": [
         {
             "path": "uribarri.online/back-end/",
-            "color": "foldercustomization.AnsiColor33"
+            "color": "foldercustomization.AnsiColor69"
         },
         {
             "path": "uribarri.online/front-end/",
@@ -10,7 +10,7 @@
         },
         {
             "path": "uribarri.online/db/scripts/",
-            "color": "foldercustomization.AnsiColor91"
+            "color": "foldercustomization.AnsiColor128"
         },
         {
             "path": "uribarri.online/back-end/config/",
@@ -58,6 +58,18 @@
         {
             "path": "uribarri.online/front-end/src/components/product_management/",
             "badge": "👽"
+        },
+        {
+            "path": "uribarri.online/back-end/models/",
+            "color": "foldercustomization.AnsiColor69"
+        },
+        {
+            "path": "uribarri.online/back-end/controllers/",
+            "color": "foldercustomization.AnsiColor69"
+        },
+        {
+            "path": "uribarri.online/back-end/routers/",
+            "color": "foldercustomization.AnsiColor69"
         }
     ]
 }
