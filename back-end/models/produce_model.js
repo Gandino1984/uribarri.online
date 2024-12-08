@@ -18,7 +18,7 @@ const produce_model = sequelize.define("produce", {
         allowNull: false
     }
 }, {
-    timestamps : false,
+    timestamps: true,
     freezeTableName: true
 });
 

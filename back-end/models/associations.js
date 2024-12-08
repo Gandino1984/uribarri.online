@@ -13,6 +13,13 @@ function setupAssociations() {
         as: 'userhasmanyshops'
     });
 
+    shop_model.belongsTo(user_model, {
+        as: 'shopbelongstouser'
+    });
+
+    // ----------------
+
+
     user_model.hasMany(sales_model, {
         as: 'userhasmanysales'
     });
@@ -23,17 +30,14 @@ function setupAssociations() {
     });
 
     // Shop Model Associations
-    shop_model.belongsTo(user_model, {
-        as: 'shopbelongstouser'
-    });
 
     shop_model.hasMany(sales_model, {
         as: 'shophasmanysales'
     });
 
-    // shop_model.hasMany(inventory_model, {
-    //     as: 'shophasmanybuys'
-    // });
+    shop_model.hasMany(inventory_model, {
+        as: 'shophasmanybuys'
+    });
 
     // Product Model Associations
     product_model.belongsToMany(user_model, { 
@@ -79,6 +83,10 @@ function setupAssociations() {
     inventory_model.belongsTo(provider_model, { 
         as: 'inventorybelongstoprovider' 
       });
+
+      inventory_model.belongsTo(product_model, {
+        as: 'inventoryProduct'
+    });
 }
 
 export default setupAssociations;

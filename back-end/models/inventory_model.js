@@ -22,7 +22,7 @@ const inventory_model = sequelize.define("inventory", {
         allowNull: false
     },
 }, {
-    timestamps : false,
+    timestamps : true,
     freezeTableName: true
 });
 

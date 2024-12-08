@@ -23,7 +23,7 @@ const orders_model = sequelize.define("orders", {
         defaultValue: false
     }
 }, {
-    timestamps : false,
+    timestamps: true,
     freezeTableName: true
 });
 

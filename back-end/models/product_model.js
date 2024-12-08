@@ -63,7 +63,7 @@ const product_model = sequelize.define("product", {
         allowNull: true
     }
 }, {
-    timestamps : false,
+    timestamps: true,
     freezeTableName: true
 });
 

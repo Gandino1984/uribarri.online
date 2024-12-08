@@ -1,4 +1,6 @@
 import user_model from "../../models/user_model.js";
+import shop_model from "../../models/shop_model.js";
+import sequelize from "../../config/sequelize.js";
 import { Op } from "sequelize";
 
 // Validation utilities
@@ -48,6 +50,39 @@ if (userData.name_user) {
         errors
     };
 };
+
+function validateShopData(shopData) {
+    const errors = [];
+    // Required fields check
+    const requiredFields = ['name_shop', 'location_shop', 'type_shop', 'subtype_shop'];
+    requiredFields.forEach(field => {
+        if (!shopData[field]) {
+            errors.push(`Falta el campo: ${field}`);
+        }
+    });
+    // Name validation
+    if (shopData.name_shop) {
+        if (shopData.name_shop.length < 2) {
+            errors.push('El nombre de la tienda debe tener al menos 2 caracteres');
+        }
+        if (shopData.name_shop.length > 100) {
+            errors.push('El nombre de la tienda no puede exceder 100 caracteres');
+        }
+    }
+    // Location validation
+    if (shopData.location_shop && typeof shopData.location_shop !== 'string') {
+        errors.push('La ubicación debe ser una cadena de texto');
+    }
+    // Shop type validation
+    const validShopTypes = ['General', 'Restaurante', 'Bar', 'Fruteria', 'Peluqueria','Drogueria', 'Ferreteria', 'Pescaderia', 'Carniceria', 'Especial']; 
+    if (shopData.type_shop && !validShopTypes.includes(shopData.type_shop)) {
+        errors.push('Tipo de tienda no válido');
+    }
+    return {
+        isValid: errors.length === 0,
+        errors
+    };
+}
 
 async function getAll() {
     try {
@@ -108,7 +143,6 @@ async function getByUserName(userName) {
     }
 }
 
-
 async function create(userData) {
     try {
         // Validate input data
@@ -140,59 +174,6 @@ async function create(userData) {
         console.error("Error in create:", error);
         return { 
             error: "Error al crear el usuario",
-            details: error.message 
-        };
-    }
-}
-
-async function login(userData) {
-    try {
-        // Validate login data
-        if (!userData.name_user || !userData.pass_user) {
-            return { 
-                error: "Información de usuario incompleta",
-                details: "Both username and password are required" 
-            };
-        }
-        // Password validation
-        if (userData.pass_user.length !== 4 || !/^\d+$/.test(userData.pass_user)) {
-            return { 
-                error: "Contraseña inválida",
-                details: "Password must be exactly 4 digits" 
-            };
-        }
-        // Find user
-        const user = await user_model.findOne({ 
-            where: { name_user: userData.name_user } 
-        });
-        if (!user) {
-            return { 
-                error: "El usuario no existe",
-                details: "User not found" 
-            };
-        }
-        // Verify password
-        if (user.pass_user !== userData.pass_user) {
-            return { 
-                error: "Contraseña incorrecta",
-                details: "Incorrect password" 
-            };
-        }
-        // Return user data without sensitive information
-        const userResponse = {
-            id_user: user.id_user,
-            name_user: user.name_user,
-            type_user: user.type_user,
-            location_user: user.location_user
-        };
-        return { 
-            data: userResponse,
-            message: "Login successful" 
-        };
-    } catch (error) {
-        console.error("Error in login:", error);
-        return { 
-            error: "Error al iniciar sesión",
             details: error.message 
         };
     }
@@ -248,6 +229,126 @@ async function register(userData) {
         console.error("Error in register:", error);
         return { 
             error: "Error de registro",
+            details: error.message 
+        };
+    }
+}
+
+async function createSellerWithShop(userData, shopData) {
+    // Input validation
+    const userValidation = validateUserData({
+        ...userData,
+        type_user: 'seller' // Enforce seller type
+    });
+
+    const shopValidation = validateShopData(shopData);
+    if (!userValidation.isValid) {
+        return { 
+            error: "Validación de usuario fallida",
+            details: userValidation.errors 
+        };
+    }
+    if (!shopValidation.isValid) {
+        return { 
+            error: "Validación de tienda fallida",
+            details: shopValidation.errors 
+        };
+    }
+    try {
+        // Check if user already exists
+        const existingUser = await user_model.findOne({ 
+            where: { name_user: userData.name_user } 
+        });
+        
+        if (existingUser) {
+            return { 
+                error: "El usuario ya existe",
+                details: "Username already exists" 
+            };
+        }
+        // Use a transaction to ensure atomic creation
+        const result = await sequelize.transaction(async (t) => {
+            // Create user
+            const newUser = await user_model.create({
+                ...userData,
+                type_user: 'seller'
+            }, { transaction: t });
+            // Create associated shop
+            const newShop = await shop_model.create({
+                ...shopData,
+                user_id: newUser.id_user
+            }, { transaction: t });
+            return { 
+                user: {
+                    id_user: newUser.id_user,
+                    name_user: newUser.name_user,
+                    type_user: newUser.type_user,
+                    location_user: newUser.location_user
+                },
+                shop: newShop 
+            };
+        });
+        return { 
+            data: result,
+            message: "Seller and shop created successfully" 
+        };
+    } catch (error) {
+        console.error("Error in createSellerWithShop:", error);
+        return { 
+            error: "Error creando seller y tienda",
+            details: error.message 
+        };
+    }
+}
+
+async function login(userData) {
+    try {
+        // Validate login data
+        if (!userData.name_user || !userData.pass_user) {
+            return { 
+                error: "Información de usuario incompleta",
+                details: "Both username and password are required" 
+            };
+        }
+        // Password validation
+        if (userData.pass_user.length !== 4 || !/^\d+$/.test(userData.pass_user)) {
+            return { 
+                error: "Contraseña inválida",
+                details: "Password must be exactly 4 digits" 
+            };
+        }
+        // Find user
+        const user = await user_model.findOne({ 
+            where: { name_user: userData.name_user } 
+        });
+        if (!user) {
+            return { 
+                error: "El usuario no existe",
+                details: "User not found" 
+            };
+        }
+        // Verify password
+        if (user.pass_user !== userData.pass_user) {
+            return { 
+                error: "Contraseña incorrecta",
+                details: "Incorrect password" 
+            };
+        }
+        // Return user data without sensitive information
+        const userResponse = {
+            id_user: user.id_user,
+            name_user: user.name_user,
+            type_user: user.type_user,
+            location_user: user.location_user
+        };
+        return { 
+            data: userResponse,
+            message: "Login successful" 
+        };
+    } catch (error) {
+        console.error("Error in login:", error);
+        return { 
+            error: "Error al iniciar sesión",
             details: error.message 
         };
     }
@@ -349,7 +450,8 @@ export {
     removeById, 
     login, 
     register,
-    getByUserName 
+    getByUserName,
+    createSellerWithShop
 };
 
 export default { 
@@ -360,5 +462,6 @@ export default {
     removeById, 
     login, 
     register,
-    getByUserName 
+    getByUserName,
+    createSellerWithShop 
 };
