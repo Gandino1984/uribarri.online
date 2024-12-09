@@ -9,8 +9,13 @@ const RESET_HOURS = parseInt(process.env.RESET_HOURS) || 24;
 
 
 router.get("/", userApiController.getAll);
+
 router.get('/ip/check', async (req, res) => {
-    const ip = req.ip || req.connection.remoteAddress;
+    console.log('!!! -> user_api_router.js - /ip/check endpoint hit');
+
+    const ip = req.socket.remoteAddress;
+    console.log('-> /ip/check - Your ip address = ', ip);
+    
     try {
         const [ipRecord, created] = await IpRegistry.findOrCreate({
             where: { ip_address: ip },
@@ -19,25 +24,33 @@ router.get('/ip/check', async (req, res) => {
                 last_attempt: new Date()
             }
         });
+        console.log('-> /ip/check - IP record = ', ipRecord);
+        console.log('-> /ip/check - Created = ', created);
+        // if an ip record does not exist, create a new one
         if (!created) {
             const hoursSinceLastAttempt = (Date.now() - new Date(ipRecord.last_attempt).getTime()) / (1000 * 60 * 60); 
             // Reset counter if RESET_HOURS have passed
             if (hoursSinceLastAttempt >= RESET_HOURS) {
+                console.log('-> /ip/check - RESET_HOURS have passed, resetting registration attempt counter...');
                 await ipRecord.update({
                     registration_count: 0,
                     last_attempt: new Date()
                 });
+                // Return response with canRegister = true and hoursUntilReset = 0
+                console.log('-> /ip/check - IP record updated');
+                console.log('-> /ip/check - canRegister = true & hoursUntilReset = 0');
                 return res.json({ canRegister: true, hoursUntilReset: 0 });
             }
             // Check if limit exceeded
             if (ipRecord.registration_count >= MAX_REGISTRATIONS) {
+                console.log('-> /ip/check - Limit of registrations exceeded, returning response with canRegister = false & hoursUntilReset = ', RESET_HOURS - hoursSinceLastAttempt);
                 const hoursUntilReset = RESET_HOURS - hoursSinceLastAttempt;
                 return res.json({ canRegister: false, hoursUntilReset });
             }
         }
         res.json({ canRegister: true, hoursUntilReset: 0 });
     } catch (error) {
-        console.error('IP check error:', {
+        console.error('-> ip/check - Error checking registration limits - Error = ', error, {
             message: error.message,
             stack: error.stack
         });

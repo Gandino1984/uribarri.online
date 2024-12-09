@@ -4,7 +4,6 @@ import { useUsernameValidation } from './useUsernameValidation.jsx';
 import { useIPValidation } from './useIpValidation.jsx';
 import axiosInstance from '../../../../../utils/axiosConfig.js';
 
-
 export const LoginRegisterFunctions = () => {
     const {
         isLoggingIn, setIsLoggingIn,
@@ -299,12 +298,16 @@ export const LoginRegisterFunctions = () => {
     };
       
     const handleFormSubmit = async (e) => {
-      console.log('Form submitted!');
+      console.log('-> LoginRegisterFunctions - handleFormSubmit - Form submitted.');
       e.preventDefault();
       try {
         // IP validation for registration only
+        console.log('-> isLoggingIn state = ', isLoggingIn);
         if (!isLoggingIn) {
+          console.log('-> handleFormSubmit - Validación de IP para registro iniciada');
+
           const canRegister = await validateIPRegistration();
+          
           if (!canRegister) {
             console.log('IP validation failed');
             return;
