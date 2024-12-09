@@ -1,12 +1,6 @@
 import shop_model from "../../models/shop_model.js";
 import user_model from "../../models/user_model.js";
 
-/**
- * Retrieves all shops from the database.
- * 
- * @async
- * @returns {Object} An object containing the retrieved shops or an error message.
- */
 async function getAll() {
     try {
         const shops = await shop_model.findAll();
@@ -18,16 +12,6 @@ async function getAll() {
     }
 }
 
-/**
- * Creates a new shop in the database.
- * 
- * @async
- * @param {Object} shopData - The data for the new shop.
- * @param {string} shopData.name_shop - The name of the shop.
- * @param {string} shopData.location_shop - The location of the shop.
- * @param {string} shopData.type_shop - The type of the shop.
- * @returns {Object} An object containing the created shop or an error message.
- */
 async function create(shopData) {
     try {
         // Check if user already exists by name
@@ -48,17 +32,6 @@ async function create(shopData) {
     }
 }
 
-/**
- * Updates an existing shop in the database.
- * 
- * @async
- * @param {number} id - The ID of the shop to update.
- * @param {Object} shopData - The updated data for the shop.
- * @param {string} shopData.name_shop - The updated name of the shop.
- * @param {string} shopData.location_shop - The updated location of the shop.
- * @param {string} shopData.type_shop - The updated type of the shop.
- * @returns {Object} An object containing the updated shop or an error message.
- */
 async function update(id, shopData) {
     try {
         const { name_shop, location_shop, type_shop } = shopData;
@@ -80,13 +53,6 @@ async function update(id, shopData) {
     }
 }
 
-/**
- * Retrieves shops by type from the database.
- * 
- * @async
- * @param {string} shopType - The type of shops to retrieve.
- * @returns {Object} An object containing the retrieved shops or an error message.
- */
 async function getByType(shopType) {
     try {
         console.log(`!!! Attempting to find shops with type: ${shopType}`);
@@ -106,13 +72,6 @@ async function getByType(shopType) {
     }
 }
 
-/**
- * Retrieves shops by user ID from the database.
- * 
- * @async
- * @param {number} id - The ID of the user.
- * @returns {Object} An object containing the retrieved shops or an error message.
- */
 async function getByUserId(id) {
     try {
         console.log(`Attempting to find shops for user ID: ${id}`);
@@ -133,13 +92,6 @@ async function getByUserId(id) {
     }
 }
 
-/**
- * Deletes a shop by ID from the database.
- * 
- * @async
- * @param {number} id - The ID of the shop to delete.
- * @returns {Object} An object containing a success message or an error message.
- */
 async function removeById(id) {
     try {
       // Find the shop and verify it exists
@@ -158,12 +110,7 @@ async function removeById(id) {
     }
   }
 
-  /**
- * Retrieves unique shop types from the database.
- * 
- * @async
- * @returns {Object} An object containing the unique shop types or an error message.
- */
+
 async function getTypesOfShops() {
     try {
       const shopTypes = await shop_model.findAll({

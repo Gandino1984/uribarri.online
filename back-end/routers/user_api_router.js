@@ -9,8 +9,6 @@ const RESET_HOURS = parseInt(process.env.RESET_HOURS) || 24;
 
 
 router.get("/", userApiController.getAll);
-// router.get("/:id", userApiController.getById);
-// router.get("/:id/update", userApiController.update);
 router.get('/ip/check', async (req, res) => {
     const ip = req.ip || req.connection.remoteAddress;
     try {
@@ -56,6 +54,7 @@ router.get('/ip/check', async (req, res) => {
         }
     }
 });
+
 router.post("/login", userApiController.login);
 // to create any type of user
 router.post("/create", userApiController.create);
@@ -92,7 +91,7 @@ router.post('/register', async (req, res) => {
 });
 router.post("/details", userApiController.getByUserName);
 
-// route for creating a seller with a shop
+// route for creating a seller with a shop that he/she owns
 router.post('/seller/create', async (req, res) => {
     console.log('Seller creation endpoint hit');  
     const ip = req.ip || req.connection.remoteAddress;
@@ -111,13 +110,11 @@ router.post('/seller/create', async (req, res) => {
                 error: 'Has excedido el límite de registros permitidos.' 
             });
         }
-        
         // Update registration count
         await ipRecord.update({
             registration_count: hoursSinceLastAttempt >= RESET_HOURS ? 1 : ipRecord.registration_count + 1,
             last_attempt: new Date()
         });
-        
         // Proceed with seller and shop creation
         await userApiController.createSellerWithShop(req, res);
     } catch (error) {

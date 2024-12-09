@@ -4,10 +4,7 @@ import { useUsernameValidation } from './useUsernameValidation.jsx';
 import { useIPValidation } from './useIpValidation.jsx';
 import axiosInstance from '../../../../../utils/axiosConfig.js';
 
-/**
- * Custom hook for handling login and registration functionality
- * @returns {Object} Object containing methods and state for login/register operations
- */
+
 export const LoginRegisterFunctions = () => {
     const {
         isLoggingIn, setIsLoggingIn,
@@ -18,7 +15,7 @@ export const LoginRegisterFunctions = () => {
         setShowPasswordRepeat,
         setShowPasswordLabel,
         setKeyboardKey,
-        setShowBusinessSelector,
+        showShopManagement, setshowShopManagement,
         setDisplayedPassword,
         userType, setUserType,
         currentUser, 
@@ -26,17 +23,19 @@ export const LoginRegisterFunctions = () => {
         setIsAddingShop,
         setShops,
         usernameError, setUsernameError,
-        passwordError, setPasswordError
+        passwordError, setPasswordError,
+        locationUser, setLocationUser,
+        shopName, setShopName,
+        shopLocation, setShopLocation,
+        shopType, setShopType,
+        shopSubtype, setShopSubtype
     } = useContext(AppContext);
 
     // Custom hooks for validation
     const { validateUsername, cleanupUsername } = useUsernameValidation();
     const { ipError, validateIPRegistration } = useIPValidation();
 
-    /**
-     * Handles username input changes with cleanup
-     * @param {Event} e - The input change event
-     */
+
     const handleUsernameChange = (e) => {
         const rawValue = e.target.value;
         console.log('!!! LOGIN: Username rawValue= ', rawValue);
@@ -44,11 +43,6 @@ export const LoginRegisterFunctions = () => {
         setUsernameError('');
       };
 
-    /**
-     * Handles completion of password entry
-     * @param {boolean} isLogin - Whether in login mode
-     * @returns {Function} Callback function for password completion
-     */
     const handlePasswordComplete = (isLogin) => () => {
         if (!isLogin) {
             setDisplayedPassword('');
@@ -59,13 +53,6 @@ export const LoginRegisterFunctions = () => {
         }
     };
 
-
-
-    /**
-     * Handles password input changes
-     * @param {boolean} isLogin - Whether in login mode
-     * @param {string} newPassword - New password value
-     */
     const handlePasswordChange = (isLogin, newPassword) => {
         if (!isLogin && showPasswordRepeat) {
             setPasswordRepeat(newPassword);
@@ -79,18 +66,12 @@ export const LoginRegisterFunctions = () => {
         }
     };
 
-    /**
-     * Handles repeated password input changes
-     * @param {string} newPassword - New password value
-     */
+
     const handleRepeatPasswordChange = (newPassword) => {
         setPasswordRepeat(newPassword);
         setDisplayedPassword('*'.repeat(newPassword.length));
     };
 
-    /**
-     * Resets all form fields to their initial state
-     */
     const resetForm = () => {
         setUsername('');
         setPassword('');
@@ -103,20 +84,13 @@ export const LoginRegisterFunctions = () => {
         setUserType('');
     };
 
-    /**
-     * Toggles between login and registration forms
-     */
+
     const toggleForm = () => {
         clearUserSession();
         setIsLoggingIn((prevState) => !prevState);
         resetForm();
     };
 
-    /**
-     * Processes login response and updates user state
-     * @param {Object} response - Server response
-     * @throws {Error} If response is invalid
-     */
     const handleLoginResponse = async (response) => {
         if (!response.data) {
             throw new Error('No se recibió respuesta del servidor');
@@ -151,48 +125,47 @@ export const LoginRegisterFunctions = () => {
                 // If no shops exist, open the shop creation form
                 if (userShops.length === 0) {
                     setIsAddingShop(true);
-                    setShowBusinessSelector(false);
+                    setshowShopManagement(false);
                 } else {
                     // Set the shops owned by this specific seller
                     setShops(userShops);
-                    setShowBusinessSelector(true);
+                    setshowShopManagement(true);
                     setIsAddingShop(false);
                 }
             } catch (error) {
                 console.error('Error fetching seller shops:', error);
                 setIsAddingShop(true);
-                setShowBusinessSelector(false);
+                setshowShopManagement(false);
             }
         }else {
             // For other user types (client, provider), show business selector
-            setShowBusinessSelector(true);
+            setshowShopManagement(true);
         }
     };
 
-    /**
-     * Processes registration response and updates user state
-     * @param {Object} response - Server response, comes from handleRegistration
-     * @throws {Error} If response is invalid
-     */
     const handleRegistrationResponse = async (response) => {
-        if (!response.data) {
-            throw new Error('No se recibió respuesta del servidor');
-        }
-        if (response.data.error) {
-            throw new Error(response.data.error);
-        }
-        const userData = response.data.data;
-        if (!userData || !userData.id_user) {
-            throw new Error('Error en el registro: datos de usuario incompletos');
-        }
-        const normalizedUserData = {
-            username: userData.name_user,
-            password: password,
-            userType: userType,
-            id: userData.id_user
-        };
-        login(normalizedUserData);
-        setShowBusinessSelector(true); //??
+      if (!response.data) {
+        throw new Error('No se recibió respuesta del servidor');
+      }
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+      const userData = response.data.data;
+      if (!userData || !userData.id_user) {
+        throw new Error('Error en el registro: datos de usuario incompletos');
+      }
+      const normalizedUserData = {
+        username: userData.name_user,
+        password: password,
+        userType: userType,
+        id: userData.id_user,
+        shopData: response.data.shop // Include shop data if available
+      };
+      login(normalizedUserData);
+      if (userType === 'seller') {
+        // For sellers, show business selector
+        setshowShopManagement(true);
+      }
     };
 
     // /**
@@ -221,11 +194,7 @@ export const LoginRegisterFunctions = () => {
     //     return { isValid: true, error: null };
     // };
 
-    /**
-     * Handles login API request
-     * @param {string} cleanedUsername - Sanitized username
-     * @param {string} password - User password
-     */
+
     const handleLogin = async (cleanedUsername, password) => {
         try {
           // Fetch user details first
@@ -255,39 +224,69 @@ export const LoginRegisterFunctions = () => {
           await handleLoginResponse(loginResponse);
           // Check if user type is 'seller' and show ShopManagement component
           if (type === 'seller') {
-            setShowBusinessSelector(true);
+            setshowShopManagement(true);
           }
         } catch (error) {
           const errorMessage = error.response?.data?.error || error.message;
           if (errorMessage.includes('username')) {
-            setUsernameError('Sorry, we couldn\'t find a user with that username');
+            setUsernameError('Nombre de usuario incorrecto');
           } else {
             setUsernameError('Nombre de usuario o contraseña incorrectos');
           }
         }
       };
   
-    /**
-     * Handles registration API request
-     * @param {string} cleanedUsername - Sanitized username
-     * @param {string} password - User password
-     * @param {string} userType - Type of user account
-     */
-    const handleRegistration = async (cleanedUsername, password, userType) => {
-        const registrationData = {
+      const handleRegistration = async (cleanedUsername, password, userType, locationUser, shopName, shopLocation, shopType, shopSubtype) => {
+        console.log('Calling handleRegistration...');
+        if (userType === 'seller') {
+          const registrationData = {
             name_user: cleanedUsername,
             pass_user: password,
-            type_user: userType,
-            location_user: 'bilbao'
-        };
-        const response = await axiosInstance.post('/user/register', registrationData);
-        await handleRegistrationResponse(response);
-        toggleForm();
-    };
+            location_user: locationUser || '', // User location
+            name_shop: shopName,
+            location_shop: shopLocation,
+            type_shop: shopType,
+            subtype_shop: shopSubtype
+          };
+    
+          console.log('!!! handleRegistration() - Registration data:', registrationData);
+    
+          // Log the values of shopType and shopSubtype
+          console.log('shopType:', shopType);
+          console.log('shopSubtype:', shopSubtype);
+    
+          try {
+            const response = await axiosInstance.post('/user/seller/create', registrationData, {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            console.log('Full response - sellerCreate', response);
+    
+            // Ensure we handle the registration response
+            await handleRegistrationResponse(response);
+    
+            // For sellers, explicitly set shop management to true
+            setshowShopManagement(true);
+            setIsLoggingIn(false); // Ensure we're not in login mode
+          } catch (error) {
+            console.error('Full error details:', {
+              response: error.response,
+              request: error.request,
+              message: error.message,
+              config: error.config
+            });
+    
+            // detailed error handling
+            setUsernameError(
+              error.response?.data?.error ||
+              error.message ||
+              'Registration failed'
+            );
+          }
+        }
+      };
 
-    /**
-     * Clears current user session and resets form
-     */
     const clearUserSession = () => {
         logout();
         setUsername('');
@@ -296,86 +295,90 @@ export const LoginRegisterFunctions = () => {
         setDisplayedPassword('');
         setShowPasswordLabel(true);
         setKeyboardKey((prev) => prev + 1);
-        setShowBusinessSelector(false);
+        // setshowShopManagement(false);
     };
       
-    /**
-     * Handles form submission for both login and registration
-     * @param {Event} e - Form submission event
-     */
     const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        try {
-          // IP validation for registration only
-          if (!isLoggingIn) {
-            const canRegister = await validateIPRegistration();
-            if (!canRegister) {
-              console.log('IP validation failed');
-              return;
-            }
-          }
-      
-          // Username validation
-          const { isValid, cleanedUsername, errors } = validateUsername(username);
-          if (!isValid) {
-            setError(errors[0]);
+      console.log('Form submitted!');
+      e.preventDefault();
+      try {
+        // IP validation for registration only
+        if (!isLoggingIn) {
+          const canRegister = await validateIPRegistration();
+          if (!canRegister) {
+            console.log('IP validation failed');
             return;
           }
-      
-          // Form validation
-          if (isButtonDisabled()) {
-            return;
-          }
-      
-          // Check for existing session
-          if (!isLoggingIn && currentUser?.id) {
-            console.log('Existing user session');
-            setUsernameError('Ya existe un usuario registrado con ese nombre.');
-            return;
-          }
-      
-          // Handle login or registration
-          if (isLoggingIn) {
-            console.log('Attempting login', { 
-              username, 
-              userType  // Log the current user type
-            });
-            await handleLogin(cleanedUsername, password);
+        }
+        // Username validation
+        const { isValid, cleanedUsername, errors } = validateUsername(username);
+        if (!isValid) {
+          setUsernameError(errors[0]);
+          return;
+        }
+        // Form validation
+        if (isButtonDisabled()) {
+          return;
+        }
+        // Check for existing session
+        if (!isLoggingIn && currentUser?.id) {
+          setUsernameError('Ya existe un usuario registrado con ese nombre.');
+          return;
+        }
+        // Handle login or registration
+        if (isLoggingIn) {
+          await handleLogin(cleanedUsername, password);
+        } else {
+          // For seller registration, ensure shop management is set to true
+          console.log('User type:', userType);
+          if (userType === 'seller') {
+            console.log('Seller registration initiated');
+            setshowShopManagement(true);
+
+            
+            // Slight delay to ensure state update
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Attempt registration with shop details
+            await handleRegistration(
+              cleanedUsername, 
+              password, 
+              userType,
+              locationUser, 
+              shopName, 
+              shopLocation, 
+              shopType, 
+              shopSubtype
+            );
           } else {
-            console.log('Attempting registration');
+            // Handle registration for other user types
             await handleRegistration(cleanedUsername, password, userType);
           }
-        } catch (error) {
-          const errorMessage = error.response?.data?.error || error.message;
-          if (errorMessage.includes('username')) {
-            setUsernameError(errorMessage);
-          } else {
-            setPasswordError(errorMessage);
-          } 
-          
-          // Reset password fields on error
-          setPassword('');
-          setPasswordRepeat('');
-          setDisplayedPassword('');
-          setShowPasswordLabel(true);
-          setKeyboardKey((prev) => prev + 1);
         }
-      };
+      } catch (error) {
+        console.error('Error during registration:', error);
+        const errorMessage = error.response?.data?.error || error.message;
+        if (errorMessage.includes('username')) {
+          setUsernameError(errorMessage);
+        } else {
+          setPasswordError(errorMessage);
+        } 
+        // Reset password fields on error
+        setPassword('');
+        setPasswordRepeat('');
+        setDisplayedPassword('');
+        setShowPasswordLabel(true);
+        setKeyboardKey((prev) => prev + 1);
+      }
+    };
 
-    /**
-     * Handles user type selection changes
-     * @param {Event} e - Change event from user type selector
-     */
+
     const handleUserTypeChange = (e) => {
         setUserType(e.target.value);
         setUsernameError('');
     };
 
-    /**
-     * Determines whether the submit button should be disabled based on form input validity.
-     * 
-     * @returns {boolean} True if the button should be disabled, false otherwise.
-     */
+
     const isButtonDisabled = () => {
         // Check if the username is valid
         const { isValid } = validateUsername(username);

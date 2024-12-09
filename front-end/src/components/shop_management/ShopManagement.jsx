@@ -12,20 +12,24 @@ const ShopManagement = ({ onBack }) => {
     error, setError,
     selectedShop, setSelectedShop,
     showShopCreationForm, setShowShopCreationForm,
-    ShowBusinessSelector, setShowBusinessSelector,
+    showShopManagement, setshowShopManagement,
     isAddingShop, setIsAddingShop
   } = useContext(AppContext);
 
 
   const handleCancel = () => {
-    setShowBusinessSelector(false);
+    setshowShopManagement(false);
   };
 
   const handleSelectShop = (shop) => {
     setSelectedShop(shop);
   };
 
-  // take this away from here
+  useEffect(() => {
+    console.log('showShopManagement changed:', showShopManagement);
+    console.log('showShopManagement changed again:', showShopManagement);
+  }, [showShopManagement]);
+
   useEffect(() => {
     const fetchUserShops = async () => {
       if (!currentUser) return;

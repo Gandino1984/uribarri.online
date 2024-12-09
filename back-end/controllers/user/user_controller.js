@@ -240,7 +240,6 @@ async function createSellerWithShop(userData, shopData) {
         ...userData,
         type_user: 'seller' // Enforce seller type
     });
-
     const shopValidation = validateShopData(shopData);
     if (!userValidation.isValid) {
         return { 
@@ -367,7 +366,6 @@ async function update(id, userData) {
                 details: "At least one field must be provided for update" 
             };
         }
-
         // Find user
         const user = await user_model.findByPk(id);
         if (!user) {
@@ -391,7 +389,6 @@ async function update(id, userData) {
                 details: validation.errors 
             };
         }
-
         // Update user
         Object.assign(user, fieldsToUpdate);
         await user.save();
@@ -415,7 +412,6 @@ async function removeById(id) {
         if (!id) {
             return { error: "El ID de usuario es requerido" };
         }
-
         const user = await user_model.findByPk(id);
         if (!user) {
             return { 
@@ -423,11 +419,9 @@ async function removeById(id) {
                 details: "User not found" 
             };
         }
-
         await user_model.destroy({
             where: { id_user: id }
         });       
-
         console.log("Deleted user with id:", id);
         return { 
             data: { id },

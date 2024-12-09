@@ -94,7 +94,7 @@ export const AppContextProvider = ({ children }) => {
   const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
   const [showPasswordLabel, setShowPasswordLabel] = useState(true);
   const [keyboardKey, setKeyboardKey] = useState(0);
-  const [showBusinessSelector, setShowBusinessSelector] = useState(false);
+  const [showShopManagement, setshowShopManagement] = useState(false);
   const [onPasswordComplete, setOnPasswordComplete] = useState(null);
   const [onClear, setOnClear] = useState(null);
   const [businessType, setBusinessType] = useState('general');
@@ -120,6 +120,12 @@ export const AppContextProvider = ({ children }) => {
   const [error, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  const [locationUser, setLocationUser] = useState('');
+  const [shopName, setShopName] = useState('');
+  const [shopLocation, setShopLocation] = useState('');
+  const [shopType, setShopType] = useState('');
+  const [shopSubtype, setShopSubtype] = useState('');
   
   const value = {
     isLoggingIn, setIsLoggingIn,
@@ -130,7 +136,7 @@ export const AppContextProvider = ({ children }) => {
     databaseResponse, setDatabaseResponse,
     userType, setUserType,
     businessType, setBusinessType,
-    showBusinessSelector, setShowBusinessSelector,
+    showShopManagement, setshowShopManagement,
     showPasswordRepeat, setShowPasswordRepeat,
     showPasswordLabel, setShowPasswordLabel,
     keyboardKey, setKeyboardKey,
@@ -153,7 +159,12 @@ export const AppContextProvider = ({ children }) => {
     filters, setFilters,
     filteredProducts, setFilteredProducts,
     shopTypes, setShopTypes,
-    passwordError, setPasswordError
+    passwordError, setPasswordError,
+    locationUser, setLocationUser,
+    shopName, setShopName,
+    shopLocation, setShopLocation,
+    shopType, setShopType,
+    shopSubtype, setShopSubtype
   };
 
   return (
