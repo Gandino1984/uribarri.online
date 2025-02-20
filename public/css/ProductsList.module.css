@@ -1,0 +1,64 @@
+.shop{
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  width: 100%; 
+  gap: 1rem; 
+  margin-bottom: 1rem;
+}
+
+.filters{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.productType {
+    font-size: 16px;
+    color: #666;
+  }
+  
+.productStock {
+  font-size: 16px;
+   color: #666;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  margin-right: .5rem;
+}
+
+.checkboxLabel{
+  user-select: none;
+  cursor: pointer;
+}
+
+.productsListHeader{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.list{
+  display: flex;
+  /* align-items: center; */
+  justify-content:left ;
+  flex-direction: column;
+}
+
+.product{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: .5rem;
+}
+
+.product:hover{
+  cursor: pointer;
+  background-color: #ebebeb;  
+}

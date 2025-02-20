@@ -1,0 +1,27 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    padding: .3rem .5rem;
+    gap: .2rem; 
+    background-color: var(--superlight-orange);
+    border-radius: 6px;
+    border: 2px solid var(--saturated-orange);
+}
+
+.infoList {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.infoItem {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    line-height: .9rem;
+    font-size: .9rem;
+    color: var(--saturated-orange);
+}

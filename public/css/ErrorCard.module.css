@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    padding: .3rem .5rem;
+    gap: .2rem; 
+    background-color: var(--superlight-red);
+    border-radius: 6px;
+    border: 2px solid red;
+    z-index: 99999999999999;
+ }
+
+.errorList{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.errorItem{
+    display: block;
+    align-items:center;
+    justify-content:center;
+    line-height: .9rem;
+    font-size: .9rem;
+    color: red;
+}

@@ -1,0 +1,94 @@
+.container{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 6px;
+    font-size: .8rem;
+    padding: .5rem 1rem;
+    margin-top: .5rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.formTitle{
+    text-align: center;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.formField{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: .5rem;
+    /* flex-wrap: wrap; */
+}
+
+select,
+textarea {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.formField textarea {
+    flex: 1 1 100%;
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+    .formField {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .formField input,
+    .formField select {
+        flex: 1 1 100%;
+        margin: 0.25rem 0;
+    }
+
+    /* Center and adjust label positioning */
+    .formField label {
+        margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* Make buttons full width on mobile */
+    .formField button {
+        width: 100%;
+    }
+
+    /* Add more spacing between form fields on mobile */
+    .formField {
+        margin-bottom: .7rem;
+    }
+
+    /* Ensure container has proper padding on mobile */
+    .container {
+        padding: 1rem;
+    }
+}
+
+/* Additional breakpoint for very small screens */
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 0.8rem;
+    }
+
+    .formField {
+        gap: 0.3rem;
+    }
+    
+    /* Maintain centered labels on very small screens */
+    .formField label {
+        text-align: center;
+        width: 100%;
+    }
+}

@@ -1,0 +1,24 @@
+The array filtering process in the filterProducts function is performed using the filter() method, which is a built-in JavaScript method for arrays.
+
+Here's the relevant code snippet:
+
+return products.filter((product) => {
+  return isSeasonMatch() && isTypeMatch() && isOnSaleMatch() && isCalificationMatch();
+});
+
+Here's a step-by-step explanation of the filtering process:
+
+The filter() method is called on the products array, which contains the list of products to be filtered.
+The filter() method takes a callback function as an argument, which is called for each element in the products array.
+The callback function takes a single argument, product, which represents the current product being processed.
+The callback function calls four other functions: isSeasonMatch(), isTypeMatch(), isOnSaleMatch(), and isCalificationMatch(). Each of these functions checks whether the current product matches a specific filter criterion.
+The results of these four function calls are combined using the logical && operator, which returns true only if all four conditions are true.
+If the combined result is true, the current product is included in the filtered array. If the result is false, the product is excluded from the filtered array.
+The filter() method returns a new array containing only the products that passed the filter criteria.
+The four filter functions (isSeasonMatch(), isTypeMatch(), isOnSaleMatch(), and isCalificationMatch()) are defined earlier in the filterProducts function and perform the following checks:
+
+isSeasonMatch(): Checks whether the product's season matches the selected season filter.
+isTypeMatch(): Checks whether the product's type matches the selected type filter.
+isOnSaleMatch(): Checks whether the product is on sale (i.e., its discount price is greater than 0).
+isCalificationMatch(): Checks whether the product's calification matches the selected calification filter.
+By combining the results of these four filter functions, the filterProducts function returns a filtered array of products that match all the selected filter criteria.

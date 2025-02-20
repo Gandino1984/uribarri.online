@@ -1,0 +1,34 @@
+/* TopBar.module.css */
+.container {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    background-color: white;
+    padding: .5rem 2rem;
+    margin-bottom: 1rem;
+    z-index: 9999999999999999;
+}
+
+.errorWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 99999999999;
+}
+
+.contentWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.messageWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 999999999999999999;
+}

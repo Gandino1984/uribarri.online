@@ -1,0 +1,47 @@
+.container{
+    /* padding: 1rem 3rem; */
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    flex-direction: column;
+}
+
+.header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.list{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.shop{
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition: all .2s ease;
+}
+
+.shop:hover{
+    background-color: #ebebeb;  
+}
+
+.shopInfo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}

@@ -1,0 +1,35 @@
+# docker-compose.yml
+services:
+  db:
+    image: mysql:8.0
+    container_name: ${MYSQL_HOST}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}      
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - data:/var/lib/mysql
+      - ./db/scripts:/docker-entrypoint-initdb.d
+
+  backend:
+    build: .
+    container_name: ${BACKEND_HOST}
+    restart: unless-stopped
+    ports:
+      - ${APP_PORT}:3000
+    depends_on:
+      - db
+    environment:
+      - APP_PORT=${APP_PORT}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./public:/app/public
+      - ./public/images/uploads:/app/public/images/uploads
+
+volumes:
+  data:

@@ -1,0 +1,291 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  padding: 1rem 1rem;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding-right: 3rem;
+  padding-bottom: .5rem;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 6px;
+  padding: 1rem 1rem 1rem 1rem;
+}
+
+.inputSection{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formTitle {
+  padding-bottom: .5rem;
+}
+
+.formActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1.7rem;
+}
+
+/* .selectOptions{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  flex-direction: column;
+  width: 100%;
+}
+
+.selectOptions input[type="select"] {
+  height:2rem;
+ 
+} */
+
+.formField {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: .3rem;
+  gap: .5rem;
+  width: 100%;
+}
+
+.formField label {
+  font-weight: 500;
+  padding-bottom: .5rem;
+}
+
+.validationMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: .5rem;
+}
+
+::placeholder {
+  color: lightgrey;
+  opacity: 1; 
+}
+
+.validText {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.errorText {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.validIcon {
+  color: #16a34a;
+}
+
+.errorIcon {
+  color: #dc2626;
+}
+
+.passwordLabel {
+  min-height: 25px;
+  display: block;
+}
+
+.inputError {
+  border: 2px solid red;
+  color: red;
+}
+
+.inputSuccess {
+  border: 2px solid green;
+  color: green;
+}
+
+.repeatPasswordMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+}
+
+.active {
+  color: rgb(247, 247, 247);
+  background-color: var(--saturated-blue);
+  color: white;
+}
+
+.active:hover {
+  color: black;
+  background-color: var(--dark-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.inactive {
+  background-color: var(--superlight-gray);
+  color: var(--gray);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media screen and (min-width: 400px) {
+  .formActions {
+    justify-content: left;
+    gap: 1rem;
+  }
+
+}
+
+/* Medium Screen Breakpoint */
+@media screen and (min-width: 500px) {
+  .container {
+    padding: 0 2rem;
+    justify-content: center;
+  }
+
+  .formContent {
+    display: flex;
+    gap: 3rem;
+    align-items: stretch;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .formContent::after {
+    content: '';
+    position: absolute;
+    right: calc(50% - 1.5rem);
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background-color: #e5e7eb;
+  }
+
+  .inputSection,
+  .keyboardSection {
+    flex: 1;
+    padding-right: 1rem;
+  }
+
+  .formContainer {
+    padding: 1rem 2rem;
+  }
+}
+
+/* Tablet Breakpoint */
+@media screen and (min-width: 768px) {
+  .container {
+    justify-content: center;
+  }
+
+  .formActions {
+    justify-content: left;
+    /* margin-top: 1rem; */
+    gap: 1rem;
+  }
+
+  .formField {
+    /* flex-direction: row; */
+    justify-content: center;
+    align-items: center;
+  }
+
+  .formField label {
+    padding-bottom: 0;
+    min-width: 120px;
+    text-align: right;
+    margin-right: 1rem;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    flex: 1;
+    max-width: 300px;
+  }
+}
+
+/* Desktop Breakpoint */
+@media screen and (min-width: 1024px) {
+  .container {
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  .formContainer {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  .formTitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .formField {
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+
+  .formField label {
+    min-width: 150px;
+    font-size: 1rem;
+  }
+
+  .formActions {
+    justify-content: left;
+    /* margin-top: 1rem; */
+    gap: 1rem;
+  }
+
+  :global(.numericKeyboardContainer) {
+    transform: scale(1.1);
+    margin: 1rem 0;
+  }
+}
+
+/* Large Desktop Breakpoint */
+@media screen and (min-width: 1440px) {
+  .formContainer {
+    justify-content: space-between;
+    gap: 4rem;
+    padding: 2rem;
+  }
+
+  .formActions {
+    justify-content: left;
+    gap: 1rem;
+  }
+
+  .formFields {
+    flex: 1;
+    max-width: 500px;
+  }
+
+  .numericKeyboardWrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+}

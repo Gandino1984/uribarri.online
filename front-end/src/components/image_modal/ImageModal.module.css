@@ -1,0 +1,73 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999999999; /* Increased z-index to ensure it's above all other elements */
+  padding: 1rem;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10000; /* Ensure close button is above the image */
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modalImage {
+  display: block;
+  max-width: 100%;
+  max-height: calc(90vh - 2rem);
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.loadingSpinner {
+  color: white;
+  font-size: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.errorMessage {
+  color: white;
+  font-size: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

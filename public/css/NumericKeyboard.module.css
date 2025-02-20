@@ -1,0 +1,73 @@
+.container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0rem 0rem 1rem 0rem;
+    margin-bottom: .5rem;
+}
+
+.numericKeyboardInput{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.passwordDisplay{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* min-height: 2rem; */
+    height: 3rem;
+    font-size: 7rem;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    color: var(--saturated-blue);
+    overflow: hidden;
+}
+
+.keyboard{
+    position: relative;
+    width: 100%;
+}
+
+.key{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    width: 2.7rem;
+    height: 2.7rem;
+    font-size: 1rem;
+    border-radius: 50%;
+    padding: .5rem .7rem;
+    user-select: none;
+    margin: .2rem;
+    background-color: var(--superlight-gray);
+    transition: all .8s ease;
+}
+
+.key:hover{
+    color: white;
+    background-color: var(--saturated-blue);
+    transition: all .15s ease;
+}
+
+.row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: .3rem;
+}
+
+@media screen and (min-width: 500px) {
+    .container {
+        padding: 2rem 0rem 1rem 0rem;
+    }
+  
+  }

@@ -1,0 +1,153 @@
+.container{
+    /* width: 100vw; */
+    /* display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; */
+    gap:1rem;
+    border-radius: 6px;
+    /* min-height: 100vh; */
+}
+
+.content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: white;
+    border-radius: 6px;
+    margin-top: 3rem;
+    padding: 1rem 1rem;
+    
+}
+
+
+.header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: .7rem;
+}
+
+.timeGroup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .timeInput {
+    flex: 1;
+    position: relative;
+  }
+  
+  .timeIcon {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+  }
+  
+  .timeInput input[type="time"] {
+    padding-left: 32px;
+  }
+  
+  .timeSeparator {
+    color: #666;
+    font-weight: 500;
+  }
+  
+  .checkboxField {
+    margin-top: 0.5rem;
+  }
+  
+  .checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+
+  .scheduleSection {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+  }
+  
+  .scheduleTitle {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .scheduleFields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .timeGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .timeGroup label {
+    min-width: 70px;
+    color: #666;
+  }
+  
+  .timeGroup span {
+    color: #666;
+    margin: 0 5px;
+  }
+  
+  .timeInput {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .scheduleContainer {
+    margin: 1rem 0;
+  }
+  
+  .scheduleTitle {
+    margin: 0.5rem 0;
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  .scheduleFields {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .timeInput {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 120px;
+  }
+
+

@@ -1,0 +1,133 @@
+.container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 30%; /* 16:9 aspect ratio base */
+}
+
+/* Small screens (540px and below) */
+@media (max-width: 539px) {
+  .container {
+    padding-bottom: 35%; /* 16:9 ratio */
+  }
+}
+
+/* Medium-small screens (540px to 639px) */
+@media (min-width: 540px) and (max-width: 639px) {
+  .container {
+    padding-bottom: 30%; /* Maintain 16:9 ratio */
+  }
+}
+
+/* Medium screens (640px to 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .container {
+    padding-bottom: 30%; /* Less extreme wide ratio */
+  }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .container {
+    padding-bottom: 30%; /* Widest ratio */
+  }
+}
+
+/* Portrait orientation override */
+@media (orientation: portrait) and (max-width: 1023px) {
+  .container {
+    padding-bottom: 20%; /* 2:1 ratio for portrait */
+  }
+}
+
+.imageWrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.noImage {
+  width: 100%;
+  height: 100%;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.noImageText {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.uploadButtonContainer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 8px;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Larger touch targets for mobile */
+@media (max-width: 640px) {
+  .uploadButton {
+    padding: 10px;
+  }
+  
+  .cameraIcon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.uploadButton:hover {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cameraIcon {
+  color: #374151;
+}
+
+.loader {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+}
+
+.loaderIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
