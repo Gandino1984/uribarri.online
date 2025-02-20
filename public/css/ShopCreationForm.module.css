@@ -1,153 +1,191 @@
-.container{
-    /* width: 100vw; */
-    /* display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column; */
-    gap:1rem;
-    border-radius: 6px;
-    /* min-height: 100vh; */
+.container {
+  width: 100%;
+  gap: 1rem;
+  border-radius: 6px;
 }
 
-.content{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: white;
-    border-radius: 6px;
-    margin-top: 3rem;
-    padding: 1rem 1rem;
-    
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: white;
+  border-radius: 6px;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  /* width: 100%; */
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-
-.header{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
 }
 
-.form{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: .7rem;
+.headerTitle {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
 }
 
-.timeGroup {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: 100%;
+}
+
+.formField {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: .5rem;
+}
+
+.formFields{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-top: 1rem;
+  /* gap: 1rem; */
+}
+
+/* .input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+} */
+
+.scheduleContainer {
+  /* width: 100%; */
+  /* margin: 1rem 0; */
+}
+
+.scheduleTitle {
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+  /* font-weight: 600; */
+}
+
+.scheduleFields {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.timeInput {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  /* width: 120px; */
+}
+
+.buttonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* margin-top: 1rem; */
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
+
+/* Media query for landscape orientation and larger screens */
+@media (min-width: 768px) and (orientation: landscape) {
+  .content {
+    max-width: 95%;
+    padding: 2rem;
   }
-  
-  .timeInput {
+
+  .form {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .formFields {
     flex: 1;
-    position: relative;
-  }
-  
-  .timeIcon {
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #666;
-  }
-  
-  .timeInput input[type="time"] {
-    padding-left: 32px;
-  }
-  
-  .timeSeparator {
-    color: #666;
-    font-weight: 500;
-  }
-  
-  .checkboxField {
-    margin-top: 0.5rem;
-  }
-  
-  .checkboxLabel {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-  }
-  
-  .checkbox {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-  }
-
-
-  .scheduleSection {
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-  }
-  
-  .scheduleTitle {
-    margin-bottom: 15px;
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  .scheduleFields {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .timeGroup {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .timeGroup label {
-    min-width: 70px;
-    color: #666;
-  }
-  
-  .timeGroup span {
-    color: #666;
-    margin: 0 5px;
-  }
-  
-  .timeInput {
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    min-width: 300px;
+    max-width: 50%;
+    border-right: 1px solid #ddd;
   }
 
   .scheduleContainer {
-    margin: 1rem 0;
-  }
-  
-  .scheduleTitle {
-    margin: 0.5rem 0;
-    color: #666;
-    font-size: 0.9rem;
-  }
-  
-  .scheduleFields {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .timeInput {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 120px;
+    justify-content: center;
+    flex-direction: column;
+    flex: 1;
+    /* min-width: 300px; */
+    margin: 0;
+    /* padding-left: 1.5rem; */
+    
   }
 
+  .buttonContainer {
+    width: 100%;
+    justify-content: center;
+    /* padding-top: 1.5rem; */
+    /* border-top: 1px solid #ddd; */
+  }
+}
 
+/* Additional media query for extra-large screens */
+@media (min-width: 1200px) {
+  .content {
+    max-width: 1140px;
+  }
+}
+
+/* Media query for smaller screens in portrait mode */
+@media (max-width: 480px) {
+  .content {
+    margin-top: 2rem;
+    padding: 1rem;
+    max-width: 95%;
+  }
+
+  .headerTitle {
+    font-size: 1.25rem;
+  }
+
+  .scheduleFields {
+    flex-direction: column;
+    /* align-items: stretch; */
+    gap: 0.5rem;
+  }
+
+  /* .timeInput {
+    width: 100%;
+  } */
+}

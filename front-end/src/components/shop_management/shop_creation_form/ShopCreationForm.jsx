@@ -86,12 +86,13 @@ const ShopCreationForm = () => {
   return (
     <animated.div style={formAnimation} className={styles.container}>
       <div className={styles.content}>
-          <div className={styles.header}>   
-              <h3 className={styles.headerTitle}>
-                  {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-              </h3>
-          </div>
-          <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.header}>   
+          <h3 className={styles.headerTitle}>
+            {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
+          </h3>
+        </div>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formFields}>
             <div className={styles.formField}>
               <input
                 type="text"
@@ -149,58 +150,58 @@ const ShopCreationForm = () => {
                 required
               />
             </div>
+          </div>
 
-            {/* New schedule fields */}
-            <div className={styles.scheduleContainer}>
-              <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
-              <div className={styles.scheduleFields}>
-                <input
-                  type="time"
-                  value={newShop.morning_open || ''}
-                  onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                  className={styles.timeInput}
-                  required
-                />
-                <span>a</span>
-                <input
-                  type="time"
-                  value={newShop.morning_close || ''}
-                  onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                  className={styles.timeInput}
-                  required
-                />
-              </div>
-
-              <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
-              <div className={styles.scheduleFields}>
-                <input
-                  type="time"
-                  value={newShop.afternoon_open || ''}
-                  onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                  className={styles.timeInput}
-                  required
-                />
-                <span>a</span>
-                <input
-                  type="time"
-                  value={newShop.afternoon_close || ''}
-                  onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                  className={styles.timeInput}
-                  required
-                />
-              </div>
+          <div className={styles.scheduleContainer}>
+            <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
+            <div className={styles.scheduleFields}>
+              <input
+                type="time"
+                value={newShop.morning_open || ''}
+                onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
+                className={styles.timeInput}
+                required
+              />
+              <span>a</span>
+              <input
+                type="time"
+                value={newShop.morning_close || ''}
+                onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
+                className={styles.timeInput}
+                required
+              />
             </div>
+
+            <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
+            <div className={styles.scheduleFields}>
+              <input
+                type="time"
+                value={newShop.afternoon_open || ''}
+                onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
+                className={styles.timeInput}
+                required
+              />
+              <span>a</span>
+              <input
+                type="time"
+                value={newShop.afternoon_close || ''}
+                onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
+                className={styles.timeInput}
+                required
+              />
+            </div>
+          </div>
             
-            <div className={styles.buttonContainer}>
-              <button 
-                type="submit" 
-                className={styles.submitButton}
-              >
-                {selectedShop ? 'Actualizar' : 'Crear'}
-                <Box size={17} />
-              </button>
-            </div>
-          </form>
+          <div className={styles.buttonContainer}>
+            <button 
+              type="submit" 
+              className={styles.submitButton}
+            >
+              {selectedShop ? 'Actualizar' : 'Crear'}
+              <Box size={17} />
+            </button>
+          </div>
+        </form>
       </div>
     </animated.div>
   );
