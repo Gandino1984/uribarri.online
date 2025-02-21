@@ -89,7 +89,8 @@ async function update(req, res) {
         location_user, 
         type_user, 
         image_user, 
-        calification_user 
+        calification_user,
+        category_user 
     } = req.body;
     
     if (calification_user !== undefined && calification_user < 0) {
@@ -104,7 +105,8 @@ async function update(req, res) {
         location_user, 
         type_user, 
         image_user,
-        calification_user 
+        calification_user,
+        category_user 
     });
     
     res.json({error, data});
