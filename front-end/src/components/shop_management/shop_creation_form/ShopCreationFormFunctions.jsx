@@ -12,7 +12,8 @@ export const ShopCreationFormFunctions = () => {
     setShowErrorCard,
     selectedShop,
     setInfo,
-    setShowInfoCard
+    setShowInfoCard,
+    shops
   } = useContext(AppContext);
 
   const validateSchedule = (formData) => {
@@ -64,6 +65,30 @@ export const ShopCreationFormFunctions = () => {
 
   const handleCreateShop = async (formData) => {
     try {
+      // Get user's current shops count
+      const userShops = shops.filter(shop => shop.id_user === currentUser.id);
+      const shopCount = userShops.length;
+
+      // Check shop creation limits based on user category
+      const isSponsor = currentUser.category_user === 1;
+      const maxShops = isSponsor ? 3 : 1;
+
+      if (shopCount >= maxShops) {
+        if (!isSponsor) {
+          setError(prevError => ({
+            ...prevError,
+            shopError: 'Para crear más de un comercio, necesitas convertirte en patrocinador. Contacta con el administrador para más información.'
+          }));
+        } else {
+          setError(prevError => ({
+            ...prevError,
+            shopError: 'Has alcanzado el límite máximo de comercios permitidos (3).'
+          }));
+        }
+        setShowErrorCard(true);
+        return;
+      }
+
       const response = await axiosInstance.post('/shop/create', {
         ...formData,
         id_user: currentUser.id
@@ -74,7 +99,7 @@ export const ShopCreationFormFunctions = () => {
         if (response.data.error.includes("Ya existe una comercio con ese nombre")) {
           setInfo(prevInfo => ({ ...prevInfo, shopInfo: "Ya existe una tienda con ese nombre" }));
           setShowInfoCard(true);
-          return; // Exit early to prevent further error handling
+          return;
         }
         // For other errors, use the error card
         setError(prevError => ({ ...prevError, shopError: response.data.error }));
@@ -119,7 +144,6 @@ export const ShopCreationFormFunctions = () => {
         id_user: currentUser.id,
         calification_shop: formData.calification_shop || 0,
         image_shop: formData.image_shop || '',
-        // Explicitly include schedule fields
         morning_open: formData.morning_open,
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
@@ -165,7 +189,6 @@ export const ShopCreationFormFunctions = () => {
       }
     }
   };
-  
 
   return {
     handleCreateShop,

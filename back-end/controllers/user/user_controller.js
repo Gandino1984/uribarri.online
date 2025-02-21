@@ -75,9 +75,10 @@ async function getById(id) {
 
         const user = await user_model.findByPk(id);
         
-        console.log("-> user_controller.js - getById() - Retrieved user = ", user);
+        // console.log("-> user_controller.js - getById() - Retrieved user = ", user);
 
         if (!user) {
+            console.warn("-> user_controller.js - getById() - User not found");
             return { error: "Usuario no encontrado" };
         }   
         return { data: user };

@@ -63,6 +63,7 @@ const ShopCreationForm = () => {
     
     // Validate schedule
     const scheduleValidation = validateSchedule(newShop);
+    
     if (!scheduleValidation.isValid) {
       setError(prevError => ({ 
         ...prevError, 
