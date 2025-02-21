@@ -38,6 +38,9 @@ const validateUserData = (userData) => {
     if (userData.calification_user !== undefined && userData.calification_user < 0) {
         errors.push('La calificación no puede ser negativa');
     }
+    if (userData.category_user !== undefined && typeof userData.category_user !== 'boolean') {
+        errors.push('La categoría de usuario debe ser un valor booleano');
+    }
 
     return {
         isValid: errors.length === 0,
@@ -186,13 +189,14 @@ async function login(userData) {
             };
         }
 
-        // Return user data including image_user
+        // Return user data including category_user
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
             type_user: user.type_user,
             location_user: user.location_user,
-            image_user: user.image_user 
+            image_user: user.image_user,
+            category_user: user.category_user
         };
 
         console.log('-> login() - User response:', userResponse); 
@@ -234,9 +238,14 @@ async function register(userData) {
             };
         }
 
-        // Add default calification if not provided
+        // Add default values if not provided
         if (userData.calification_user === undefined) {
-            userData.calification_user = 0;
+            userData.calification_user = 5;
+        }
+        if (userData.category_user === undefined) {
+            //if category is false it means the user is not a sponsor of the app
+            //by default all users are not sponsors
+            userData.category_user = false;
         }
 
         const user = await user_model.create(userData);
@@ -247,12 +256,13 @@ async function register(userData) {
             name_user: user.name_user,
             type_user: user.type_user,
             location_user: user.location_user,
-            calification_user: user.calification_user
+            calification_user: user.calification_user,
+            category_user: user.category_user
         };
 
         return { 
-            data: userResponse,
-            message: "Registro exitoso" 
+            message: "Registro exitoso", 
+            data: userResponse
         };
     } catch (err) {
         console.error("Error en el registro = ", err);
@@ -282,7 +292,6 @@ async function update(id, userData) {
         if (!user) {
             return { 
                 error: "El usuario no existe",
-                details: "User not found" 
             };
         }
 
@@ -293,6 +302,7 @@ async function update(id, userData) {
         if (userData.location_user) fieldsToUpdate.location_user = userData.location_user;
         if (userData.type_user) fieldsToUpdate.type_user = userData.type_user;
         if (userData.calification_user !== undefined) fieldsToUpdate.calification_user = userData.calification_user;
+        if (userData.category_user !== undefined) fieldsToUpdate.category_user = userData.category_user;
 
         const validation = validateUserData(fieldsToUpdate);
         if (!validation.isValid) {
@@ -308,8 +318,9 @@ async function update(id, userData) {
 
         console.log("Updated user:", user);
         return { 
-            data: user,
-            message: "Usuario actualizado correctamente" 
+            message: "Usuario actualizado correctamente" ,
+            data: user
+            
         };
     } catch (error) {
         console.error("Error in update:", error);

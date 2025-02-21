@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `type_user` VARCHAR(45) NOT NULL,
   `image_user` VARCHAR(255) NULL,
   `calification_user` INT NOT NULL DEFAULT 5,
+  `category_user` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE
 ) ENGINE = InnoDB;
