@@ -174,21 +174,36 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const login = (userData) => {
-    // Remove only the password field
+    console.log('Incoming userData:', userData);
+  
+    // Remove the password field but keep all other original data
     const { pass_user, ...userWithoutPassword } = userData;
     
-    // Preserve all other user data including image_user
+    // Create the user state object with correct property mappings
+    const userStateData = {
+      id_user: userData.id_user,            
+      name_user: userData.name_user,   
+      type_user: userData.type_user,   
+      location: userData.location_user, 
+      image_user: userData.image_user, 
+      category_user: userData.category_user, 
+    };
+  
+    // Log the transformed data before setting state
+    console.log('Transformed user state data:', userStateData);
+    
+    // Create timestamp data for localStorage
     const userDataWithTimestamp = {
-      ...userWithoutPassword,
+      ...userWithoutPassword, // Keep all original fields
       timestamp: new Date().getTime()
     };
-    
+  
     // Store complete user data in localStorage
     localStorage.setItem('currentUser', JSON.stringify(userDataWithTimestamp));
     
-    // Update state with complete user data
-    setCurrentUser(userWithoutPassword);
-    setNameUser(userWithoutPassword.name_user);
+    // Update state with verified data
+    setCurrentUser(userStateData);
+    setNameUser(userData.name_user);
     setIsLoggingIn(false);
     setshowShopManagement(true);
     clearError();

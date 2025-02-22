@@ -14,13 +14,13 @@ export const ShopManagementFunctions = () => {
 
   const fetchUserShops = async () => {
     try {
-      if (!currentUser?.id) {
+      if (!currentUser?.id_user) {
         setShops([]);
         throw new Error('No hay usuarios activos');      
       }
 
       const response = await axiosInstance.post('/shop/by-user-id', {
-        id_user: currentUser.id
+        id_user: currentUser.id_user
       });
 
       if (response.data.error) {
