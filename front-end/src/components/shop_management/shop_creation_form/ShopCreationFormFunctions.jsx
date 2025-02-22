@@ -75,44 +75,44 @@ export const ShopCreationFormFunctions = () => {
         setShowErrorCard(true);
         return;
       }
-
+  
       // Ensure the user ID matches the current user
       const shopData = {
         ...formData,
         id_user: currentUser.id_user
       };
-
+  
       console.log('Creating shop with data:', shopData);
-
+  
       // Check shop limits with explicit category check
       const userShops = Array.isArray(shops) ? shops.filter(shop => shop.id_user === currentUser.id_user) : [];
       const shopCount = userShops.length;
       
-      // Explicitly check category_user, defaulting to non-sponsor if undefined
-      const isSponsor = currentUser?.category_user !== undefined && currentUser.category_user !== null;
+      // Fix: Properly check if user is sponsor based on category_user boolean value
+      const isSponsor = currentUser?.category_user === true;
       const maxShops = isSponsor ? 3 : 1;
-
+  
       console.log('Shop validation:', {
         shopCount,
         isSponsor,
         maxShops,
         currentUserCategory: currentUser?.category_user
       });
-
+  
       if (shopCount >= maxShops) {
         setError(prevError => ({
           ...prevError,
           shopError: isSponsor 
-            ? 'Has alcanzado el límite máximo de comercios permitidos.'
+            ? 'Has alcanzado el límite máximo de comercios permitidos (3).'
             : 'Para crear más comercios tienes que ser patrocinador del proyecto.'
         }));
         setShowErrorCard(true);
         return;
       }
-
+  
       // Create the shop
       const response = await axiosInstance.post('/shop/create', shopData);
-
+  
       if (response.data.error) {
         if (response.data.error.includes("Ya existe una comercio con ese nombre")) {
           setInfo(prevInfo => ({ ...prevInfo, shopInfo: "Ya existe una tienda con ese nombre" }));
@@ -121,10 +121,10 @@ export const ShopCreationFormFunctions = () => {
         }
         throw new Error(response.data.error);
       }
-
+  
       setShops(prevShops => [...(Array.isArray(prevShops) ? prevShops : []), response.data.data]);
       setShowShopCreationForm(false);
-
+  
     } catch (err) {
       console.error('Error creating shop:', err);
       setError(prevError => ({ 
