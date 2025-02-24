@@ -60,6 +60,16 @@ const product_model = sequelize.define("product", {
         type: DataTypes.TINYINT(1),
         allowNull: false,
         defaultValue: 0
+    },
+    
+    expiration_product: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    surplus_product: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
     }
 }, {
     timestamps: false,

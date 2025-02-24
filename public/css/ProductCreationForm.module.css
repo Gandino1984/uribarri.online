@@ -39,6 +39,26 @@ textarea {
     flex: 1 1 100%;
 }
 
+.dateInput {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-top: 4px;
+  }
+  
+  .dateInput::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+  
+  .formField label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #666;
+  }
+
 /* Media queries for responsive design */
 @media screen and (max-width: 768px) {
     .formField {

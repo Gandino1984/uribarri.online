@@ -27,7 +27,9 @@ async function create(req, res) {
             stock_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         } = req.body;
 
         if (name_product === undefined || 
@@ -40,16 +42,18 @@ async function create(req, res) {
             stock_product === undefined || 
             info_product === undefined || 
             id_shop === undefined ||
-            second_hand === undefined) {
+            second_hand === undefined ||
+            surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios"
+                error: "Todos los campos son obligatorios excepto expiration_product"
             });
         }
 
         if(price_product < 0 || 
            discount_product < 0 || 
            calification_product < 0 || 
-           stock_product < 0) {
+           stock_product < 0 ||
+           surplus_product < 0) {
             return res.status(400).json({
                 error: "Los campos numéricos no pueden ser negativos"
             });
@@ -66,7 +70,9 @@ async function create(req, res) {
             stock_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         });
 
         res.json({error, data, success});    
@@ -93,7 +99,9 @@ async function update(req, res) {
             stock_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         } = req.body;
 
         if(id_product === undefined || 
@@ -107,16 +115,18 @@ async function update(req, res) {
            stock_product === undefined || 
            info_product === undefined || 
            id_shop === undefined ||
-           second_hand === undefined) {
+           second_hand === undefined ||
+           surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios"
+                error: "Todos los campos son obligatorios excepto expiration_product"
             });
         }
 
         if(price_product < 0 || 
            discount_product < 0 || 
            calification_product < 0 || 
-           stock_product < 0) {
+           stock_product < 0 ||
+           surplus_product < 0) {
             return res.status(400).json({
                 error: "Los campos numéricos no pueden ser negativos"
             });
@@ -135,7 +145,9 @@ async function update(req, res) {
                 stock_product, 
                 info_product, 
                 id_shop,
-                second_hand
+                second_hand,
+                surplus_product,
+                expiration_product
             }
         );   
 

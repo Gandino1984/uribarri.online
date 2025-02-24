@@ -205,6 +205,31 @@ const ProductCreationForm = () => {
         </div>
 
         <div className={styles.formField}>
+          <label htmlFor="surplus_product">Excedente</label>
+          <CustomNumberInput
+            label="Excedente"
+            name="surplus_product"
+            value={productData.surplus_product}
+            onChange={handleNumericInputChange}
+            min={0}
+            required
+          />
+        </div>
+
+        <div className={styles.formField}>
+          <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
+          <input
+            type="date"
+            id="expiration_product"
+            name="expiration_product"
+            value={productData.expiration_product || ''}
+            onChange={handleChange}
+            min={new Date().toISOString().split('T')[0]} // Set minimum date to today
+            className={styles.dateInput}
+          />
+        </div>
+
+        <div className={styles.formField}>
           <button 
             type="submit" 
             className={styles.submitButton}

@@ -40,7 +40,9 @@ async function create(productData) {
             stock_product, 
             info_product, 
             id_shop,
-            second_hand 
+            second_hand,
+            surplus_product,
+            expiration_product 
         } = productData;
 
         const product = await product_model.create({
@@ -54,7 +56,9 @@ async function create(productData) {
             stock_product,
             info_product,
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         });
         
         return { 
@@ -80,7 +84,9 @@ async function update(id, productData) {
             stock_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         } = productData;
 
         const product = await product_model.findByPk(id);
@@ -100,6 +106,8 @@ async function update(id, productData) {
         if (info_product) product.info_product = info_product;
         if (id_shop) product.id_shop = id_shop;
         if (second_hand !== undefined) product.second_hand = second_hand;
+        if (surplus_product >= 0) product.surplus_product = surplus_product;
+        if (expiration_product) product.expiration_product = expiration_product;
         
         await product.save();
 
@@ -112,6 +120,7 @@ async function update(id, productData) {
         return { error: "Producto no actualizado" };
     }
 }
+
 
 async function getById(id) {
     try {
@@ -130,7 +139,6 @@ async function getById(id) {
         return { error: "Producto no encontrado" };
     }
 }
-
 
 
 async function removeByShopId(id_shop, transaction) {

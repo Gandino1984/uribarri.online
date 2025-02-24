@@ -119,6 +119,18 @@ const ProductCreationFormFunctions = () => {
         throw new Error("El subtipo de producto es requerido");
       }
 
+      if (newProductData.surplus_product < 0) {
+        setError(prevError => ({ ...prevError, productError: "El excedente no puede ser negativo"}));
+        throw new Error("El excedente no puede ser negativo");
+      }
+      if (newProductData.expiration_product) {
+        const expirationDate = new Date(newProductData.expiration_product);
+        if (isNaN(expirationDate.getTime())) {
+          setError(prevError => ({ ...prevError, productError: "Fecha de caducidad inválida"}));
+          throw new Error("Fecha de caducidad inválida");
+        }
+      }
+
       return true;
     } catch (err) {
       console.error('Error validating product data:', err);
@@ -139,7 +151,9 @@ const ProductCreationFormFunctions = () => {
       info_product: '',
       id_shop: selectedShop?.id_shop || '',
       subtype_product: '',
-      second_hand: 0
+      second_hand: 0,
+      surplus_product: 0,
+      expiration_product: null 
     });
     setError(prevError => ({
       ...prevError,
