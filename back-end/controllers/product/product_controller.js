@@ -345,8 +345,57 @@ async function removeById(id_product) {
         return { error: "Producto no eliminado" };
     }
 }
-  
 
-export { getAll, getById, create, update, removeById, removeByShopId, getByShopId, getByType, getOnSale, updateProductImage, deleteImage}
+// New function to check if a product with the same name exists in a specific shop
+async function verifyProductName(name_product, id_shop) {
+    try {
+        const existingProduct = await product_model.findOne({
+            where: { 
+                id_shop: id_shop,
+                name_product: name_product,
+            }
+        });
+        
+        return { 
+            exists: !!existingProduct,
+            data: existingProduct,
+            success: "Verificación de producto completada"
+        };
+    } catch (err) {
+        console.error("-> product_controller.js - verifyProductName() - Error = ", err);
+        return { 
+            error: "Error al verificar la existencia del producto",
+            exists: false
+        };
+    }
+}
 
-export default { getAll, getById, create, update, removeById, removeByShopId, getByShopId, getByType, getOnSale, updateProductImage, deleteImage }
+export { 
+    getAll, 
+    getById, 
+    create, 
+    update, 
+    removeById, 
+    removeByShopId, 
+    getByShopId, 
+    getByType, 
+    getOnSale, 
+    updateProductImage, 
+    deleteImage,
+    verifyProductName
+}
+
+export default { 
+    getAll, 
+    getById, 
+    create, 
+    update, 
+    removeById, 
+    removeByShopId, 
+    getByShopId, 
+    getByType, 
+    getOnSale, 
+    updateProductImage, 
+    deleteImage,
+    verifyProductName
+}

@@ -184,8 +184,6 @@ async function getById(req, res) {
     }
 }
 
-
-
 async function removeById(req, res) {
     try {
         const id_product = req.params.id_product;
@@ -326,6 +324,37 @@ async function deleteImage(req, res) {
     }
   }
   
+  async function verifyProductName(req, res) {
+    console.log('-> product_api_controller.js - verifyProductName() - Iniciando verificación de nombre de producto');
+    try {
+        const { name_product, id_shop } = req.body;
+        
+        if (!name_product || !id_shop) {
+            return res.status(400).json({
+                error: "El nombre del producto y el ID del comercio son obligatorios",
+                exists: false
+            });
+        }
+        
+        const { error, exists, data, success } = await productController.verifyProductName(name_product, id_shop);
+        
+        if (error) {
+            return res.status(400).json({ error, exists: false });
+        }
+        
+        return res.json({ 
+            exists, 
+            data, 
+            success 
+        });
+    } catch (err) {
+        console.error("-> product_api_controller.js - verifyProductName() - Error =", err);
+        return res.status(500).json({
+            error: "Error al verificar la existencia del producto",
+            exists: false
+        });
+    }
+}
 
 export {
     getAll,
@@ -337,7 +366,8 @@ export {
     getByType,
     getOnSale,
     updateProductImage,
-    deleteImage
+    deleteImage,
+    verifyProductName
 }
 
 export default {
@@ -350,5 +380,6 @@ export default {
     getByType,
     getOnSale,
     updateProductImage,
-    deleteImage
+    deleteImage,
+    verifyProductName
 }

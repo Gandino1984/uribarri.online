@@ -4,7 +4,7 @@ import ShopProductListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
 import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
-import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
+// import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
 import { useSpring, animated, config } from '@react-spring/web';
@@ -35,12 +35,12 @@ const ShopProductList = () => {
   const [contentVisible, setContentVisible] = useState(false);
 
   // Animation for shop info section
-  const shopInfoAnimation = useSpring({
-    from: { transform: 'translateY(-50px)', opacity: 0 },
-    to: { transform: 'translateY(0px)', opacity: 1 },
-    config: config.gentle,
-    delay: 120
-  });
+  // const shopInfoAnimation = useSpring({
+  //   from: { transform: 'translateY(-50px)', opacity: 0 },
+  //   to: { transform: 'translateY(0px)', opacity: 1 },
+  //   config: config.gentle,
+  //   delay: 120
+  // });
 
   // Animation for main content (listHeader, filters, and table)
   const mainContentAnimation = useSpring({
@@ -136,7 +136,7 @@ const ShopProductList = () => {
 
   return (
     <div className={styles.container}>
-        <ConfirmationModal />
+        {/* <ConfirmationModal /> */}
 
         <ImageModal
         isOpen={isImageModalOpen}

@@ -4,7 +4,7 @@ import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopsListBySeller.module.css';
 import { ShopsListBySellerFunctions } from './ShopsListBySellerFunctions.jsx';
 import { Box, Trash2, Edit } from 'lucide-react';
-import ConfirmationModal from '../../confirmation_modal/ConfirmationModal.jsx';
+// import ConfirmationModal from '../../confirmation_modal/ConfirmationModal.jsx';
 
 const ShopsListBySeller = () => {
   const { 
@@ -54,7 +54,7 @@ const ShopsListBySeller = () => {
 
   return (
     <animated.div style={springProps} className={styles.container}>
-      <ConfirmationModal />
+      {/* <ConfirmationModal /> */}
       <div className={styles.content}>
         <div className={styles.headerContainer}>
           <div className={styles.header}>

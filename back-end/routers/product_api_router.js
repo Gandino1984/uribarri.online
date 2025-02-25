@@ -53,4 +53,6 @@ router.patch("/update", productApiController.update);
 router.delete("/remove-by-id/:id_product", productApiController.removeById);
 router.delete('/delete-image/:id_product', productApiController.deleteImage);
 
+router.post("/verify-product-name", productApiController.verifyProductName);
+
 export default router;
