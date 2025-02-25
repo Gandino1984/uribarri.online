@@ -11,7 +11,13 @@ const ProductCreationFormFunctions = () => {
     setShowProductManagement,
     selectedProductToUpdate,
     setIsUpdatingProduct,
-    setSelectedProductToUpdate, 
+    setSelectedProductToUpdate,
+    setIsModalOpen,
+    setModalMessage,
+    isAccepted,
+    setIsAccepted,
+    isDeclined,
+    setIsDeclined
   } = useContext(AppContext);
 
   useEffect(() => {
@@ -22,6 +28,24 @@ const ProductCreationFormFunctions = () => {
       }));
     }
   }, [selectedShop, setNewProductData]);
+
+  // New effect to handle modal response
+  useEffect(() => {
+    const handleModalResponse = async () => {
+      // Only proceed if we have a modal response (accepted or declined)
+      if (isAccepted) {
+        // User confirmed they want to create the product despite duplicate name
+        await createProduct();
+        // Reset the modal response state
+        setIsAccepted(false);
+      } else if (isDeclined) {
+        // User canceled, reset modal response state
+        setIsDeclined(false);
+      }
+    };
+
+    handleModalResponse();
+  }, [isAccepted, isDeclined]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -163,11 +187,26 @@ const ProductCreationFormFunctions = () => {
     setSelectedProductToUpdate(null);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Function to check if a product with the same name exists
+  const checkProductNameExists = async () => {
     try {
-      if (!validateProductData(newProductData)) return;
+      const response = await axiosInstance.get(`/product/check-name`, {
+        params: {
+          name: newProductData.name_product,
+          id_shop: newProductData.id_shop
+        }
+      });
+      
+      return response.data.exists;
+    } catch (err) {
+      console.error('Error checking product name:', err);
+      return false;
+    }
+  };
 
+  // Extracted the product creation logic to a separate function
+  const createProduct = async () => {
+    try {
       // Ensure price has exactly 2 decimal places before submitting
       const formattedData = {
         ...newProductData,
@@ -183,13 +222,48 @@ const ProductCreationFormFunctions = () => {
           databaseResponseError: response.data.error
         }));
         setShowErrorCard(true);
-        return;
+        return false;
       }
 
       if (response.data.data) {
         setProducts(prevProducts => [...prevProducts, response.data.data]);
         resetNewProductData();
         setShowProductManagement(false);
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      setError(prevError => ({
+        ...prevError,
+        databaseResponseError: 'Error al crear el producto'
+      }));
+      setShowErrorCard(true);
+      console.error('ProductCreationFormFunctions - createProduct() - Error al crear el producto =', err);
+      console.error('Error request:', err.request);
+      console.error('Error config:', err.config);
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (!validateProductData(newProductData)) return;
+
+      // Check if a product with the same name already exists
+      const nameExists = await checkProductNameExists();
+      
+      if (nameExists) {
+        // Show confirmation modal if product with same name exists
+        setModalMessage(
+          `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la creación de este producto?`
+        );
+        setIsModalOpen(true);
+        // The actual product creation will be handled by the useEffect watching isAccepted
+      } else {
+        // If no duplicate, proceed with creation directly
+        await createProduct();
       }
     } catch (err) {
       setError(prevError => ({
@@ -198,8 +272,6 @@ const ProductCreationFormFunctions = () => {
       }));
       setShowErrorCard(true);
       console.error('ProductCreationFormFunctions - handleSubmit() - Error al crear el producto =', err);
-      console.error('Error request:', err.request);
-      console.error('Error config:', err.config);
     }
   };
 
@@ -219,23 +291,64 @@ const ProductCreationFormFunctions = () => {
         id_product,
         price_product: Number(newProductData.price_product).toFixed(2)
       };
+      
+      // Check if the updated name already exists for another product
+      if (newProductData.name_product !== selectedProductToUpdate.name_product) {
+        const nameExists = await checkProductNameExists();
+        
+        if (nameExists) {
+          // Show confirmation modal if product with same name exists
+          setModalMessage(
+            `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la actualización de este producto?`
+          );
+          setIsModalOpen(true);
+          
+          // Wait for user response through modal
+          const modalResponseHandler = async () => {
+            if (isAccepted) {
+              await updateProductInDB(updateData);
+              setIsAccepted(false);
+            }
+            // If declined, do nothing and stay on the form
+          };
+          
+          modalResponseHandler();
+          return;
+        }
+      }
+      
+      // If name is unique or unchanged, proceed with update
+      await updateProductInDB(updateData);
+    } catch (err) {
+      setError(prevError => ({
+        ...prevError,
+        databaseResponseError: err.message || 'Error al actualizar el producto'
+      }));
+      setShowErrorCard(true);
+      console.error('Error updating product:', err);
+    }
+  };
   
+  // Extracted update logic to a separate function
+  const updateProductInDB = async (updateData) => {
+    try {
       const response = await axiosInstance.patch('/product/update', updateData);
-  
+    
       if (!response.data) {
         throw new Error('No response data received');
       }
-  
+    
       if (response.data.error) {
         setError(prevError => ({
           ...prevError,
           databaseResponseError: response.data.error
         }));
         setShowErrorCard(true);
-        return;
+        return false;
       }
-  
+    
       if (response.data.data) {
+        const id_product = updateData.id_product;
         setProducts(prevProducts => 
           prevProducts.map(product => 
             product.id_product === id_product 
@@ -248,14 +361,12 @@ const ProductCreationFormFunctions = () => {
         setShowProductManagement(false);
         setIsUpdatingProduct(false);
         setSelectedProductToUpdate(null);
+        return true;
       }
+      
+      return false;
     } catch (err) {
-      setError(prevError => ({
-        ...prevError,
-        databaseResponseError: err.message || 'Error al actualizar el producto'
-      }));
-      setShowErrorCard(true);
-      console.error('Error updating product:', err);
+      throw err;
     }
   };
 

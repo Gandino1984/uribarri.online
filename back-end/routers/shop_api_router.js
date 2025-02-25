@@ -30,4 +30,6 @@ router.patch("/update-with-folder", shopApiController.updateWithFolder);
 
 router.post("/upload-cover-image", handleShopCoverUpload, shopApiController.uploadCoverImage);
 
+router.post("/verify-product-name", shopApiController.verifyProductName);
+
 export default router;
