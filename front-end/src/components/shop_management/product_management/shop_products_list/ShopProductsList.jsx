@@ -7,6 +7,7 @@ import styles from '../../../../../../public/css/ShopProductsList.module.css';
 // import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
+import ProductCard from '../product_card/ProductCard.jsx';
 import { useSpring, animated, config } from '@react-spring/web';
 import ShopCard from '../../shop_card/ShopCard.jsx'; 
 
@@ -28,21 +29,16 @@ const ShopProductList = () => {
     isImageModalOpen,
     setIsImageModalOpen,
     productToDelete, setProductToDelete,
-    selectedImageForModal, setSelectedImageForModal
-    
+    selectedImageForModal, setSelectedImageForModal,
+    // Añadimos el nuevo estado para el producto seleccionado
+    selectedProductDetails, setSelectedProductDetails
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
+  // Estado para controlar la visibilidad del ProductCard
+  const [showProductCard, setShowProductCard] = useState(false);
 
-  // Animation for shop info section
-  // const shopInfoAnimation = useSpring({
-  //   from: { transform: 'translateY(-50px)', opacity: 0 },
-  //   to: { transform: 'translateY(0px)', opacity: 1 },
-  //   config: config.gentle,
-  //   delay: 120
-  // });
-
-  // Animation for main content (listHeader, filters, and table)
+  // Animation for main content
   const mainContentAnimation = useSpring({
     from: { transform: 'translateY(100px)', opacity: 0 },
     to: { 
@@ -133,20 +129,35 @@ const ShopProductList = () => {
     }
   }, [isDeclined]);
 
+  // Función para manejar el clic en una fila de producto
+  const handleProductRowClick = (product) => {
+    setSelectedProductDetails(product);
+    setShowProductCard(true);
+  };
 
   return (
     <div className={styles.container}>
         {/* <ConfirmationModal /> */}
 
         <ImageModal
-        isOpen={isImageModalOpen}
-        onClose={() => {
-          setIsImageModalOpen(false);
-          setSelectedImageForModal(null); // Clear the image when closing
-        }}
-        imageUrl={selectedImageForModal}
-        altText="Product full size image"
-      />
+          isOpen={isImageModalOpen}
+          onClose={() => {
+            setIsImageModalOpen(false);
+            setSelectedImageForModal(null); // Clear the image when closing
+          }}
+          imageUrl={selectedImageForModal}
+          altText="Product full size image"
+        />
+
+        {/* Integración del nuevo componente ProductCard */}
+        {showProductCard && selectedProductDetails && (
+          <ProductCard 
+            onClose={() => {
+              setShowProductCard(false);
+              setSelectedProductDetails(null);
+            }} 
+          />
+        )}
 
         {selectedShop && <ShopCard shop={selectedShop} />}
 
@@ -214,8 +225,10 @@ const ShopProductList = () => {
                   <tr
                     key={product.id_product}
                     className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
+                    onClick={() => handleProductRowClick(product)} // Añadimos el manejador de eventos onClick
+                    style={{ cursor: 'pointer' }} // Añadimos cursor pointer para indicar que es clickeable
                   >
-                    <td className={styles.actionsCell}>
+                    <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => handleUpdateProduct(product.id_product)}
                         className={`${styles.actionButton} ${styles.updateButton}`}
@@ -242,7 +255,8 @@ const ShopProductList = () => {
                       </button>
                     </td>
                     <td className={styles.tableCell}
-                        onDoubleClick={() => {
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
                           handleProductImageDoubleClick(product);
                         }}
                     >
@@ -269,4 +283,3 @@ const ShopProductList = () => {
 };
 
 export default ShopProductList;
-
