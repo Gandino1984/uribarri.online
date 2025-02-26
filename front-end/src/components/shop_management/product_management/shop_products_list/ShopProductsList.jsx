@@ -135,6 +135,18 @@ const ShopProductList = () => {
     setShowProductCard(true);
   };
 
+  // Función para formatear la fecha
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    // Extraer solo la parte de la fecha (YYYY-MM-DD)
+    return dateString.split('T')[0];
+  };
+
+  // Función para formatear el campo second_hand
+  const formatSecondHand = (value) => {
+    return value ? 'Sí' : 'No';
+  };
+
   return (
     <div className={styles.container}>
         {/* <ConfirmationModal /> */}
@@ -211,13 +223,16 @@ const ShopProductList = () => {
                   <th className={styles.tableHeaderCell}>Acciones</th>
                   <th className={styles.tableHeaderCell}>Imagen</th>
                   <th className={styles.tableHeaderCell}>Nombre</th>
-                  <th className={styles.tableHeaderCell}>Precio</th>
-                  <th className={styles.tableHeaderCell}>Vendidos</th>
-                  <th className={styles.tableHeaderCell}>Descuento</th>
-                  <th className={styles.tableHeaderCell}>Temporada</th>
+                  <th className={styles.tableHeaderCell}>Precio</th>            
                   <th className={styles.tableHeaderCell}>Tipo</th>
                   <th className={styles.tableHeaderCell}>Sub-tipo</th>
+                  <th className={styles.tableHeaderCell}>Temporada</th>
+                  <th className={styles.tableHeaderCell}>Descuento</th>
+                  <th className={styles.tableHeaderCell}>Total Vendidos</th>
+                  <th className={styles.tableHeaderCell}>Segunda Mano</th>
                   <th className={styles.tableHeaderCell}>Más Información</th>
+                  <th className={styles.tableHeaderCell}>Caducidad AAAA-MM-DD</th>
+                  <th className={styles.tableHeaderCell}>Excedente</th>
                 </tr>
               </thead>
               <tbody>
@@ -264,14 +279,17 @@ const ShopProductList = () => {
                     </td>
                     <td className={styles.tableCell}>{product.name_product}</td>
                     <td className={styles.tableCell}>&euro;{product.price_product}</td>
-                    <td className={styles.tableCell}>{product.sold_product}</td>
-                    <td className={styles.tableCell}>
-                      {product.discount_product > 0 ? `${product.discount_product}%` : '-'}
-                    </td>
-                    <td className={styles.tableCell}>{product.season_product}</td>
                     <td className={styles.tableCell}>{product.type_product}</td>
                     <td className={styles.tableCell}>{product.subtype_product}</td>
+                    <td className={styles.tableCell}>{product.season_product}</td>
+                    <td className={styles.tableCell}>
+                      {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
+                    </td>
+                    <td className={styles.tableCell}>{product.sold_product}</td>
+                    <td className={styles.tableCell}>{formatSecondHand(product.second_hand)}</td>
                     <td className={styles.tableCell}>{product.info_product}</td>
+                    <td className={styles.tableCell}>{formatDate(product.expiration_product)}</td>
+                    <td className={styles.tableCell}>{product.surplus_product}</td>
                   </tr>
                 ))}
               </tbody>

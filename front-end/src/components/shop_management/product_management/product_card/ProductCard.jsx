@@ -119,8 +119,8 @@ const ProductCard = ({ onClose }) => {
             
             <div className={styles.soldInfo}>
               <ShoppingCart size={18} />
-              <span>sold: {sold_product} unidades</span>
-            </div>
+              <span>Vendidos: {sold_product}</span>
+            </div>  
             
             <div className={styles.categoryInfo}>
               <div className={styles.infoItem}>
