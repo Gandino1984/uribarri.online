@@ -90,7 +90,7 @@ export const ShopCreationFormFunctions = () => {
       
       // Fix: Properly check if user is sponsor based on category_user boolean value
       const isSponsor = currentUser?.category_user === true;
-      const maxShops = isSponsor ? 3 : 1;
+      const maxShops = isSponsor ? 2 : 1;
   
       console.log('Shop validation:', {
         shopCount,

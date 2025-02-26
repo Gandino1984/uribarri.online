@@ -29,6 +29,8 @@ export const ShopManagementFunctions = () => {
       }
 
       const userShops = response.data.data || [];
+
+      console.log('-> ShopManagementFunctions.jsx - fetchUserShops() - shops:', userShops);
       
       setShops(userShops);
     } catch (err) {

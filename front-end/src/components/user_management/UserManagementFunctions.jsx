@@ -41,7 +41,7 @@ export const UserManagementFunctions = () => {
       if (response.data.error) {
         throw new Error(response.data.error);
       }
-      
+      console.log('-> UserManagementFunctions.jsx - handleBusinessTypeSelect() - shops:', response.data.data);
       setShops(response.data.data || []);
     } catch (error) {
       console.error('Error fetching shops by type:', error);

@@ -113,7 +113,7 @@ const ProductCard = ({ onClose }) => {
                   <span className={styles.discountBadge}>-{discount_product}%</span>
                 </>
               ) : (
-                <span className={styles.price}>€{price_product.toFixed(2)}</span>
+                <span className={styles.price}>€{Number(price_product).toFixed(2)}</span>
               )}
             </div>
             

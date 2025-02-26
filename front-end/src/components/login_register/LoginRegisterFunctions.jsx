@@ -139,7 +139,7 @@ export const LoginRegisterFunctions = () => {
           type_user: userData.type_user,
           location_user: userData.location_user,
           image_user: userData.image_user,
-          category_user: userData.category_user 
+          category_user: userData.category_user       
         };
   
         login(normalizedUserData);

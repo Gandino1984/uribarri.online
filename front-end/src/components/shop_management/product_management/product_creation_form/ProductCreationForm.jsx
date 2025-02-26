@@ -224,7 +224,7 @@ const ProductCreationForm = () => {
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="discount_product">Descuento (%)</label>
+          <label htmlFor="discount_product">Descuento % (opcional)</label>
           <CustomNumberInput
             label="Descuento (%)"
             name="discount_product"
@@ -236,20 +236,8 @@ const ProductCreationForm = () => {
           />
         </div>
 
-        {/* <div className={styles.formField}>
-          <label htmlFor="sold_product">sold</label>
-          <CustomNumberInput
-            label="sold"
-            name="sold_product"
-            value={productData.sold_product}
-            onChange={handleNumericInputChange}
-            min={0}
-            required
-          />
-        </div> */}
-
         <div className={styles.formField}>
-          <label htmlFor="surplus_product">Excedente</label>
+          <label htmlFor="surplus_product">Excedente (opcional)</label>
           <CustomNumberInput
             label="Surplus"
             name="surplus_product"

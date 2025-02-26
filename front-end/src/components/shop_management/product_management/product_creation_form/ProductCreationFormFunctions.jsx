@@ -54,7 +54,7 @@ const ProductCreationFormFunctions = () => {
   // Determinar el límite de productos basado en la categoría del usuario
   useEffect(() => {
     if (currentUser?.category_user) {
-      setProductLimit(60); // Límite para usuarios sponsor
+      setProductLimit(25); // Límite para usuarios sponsor
     } else {
       setProductLimit(3); // Límite para usuarios no sponsor
     }
