@@ -212,7 +212,7 @@ const ShopProductList = () => {
                   <th className={styles.tableHeaderCell}>Imagen</th>
                   <th className={styles.tableHeaderCell}>Nombre</th>
                   <th className={styles.tableHeaderCell}>Precio</th>
-                  <th className={styles.tableHeaderCell}>Stock</th>
+                  <th className={styles.tableHeaderCell}>Vendidos</th>
                   <th className={styles.tableHeaderCell}>Descuento</th>
                   <th className={styles.tableHeaderCell}>Temporada</th>
                   <th className={styles.tableHeaderCell}>Tipo</th>
@@ -264,7 +264,7 @@ const ShopProductList = () => {
                     </td>
                     <td className={styles.tableCell}>{product.name_product}</td>
                     <td className={styles.tableCell}>&euro;{product.price_product}</td>
-                    <td className={styles.tableCell}>{product.stock_product}</td>
+                    <td className={styles.tableCell}>{product.sold_product}</td>
                     <td className={styles.tableCell}>
                       {product.discount_product > 0 ? `${product.discount_product}%` : '-'}
                     </td>

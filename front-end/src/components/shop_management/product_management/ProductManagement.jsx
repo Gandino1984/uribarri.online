@@ -29,7 +29,7 @@ function ProductManagement() {
         season_product: '',
         calification_product: 0,
         type_product: '',
-        stock_product: 0,
+        sold_product: 0,
         info_product: '',
         id_shop: selectedShop.id_shop
       });

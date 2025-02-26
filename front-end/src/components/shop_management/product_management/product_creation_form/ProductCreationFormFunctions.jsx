@@ -159,7 +159,7 @@ const ProductCreationFormFunctions = () => {
         }
       }
     } else {
-      // Handle other numeric inputs (stock, discount, etc.)
+      // Handle other numeric inputs (sold, discount, etc.)
       const processedValue = value === '' ? '' : Number(value);
       
       if (!isNaN(processedValue)) {
@@ -189,9 +189,9 @@ const ProductCreationFormFunctions = () => {
         setError(prevError => ({ ...prevError, productError: "Valor de descuento fuera del rango permitido"}));
         throw new Error("Valor de descuento fuera del rango permitido");
       }
-      if (newProductData.stock_product < 0) {
-        setError(prevError => ({ ...prevError, productError: "El Stock no puede ser negativo"}));
-        throw new Error("El Stock no puede ser negativo");
+      if (newProductData.sold_product < 0) {
+        setError(prevError => ({ ...prevError, productError: "El sold no puede ser negativo"}));
+        throw new Error("El sold no puede ser negativo");
       }
       // Validate price format
       if (newProductData.price_product.toString().split('.')[1]?.length > 2) {
@@ -241,7 +241,7 @@ const ProductCreationFormFunctions = () => {
       season_product: 'Todo el Año',
       calification_product: 0,
       type_product: '',
-      stock_product: 0,
+      sold_product: 0,
       info_product: '',
       id_shop: selectedShop?.id_shop || '',
       subtype_product: '',

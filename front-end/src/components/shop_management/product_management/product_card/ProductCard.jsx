@@ -38,7 +38,7 @@ const ProductCard = ({ onClose }) => {
   const {
     name_product,
     price_product,
-    stock_product,
+    sold_product,
     discount_product,
     season_product,
     type_product,
@@ -117,9 +117,9 @@ const ProductCard = ({ onClose }) => {
               )}
             </div>
             
-            <div className={styles.stockInfo}>
+            <div className={styles.soldInfo}>
               <ShoppingCart size={18} />
-              <span>Stock: {stock_product} unidades</span>
+              <span>sold: {sold_product} unidades</span>
             </div>
             
             <div className={styles.categoryInfo}>

@@ -24,7 +24,7 @@ async function create(req, res) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
             second_hand,
@@ -39,7 +39,7 @@ async function create(req, res) {
             calification_product === undefined || 
             type_product === undefined || 
             subtype_product === undefined || 
-            stock_product === undefined || 
+            sold_product === undefined || 
             info_product === undefined || 
             id_shop === undefined ||
             second_hand === undefined ||
@@ -52,7 +52,7 @@ async function create(req, res) {
         if(price_product < 0 || 
            discount_product < 0 || 
            calification_product < 0 || 
-           stock_product < 0 ||
+           sold_product < 0 ||
            surplus_product < 0) {
             return res.status(400).json({
                 error: "Los campos numéricos no pueden ser negativos"
@@ -67,7 +67,7 @@ async function create(req, res) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
             second_hand,
@@ -96,7 +96,7 @@ async function update(req, res) {
             calification_product, 
             type_product,
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
             second_hand,
@@ -112,7 +112,7 @@ async function update(req, res) {
            calification_product === undefined || 
            type_product === undefined ||
            subtype_product === undefined || 
-           stock_product === undefined || 
+           sold_product === undefined || 
            info_product === undefined || 
            id_shop === undefined ||
            second_hand === undefined ||
@@ -125,7 +125,7 @@ async function update(req, res) {
         if(price_product < 0 || 
            discount_product < 0 || 
            calification_product < 0 || 
-           stock_product < 0 ||
+           sold_product < 0 ||
            surplus_product < 0) {
             return res.status(400).json({
                 error: "Los campos numéricos no pueden ser negativos"
@@ -142,7 +142,7 @@ async function update(req, res) {
                 calification_product, 
                 type_product,
                 subtype_product, 
-                stock_product, 
+                sold_product, 
                 info_product, 
                 id_shop,
                 second_hand,

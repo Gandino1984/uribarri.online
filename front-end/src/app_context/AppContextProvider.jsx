@@ -325,7 +325,7 @@ export const AppContextProvider = ({ children }) => {
     calification_product: 0,
     type_product: '',
     subtype_product: '',
-    stock_product: 0,
+    sold_product: 0,
     info_product: '',
     id_shop: '',
     second_hand: false,

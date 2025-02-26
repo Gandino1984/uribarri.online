@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   `calification_product` INT NOT NULL DEFAULT 0,
   `type_product` VARCHAR(45) NOT NULL,
   `subtype_product` VARCHAR(45) NOT NULL,
-  `stock_product` INT NOT NULL DEFAULT 0,
+  `sold_product` INT NOT NULL DEFAULT 0,
   `info_product` TEXT, 
   `id_shop` INT UNSIGNED NOT NULL,
   `image_product` VARCHAR(255) NULL,

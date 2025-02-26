@@ -39,7 +39,7 @@ const product_model = sequelize.define("product", {
         type: DataTypes.STRING(45),
         allowNull: false,
     },
-    stock_product: {
+    sold_product: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0

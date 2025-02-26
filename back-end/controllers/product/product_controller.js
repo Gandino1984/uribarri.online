@@ -37,7 +37,7 @@ async function create(productData) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
             second_hand,
@@ -53,7 +53,7 @@ async function create(productData) {
             calification_product,
             type_product,
             subtype_product,
-            stock_product,
+            sold_product,
             info_product,
             id_shop,
             second_hand,
@@ -81,7 +81,7 @@ async function update(id, productData) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
             second_hand,
@@ -102,7 +102,7 @@ async function update(id, productData) {
         if (calification_product >= 0) product.calification_product = calification_product;
         if (type_product) product.type_product = type_product;
         if (subtype_product) product.subtype_product = subtype_product;
-        if (stock_product >= 0) product.stock_product = stock_product;
+        if (sold_product >= 0) product.sold_product = sold_product;
         if (info_product) product.info_product = info_product;
         if (id_shop) product.id_shop = id_shop;
         if (second_hand !== undefined) product.second_hand = second_hand;
