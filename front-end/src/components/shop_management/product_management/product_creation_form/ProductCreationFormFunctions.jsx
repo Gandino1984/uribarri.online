@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AppContext from '../../../../app_context/AppContext';
 import axiosInstance from '../../../../utils/app/axiosConfig';
 
@@ -17,8 +17,55 @@ const ProductCreationFormFunctions = () => {
     isAccepted,
     setIsAccepted,
     isDeclined,
-    setIsDeclined
+    setIsDeclined,
+    currentUser
   } = useContext(AppContext);
+
+  // Estado para llevar la cuenta de productos y el límite
+  const [productCount, setProductCount] = useState(0);
+  const [productLimit, setProductLimit] = useState(7); // Valor por defecto para usuarios no sponsor
+
+    // Función para obtener productos por tienda
+    const fetchProductsByShop = async () => {
+      try {
+        if (!selectedShop?.id_shop) {
+          console.error('No hay comercio seleccionado');
+          setError(prevError => ({ ...prevError, shopError: "No hay comercio seleccionado" }));
+          setProducts([]);
+          return;
+        }
+        
+        const response = await axiosInstance.get(`/product/by-shop-id/${selectedShop.id_shop}`);
+        const fetchedProducts = response.data.data || [];
+        
+        console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
+        setProducts(fetchedProducts);
+        setProductCount(fetchedProducts.length);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError(prevError => ({ 
+          ...prevError, 
+          databaseResponseError: "Hubo un error al buscar los productos del comercio" 
+        }));
+        setProducts([]);
+      } 
+    };
+
+  // Determinar el límite de productos basado en la categoría del usuario
+  useEffect(() => {
+    if (currentUser?.category_user) {
+      setProductLimit(60); // Límite para usuarios sponsor
+    } else {
+      setProductLimit(3); // Límite para usuarios no sponsor
+    }
+  }, [currentUser]);
+
+  // Establecer el conteo de productos cada vez que cambian los productos
+  useEffect(() => {
+    if (Array.isArray(products)) {
+      setProductCount(products.length);
+    }
+  }, [products]);
 
   useEffect(() => {
     if (selectedShop) {
@@ -26,8 +73,12 @@ const ProductCreationFormFunctions = () => {
         ...prev,
         id_shop: selectedShop.id_shop
       }));
+      
+      // Utilizar la función existente para obtener los productos de la tienda
+      fetchProductsByShop();
     }
   }, [selectedShop, setNewProductData]);
+
 
   // Enhanced effect to handle modal responses for both create and update
   useEffect(() => {
@@ -165,10 +216,19 @@ const ProductCreationFormFunctions = () => {
         }
       }
 
+      // Verificar límite de productos
+      if (!selectedProductToUpdate && productCount >= productLimit) {
+        setError(prevError => ({ 
+          ...prevError, 
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+        }));
+        throw new Error(`Has alcanzado el límite de ${productLimit} productos`);
+      }
+
       return true;
     } catch (err) {
       console.error('Error validating product data:', err);
-      setError(prevError => ({ ...prevError, productError: "Error al validar los datos del producto" }));
+      setError(prevError => ({ ...prevError, productError: err.message || "Error al validar los datos del producto" }));
       return false;
     }
   };
@@ -217,6 +277,16 @@ const ProductCreationFormFunctions = () => {
   // Extracted the product creation logic to a separate function
   const createProduct = async () => {
     try {
+      // Verificar que no se haya alcanzado el límite
+      if (productCount >= productLimit) {
+        setError(prevError => ({
+          ...prevError,
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+        }));
+        setShowErrorCard(true);
+        return false;
+      }
+
       // Ensure price has exactly 2 decimal places before submitting
       const formattedData = {
         ...newProductData,
@@ -239,6 +309,8 @@ const ProductCreationFormFunctions = () => {
         setProducts(prevProducts => [...prevProducts, response.data.data]);
         resetNewProductData();
         setShowProductManagement(false);
+        // Actualizar el contador después de crear un producto
+        setProductCount(prev => prev + 1);
         return true;
       }
       
@@ -256,76 +328,77 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    if (!validateProductData(newProductData)) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (!validateProductData(newProductData)) return;
 
-    // Check if a product with the same name already exists
-    const nameExists = await verifyProductName(newProductData.name_product, newProductData.id_shop);
-    
-    if (nameExists) {
-      // Show confirmation modal if product with same name exists
-      setModalMessage(
-        `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la creación de este producto?`
-      );
-      setIsModalOpen(true);
-      // Remove this line to keep the form visible
-      // setShowProductManagement(false);   
-      
-      // The actual product creation will be handled by the useEffect watching isAccepted
-    } else {
-      // If no duplicate, proceed with creation directly
-      await createProduct();
-    }
-  } catch (err) {
-    setError(prevError => ({
-      ...prevError,
-      databaseResponseError: 'Error al crear el producto'
-    }));
-    setShowErrorCard(true);
-    console.error('ProductCreationFormFunctions - handleSubmit() - Error al crear el producto =', err);
-  }
-};
-
-const handleUpdate = async (e) => {
-  e.preventDefault();
-  try {
-    if (!validateProductData(newProductData)) return;
-
-    const id_product = selectedProductToUpdate.id_product;
-    
-    if (!id_product) {
-      throw new Error('No product ID found for update');
-    }
-
-    // Check if the updated name already exists for another product
-    if (newProductData.name_product !== selectedProductToUpdate.name_product) {
-      const nameExists = await verifyProductName(newProductData.name_product, selectedProductToUpdate.id_shop);
+      // Check if a product with the same name already exists
+      const nameExists = await verifyProductName(newProductData.name_product, newProductData.id_shop);
       
       if (nameExists) {
         // Show confirmation modal if product with same name exists
         setModalMessage(
-          `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la actualización de este producto?`
+          `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la creación de este producto?`
         );
         setIsModalOpen(true);
-        // Don't hide the form here either
-        return; // Exit and wait for modal response in useEffect
+        // The actual product creation will be handled by the useEffect watching isAccepted
+      } else {
+        // If no duplicate, proceed with creation directly
+        await createProduct();
       }
+    } catch (err) {
+      setError(prevError => ({
+        ...prevError,
+        databaseResponseError: 'Error al crear el producto'
+      }));
+      setShowErrorCard(true);
+      console.error('ProductCreationFormFunctions - handleSubmit() - Error al crear el producto =', err);
     }
-    
-    // If name is unique or unchanged, proceed with update
-    const updateData = {
-      ...newProductData,
-      id_product,
-      price_product: Number(newProductData.price_product).toFixed(2)
-    };
-    
-    await updateProductInDB(updateData);
-  } catch (err) {
-    // ...error handling...
-  }
-};
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      if (!validateProductData(newProductData)) return;
+
+      const id_product = selectedProductToUpdate.id_product;
+      
+      if (!id_product) {
+        throw new Error('No product ID found for update');
+      }
+
+      // Check if the updated name already exists for another product
+      if (newProductData.name_product !== selectedProductToUpdate.name_product) {
+        const nameExists = await verifyProductName(newProductData.name_product, selectedProductToUpdate.id_shop);
+        
+        if (nameExists) {
+          // Show confirmation modal if product with same name exists
+          setModalMessage(
+            `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la actualización de este producto?`
+          );
+          setIsModalOpen(true);
+          return; // Exit and wait for modal response in useEffect
+        }
+      }
+      
+      // If name is unique or unchanged, proceed with update
+      const updateData = {
+        ...newProductData,
+        id_product,
+        price_product: Number(newProductData.price_product).toFixed(2)
+      };
+      
+      await updateProductInDB(updateData);
+    } catch (err) {
+      setError(prevError => ({
+        ...prevError,
+        databaseResponseError: 'Error al actualizar el producto'
+      }));
+      setShowErrorCard(true);
+      console.error('ProductCreationFormFunctions - handleUpdate() - Error al actualizar el producto =', err);
+    }
+  };
   
   // Extracted update logic to a separate function
   const updateProductInDB = async (updateData) => {
@@ -373,7 +446,10 @@ const handleUpdate = async (e) => {
     handleNumericInputChange,
     handleSubmit,
     handleUpdate,
-    resetNewProductData
+    resetNewProductData,
+    productCount,
+    productLimit,
+    fetchProductsByShop
   };
 };
 

@@ -59,6 +59,36 @@ textarea {
     color: #666;
   }
 
+  .productLimitInfo {
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }
+  
+  .limitHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .upgradeMessage {
+    font-size: 0.85rem;
+    color: #dc3545;
+    margin-top: 5px;
+  }
+  
+  /* Estilos para el botón deshabilitado */
+  .submitButton:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
 /* Media queries for responsive design */
 @media screen and (max-width: 768px) {
     .formField {
