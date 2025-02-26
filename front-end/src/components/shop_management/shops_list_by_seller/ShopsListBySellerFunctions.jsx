@@ -6,14 +6,36 @@ export const ShopsListBySellerFunctions = () => {
   const {
     setSelectedShop,
     setShops,
+    shops,
     setShowShopCreationForm,
     setShowProductManagement,
     setError,
     setIsModalOpen,
     setModalMessage,
     isAccepted,
-    setIsAccepted
+    setIsAccepted,
+    currentUser
   } = useContext(AppContext);
+
+  // Estado para llevar la cuenta de tiendas y el límite
+  const [shopCount, setShopCount] = useState(0);
+  const [shopLimit, setShopLimit] = useState(1); // Valor por defecto para usuarios no sponsor
+
+  // Determinar el límite de tiendas basado en la categoría del usuario
+  useEffect(() => {
+    if (currentUser?.category_user) {
+      setShopLimit(2); // Límite para usuarios sponsor
+    } else {
+      setShopLimit(1); // Límite para usuarios no sponsor
+    }
+  }, [currentUser]);
+
+  // Establecer el conteo de tiendas cada vez que cambian las tiendas
+  useEffect(() => {
+    if (Array.isArray(shops)) {
+      setShopCount(shops.length);
+    }
+  }, [shops]);
 
   const handleSelectShop = (shop) => {
     setSelectedShop(shop);
@@ -22,6 +44,15 @@ export const ShopsListBySellerFunctions = () => {
   };
 
   const handleAddShop = () => {
+    // Verificar si el usuario ha alcanzado el límite
+    if (shopCount >= shopLimit) {
+      setError(prevError => ({ 
+        ...prevError, 
+        shopError: `Has alcanzado el límite de ${shopLimit} comercios. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+      }));
+      return;
+    }
+    
     setShowShopCreationForm(true);
     setShowProductManagement(false);
   };
@@ -69,6 +100,8 @@ export const ShopsListBySellerFunctions = () => {
     handleSelectShop,
     handleDeleteShop,
     handleAddShop,
-    handleUpdateShop
+    handleUpdateShop,
+    shopCount,
+    shopLimit
   };
 };

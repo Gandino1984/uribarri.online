@@ -185,6 +185,36 @@
   transform: scale(1.05);
 }
 
+.shopLimitInfo {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.limitHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.upgradeMessage {
+  margin-top: 4px;
+  color: #e74c3c;
+  font-size: 0.85rem;
+}
+
+.disabledButton {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.disabledButton:hover {
+  background-color: #e9ecef;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;
