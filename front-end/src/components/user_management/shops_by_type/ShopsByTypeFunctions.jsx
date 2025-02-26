@@ -68,6 +68,7 @@ export const ShopsByTypeFunctions = () => {
         shop.type_shop === shopType
       );
 
+      console.log('-> ShopsByTypeFunctions.jsx - fetchShopsByType() - shops:', validShops);
       setShops(validShops);
       
     } catch (err) {

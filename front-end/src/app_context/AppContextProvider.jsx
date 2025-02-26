@@ -174,21 +174,34 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const login = (userData) => {
-    // Remove only the password field
+    console.log('Incoming userData:', userData);
+  
+    // Remove the password field but keep all other original data
     const { pass_user, ...userWithoutPassword } = userData;
     
-    // Preserve all other user data including image_user
+    // Create the user state object with correct property mappings
+    const userStateData = {
+      id_user: userData.id_user,            
+      name_user: userData.name_user,   
+      type_user: userData.type_user,   
+      location: userData.location_user, 
+      image_user: userData.image_user, 
+      category_user: userData.category_user, 
+    };
+
+    
+    // Create timestamp data for localStorage
     const userDataWithTimestamp = {
-      ...userWithoutPassword,
+      ...userWithoutPassword, // Keep all original fields
       timestamp: new Date().getTime()
     };
-    
+  
     // Store complete user data in localStorage
     localStorage.setItem('currentUser', JSON.stringify(userDataWithTimestamp));
     
-    // Update state with complete user data
-    setCurrentUser(userWithoutPassword);
-    setNameUser(userWithoutPassword.name_user);
+    // Update state with verified data
+    setCurrentUser(userStateData);
+    setNameUser(userData.name_user);
     setIsLoggingIn(false);
     setshowShopManagement(true);
     clearError();
@@ -254,8 +267,10 @@ export const AppContextProvider = ({ children }) => {
     id_user: '',
     calification_shop: 0, 
     image_shop: '',
-    opening_time: '09:00',
-    closing_time: '17:00',
+    morning_open: '00:00',
+    morning_close: '00:00',
+    afternoon_open: '00:00',
+    afternoon_close: '00:00',
     has_delivery: false,
   })
 
@@ -310,14 +325,19 @@ export const AppContextProvider = ({ children }) => {
     calification_product: 0,
     type_product: '',
     subtype_product: '',
-    stock_product: 0,
+    sold_product: 0,
     info_product: '',
-    id_shop: ''
+    id_shop: '',
+    second_hand: false,
+    surplus_product: 0,
+    expiration_product: null
   });
   
   const [selectedProductForImageUpload, setSelectedProductForImageUpload] = useState(null);
 
   const [products, setProducts] = useState([]);
+
+  const [selectedProductDetails, setSelectedProductDetails] = useState(null);
 
   const [productTypesAndSubtypes, setProductTypesAndSubtypes] = useState({
     'Accesorios': ['Bolso', 'Gafas', 'Joyería', 'Reloj', 'Cinturón', 'Varios'],
@@ -439,7 +459,8 @@ export const AppContextProvider = ({ children }) => {
     success, setSuccess,
     clearSuccess, info, setInfo,
     showInfoCard, setShowInfoCard,
-    clearInfo
+    clearInfo,
+    selectedProductDetails, setSelectedProductDetails,
   };
 
   return (

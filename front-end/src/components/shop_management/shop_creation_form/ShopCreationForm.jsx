@@ -11,9 +11,9 @@ const ShopCreationForm = () => {
     setNewShop,
     shopTypesAndSubtypes,
     selectedShop,
-    setShowShopCreationForm,
     setError,
-    setShowErrorCard
+    setShowErrorCard,
+    currentUser
   } = useContext(AppContext);
 
   const {
@@ -39,30 +39,68 @@ const ShopCreationForm = () => {
     }
   });
 
-  // Initialize form with selected shop data when updating
-  useEffect(() => {
-    if (selectedShop) {
-      setNewShop({
-        name_shop: selectedShop.name_shop,
-        type_shop: selectedShop.type_shop,
-        subtype_shop: selectedShop.subtype_shop,
-        location_shop: selectedShop.location_shop,
-        id_user: selectedShop.id_user,
-        calification_shop: selectedShop.calification_shop,
-        image_shop: selectedShop.image_shop,
-        morning_open: selectedShop.morning_open || '',
-        morning_close: selectedShop.morning_close || '',
-        afternoon_open: selectedShop.afternoon_open || '',
-        afternoon_close: selectedShop.afternoon_close || ''
-      });
-    }
-  }, [selectedShop, setNewShop]);
+ // Modified useEffect to properly handle user ID
+ useEffect(() => {
+  if (currentUser?.id_user) {
+    setNewShop(prev => {
+      // Only update if the ID is different to avoid unnecessary rerenders
+      if (prev?.id_user !== currentUser.id_user) {
+        console.log('Updating user ID in form:', currentUser.id_user);
+        return {
+          ...prev,
+          id_user: currentUser.id_user
+        };
+      }
+      return prev;
+    });
+  }
+}, [currentUser?.id_user, setNewShop]); 
+
+useEffect(() => {
+  if (selectedShop && currentUser?.id_user) {
+    setNewShop({
+      name_shop: selectedShop.name_shop,
+      type_shop: selectedShop.type_shop,
+      subtype_shop: selectedShop.subtype_shop,
+      location_shop: selectedShop.location_shop,
+      id_user: currentUser.id_user, // Ensure we always set the current user ID
+      calification_shop: selectedShop.calification_shop,
+      image_shop: selectedShop.image_shop,
+      morning_open: selectedShop.morning_open || '',
+      morning_close: selectedShop.morning_close || '',
+      afternoon_open: selectedShop.afternoon_open || '',
+      afternoon_close: selectedShop.afternoon_close || ''
+    });
+  }
+}, [selectedShop, currentUser?.id_user, setNewShop]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    console.log('Submitting form with currentUser:', currentUser);
+    console.log('Form data:', newShop);
+
+    if (!currentUser?.id_user) {
+      console.error('No user ID available:', currentUser);
+      setError(prevError => ({
+        ...prevError,
+        shopError: 'Error: Usuario no identificado. Por favor, inicie sesión de nuevo.'
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    const formData = {
+      ...newShop,
+      id_user: currentUser.id_user
+    };
+
+    console.log('Submitting form with data:', formData);
+
     
     // Validate schedule
     const scheduleValidation = validateSchedule(newShop);
+    
     if (!scheduleValidation.isValid) {
       setError(prevError => ({ 
         ...prevError, 

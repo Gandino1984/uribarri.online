@@ -134,12 +134,12 @@ export const LoginRegisterFunctions = () => {
   
         // Normalize user data structure using the server-provided user type
         const normalizedUserData = {
-          id: userData.id_user, 
+          id_user: userData.id_user, 
           name_user: userData.name_user,
-          // password: password,
           type_user: userData.type_user,
-          location: userData.location_user,
-          image_user: userData.image_user
+          location_user: userData.location_user,
+          image_user: userData.image_user,
+          category_user: userData.category_user       
         };
   
         login(normalizedUserData);
@@ -281,7 +281,7 @@ export const LoginRegisterFunctions = () => {
           throw new Error('Error en el registro: datos de usuario incompletos');
       }
       const normalizedUserData = {
-          id: userData.id_user,
+          id_user: userData.id_user,
           name_user: userData.name_user,
           // password: password,
           type_user: userData.type_user,
@@ -328,7 +328,7 @@ export const LoginRegisterFunctions = () => {
         }
     
         // Check for existing session
-        if (!isLoggingIn && currentUser?.id) {
+        if (!isLoggingIn && currentUser?.id_user) {
           console.error('LoginRegisterFunctions.jsx - handleFormSubmit() -> Ya existe un usuario registrado con ese nombre.');
           setError(prevError => ({ ...prevError, userError: 'Ya existe un usuario registrado con ese nombre.' }));
           return;

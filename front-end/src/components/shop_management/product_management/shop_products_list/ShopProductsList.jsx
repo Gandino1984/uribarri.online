@@ -4,9 +4,10 @@ import ShopProductListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
 import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
-import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
+// import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
+import ProductCard from '../product_card/ProductCard.jsx';
 import { useSpring, animated, config } from '@react-spring/web';
 import ShopCard from '../../shop_card/ShopCard.jsx'; 
 
@@ -28,21 +29,16 @@ const ShopProductList = () => {
     isImageModalOpen,
     setIsImageModalOpen,
     productToDelete, setProductToDelete,
-    selectedImageForModal, setSelectedImageForModal
-    
+    selectedImageForModal, setSelectedImageForModal,
+    // Añadimos el nuevo estado para el producto seleccionado
+    selectedProductDetails, setSelectedProductDetails
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
+  // Estado para controlar la visibilidad del ProductCard
+  const [showProductCard, setShowProductCard] = useState(false);
 
-  // Animation for shop info section
-  const shopInfoAnimation = useSpring({
-    from: { transform: 'translateY(-50px)', opacity: 0 },
-    to: { transform: 'translateY(0px)', opacity: 1 },
-    config: config.gentle,
-    delay: 120
-  });
-
-  // Animation for main content (listHeader, filters, and table)
+  // Animation for main content
   const mainContentAnimation = useSpring({
     from: { transform: 'translateY(100px)', opacity: 0 },
     to: { 
@@ -133,20 +129,47 @@ const ShopProductList = () => {
     }
   }, [isDeclined]);
 
+  // Función para manejar el clic en una fila de producto
+  const handleProductRowClick = (product) => {
+    setSelectedProductDetails(product);
+    setShowProductCard(true);
+  };
+
+  // Función para formatear la fecha
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    // Extraer solo la parte de la fecha (YYYY-MM-DD)
+    return dateString.split('T')[0];
+  };
+
+  // Función para formatear el campo second_hand
+  const formatSecondHand = (value) => {
+    return value ? 'Sí' : 'No';
+  };
 
   return (
     <div className={styles.container}>
-        <ConfirmationModal />
+        {/* <ConfirmationModal /> */}
 
         <ImageModal
-        isOpen={isImageModalOpen}
-        onClose={() => {
-          setIsImageModalOpen(false);
-          setSelectedImageForModal(null); // Clear the image when closing
-        }}
-        imageUrl={selectedImageForModal}
-        altText="Product full size image"
-      />
+          isOpen={isImageModalOpen}
+          onClose={() => {
+            setIsImageModalOpen(false);
+            setSelectedImageForModal(null); // Clear the image when closing
+          }}
+          imageUrl={selectedImageForModal}
+          altText="Product full size image"
+        />
+
+        {/* Integración del nuevo componente ProductCard */}
+        {showProductCard && selectedProductDetails && (
+          <ProductCard 
+            onClose={() => {
+              setShowProductCard(false);
+              setSelectedProductDetails(null);
+            }} 
+          />
+        )}
 
         {selectedShop && <ShopCard shop={selectedShop} />}
 
@@ -200,13 +223,16 @@ const ShopProductList = () => {
                   <th className={styles.tableHeaderCell}>Acciones</th>
                   <th className={styles.tableHeaderCell}>Imagen</th>
                   <th className={styles.tableHeaderCell}>Nombre</th>
-                  <th className={styles.tableHeaderCell}>Precio</th>
-                  <th className={styles.tableHeaderCell}>Stock</th>
-                  <th className={styles.tableHeaderCell}>Descuento</th>
-                  <th className={styles.tableHeaderCell}>Temporada</th>
+                  <th className={styles.tableHeaderCell}>Precio</th>            
                   <th className={styles.tableHeaderCell}>Tipo</th>
                   <th className={styles.tableHeaderCell}>Sub-tipo</th>
+                  <th className={styles.tableHeaderCell}>Temporada</th>
+                  <th className={styles.tableHeaderCell}>Descuento</th>
+                  <th className={styles.tableHeaderCell}>Total Vendidos</th>
+                  <th className={styles.tableHeaderCell}>Segunda Mano</th>
                   <th className={styles.tableHeaderCell}>Más Información</th>
+                  <th className={styles.tableHeaderCell}>Caducidad AAAA-MM-DD</th>
+                  <th className={styles.tableHeaderCell}>Excedente</th>
                 </tr>
               </thead>
               <tbody>
@@ -214,8 +240,10 @@ const ShopProductList = () => {
                   <tr
                     key={product.id_product}
                     className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
+                    onClick={() => handleProductRowClick(product)} // Añadimos el manejador de eventos onClick
+                    style={{ cursor: 'pointer' }} // Añadimos cursor pointer para indicar que es clickeable
                   >
-                    <td className={styles.actionsCell}>
+                    <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => handleUpdateProduct(product.id_product)}
                         className={`${styles.actionButton} ${styles.updateButton}`}
@@ -242,7 +270,8 @@ const ShopProductList = () => {
                       </button>
                     </td>
                     <td className={styles.tableCell}
-                        onDoubleClick={() => {
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
                           handleProductImageDoubleClick(product);
                         }}
                     >
@@ -250,14 +279,17 @@ const ShopProductList = () => {
                     </td>
                     <td className={styles.tableCell}>{product.name_product}</td>
                     <td className={styles.tableCell}>&euro;{product.price_product}</td>
-                    <td className={styles.tableCell}>{product.stock_product}</td>
-                    <td className={styles.tableCell}>
-                      {product.discount_product > 0 ? `${product.discount_product}%` : '-'}
-                    </td>
-                    <td className={styles.tableCell}>{product.season_product}</td>
                     <td className={styles.tableCell}>{product.type_product}</td>
                     <td className={styles.tableCell}>{product.subtype_product}</td>
+                    <td className={styles.tableCell}>{product.season_product}</td>
+                    <td className={styles.tableCell}>
+                      {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
+                    </td>
+                    <td className={styles.tableCell}>{product.sold_product}</td>
+                    <td className={styles.tableCell}>{formatSecondHand(product.second_hand)}</td>
                     <td className={styles.tableCell}>{product.info_product}</td>
+                    <td className={styles.tableCell}>{formatDate(product.expiration_product)}</td>
+                    <td className={styles.tableCell}>{product.surplus_product}</td>
                   </tr>
                 ))}
               </tbody>
@@ -269,4 +301,3 @@ const ShopProductList = () => {
 };
 
 export default ShopProductList;
-

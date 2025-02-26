@@ -32,6 +32,11 @@ const user_model = sequelize.define("user", {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 5
+    },
+    category_user: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     timestamps: false,

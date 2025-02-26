@@ -37,10 +37,12 @@ async function create(productData) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
-            second_hand 
+            second_hand,
+            surplus_product,
+            expiration_product 
         } = productData;
 
         const product = await product_model.create({
@@ -51,10 +53,12 @@ async function create(productData) {
             calification_product,
             type_product,
             subtype_product,
-            stock_product,
+            sold_product,
             info_product,
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         });
         
         return { 
@@ -77,10 +81,12 @@ async function update(id, productData) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         } = productData;
 
         const product = await product_model.findByPk(id);
@@ -96,10 +102,12 @@ async function update(id, productData) {
         if (calification_product >= 0) product.calification_product = calification_product;
         if (type_product) product.type_product = type_product;
         if (subtype_product) product.subtype_product = subtype_product;
-        if (stock_product >= 0) product.stock_product = stock_product;
+        if (sold_product >= 0) product.sold_product = sold_product;
         if (info_product) product.info_product = info_product;
         if (id_shop) product.id_shop = id_shop;
         if (second_hand !== undefined) product.second_hand = second_hand;
+        if (surplus_product >= 0) product.surplus_product = surplus_product;
+        if (expiration_product) product.expiration_product = expiration_product;
         
         await product.save();
 
@@ -112,6 +120,7 @@ async function update(id, productData) {
         return { error: "Producto no actualizado" };
     }
 }
+
 
 async function getById(id) {
     try {
@@ -130,7 +139,6 @@ async function getById(id) {
         return { error: "Producto no encontrado" };
     }
 }
-
 
 
 async function removeByShopId(id_shop, transaction) {
@@ -337,8 +345,57 @@ async function removeById(id_product) {
         return { error: "Producto no eliminado" };
     }
 }
-  
 
-export { getAll, getById, create, update, removeById, removeByShopId, getByShopId, getByType, getOnSale, updateProductImage, deleteImage}
+// New function to check if a product with the same name exists in a specific shop
+async function verifyProductName(name_product, id_shop) {
+    try {
+        const existingProduct = await product_model.findOne({
+            where: { 
+                id_shop: id_shop,
+                name_product: name_product,
+            }
+        });
+        
+        return { 
+            exists: !!existingProduct,
+            data: existingProduct,
+            success: "Verificación de producto completada"
+        };
+    } catch (err) {
+        console.error("-> product_controller.js - verifyProductName() - Error = ", err);
+        return { 
+            error: "Error al verificar la existencia del producto",
+            exists: false
+        };
+    }
+}
 
-export default { getAll, getById, create, update, removeById, removeByShopId, getByShopId, getByType, getOnSale, updateProductImage, deleteImage }
+export { 
+    getAll, 
+    getById, 
+    create, 
+    update, 
+    removeById, 
+    removeByShopId, 
+    getByShopId, 
+    getByType, 
+    getOnSale, 
+    updateProductImage, 
+    deleteImage,
+    verifyProductName
+}
+
+export default { 
+    getAll, 
+    getById, 
+    create, 
+    update, 
+    removeById, 
+    removeByShopId, 
+    getByShopId, 
+    getByType, 
+    getOnSale, 
+    updateProductImage, 
+    deleteImage,
+    verifyProductName
+}

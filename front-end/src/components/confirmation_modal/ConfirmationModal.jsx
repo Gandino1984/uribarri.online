@@ -10,7 +10,6 @@ const ConfirmationModal = () => {
     setIsAccepted,
     setIsDeclined,
     modalMessage,
-    clearError 
   } = useContext(AppContext);
 
   const handleAccept = () => {

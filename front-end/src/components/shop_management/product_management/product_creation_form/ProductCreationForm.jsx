@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import ProductCreationFormFunctions from './ProductCreationFormFunctions';
 import AppContext from '../../../../app_context/AppContext';
 import styles from '../../../../../../public/css/ProductCreationForm.module.css';
-import { CirclePlus, ScrollText, PackagePlus, Save } from 'lucide-react';
+import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 import CustomNumberInput from '../../../custom_number_input/CustomNumberInput';
 
@@ -13,7 +13,10 @@ const ProductCreationForm = () => {
     handleNumericInputChange,
     resetNewProductData,
     handleSubmit,
-    handleUpdate
+    handleUpdate,
+    productCount,
+    productLimit,
+    fetchProductsByShop
   } = ProductCreationFormFunctions();
 
   const { 
@@ -23,7 +26,9 @@ const ProductCreationForm = () => {
     isUpdatingProduct,
     selectedProductToUpdate,
     productTypesAndSubtypes,
-    setNewProductData
+    setNewProductData,
+    currentUser,
+    selectedShop
   } = useContext(AppContext);
 
   // Get the list of product types
@@ -49,6 +54,13 @@ const ProductCreationForm = () => {
     }
   }, [isUpdatingProduct, selectedProductToUpdate]);
 
+  // Cargar productos cuando cambia la tienda seleccionada
+  useEffect(() => {
+    if (selectedShop?.id_shop) {
+      fetchProductsByShop();
+    }
+  }, [selectedShop]);
+
   const handleViewProductList = () => {
     setShowProductManagement(false);
   };
@@ -60,6 +72,35 @@ const ProductCreationForm = () => {
     } else {
       handleSubmit(e);
     }
+  };
+
+  // Función para mostrar información sobre el límite de productos
+  const renderProductLimitInfo = () => {
+    if (isUpdatingProduct) return null; // No mostrar en modo actualización
+    
+    // Determinar el color del indicador basado en cuán cerca está el usuario del límite
+    const percentUsed = (productCount / productLimit) * 100;
+    let statusColor = 'green';
+    
+    if (percentUsed >= 90) {
+      statusColor = 'red';
+    } else if (percentUsed >= 70) {
+      statusColor = 'orange';
+    }
+    
+    return (
+      <div className={styles.productLimitInfo}>
+        <div className={styles.limitHeader}>
+          <AlertCircle size={16} color={statusColor} />
+          <span>Límite de productos: {productCount} de {productLimit}</span>
+        </div>
+        {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
+          <p className={styles.upgradeMessage}>
+            Conviértete en sponsor para aumentar tu límite a 100 productos.
+          </p>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -78,6 +119,9 @@ const ProductCreationForm = () => {
       <h2 className={styles.formTitle}>
         {isUpdatingProduct ? 'Actualizar Producto' : '¿O quieres crear un nuevo producto?'}
       </h2>
+      
+      {/* Mostrar indicador de límite de productos */}
+      {renderProductLimitInfo()}
       
       <form onSubmit={handleFormSubmit} className={styles.form}>
         <div className={styles.formField}>
@@ -180,7 +224,7 @@ const ProductCreationForm = () => {
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="discount_product">Descuento (%)</label>
+          <label htmlFor="discount_product">Descuento % (opcional)</label>
           <CustomNumberInput
             label="Descuento (%)"
             name="discount_product"
@@ -193,11 +237,11 @@ const ProductCreationForm = () => {
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="stock_product">Stock</label>
+          <label htmlFor="surplus_product">Excedente (opcional)</label>
           <CustomNumberInput
-            label="Stock"
-            name="stock_product"
-            value={productData.stock_product}
+            label="Surplus"
+            name="surplus_product"
+            value={productData.surplus_product}
             onChange={handleNumericInputChange}
             min={0}
             required
@@ -205,9 +249,23 @@ const ProductCreationForm = () => {
         </div>
 
         <div className={styles.formField}>
+          <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
+          <input
+            type="date"
+            id="expiration_product"
+            name="expiration_product"
+            value={productData.expiration_product || ''}
+            onChange={handleChange}
+            min={new Date().toISOString().split('T')[0]} // Set minimum date to today
+            className={styles.dateInput}
+          />
+        </div>
+
+        <div className={styles.formField}>
           <button 
             type="submit" 
             className={styles.submitButton}
+            disabled={!isUpdatingProduct && productCount >= productLimit}
           >
             {isUpdatingProduct ? (
               <>
@@ -221,6 +279,11 @@ const ProductCreationForm = () => {
               </>
             )}
           </button>
+          {!isUpdatingProduct && productCount >= productLimit && (
+            <p className={styles.errorMessage}>
+              Has alcanzado el límite de productos permitidos
+            </p>
+          )}
         </div>
       </form>
     </div>

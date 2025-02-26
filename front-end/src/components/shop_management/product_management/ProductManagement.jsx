@@ -4,6 +4,7 @@ import ProductManagementFunctions from './ProductManagementFunctions.jsx';
 import ProductCreationForm from './product_creation_form/ProductCreationForm.jsx';
 import ShopProductList from './shop_products_list/ShopProductsList.jsx';
 import styles from '../../../../../public/css/ProductManagement.module.css';
+import ConfirmationModal from '../../confirmation_modal/ConfirmationModal.jsx';
 
 function ProductManagement() {
   const { 
@@ -28,7 +29,7 @@ function ProductManagement() {
         season_product: '',
         calification_product: 0,
         type_product: '',
-        stock_product: 0,
+        sold_product: 0,
         info_product: '',
         id_shop: selectedShop.id_shop
       });
@@ -36,7 +37,7 @@ function ProductManagement() {
   }, [selectedShop]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container}>  
       {showProductManagement ? (
         <ShopProductList />
       ) : (

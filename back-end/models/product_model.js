@@ -39,7 +39,7 @@ const product_model = sequelize.define("product", {
         type: DataTypes.STRING(45),
         allowNull: false,
     },
-    stock_product: {
+    sold_product: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
@@ -58,6 +58,16 @@ const product_model = sequelize.define("product", {
     },
     second_hand: {
         type: DataTypes.TINYINT(1),
+        allowNull: false,
+        defaultValue: 0
+    },
+    
+    expiration_product: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    surplus_product: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
     }

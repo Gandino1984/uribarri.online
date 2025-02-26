@@ -12,7 +12,8 @@ export const ShopCreationFormFunctions = () => {
     setShowErrorCard,
     selectedShop,
     setInfo,
-    setShowInfoCard
+    setShowInfoCard,
+    shops
   } = useContext(AppContext);
 
   const validateSchedule = (formData) => {
@@ -64,35 +65,73 @@ export const ShopCreationFormFunctions = () => {
 
   const handleCreateShop = async (formData) => {
     try {
-      const response = await axiosInstance.post('/shop/create', {
+      // Ensure we have a valid user ID and category information
+      if (!currentUser?.id_user || !formData.id_user) {
+        console.error('Missing user ID:', { currentUser, formData });
+        setError(prevError => ({
+          ...prevError,
+          shopError: 'Error: Usuario no identificado'
+        }));
+        setShowErrorCard(true);
+        return;
+      }
+  
+      // Ensure the user ID matches the current user
+      const shopData = {
         ...formData,
-        id_user: currentUser.id
+        id_user: currentUser.id_user
+      };
+  
+      console.log('Creating shop with data:', shopData);
+  
+      // Check shop limits with explicit category check
+      const userShops = Array.isArray(shops) ? shops.filter(shop => shop.id_user === currentUser.id_user) : [];
+      const shopCount = userShops.length;
+      
+      // Fix: Properly check if user is sponsor based on category_user boolean value
+      const isSponsor = currentUser?.category_user === true;
+      const maxShops = isSponsor ? 2 : 1;
+  
+      console.log('Shop validation:', {
+        shopCount,
+        isSponsor,
+        maxShops,
+        currentUserCategory: currentUser?.category_user
       });
-
+  
+      if (shopCount >= maxShops) {
+        setError(prevError => ({
+          ...prevError,
+          shopError: isSponsor 
+            ? 'Has alcanzado el límite máximo de comercios permitidos (3).'
+            : 'Para crear más comercios tienes que ser patrocinador del proyecto.'
+        }));
+        setShowErrorCard(true);
+        return;
+      }
+  
+      // Create the shop
+      const response = await axiosInstance.post('/shop/create', shopData);
+  
       if (response.data.error) {
-        // Check if the error is about existing shop name
         if (response.data.error.includes("Ya existe una comercio con ese nombre")) {
           setInfo(prevInfo => ({ ...prevInfo, shopInfo: "Ya existe una tienda con ese nombre" }));
           setShowInfoCard(true);
-          return; // Exit early to prevent further error handling
+          return;
         }
-        // For other errors, use the error card
-        setError(prevError => ({ ...prevError, shopError: response.data.error }));
-        setShowErrorCard(true);
         throw new Error(response.data.error);
       }
-
-      setShops(prevShops => [...prevShops, response.data.data]);
+  
+      setShops(prevShops => [...(Array.isArray(prevShops) ? prevShops : []), response.data.data]);
       setShowShopCreationForm(false);
+  
     } catch (err) {
-      if (!err.message?.includes("Ya existe una comercio con ese nombre")) {
-        console.error('Error creating shop:', err);
-        setError(prevError => ({ 
-          ...prevError, 
-          shopError: 'Error al crear el comercio. Por favor, inténtalo de nuevo.' 
-        }));
-        setShowErrorCard(true);
-      }
+      console.error('Error creating shop:', err);
+      setError(prevError => ({ 
+        ...prevError, 
+        shopError: 'Error al crear el comercio.' 
+      }));
+      setShowErrorCard(true);
     }
   };
 
@@ -116,10 +155,9 @@ export const ShopCreationFormFunctions = () => {
         type_shop: formData.type_shop,
         subtype_shop: formData.subtype_shop,
         location_shop: formData.location_shop,
-        id_user: currentUser.id,
+        id_user: currentUser.id_user,
         calification_shop: formData.calification_shop || 0,
         image_shop: formData.image_shop || '',
-        // Explicitly include schedule fields
         morning_open: formData.morning_open,
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
@@ -165,7 +203,6 @@ export const ShopCreationFormFunctions = () => {
       }
     }
   };
-  
 
   return {
     handleCreateShop,

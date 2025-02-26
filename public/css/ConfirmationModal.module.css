@@ -1,13 +1,18 @@
 .modalOverlay {
   position: fixed;
-  inset: 0;
-  z-index: 99999;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 999999999999;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(3px);
   padding: 1rem;
+  width: 100vw;
+  height: 100vh;
 }
 
 .modalBackdrop {

@@ -19,7 +19,7 @@ const ShopCoverImage = ({ id_shop }) => {
 
   const shop = shops.find(s => s.id_shop === id_shop);
   
-  console.log('ShopCoverImage rendered for ', shop?.name_shop || 'Shop');
+  // console.log('ShopCoverImage rendered for ', shop?.name_shop || 'Shop');
 
   return (
     <div className={styles.container}>

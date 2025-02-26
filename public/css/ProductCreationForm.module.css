@@ -11,7 +11,7 @@
     margin-top: .5rem;
     margin-left: auto;
     margin-right: auto;
-}
+}   
 
 .formTitle{
     text-align: center;
@@ -38,6 +38,56 @@ textarea {
 .formField textarea {
     flex: 1 1 100%;
 }
+
+.dateInput {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-top: 4px;
+  }
+  
+  .dateInput::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+  
+  .formField label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #666;
+  }
+
+  .productLimitInfo {
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }
+  
+  .limitHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .upgradeMessage {
+    font-size: 0.85rem;
+    color: #dc3545;
+    margin-top: 5px;
+  }
+  
+  /* Estilos para el botón deshabilitado */
+  .submitButton:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
 
 /* Media queries for responsive design */
 @media screen and (max-width: 768px) {

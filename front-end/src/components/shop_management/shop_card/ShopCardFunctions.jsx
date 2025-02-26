@@ -47,6 +47,7 @@ const ShopCardFunctions = () => {
             ? { ...shop, image_shop: response.data.data.image_shop }
             : shop
         );
+        console.log('-> ShopCardFunctions.jsx - handleShopImageUpload() - shops:', updatedShops);
         setShops(updatedShops);
 
         return response.data.data.image_shop;

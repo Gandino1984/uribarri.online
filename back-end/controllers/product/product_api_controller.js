@@ -24,10 +24,12 @@ async function create(req, res) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         } = req.body;
 
         if (name_product === undefined || 
@@ -37,19 +39,21 @@ async function create(req, res) {
             calification_product === undefined || 
             type_product === undefined || 
             subtype_product === undefined || 
-            stock_product === undefined || 
+            sold_product === undefined || 
             info_product === undefined || 
             id_shop === undefined ||
-            second_hand === undefined) {
+            second_hand === undefined ||
+            surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios"
+                error: "Todos los campos son obligatorios excepto expiration_product"
             });
         }
 
         if(price_product < 0 || 
            discount_product < 0 || 
            calification_product < 0 || 
-           stock_product < 0) {
+           sold_product < 0 ||
+           surplus_product < 0) {
             return res.status(400).json({
                 error: "Los campos numéricos no pueden ser negativos"
             });
@@ -63,10 +67,12 @@ async function create(req, res) {
             calification_product, 
             type_product, 
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         });
 
         res.json({error, data, success});    
@@ -90,10 +96,12 @@ async function update(req, res) {
             calification_product, 
             type_product,
             subtype_product, 
-            stock_product, 
+            sold_product, 
             info_product, 
             id_shop,
-            second_hand
+            second_hand,
+            surplus_product,
+            expiration_product
         } = req.body;
 
         if(id_product === undefined || 
@@ -104,19 +112,21 @@ async function update(req, res) {
            calification_product === undefined || 
            type_product === undefined ||
            subtype_product === undefined || 
-           stock_product === undefined || 
+           sold_product === undefined || 
            info_product === undefined || 
            id_shop === undefined ||
-           second_hand === undefined) {
+           second_hand === undefined ||
+           surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios"
+                error: "Todos los campos son obligatorios excepto expiration_product"
             });
         }
 
         if(price_product < 0 || 
            discount_product < 0 || 
            calification_product < 0 || 
-           stock_product < 0) {
+           sold_product < 0 ||
+           surplus_product < 0) {
             return res.status(400).json({
                 error: "Los campos numéricos no pueden ser negativos"
             });
@@ -132,10 +142,12 @@ async function update(req, res) {
                 calification_product, 
                 type_product,
                 subtype_product, 
-                stock_product, 
+                sold_product, 
                 info_product, 
                 id_shop,
-                second_hand
+                second_hand,
+                surplus_product,
+                expiration_product
             }
         );   
 
@@ -171,8 +183,6 @@ async function getById(req, res) {
         });
     }
 }
-
-
 
 async function removeById(req, res) {
     try {
@@ -314,6 +324,37 @@ async function deleteImage(req, res) {
     }
   }
   
+  async function verifyProductName(req, res) {
+    console.log('-> product_api_controller.js - verifyProductName() - Iniciando verificación de nombre de producto');
+    try {
+        const { name_product, id_shop } = req.body;
+        
+        if (!name_product || !id_shop) {
+            return res.status(400).json({
+                error: "El nombre del producto y el ID del comercio son obligatorios",
+                exists: false
+            });
+        }
+        
+        const { error, exists, data, success } = await productController.verifyProductName(name_product, id_shop);
+        
+        if (error) {
+            return res.status(400).json({ error, exists: false });
+        }
+        
+        return res.json({ 
+            exists, 
+            data, 
+            success 
+        });
+    } catch (err) {
+        console.error("-> product_api_controller.js - verifyProductName() - Error =", err);
+        return res.status(500).json({
+            error: "Error al verificar la existencia del producto",
+            exists: false
+        });
+    }
+}
 
 export {
     getAll,
@@ -325,7 +366,8 @@ export {
     getByType,
     getOnSale,
     updateProductImage,
-    deleteImage
+    deleteImage,
+    verifyProductName
 }
 
 export default {
@@ -338,5 +380,6 @@ export default {
     getByType,
     getOnSale,
     updateProductImage,
-    deleteImage
+    deleteImage,
+    verifyProductName
 }

@@ -3,8 +3,7 @@ import { useSpring, animated } from '@react-spring/web';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopsListBySeller.module.css';
 import { ShopsListBySellerFunctions } from './ShopsListBySellerFunctions.jsx';
-import { Box, Trash2, Edit } from 'lucide-react';
-import ConfirmationModal from '../../confirmation_modal/ConfirmationModal.jsx';
+import { Box, Trash2, Edit, AlertCircle } from 'lucide-react';
 
 const ShopsListBySeller = () => {
   const { 
@@ -18,7 +17,10 @@ const ShopsListBySeller = () => {
   const { 
     handleSelectShop,
     handleDeleteShop,
-    handleAddShop
+    handleAddShop,
+    handleUpdateShop,
+    shopCount,
+    shopLimit
   } = ShopsListBySellerFunctions();
 
   // Animation configuration
@@ -47,14 +49,35 @@ const ShopsListBySeller = () => {
     console.log('Shops state updated:', shops);
   }, [shops]);
 
-  const handleUpdateShop = (shop) => {
-    setSelectedShop(shop);
-    setShowShopCreationForm(true);
+  // Función para mostrar información sobre el límite de tiendas
+  const renderShopLimitInfo = () => {
+    // Determinar el color del indicador basado en cuán cerca está el usuario del límite
+    const percentUsed = (shopCount / shopLimit) * 100;
+    let statusColor = 'green';
+    
+    if (percentUsed >= 90) {
+      statusColor = 'red';
+    } else if (percentUsed >= 70) {
+      statusColor = 'orange';
+    }
+    
+    return (
+      <div className={styles.shopLimitInfo}>
+        <div className={styles.limitHeader}>
+          <AlertCircle size={16} color={statusColor} />
+          <span>Límite de comercios: {shopCount} de {shopLimit}</span>
+        </div>
+        {!currentUser?.category_user && shopCount >= shopLimit * 0.7 && (
+          <p className={styles.upgradeMessage}>
+            Conviértete en sponsor para aumentar tu límite a 5 comercios.
+          </p>
+        )}
+      </div>
+    );
   };
 
   return (
     <animated.div style={springProps} className={styles.container}>
-      <ConfirmationModal />
       <div className={styles.content}>
         <div className={styles.headerContainer}>
           <div className={styles.header}>
@@ -64,13 +87,17 @@ const ShopsListBySeller = () => {
               
               <button 
                 onClick={handleAddShop}
-                className={styles.addButton}
+                className={`${styles.addButton} ${shopCount >= shopLimit ? styles.disabledButton : ''}`}
                 title="Crear nuevo comercio"
+                disabled={shopCount >= shopLimit}
               >
                 <span className={styles.buttonText}>Nuevo</span>
                 <Box size={16} />
               </button>
           </div>
+          
+          {/* Mostrar indicador de límite de tiendas */}
+          {renderShopLimitInfo()}
         </div>
 
         {shops.length === 0 ? (
