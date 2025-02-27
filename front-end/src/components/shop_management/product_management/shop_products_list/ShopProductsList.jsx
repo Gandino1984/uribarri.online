@@ -137,9 +137,16 @@ const ShopProductList = () => {
 
   // Función para formatear la fecha
   const formatDate = (dateString) => {
-    if (!dateString) return '';
-    // Extraer solo la parte de la fecha (YYYY-MM-DD)
-    return dateString.split('T')[0];
+    if (!dateString) return '-';
+    try {
+      // Convierte la fecha en un objeto Date y luego la formatea
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '-'; // Si la fecha no es válida
+      return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+      return '-';
+    }
   };
 
   // Función para formatear el campo second_hand
@@ -236,62 +243,62 @@ const ShopProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
-                  <tr
-                    key={product.id_product}
-                    className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
-                    onClick={() => handleProductRowClick(product)} // Añadimos el manejador de eventos onClick
-                    style={{ cursor: 'pointer' }} // Añadimos cursor pointer para indicar que es clickeable
-                  >
-                    <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => handleUpdateProduct(product.id_product)}
-                        className={`${styles.actionButton} ${styles.updateButton}`}
-                        title="Actualizar producto"
+                    {filteredProducts.map((product) => (
+                      <tr
+                        key={product.id_product}
+                        className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
+                        onClick={() => handleProductRowClick(product)}
+                        style={{ cursor: 'pointer' }}
                       >
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteProduct(product.id_product)}
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        title="Eliminar producto"
-                        type="button"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleSelectProduct(product.id_product)}
-                        className={`${styles.actionButton} ${styles.selectButton} ${
-                          selectedProducts.has(product.id_product) ? styles.selected : ''
-                        }`}
-                        title="Seleccionar producto"
-                      >
-                        <CheckCircle size={18} />
-                      </button>
-                    </td>
-                    <td className={styles.tableCell}
-                        onDoubleClick={(e) => {
-                          e.stopPropagation();
-                          handleProductImageDoubleClick(product);
-                        }}
-                    >
-                      <ProductImage id_product={product.id_product} />
-                    </td>
-                    <td className={styles.tableCell}>{product.name_product}</td>
-                    <td className={styles.tableCell}>&euro;{product.price_product}</td>
-                    <td className={styles.tableCell}>{product.type_product}</td>
-                    <td className={styles.tableCell}>{product.subtype_product}</td>
-                    <td className={styles.tableCell}>{product.season_product}</td>
-                    <td className={styles.tableCell}>
-                      {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
-                    </td>
-                    <td className={styles.tableCell}>{product.sold_product}</td>
-                    <td className={styles.tableCell}>{formatSecondHand(product.second_hand)}</td>
-                    <td className={styles.tableCell}>{product.info_product}</td>
-                    <td className={styles.tableCell}>{formatDate(product.expiration_product)}</td>
-                    <td className={styles.tableCell}>{product.surplus_product}</td>
-                  </tr>
-                ))}
+                        <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => handleUpdateProduct(product.id_product)}
+                            className={`${styles.actionButton} ${styles.updateButton}`}
+                            title="Actualizar producto"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id_product)}
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                            title="Eliminar producto"
+                            type="button"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleSelectProduct(product.id_product)}
+                            className={`${styles.actionButton} ${styles.selectButton} ${
+                              selectedProducts.has(product.id_product) ? styles.selected : ''
+                            }`}
+                            title="Seleccionar producto"
+                          >
+                            <CheckCircle size={18} />
+                          </button>
+                        </td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              handleProductImageDoubleClick(product);
+                            }}
+                        >
+                          <ProductImage id_product={product.id_product} />
+                        </td>
+                        <td className={`${styles.tableCell} ${styles.mediumCell}`}>{product.name_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>&euro;{product.price_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.type_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.subtype_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.season_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>
+                          {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
+                        </td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.sold_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatSecondHand(product.second_hand)}</td>
+                        <td className={`${styles.tableCell} ${styles.largeCell}`}>{product.info_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatDate(product.expiration_product)}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.surplus_product}</td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </animated.div>

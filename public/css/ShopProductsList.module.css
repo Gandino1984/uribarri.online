@@ -10,7 +10,6 @@
 
 .shopInfo {
     width: 100%;
-    /* max-width: 72rem; */
     background-color: white;
     border-radius: 0.5rem;
     padding: 1rem 0rem;
@@ -97,7 +96,6 @@
 }
 
 .deleteButton {
-    /* background-color: #fee2e2; */
     color: #ff0000;
 }
 
@@ -121,6 +119,7 @@
     background-color: white;
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    table-layout: auto; /* Cambiado de 'fixed' a 'auto' para permitir que las columnas se ajusten al contenido */
 }
 
 .tableHeader {
@@ -129,10 +128,40 @@
 
 .tableHeaderCell {
     padding: 0.8rem 1rem;
-    text-align: left;
+    text-align: center;
     font-size: 0.875rem;
     font-weight: 600;
     color: #666;
+    white-space: nowrap; /* Evita que los títulos se rompan */
+}
+
+/* Tamaños específicos para diferentes tipos de columnas */
+.tableCell {
+    padding: 0.8rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Columnas pequeñas (como Sí/No, valores numéricos pequeños) */
+.smallCell {
+    width: 1%; /* El mínimo posible */
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Columnas medianas (para datos como tipo, subtipo) */
+.mediumCell {
+    width: auto; /* Ajuste automático basado en contenido */
+    text-align: center;
+}
+
+
+/* Columnas grandes (para descripciones, información completa) */
+.largeCell {
+    min-width: 200px; /* Garantiza un mínimo de ancho */
+    max-width: 300px; /* Limita el ancho máximo */
+    white-space: normal; /* Permite que el texto se despliegue */
+    word-wrap: break-word; /* Rompe palabras largas */
+    text-align: center;
 }
 
 .tableRow {
@@ -153,11 +182,6 @@
     background-color: var(--saturated-blue);
 }
 
-.tableCell {
-    padding: 0.8rem 1rem;
-    font-size: 0.875rem;
-}
-
 .noProducts {
     color: #666;
 }
@@ -168,6 +192,8 @@
     align-items: center;
     gap: 0.5rem;
     justify-content: center;
+    width: 1%; /* Minimiza el ancho */
+    white-space: nowrap;
 }
 
 .selectButton {

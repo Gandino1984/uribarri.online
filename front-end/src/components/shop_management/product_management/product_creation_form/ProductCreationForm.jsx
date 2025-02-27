@@ -224,6 +224,26 @@ const ProductCreationForm = () => {
         </div>
 
         <div className={styles.formField}>
+          <div className={styles.checkboxContainer}>
+            <input
+              type="checkbox"
+              id="second_hand"
+              name="second_hand"
+              checked={productData.second_hand === 1}
+              onChange={(e) => {
+                handleChange({
+                  target: {
+                    name: 'second_hand',
+                    value: e.target.checked ? 1 : 0
+                  }
+                });
+              }}
+            />
+            <label htmlFor="second_hand">Producto de segunda mano</label>
+          </div>
+        </div>
+
+        <div className={styles.formField}>
           <label htmlFor="discount_product">Descuento % (opcional)</label>
           <CustomNumberInput
             label="Descuento (%)"
