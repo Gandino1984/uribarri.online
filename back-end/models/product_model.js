@@ -61,7 +61,6 @@ const product_model = sequelize.define("product", {
         allowNull: false,
         defaultValue: 0
     },
-    
     expiration_product: {
         type: DataTypes.DATE,
         allowNull: true
@@ -70,6 +69,14 @@ const product_model = sequelize.define("product", {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
+    },
+    country_product: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
+    locality_product: {
+        type: DataTypes.STRING(100),
+        allowNull: true
     }
 }, {
     timestamps: false,

@@ -272,7 +272,9 @@ const ProductCreationFormFunctions = () => {
       subtype_product: '',
       second_hand: 0,
       surplus_product: 0,
-      expiration_product: null 
+      expiration_product: null,
+      country_product: '',  // Añadido campo de país de origen
+      locality_product: ''  // Añadido campo de localidad de origen
     });
     setError(prevError => ({
       ...prevError,

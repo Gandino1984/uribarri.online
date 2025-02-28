@@ -5,6 +5,7 @@ import styles from '../../../../../../public/css/ProductCreationForm.module.css'
 import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 import CustomNumberInput from '../../../custom_number_input/CustomNumberInput';
+import { countries } from '../../../../../src/utils/app/countries.js';
 
 
 const ProductCreationForm = () => {
@@ -184,6 +185,34 @@ const ProductCreationForm = () => {
             rows="4"
             width="100%"
             placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
+          />
+        </div>
+
+        {/* Nuevos campos para el país y la localidad de origen */}
+        <div className={styles.formField}>
+          <select
+            id="country_product"
+            name="country_product"
+            value={productData.country_product || ''}
+            onChange={handleChange}
+          >
+            <option value="">Seleccionar país de origen</option>
+            {countries.map(country => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.formField}>
+          <input
+            type="text"
+            id="locality_product"
+            name="locality_product"
+            placeholder='Localidad de origen:'
+            value={productData.locality_product || ''}
+            onChange={handleChange}
           />
         </div>
 

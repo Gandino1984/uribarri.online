@@ -78,7 +78,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   `second_hand` TINYINT(1) NOT NULL DEFAULT 0,
   `expiration_product` DATE,
   `surplus_product` INT NOT NULL DEFAULT 0,
-  -- `id_provider` INT UNSIGNED NOT NULL,
+  `country_product` VARCHAR(100) NULL ,
+  `locality_product` VARCHAR(100) NULL ,
   PRIMARY KEY (`id_product`),
   UNIQUE INDEX `id_product_UNIQUE` (`id_product` ASC) VISIBLE
 ) ENGINE = InnoDB;

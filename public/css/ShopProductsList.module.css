@@ -192,7 +192,8 @@
     align-items: center;
     gap: 0.5rem;
     justify-content: center;
-    width: 1%; /* Minimiza el ancho */
+
+    /* width: 1%; */
     white-space: nowrap;
 }
 

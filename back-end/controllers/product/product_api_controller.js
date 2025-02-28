@@ -9,7 +9,7 @@ async function getAll(req, res) {
         console.error("-> product_api_controller.js - getAll() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener todos los productos", 
-            data: data
+            data: null
         });
     }
 }
@@ -29,7 +29,9 @@ async function create(req, res) {
             id_shop,
             second_hand,
             surplus_product,
-            expiration_product
+            expiration_product,
+            country_product,
+            locality_product
         } = req.body;
 
         if (name_product === undefined || 
@@ -45,7 +47,7 @@ async function create(req, res) {
             second_hand === undefined ||
             surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios excepto expiration_product"
+                error: "Todos los campos son obligatorios excepto expiration_product, country_product y locality_product"
             });
         }
 
@@ -72,7 +74,9 @@ async function create(req, res) {
             id_shop,
             second_hand,
             surplus_product,
-            expiration_product
+            expiration_product,
+            country_product,
+            locality_product
         });
 
         res.json({error, data, success});    
@@ -101,7 +105,9 @@ async function update(req, res) {
             id_shop,
             second_hand,
             surplus_product,
-            expiration_product
+            expiration_product,
+            country_product,
+            locality_product
         } = req.body;
 
         if(id_product === undefined || 
@@ -118,7 +124,7 @@ async function update(req, res) {
            second_hand === undefined ||
            surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios excepto expiration_product"
+                error: "Todos los campos son obligatorios excepto expiration_product, country_product y locality_product"
             });
         }
 
@@ -147,7 +153,9 @@ async function update(req, res) {
                 id_shop,
                 second_hand,
                 surplus_product,
-                expiration_product
+                expiration_product,
+                country_product,
+                locality_product
             }
         );   
 
@@ -167,7 +175,7 @@ async function getById(req, res) {
 
         if (!id_product) {  
             console.error('-> product_api_controller.js - getById() - Error = El parámetro id_product es obligatorio');
-            res.status(400).json({ 
+            return res.status(400).json({ 
                 error: 'El parámetro id_product es obligatorio', 
             });
         }
@@ -179,7 +187,7 @@ async function getById(req, res) {
         console.error("-> product_api_controller.js - getById() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener un producto", 
-            data: data
+            data: null
         });
     }
 }
@@ -190,7 +198,7 @@ async function removeById(req, res) {
         
         if (!id_product) {  
             console.error('-> product_api_controller.js - removeById() - Error = El parámetro id_product es obligatorio');
-            res.status(400).json({ 
+            return res.status(400).json({ 
                 error: 'El parámetro id_product es obligatorio', 
             });
         }
@@ -202,7 +210,7 @@ async function removeById(req, res) {
         console.error("-> product_api_controller.js - removeById() - Error =", err);
         res.status(500).json({ 
             error: "Error al eliminar un producto", 
-            data: data
+            data: null
         });
     }
 }
@@ -213,7 +221,7 @@ async function getByShopId(req, res) {
 
         if (!id_shop) {
             console.error('-> product_api_controller.js - getByShopId() - Error = El id del comercio es obligatorio');
-            res.status(400).json({ 
+            return res.status(400).json({ 
                 error: 'El parámetro id_shop es obligatorio', 
             });
         }
@@ -225,7 +233,7 @@ async function getByShopId(req, res) {
         console.error("-> product_api_controller.js - getByShopId() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener los productos del comercio", 
-            data: data
+            data: null
         });
     }
 }
@@ -235,7 +243,7 @@ async function getByType(req, res) {
         const {type_product} = req.params;
         
         if (!type_product){
-            res.status(400).json({
+            return res.status(400).json({
                 error: "El tipo de producto es obligatorio"
             });
         }
@@ -247,7 +255,53 @@ async function getByType(req, res) {
         console.error("-> product_api_controller.js - getByType() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener los productos por tipo", 
-            data: data
+            data: null
+        });
+    }
+}
+
+// Nueva función para obtener productos por país
+async function getByCountry(req, res) {
+    try {
+        const { country_product } = req.params;
+        
+        if (!country_product) {
+            return res.status(400).json({
+                error: "El país de origen es obligatorio"
+            });
+        }
+        
+        const {error, data, success} = await productController.getByCountry(country_product);
+        
+        res.json({error, data, success});
+    } catch (err) {
+        console.error("-> product_api_controller.js - getByCountry() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener los productos por país", 
+            data: null
+        });
+    }
+}
+
+// Nueva función para obtener productos por localidad
+async function getByLocality(req, res) {
+    try {
+        const { locality_product } = req.params;
+        
+        if (!locality_product) {
+            return res.status(400).json({
+                error: "La localidad de origen es obligatoria"
+            });
+        }
+        
+        const {error, data, success} = await productController.getByLocality(locality_product);
+        
+        res.json({error, data, success});
+    } catch (err) {
+        console.error("-> product_api_controller.js - getByLocality() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener los productos por localidad", 
+            data: null
         });
     }
 }
@@ -261,7 +315,7 @@ async function getOnSale(req, res) {
         console.error("-> product_api_controller.js - getOnSale() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener los productos en oferta", 
-            data: data
+            data: null
         });
     }
 }
@@ -322,9 +376,9 @@ async function deleteImage(req, res) {
         details: error.message,
       });
     }
-  }
+}
   
-  async function verifyProductName(req, res) {
+async function verifyProductName(req, res) {
     console.log('-> product_api_controller.js - verifyProductName() - Iniciando verificación de nombre de producto');
     try {
         const { name_product, id_shop } = req.body;
@@ -367,7 +421,9 @@ export {
     getOnSale,
     updateProductImage,
     deleteImage,
-    verifyProductName
+    verifyProductName,
+    getByCountry,
+    getByLocality
 }
 
 export default {
@@ -381,5 +437,7 @@ export default {
     getOnSale,
     updateProductImage,
     deleteImage,
-    verifyProductName
+    verifyProductName,
+    getByCountry,
+    getByLocality
 }

@@ -6,12 +6,21 @@ import path from 'path';
 const router = Router();
 
 router.get("/", productApiController.getAll);
+
 router.get("/by-shop-id/:id_shop", productApiController.getByShopId);
+
 router.get("/by-type/:type_product", productApiController.getByType);
+
 router.get("/on-sale", productApiController.getOnSale);
+
 router.get("/by-id/:id_product", productApiController.getById);
 
+router.get("/by-country/:country_product", productApiController.getByCountry);
+
+router.get("/by-locality/:locality_product", productApiController.getByLocality);
+
 router.post("/create", productApiController.create);
+
 router.post('/upload-product-image', handleProductImageUpload, async (req, res) => {
   try {
     if (!req.file) {
@@ -51,6 +60,7 @@ router.post('/upload-product-image', handleProductImageUpload, async (req, res) 
 router.patch("/update", productApiController.update);
 
 router.delete("/remove-by-id/:id_product", productApiController.removeById);
+
 router.delete('/delete-image/:id_product', productApiController.deleteImage);
 
 router.post("/verify-product-name", productApiController.verifyProductName);
