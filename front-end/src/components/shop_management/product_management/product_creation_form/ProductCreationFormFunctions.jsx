@@ -291,7 +291,7 @@ const ProductCreationFormFunctions = () => {
       const formattedData = {
         ...newProductData,
         price_product: Number(newProductData.price_product).toFixed(2),
-        second_hand: 0
+        // second_hand: 0
       };
 
       const response = await axiosInstance.post('/product/create', formattedData);
