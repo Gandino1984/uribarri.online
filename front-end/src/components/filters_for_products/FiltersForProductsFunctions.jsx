@@ -12,6 +12,7 @@ const FiltersForProductsFunctions = () => {
 
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [expirationDateRange, setExpirationDateRange] = useState({ start: '', end: '' });
 
   // Set visibility after mount
   useEffect(() => {
@@ -25,7 +26,7 @@ const FiltersForProductsFunctions = () => {
   useEffect(() => {
     // Apply all filters including search term
     applyFilters();
-  }, [searchTerm, filters, products]);
+  }, [searchTerm, filters, products, expirationDateRange]);
 
   // Handle main filter changes
   const handleFilterChange = (filterName, option) => {
@@ -56,6 +57,28 @@ const FiltersForProductsFunctions = () => {
     }));
   };
 
+  const handleExcessChange = (e) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      excedente: e.target.checked ? 'Sí' : null
+    }));
+  };
+
+  const handleExpirationChange = (e) => {
+    const { name, value } = e.target;
+    setExpirationDateRange(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleNearExpirationChange = (e) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      proxima_caducidad: e.target.checked ? 'Sí' : null
+    }));
+  };
+
   const handleResetFilters = () => {
     setFilters({
       temporada: null,
@@ -63,8 +86,11 @@ const FiltersForProductsFunctions = () => {
       subtipo: null,
       oferta: null,
       calificacion: null,
+      excedente: null,
+      proxima_caducidad: null,
     });
     setSearchTerm('');
+    setExpirationDateRange({ start: '', end: '' });
   };
 
   const getAvailableSubtypes = () => {
@@ -72,6 +98,18 @@ const FiltersForProductsFunctions = () => {
       return [];
     }
     return productTypesAndSubtypes[filters.tipo];
+  };
+
+  // Check if a product is near expiration (within 7 days)
+  const isNearExpiration = (expirationDate) => {
+    if (!expirationDate) return false;
+    
+    const today = new Date();
+    const expDate = new Date(expirationDate);
+    const diffTime = expDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays >= 0 && diffDays <= 7;
   };
 
   // Function to apply all filters including search term
@@ -125,15 +163,60 @@ const FiltersForProductsFunctions = () => {
       );
     }
 
+    // Filter for products with surplus
+    if (filters.excedente === 'Sí') {
+      filtered = filtered.filter(product => 
+        product.surplus_product > 0
+      );
+    }
+
+    // Filter for products near expiration
+    if (filters.proxima_caducidad === 'Sí') {
+      filtered = filtered.filter(product => 
+        product.expiration_product && isNearExpiration(product.expiration_product)
+      );
+    }
+
+    // Filter by expiration date range
+    if (expirationDateRange.start || expirationDateRange.end) {
+      filtered = filtered.filter(product => {
+        if (!product.expiration_product) return false;
+        
+        const expDate = new Date(product.expiration_product);
+        
+        if (expirationDateRange.start && expirationDateRange.end) {
+          const startDate = new Date(expirationDateRange.start);
+          const endDate = new Date(expirationDateRange.end);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(23, 59, 59, 999);
+          return expDate >= startDate && expDate <= endDate;
+        } else if (expirationDateRange.start) {
+          const startDate = new Date(expirationDateRange.start);
+          startDate.setHours(0, 0, 0, 0);
+          return expDate >= startDate;
+        } else if (expirationDateRange.end) {
+          const endDate = new Date(expirationDateRange.end);
+          endDate.setHours(23, 59, 59, 999);
+          return expDate <= endDate;
+        }
+        
+        return true;
+      });
+    }
+
     setFilteredProducts(filtered);
   };
 
   return {
     isVisible,
     searchTerm,
+    expirationDateRange,
     handleFilterChange,
     handleSearchChange,
     handleOnSaleChange,
+    handleExcessChange,
+    handleExpirationChange,
+    handleNearExpirationChange,
     handleResetFilters,
     getAvailableSubtypes
   };

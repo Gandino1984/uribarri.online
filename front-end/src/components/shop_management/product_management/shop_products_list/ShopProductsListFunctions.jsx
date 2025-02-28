@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 import AppContext from '../../../../app_context/AppContext';
-import  ProductCreationFormFunctions  from '../product_creation_form/ProductCreationFormFunctions.jsx';
+import ProductCreationFormFunctions from '../product_creation_form/ProductCreationFormFunctions.jsx';
 
 const ShopProductsListFunctions = () => {
   const { 
@@ -28,8 +28,19 @@ const ShopProductsListFunctions = () => {
     setIsUpdatingProduct
   } = useContext(AppContext);
 
-
   const { resetNewProductData } = ProductCreationFormFunctions();
+
+  // Check if a product is near expiration (within 7 days)
+  const isNearExpiration = (expirationDate) => {
+    if (!expirationDate) return false;
+    
+    const today = new Date();
+    const expDate = new Date(expirationDate);
+    const diffTime = expDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays >= 0 && diffDays <= 7;
+  };
 
   const filterProducts = (products, filters) => {
     if (!products || !filters) return products;
@@ -55,8 +66,18 @@ const ShopProductsListFunctions = () => {
       // Rating match - parse as number for comparison
       const calificationMatch = !filters.calificacion || 
         product.calification_product >= Number(filters.calificacion);
+      
+      // Surplus match - added to fix filter inconsistency
+      const surplusMatch = !filters.excedente || 
+        (filters.excedente === 'Sí' && product.surplus_product > 0);
+      
+      // Near expiration match
+      const expirationMatch = !filters.proxima_caducidad || 
+        (filters.proxima_caducidad === 'Sí' && isNearExpiration(product.expiration_product));
   
-      return seasonMatch && typeMatch && subtypeMatch && onSaleMatch && calificationMatch;
+      return seasonMatch && typeMatch && subtypeMatch && 
+             onSaleMatch && calificationMatch && 
+             surplusMatch && expirationMatch;
     });
   };
 

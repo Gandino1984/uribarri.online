@@ -140,6 +140,81 @@
     color: #7c7c7c;
     pointer-events: none;
   }
+
+  /* Añade estos estilos a tu archivo FiltersForProducts.module.css */
+
+.checkboxFiltersRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .dateRangeContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  
+  .dateLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  .dateInputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .dateInput {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  
+  .dateInput:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  /* Mejoras para la visualización responsive */
+  @media (max-width: 768px) {
+    .filterControls {
+      flex-direction: column;
+    }
+    
+    .dateInputs {
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .filterWrapper {
+      width: 100%;
+    }
+  }
   
 @media (max-width: 768px) {
     .filtersContainer {
