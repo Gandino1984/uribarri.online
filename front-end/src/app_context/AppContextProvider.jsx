@@ -357,6 +357,38 @@ export const AppContextProvider = ({ children }) => {
     'Varios': ['General', 'Otros']
   });
 
+  //*************************************** */
+
+  const [shopToProductTypesMap, setShopToProductTypesMap] = useState({
+    'Artesanía': ['Artesanía', 'Accesorios', 'Joyería'],
+    'Alimentación': ['Comida', 'Bebida'],
+    'Consultoría': ['Servicio', 'Educativo'],
+    'Educativa': ['Educativo', 'Servicio'],
+    'Entretenimiento': ['Sesión', 'Varios'],
+    'Especializado': ['Varios', 'Electrónica', 'Joyería', 'Muebles'], 
+    'Ropa': ['Ropa', 'Calzado', 'Accesorios'],
+    'Salud y Bienestar': ['Salud', 'Belleza', 'Servicio'],
+    'Servicios': ['Servicio', 'Varios'],
+    'Taller': ['Artesanía', 'Servicio'],
+    'Técnico': ['Servicio', 'Electrónica', 'Muebles']
+  });
+
+  
+  const getAvailableProductTypesForShop = (shopType) => {
+    return shopToProductTypesMap[shopType] || [];
+  };
+
+  // Función para resetear los campos de tipo y subtipo de producto cuando se cambia de tienda
+  const resetProductTypeFields = () => {
+    setNewProductData(prev => ({
+      ...prev,
+      type_product: '',
+      subtype_product: ''
+    }));
+  };
+
+  //************************************ */
+
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [selectedProductToUpdate, setSelectedProductToUpdate] = useState(null);
