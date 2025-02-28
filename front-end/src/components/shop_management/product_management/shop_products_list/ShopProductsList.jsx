@@ -233,6 +233,8 @@ const ShopProductList = () => {
                   <th className={styles.tableHeaderCell}>Precio</th>            
                   <th className={styles.tableHeaderCell}>Tipo</th>
                   <th className={styles.tableHeaderCell}>Sub-tipo</th>
+                  <th className={styles.tableHeaderCell}>País de Origen</th>
+                  <th className={styles.tableHeaderCell}>Localidad</th>
                   <th className={styles.tableHeaderCell}>Temporada</th>
                   <th className={styles.tableHeaderCell}>Descuento</th>
                   <th className={styles.tableHeaderCell}>Total Vendidos</th>
@@ -288,6 +290,8 @@ const ShopProductList = () => {
                         <td className={`${styles.tableCell} ${styles.smallCell}`}>&euro;{product.price_product}</td>
                         <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.type_product}</td>
                         <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.subtype_product}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.country_product || '-'}</td>
+                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.locality_product || '-'}</td>
                         <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.season_product}</td>
                         <td className={`${styles.tableCell} ${styles.smallCell}`}>
                           {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}

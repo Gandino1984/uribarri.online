@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
-import { X, Star, ShoppingCart, Tag, Calendar, Package } from 'lucide-react';
+import { X, Star, ShoppingCart, Tag, Calendar, Package, MapPin, Globe } from 'lucide-react';
 import styles from '../../../../../../public/css/ProductCard.module.css';
 
 const ProductCard = ({ onClose }) => {
@@ -45,7 +45,9 @@ const ProductCard = ({ onClose }) => {
     subtype_product,
     info_product,
     calification_product,
-    image_product
+    image_product,
+    country_product,
+    locality_product
   } = selectedProductDetails;
 
   // Calculate discounted price if there's a discount
@@ -139,6 +141,21 @@ const ProductCard = ({ onClose }) => {
                 <Calendar size={18} />
                 <span>Temporada: {season_product}</span>
               </div>
+
+              {/* Nuevos campos de origen */}
+              {country_product && (
+                <div className={styles.infoItem}>
+                  <Globe size={18} />
+                  <span>País de origen: {country_product}</span>
+                </div>
+              )}
+              
+              {locality_product && (
+                <div className={styles.infoItem}>
+                  <MapPin size={18} />
+                  <span>Localidad: {locality_product}</span>
+                </div>
+              )}
             </div>
             
             {info_product && (

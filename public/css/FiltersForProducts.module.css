@@ -104,6 +104,42 @@
     background-color: var(--saturated-blue);
     color: white;
 }
+
+/* Añade estos estilos a tu archivo FiltersForProducts.module.css */
+
+.searchWrapper {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .searchInputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .searchInput {
+    width: 100%;
+    padding: 8px 36px 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  
+  .searchInput:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  .searchIcon {
+    position: absolute;
+    right: 10px;
+    color: #7c7c7c;
+    pointer-events: none;
+  }
   
 @media (max-width: 768px) {
     .filtersContainer {

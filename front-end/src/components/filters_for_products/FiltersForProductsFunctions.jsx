@@ -94,7 +94,6 @@ const FiltersForProductsFunctions = () => {
           (product.subtype_product && product.subtype_product.toLowerCase().includes(searchLower)) ||
           (product.info_product && product.info_product.toLowerCase().includes(searchLower)) ||
           (product.season_product && product.season_product.toLowerCase().includes(searchLower)) ||
-          // Incluir los nuevos campos en la búsqueda
           (product.country_product && product.country_product.toLowerCase().includes(searchLower)) ||
           (product.locality_product && product.locality_product.toLowerCase().includes(searchLower))
         );
