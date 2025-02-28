@@ -493,6 +493,7 @@ export const AppContextProvider = ({ children }) => {
     showInfoCard, setShowInfoCard,
     clearInfo,
     selectedProductDetails, setSelectedProductDetails,
+    shopToProductTypesMap, setShopToProductTypesMap
   };
 
   return (

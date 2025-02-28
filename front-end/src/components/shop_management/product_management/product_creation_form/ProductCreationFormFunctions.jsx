@@ -18,7 +18,8 @@ const ProductCreationFormFunctions = () => {
     setIsAccepted,
     isDeclined,
     setIsDeclined,
-    currentUser
+    currentUser,
+    shopToProductTypesMap // Add this to get access to the mapping
   } = useContext(AppContext);
 
   // Estado para llevar la cuenta de productos y el límite
@@ -171,6 +172,20 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
+  // Function to check if product type is valid for the shop type
+  const isValidProductTypeForShop = (productType, shopType) => {
+    // If we're updating a product, allow the existing type
+    if (selectedProductToUpdate && productType === selectedProductToUpdate.type_product) {
+      return true;
+    }
+    
+    // Get allowed product types for this shop type
+    const allowedTypes = shopToProductTypesMap[shopType] || [];
+    
+    // Check if the product type is in the allowed types
+    return allowedTypes.includes(productType);
+  };
+
   const validateProductData = (newProductData) => {
     try {
       if (!newProductData.id_shop) {
@@ -185,6 +200,16 @@ const ProductCreationFormFunctions = () => {
         setError(prevError => ({ ...prevError, productError: "El tipo de producto es requerido"}));
         throw new Error("El tipo de producto es requerido");
       }
+      
+      // Validate that product type is compatible with shop type
+      if (selectedShop && !isValidProductTypeForShop(newProductData.type_product, selectedShop.type_shop)) {
+        setError(prevError => ({ 
+          ...prevError, 
+          productError: `El tipo de producto "${newProductData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`
+        }));
+        throw new Error(`El tipo de producto "${newProductData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`);
+      }
+      
       if (newProductData.discount_product < 0 || newProductData.discount_product > 100) {
         setError(prevError => ({ ...prevError, productError: "Valor de descuento fuera del rango permitido"}));
         throw new Error("Valor de descuento fuera del rango permitido");
@@ -441,6 +466,15 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
+  // Function to get available product types for the selected shop
+  const getAvailableProductTypesForShop = () => {
+    if (!selectedShop || !selectedShop.type_shop) {
+      return Object.keys(productTypesAndSubtypes);
+    }
+    
+    return shopToProductTypesMap[selectedShop.type_shop] || [];
+  };
+
   return {
     handleChange,
     handleNumericInputChange,
@@ -449,7 +483,8 @@ const ProductCreationFormFunctions = () => {
     resetNewProductData,
     productCount,
     productLimit,
-    fetchProductsByShop
+    fetchProductsByShop,
+    getAvailableProductTypesForShop
   };
 };
 

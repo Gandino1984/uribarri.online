@@ -89,6 +89,10 @@ textarea {
     opacity: 0.65;
   }
 
+  .shopTypeGuidance{
+    margin-bottom: 1rem;
+  }
+
 /* Media queries for responsive design */
 @media screen and (max-width: 768px) {
     .formField {

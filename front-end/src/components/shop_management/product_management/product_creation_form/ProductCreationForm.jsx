@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ProductCreationFormFunctions from './ProductCreationFormFunctions';
 import AppContext from '../../../../app_context/AppContext';
 import styles from '../../../../../../public/css/ProductCreationForm.module.css';
@@ -28,11 +28,19 @@ const ProductCreationForm = () => {
     productTypesAndSubtypes,
     setNewProductData,
     currentUser,
-    selectedShop
+    selectedShop,
+    shopToProductTypesMap // Access the mapping here
   } = useContext(AppContext);
 
-  // Get the list of product types
-  const productTypes = Object.keys(productTypesAndSubtypes);
+  // Get available product types based on shop type
+  const availableProductTypes = selectedShop?.type_shop 
+    ? shopToProductTypesMap[selectedShop.type_shop] || []
+    : [];
+
+  // Filter product types based on the shop type
+  const filteredProductTypes = availableProductTypes.length > 0
+    ? availableProductTypes
+    : Object.keys(productTypesAndSubtypes);
 
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
@@ -60,6 +68,17 @@ const ProductCreationForm = () => {
       fetchProductsByShop();
     }
   }, [selectedShop]);
+
+  // Reset product type when shop changes
+  useEffect(() => {
+    if (selectedShop && !isUpdatingProduct) {
+      setNewProductData(prev => ({
+        ...prev,
+        type_product: '',
+        subtype_product: ''
+      }));
+    }
+  }, [selectedShop, isUpdatingProduct, setNewProductData]);
 
   const handleViewProductList = () => {
     setShowProductManagement(false);
@@ -123,6 +142,13 @@ const ProductCreationForm = () => {
       {/* Mostrar indicador de límite de productos */}
       {renderProductLimitInfo()}
       
+      {/* Show shop type guidance */}
+      {selectedShop && !isUpdatingProduct && (
+        <div className={styles.shopTypeGuidance}>
+          <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
+        </div>
+      )}
+      
       <form onSubmit={handleFormSubmit} className={styles.form}>
         <div className={styles.formField}>
           <input
@@ -136,7 +162,6 @@ const ProductCreationForm = () => {
           />
         </div>
         
-
         <div className={styles.formField}>
           <label htmlFor="price_product">Precio</label>
           <CustomNumberInput
@@ -162,7 +187,7 @@ const ProductCreationForm = () => {
           />
         </div>
 
-        {/* Product Type Dropdown */}
+        {/* Product Type Dropdown - Filtered by shop type */}
         <div className={styles.formField}>
           <select
             id="type_product"
@@ -179,7 +204,7 @@ const ProductCreationForm = () => {
             required
           >
             <option value="" disabled>Tipo:</option>
-            {productTypes.map(type => (
+            {filteredProductTypes.map(type => (
               <option key={type} value={type}>
                 {type}
               </option>
