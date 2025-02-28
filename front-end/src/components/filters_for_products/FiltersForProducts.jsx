@@ -40,6 +40,14 @@ const FiltersForProducts = () => {
   return (
     <animated.div style={containerAnimation} className={styles.filtersContainer}>
       <div className={styles.filterControls}>
+          {/* Reset Filters Button */}
+          <button
+          onClick={handleResetFilters}
+          className={styles.resetButton}
+          type="button"
+        >
+          Borrar filtros
+        </button>
         {/* Search Input */}
         <div className={`${styles.filterWrapper} ${styles.searchWrapper}`}>
           <div className={styles.searchInputContainer}>
@@ -191,14 +199,7 @@ const FiltersForProducts = () => {
           </div>
         </div>
 
-        {/* Reset Filters Button */}
-        <button
-          onClick={handleResetFilters}
-          className={styles.resetButton}
-          type="button"
-        >
-          Limpiar filtros
-        </button>
+      
       </div>
     </animated.div>
   );
