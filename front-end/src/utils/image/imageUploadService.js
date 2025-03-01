@@ -1,7 +1,7 @@
 // utils/image/imageUploadService.js
 import axiosInstance from '../app/axiosConfig.js';
 import { optimizeImage } from './imageOptimizer.js';
-// import { validateImageFile } from './imageValidation.js';
+import { validateImageFile } from './imageValidation.js';
 
 /**
  * Formats image URL from the server path
