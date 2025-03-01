@@ -1,149 +1,121 @@
+/* ShopCard.module.css - Mobile-first approach */
+
 .container {
-  width: 700px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-}
-
-.imageContainer {
-  height: 250px;
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  position: relative;
-  cursor: pointer;
-}
-
-.imageWrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.noImage {
-  width: 100%;
-  height: 100%;
-  background-color: #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.noImage span {
-  color: #9ca3af;
-}
-
-.fileInput {
-  display: none;
-}
-
-.uploadButton {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 0.5rem;
-  border-radius: 9999px;
-  transition: background-color 0.2s;
-  z-index: 10;
-}
-
-.uploadButton:hover {
-  background-color: white;
-}
-
-.cameraIcon {
-  color: #374151;
-}
-
-.loader {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 10;
-}
-
-.loaderIcon {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-      transform: rotate(0deg);
-  }
-  to {
-      transform: rotate(360deg);
-  }
 }
 
 .infoContainer {
   background-color: white;
-  border-radius: 0.5rem;
+  border-radius: 0 0 0.5rem 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
+  word-break: break-word;
 }
 
 .rating {
   color: #4b5563;
+  font-size: 0.875rem;
 }
 
 .location {
   color: #4b5563;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .locationIcon {
-  display: inline;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 /* Schedule styles */
-.schedule {
+.scheduleContainer {
   color: #4b5563;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   margin-top: 0.75rem;
 }
 
-.scheduleIcon {
-  display: inline;
-}
-
-.scheduleInfo{
+.scheduleInfo {
   display: flex;
   flex-direction: column;
-  align-items: left;
-  justify-content: center;
-  /* gap: .5rem; */
+  gap: 0.5rem;
 }
 
-.scheduleDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.timeSlot {
+.scheduleTime {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* Responsive styles */
+/* Small tablets (640px and up) */
+@media (min-width: 640px) {
+  .container {
+    max-width: 540px;
+  }
+  
+  .infoContainer {
+    padding: 1.25rem;
+  }
+  
+  .title {
+    font-size: 1.375rem;
+  }
+}
+
+/* Tablets (768px and up) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 640px;
+  }
+  
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .infoContainer {
+    padding: 1.5rem;
+  }
+}
+
+/* Laptops/Desktops (1024px and up) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 700px;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .scheduleInfo {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* Large screens (1280px and up) */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 800px;
+  }
 }

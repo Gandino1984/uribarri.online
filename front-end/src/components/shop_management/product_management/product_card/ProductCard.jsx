@@ -2,26 +2,13 @@ import React, { useContext, useEffect } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
 import { X, Star, ShoppingCart, Tag, Calendar, Package, MapPin, Globe } from 'lucide-react';
 import styles from '../../../../../../public/css/ProductCard.module.css';
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 const ProductCard = ({ onClose }) => {
   const { 
     selectedProductDetails,
     setSelectedProductDetails
   } = useContext(AppContext);
-
-  // Get the imageUrl function from the context or recreate it
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      return null;
-    }
-    
-    // Using the baseURL from your axios instance configuration
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3007';
-    const cleanPath = imagePath.replace(/^\/+/, '');
-    const imageUrl = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1");
-    
-    return imageUrl;
-  };
 
   useEffect(() => {
     // Cleanup function
@@ -85,9 +72,18 @@ const ProductCard = ({ onClose }) => {
           <div className={styles.imageContainer}>
             {image_product ? (
               <img 
-                src={getImageUrl(image_product)} 
+                src={formatImageUrl(image_product)} 
                 alt={name_product} 
                 className={styles.productImage} 
+                onError={(e) => {
+                  console.error('Image failed to load:', e.target.src);
+                  e.target.style.display = 'none';
+                  // Show fallback content
+                  const fallback = document.createElement('div');
+                  fallback.className = styles.noImage;
+                  fallback.innerHTML = `<Package size="60" /><p>Sin imagen</p>`;
+                  e.target.parentNode.appendChild(fallback);
+                }}
               />
             ) : (
               <div className={styles.noImage}>

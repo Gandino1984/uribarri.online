@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 import AppContext from '../../../../app_context/AppContext';
 import ProductCreationFormFunctions from '../product_creation_form/ProductCreationFormFunctions.jsx';
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 const ShopProductsListFunctions = () => {
   const { 
@@ -263,17 +264,9 @@ const ShopProductsListFunctions = () => {
     }
   };
 
+  // Use the formatImageUrl function from imageUploadService.js for consistency
   const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      console.error('-> ShopProductsListFunctions - getImageUrl() - No se ha proporcionado una ruta de imagen');
-      return null;
-    }
-        
-    const cleanPath = imagePath.replace(/^\/+/, '');
-    const baseUrl = axiosInstance.defaults.baseURL || '';
-    const imageUrl = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1");
-    
-    return imageUrl;
+    return formatImageUrl(imagePath);
   };
 
   const handleProductImageDoubleClick = (product) => {
