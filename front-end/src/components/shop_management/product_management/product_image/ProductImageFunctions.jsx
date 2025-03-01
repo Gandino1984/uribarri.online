@@ -1,7 +1,6 @@
-import axiosInstance from '../../../../utils/app/axiosConfig.js';
-import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import { useContext } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
+import { uploadProductImage, formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 export const ProductImageFunctions = () => {
   const {
@@ -22,41 +21,40 @@ export const ProductImageFunctions = () => {
       throw new Error("No product selected for image upload");
     }
 
-    if (!selectedShop?.name_shop) {
+    if (!selectedShop?.id_shop) {
       throw new Error("No shop selected");
     }
 
     try {
-      await validateImageFile(file);
-
-      const formData = new FormData();
-      formData.append('productImage', file);
-
       setUploading(true);
 
-      const response = await axiosInstance.post(
-        '/product/upload-product-image',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'X-Shop-Name': selectedShop.name_shop,
-            'X-Product-ID': selectedProductForImageUpload,
-          },
+      // Use the unified upload service instead of direct axios call
+      const imagePath = await uploadProductImage({
+        file,
+        shopId: selectedShop.id_shop,
+        shopName: selectedShop.name_shop,
+        productId: selectedProductForImageUpload,
+        onProgress: (progress) => {
+          console.log('Upload progress:', progress);
+        },
+        onError: (errorMessage) => {
+          console.error('Upload error:', errorMessage);
+          setError(prevError => ({
+            ...prevError,
+            imageError: errorMessage
+          }));
         }
+      });
+
+      // Update the products list with the new image
+      const updatedProducts = products.map(product =>
+        product.id_product === selectedProductForImageUpload
+          ? { ...product, image_product: imagePath }
+          : product
       );
+      setProducts(updatedProducts);
 
-      if (response.data.data?.image_product) {
-        // Update the products list with the new image
-        const updatedProducts = products.map(product =>
-          product.id_product === selectedProductForImageUpload
-            ? { ...product, image_product: response.data.data.image_product }
-            : product
-        );
-        setProducts(updatedProducts);
-
-        return response.data.data.image_product;
-      }
+      return imagePath;
     } catch (err) {
       console.error('Error uploading product image:', err);
       setError(prevError => ({
@@ -70,17 +68,7 @@ export const ProductImageFunctions = () => {
   };
 
   const getProductImageUrl = (imagePath) => {
-    if (!imagePath) {
-      console.warn('No image path provided');
-      return null;
-    }
-
-    const cleanPath = imagePath.replace(/^\/+/, ''); // Remove leading slashes
-    const baseUrl = axiosInstance.defaults.baseURL || ''; // Get the base URL from axios config
-    const imageUrl = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1"); // Construct the full URL
-
-    console.log('Generated Image URL:', imageUrl); // Log the generated URL for debugging
-    return imageUrl;
+    return formatImageUrl(imagePath);
   };
 
   return {

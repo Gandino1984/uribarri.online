@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
-import { validateImageFile } from '../../../../utils/imageValidation.js';
-import axiosInstance from '../../../../utils/axiosConfig.js';
+import { validateImageFile } from '../../../../../front-end/src/utils/image/imageUploadService.js';
+import axiosInstance from '../../../utils/app/axiosConfig.js';
 
 const ShopCardFunctions = () => {
   const {
