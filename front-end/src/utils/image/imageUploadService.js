@@ -211,3 +211,87 @@ export const uploadProductImage = async ({
     throw error;
   }
 };
+
+/**
+ * Specialized function for uploading user profile images
+ * @param {Object} options - Upload options
+ * @param {File} options.file - The file to upload
+ * @param {string} options.userName - Username
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Image path from server
+ */
+export const uploadProfileImage = async ({ 
+  file, 
+  userName, 
+  onProgress, 
+  onError 
+}) => {
+  if (!userName) {
+    throw new Error("Username is required");
+  }
+
+  console.log('Uploading profile image for user:', userName);
+
+  try {
+    // First validate the image
+    await validateImageFile(file);
+    
+    // Then optimize the image if needed
+    let optimizedFile = file;
+    if (file.size > 150 * 1024) { // Only optimize if larger than 150KB
+      try {
+        optimizedFile = await optimizeImage(file, {
+          maxWidth: 600,  // Profile images don't need to be as large as shop images
+          maxHeight: 600,
+          quality: 0.85
+        });
+        console.log('Image optimized:', {
+          originalSize: Math.round(file.size / 1024) + 'KB',
+          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+        });
+      } catch (optimizeError) {
+        console.warn('Image optimization failed, using original file:', optimizeError);
+      }
+    }
+    
+    // Create form data with the EXACT field name expected by the backend
+    const formData = new FormData();
+    formData.append('name_user', userName);
+    formData.append('profileImage', optimizedFile);
+    
+    // Set up upload with progress tracking
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      onUploadProgress: onProgress 
+        ? (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
+        : undefined
+    };
+    
+    console.log('Sending request to /user/upload-profile-image with user:', userName);
+    
+    // Make the request
+    const response = await axiosInstance.post('/user/upload-profile-image', formData, config);
+    
+    console.log('Upload response:', response.data);
+    
+    if (!response.data?.data?.image_user) {
+      throw new Error('Invalid response from server: missing image_user path');
+    }
+    
+    return response.data.data.image_user;
+  } catch (error) {
+    console.error('Profile image upload error:', error);
+    
+    if (onError) {
+      onError(error.response?.data?.error || error.message || "Error uploading profile image");
+    }
+    
+    throw error;
+  }
+};

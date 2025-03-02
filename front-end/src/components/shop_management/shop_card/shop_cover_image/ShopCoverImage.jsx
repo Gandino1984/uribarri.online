@@ -89,7 +89,7 @@ const ShopCoverImage = ({ id_shop }) => {
               onClick={handleUploadButtonClick}
             >
               <Camera size={16} className={styles.cameraIcon} />
-              <span className={styles.uploadText}>Choose Image</span>
+              <span className={styles.uploadText}>Subir imagen</span>
             </label>
           </div>
         )}
@@ -112,7 +112,7 @@ const ShopCoverImage = ({ id_shop }) => {
         {isSelected && !showUploadButton && !uploading && (
           <div className={styles.editOverlay}>
             <Camera size={20} className={styles.editIcon} />
-            <span className={styles.editText}>{shop?.image_shop ? 'Change Cover' : 'Add Cover'}</span>
+            <span className={styles.editText}>{shop?.image_shop ? 'Cambiar imagen' : 'Subir imagen'}</span>
           </div>
         )}
       </div>

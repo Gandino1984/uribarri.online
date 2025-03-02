@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
-import shop_model from '../models/shop_model.js';
+import user_model from '../models/user_model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,29 +19,29 @@ const ensureDirectoryExists = async (dirPath) => {
   }
 };
 
-const productImageStorage = multer.diskStorage({
+const profileImageStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    console.log('Multer processing product image:', file.fieldname, file.originalname);
+    console.log('Multer processing profile image:', file.fieldname, file.originalname);
     
-    const shopId = req.headers['x-shop-id'];
-    const productId = req.headers['x-product-id'];
+    const userName = req.body.name_user;
 
-    if (!shopId || !productId) {
-      return cb(new Error('Shop ID and Product ID are required'));
+    if (!userName) {
+      return cb(new Error('Usuario no especificado'));
     }
 
     try {
-      // Fetch shop details to get the shop name
-      const shop = await shop_model.findByPk(shopId);
+      // Verify user exists
+      const user = await user_model.findOne({ 
+        where: { name_user: userName } 
+      });
       
-      if (!shop) {
-        return cb(new Error('Shop not found'));
+      if (!user) {
+        return cb(new Error('Usuario no encontrado'));
       }
       
-      const shopName = shop.name_shop;
-      console.log(`Found shop name: ${shopName} for ID: ${shopId}, product ID: ${productId}`);
+      console.log(`Processing profile image for user: ${userName}`);
       
-      // Create path for shop-specific product images - use forward slashes for Docker compatibility
+      // Create path for user-specific profile images - use forward slashes for Docker compatibility
       const uploadsDir = path.join(
         __dirname, 
         '..',
@@ -49,9 +49,8 @@ const productImageStorage = multer.diskStorage({
         'public', 
         'images', 
         'uploads', 
-        'shops', 
-        shopName, 
-        'product_images'
+        'users', 
+        userName
       );
 
       console.log(`Attempting to create directory: ${uploadsDir}`);
@@ -59,7 +58,7 @@ const productImageStorage = multer.diskStorage({
       // Ensure the directory exists
       await ensureDirectoryExists(uploadsDir);
       
-      console.log(`Product image will be stored in: ${uploadsDir}`);
+      console.log(`Profile image will be stored in: ${uploadsDir}`);
       
       // Make sure permissions are set correctly (important for Docker)
       try {
@@ -75,9 +74,8 @@ const productImageStorage = multer.diskStorage({
     }
   },
   filename: function (req, file, cb) {
-    const productId = req.headers['x-product-id'];
-    // Use a consistent naming pattern for product images
-    const fileName = `product_${productId}${path.extname(file.originalname).toLowerCase()}`;
+    // Use a consistent naming pattern for profile images
+    const fileName = `profile${path.extname(file.originalname).toLowerCase()}`;
     console.log(`Generated filename: ${fileName}`);
     cb(null, fileName);
   }
@@ -90,28 +88,28 @@ const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error(`Invalid file type. Only JPEG, PNG, JPG, and WebP are allowed. Received: ${file.mimetype}`), false);
+    cb(new Error(`Tipo de archivo inválido. Solo se permiten JPEG, PNG, JPG y WebP. Recibido: ${file.mimetype}`), false);
   }
 };
 
-const uploadProductImage = multer({
-  storage: productImageStorage,
+const uploadProfileImage = multer({
+  storage: profileImageStorage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 3 * 1024 * 1024 // 3MB limit
+    fileSize: 3 * 1024 * 1024 // 3MB limit (igual que los otros middleware)
   }
-}).single('productImage'); // IMPORTANT: This must match the field name from the frontend
+}).single('profileImage'); // IMPORTANT: This must match the field name from the frontend
 
-const handleProductImageUpload = async (req, res, next) => {
-  console.log('Starting product image upload handler');
+const handleProfileImageUpload = async (req, res, next) => {
+  console.log('Starting profile image upload handler');
   console.log('Request content type:', req.headers['content-type']);
   console.log('Request headers:', req.headers);
   
-  uploadProductImage(req, res, function (err) {
+  uploadProfileImage(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       console.error('Multer error:', err);
       return res.status(400).json({
-        error: 'Error uploading file',
+        error: 'Error al subir el archivo',
         details: err.message,
         code: err.code,
         field: err.field
@@ -119,12 +117,12 @@ const handleProductImageUpload = async (req, res, next) => {
     } else if (err) {
       console.error('Upload error:', err);
       return res.status(400).json({
-        error: 'Error uploading product image',
+        error: 'Error al subir la imagen de perfil',
         details: err.message
       });
     }
     
-    console.log('Product image upload processed successfully');
+    console.log('Profile image upload processed successfully');
     if (req.file) {
       console.log('Uploaded file details:', {
         filename: req.file.filename,
@@ -139,4 +137,4 @@ const handleProductImageUpload = async (req, res, next) => {
   });
 };
 
-export { handleProductImageUpload };
+export { handleProfileImageUpload };
