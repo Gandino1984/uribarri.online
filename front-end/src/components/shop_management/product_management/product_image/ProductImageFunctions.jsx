@@ -12,7 +12,7 @@ export const ProductImageFunctions = () => {
     setProducts,
   } = useContext(AppContext);
 
-  const handleProductImageUpload = async (file) => {
+  const handleProductImageUpload = async (file, onProgressCallback = null) => {
     if (!file) {
       throw new Error("No file provided");
     }
@@ -27,8 +27,13 @@ export const ProductImageFunctions = () => {
 
     try {
       setUploading(true);
+      console.log('Starting image upload for product:', selectedProductForImageUpload);
+      console.log('Shop info:', {
+        id: selectedShop.id_shop,
+        name: selectedShop.name_shop
+      });
 
-      // Use the unified upload service instead of direct axios call
+      // Use the unified upload service
       const imagePath = await uploadProductImage({
         file,
         shopId: selectedShop.id_shop,
@@ -36,6 +41,7 @@ export const ProductImageFunctions = () => {
         productId: selectedProductForImageUpload,
         onProgress: (progress) => {
           console.log('Upload progress:', progress);
+          if (onProgressCallback) onProgressCallback(progress);
         },
         onError: (errorMessage) => {
           console.error('Upload error:', errorMessage);
@@ -46,29 +52,46 @@ export const ProductImageFunctions = () => {
         }
       });
 
-      // Update the products list with the new image
-      const updatedProducts = products.map(product =>
-        product.id_product === selectedProductForImageUpload
-          ? { ...product, image_product: imagePath }
-          : product
-      );
-      setProducts(updatedProducts);
+      console.log('Image upload successful, path:', imagePath);
 
+      // Create a completely new array to ensure React detects the state change
+      const updatedProducts = products.map(product => {
+        if (product.id_product === selectedProductForImageUpload) {
+          // Create a new product object with the updated image_product
+          return { ...product, image_product: imagePath };
+        }
+        return product;
+      });
+      
+      // Force a state update with the new array
+      setProducts(updatedProducts);
+      
+      // Log the updated products to verify
+      console.log('Products state updated with new image path');
+      
       return imagePath;
     } catch (err) {
       console.error('Error uploading product image:', err);
+      const errorMessage = err.response?.data?.error || err.message || "Error uploading file";
       setError(prevError => ({
         ...prevError,
-        imageError: err.response?.data?.error || err.message || "Error uploading file",
+        imageError: errorMessage,
       }));
-      throw err;
+      throw new Error(errorMessage);
     } finally {
       setUploading(false);
     }
   };
 
   const getProductImageUrl = (imagePath) => {
-    return formatImageUrl(imagePath);
+    if (!imagePath) return null;
+    
+    // Debug info
+    console.log('Formatting image URL for path:', imagePath);
+    const formattedUrl = formatImageUrl(imagePath);
+    console.log('Formatted URL:', formattedUrl);
+    
+    return formattedUrl;
   };
 
   return {
