@@ -175,9 +175,9 @@ const UserInfoCard = () => {
               {!uploading && (
                 <div className={styles.editOverlay}>
                   <Camera size={16} className={styles.editIcon} />
-                  <span className={styles.editText}>
+                  {/* <span className={styles.editText}>
                     {currentUser.image_user ? 'Cambiar foto' : 'Añadir foto'}
-                  </span>
+                  </span> */}
                 </div>
               )}
               

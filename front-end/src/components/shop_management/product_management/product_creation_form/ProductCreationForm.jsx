@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import ProductCreationFormFunctions from './ProductCreationFormFunctions';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import ProductCreationFormFunctions from './ProductCreationFormFunctions.jsx';
 import AppContext from '../../../../app_context/AppContext';
 import styles from '../../../../../../public/css/ProductCreationForm.module.css';
-import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle } from 'lucide-react';
+import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle, Camera, ImagePlus, Trash2 } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 import CustomNumberInput from '../../../custom_number_input/CustomNumberInput';
 import { countries } from '../../../../../src/utils/app/countries.js';
-
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 const ProductCreationForm = () => {
   const {
@@ -17,7 +17,8 @@ const ProductCreationForm = () => {
     handleUpdate,
     productCount,
     productLimit,
-    fetchProductsByShop
+    fetchProductsByShop,
+    handleImageUpload
   } = ProductCreationFormFunctions();
 
   const { 
@@ -30,8 +31,18 @@ const ProductCreationForm = () => {
     setNewProductData,
     currentUser,
     selectedShop,
-    shopToProductTypesMap // Access the mapping here
+    shopToProductTypesMap,
+    uploading,
+    setError,
+    setUploading,
+    refreshProductList
   } = useContext(AppContext);
+
+  // New state for image upload
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
 
   // Get available product types based on shop type
   const availableProductTypes = selectedShop?.type_shop 
@@ -45,6 +56,62 @@ const ProductCreationForm = () => {
 
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
+
+  // Handle image selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
+      }));
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "La imagen es demasiado grande. Máximo 5MB."
+      }));
+      return;
+    }
+
+    setSelectedImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Clear image selection
+  const handleClearImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Set image preview for product being updated
+  useEffect(() => {
+    if (isUpdatingProduct && selectedProductToUpdate?.image_product) {
+      // Get image URL using your existing utility
+      const imageUrl = formatImageUrl(selectedProductToUpdate.image_product);
+      setImagePreview(imageUrl);
+    } else if (!isUpdatingProduct) {
+      // Clear image when creating a new product
+      setImagePreview(null);
+      setSelectedImage(null);
+    }
+  }, [isUpdatingProduct, selectedProductToUpdate]);
 
   useEffect(() => {
     if (isUpdatingProduct && selectedProductToUpdate) {
@@ -63,7 +130,7 @@ const ProductCreationForm = () => {
     }
   }, [isUpdatingProduct, selectedProductToUpdate]);
 
-  // Cargar productos cuando cambia la tienda seleccionada
+  // Load products when selected shop changes
   useEffect(() => {
     if (selectedShop?.id_shop) {
       fetchProductsByShop();
@@ -82,23 +149,49 @@ const ProductCreationForm = () => {
   }, [selectedShop, isUpdatingProduct, setNewProductData]);
 
   const handleViewProductList = () => {
-    setShowProductManagement(false);
+    setShowProductManagement(true);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (isUpdatingProduct) {
-      handleUpdate(e);
-    } else {
-      handleSubmit(e);
+    
+    try {
+      let success;
+      
+      if (isUpdatingProduct) {
+        // Update existing product with image if selected
+        success = await handleUpdate(e, selectedImage);
+        
+        // If product update succeeded and user selected an image
+        if (success && selectedImage) {
+          await handleImageUpload(
+            selectedImage, 
+            selectedProductToUpdate.id_product,
+            (progress) => setUploadProgress(progress)
+          );
+        }
+      } else {
+        // Create new product with image if selected
+        success = await handleSubmit(e, selectedImage);
+      }
+      
+      // Clear image selection after successful submission
+      if (success) {
+        handleClearImage();
+        
+        // Force refresh of the product list in the ShopProductsList component
+        refreshProductList();
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
     }
   };
 
-  // Función para mostrar información sobre el límite de productos
+  // Function to display product limit information
   const renderProductLimitInfo = () => {
-    if (isUpdatingProduct) return null; // No mostrar en modo actualización
+    if (isUpdatingProduct) return null; // Don't show during updates
     
-    // Determinar el color del indicador basado en cuán cerca está el usuario del límite
+    // Determine indicator color based on how close user is to limit
     const percentUsed = (productCount / productLimit) * 100;
     let statusColor = 'green';
     
@@ -140,10 +233,10 @@ const ProductCreationForm = () => {
         {isUpdatingProduct ? 'Actualizar Producto' : '¿O quieres crear un nuevo producto?'}
       </h2>
       
-      {/* Mostrar indicador de límite de productos */}
+      {/* Product limit information */}
       {renderProductLimitInfo()}
       
-      {/* Show shop type guidance */}
+      {/* Shop type guidance */}
       {selectedShop && !isUpdatingProduct && (
         <div className={styles.shopTypeGuidance}>
           <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
@@ -188,7 +281,84 @@ const ProductCreationForm = () => {
           />
         </div>
 
-        {/* Nuevos campos para el país y la localidad de origen */}
+        {/* Image upload section */}
+        <div className={styles.formField}>
+          <div className={styles.imageUploadContainer}>
+            <label className={styles.imageUploadLabel}>
+              Imagen del Producto
+            </label>
+            
+            <div className={styles.imagePreviewBox}>
+              {imagePreview ? (
+                <img 
+                  src={imagePreview} 
+                  alt="Vista previa de imagen" 
+                  className={styles.imagePreview} 
+                />
+              ) : (
+                <div className={styles.noImagePlaceholder}>
+                  <ImagePlus size={40} className={styles.placeholderIcon} />
+                  <span>Sin imagen seleccionada</span>
+                </div>
+              )}
+              
+              {uploading && (
+                <div className={styles.progressContainer}>
+                  <div className={styles.progressBar}>
+                    <div 
+                      className={styles.progressFill} 
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <span className={styles.progressText}>{uploadProgress}%</span>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.imageControlsContainer}>
+              <input
+                type="file"
+                id="product_image"
+                ref={fileInputRef}
+                accept="image/jpeg,image/png,image/jpg,image/webp"
+                style={{ display: 'none' }}
+                onChange={handleImageSelect}
+                disabled={uploading}
+              />
+              
+              <label 
+                htmlFor="product_image" 
+                className={styles.imageButton}
+                style={{ opacity: uploading ? 0.6 : 1 }}
+              >
+                <Camera size={16} />
+                Seleccionar imagen
+              </label>
+              
+              {selectedImage && (
+                <button
+                  type="button"
+                  className={styles.clearImageButton}
+                  onClick={handleClearImage}
+                  disabled={uploading}
+                >
+                  <Trash2 size={16} />
+                  Quitar imagen
+                </button>
+              )}
+            </div>
+            
+            <p className={styles.imageHelpText}>
+              {isUpdatingProduct 
+                ? "La imagen se actualizará al guardar cambios" 
+                : "La imagen se subirá al crear el producto"}
+              <br/>
+              Formatos aceptados: JPG, PNG, WebP. Tamaño máx: 5MB
+            </p>
+          </div>
+        </div>
+
+        {/* Country and locality fields */}
         <div className={styles.formField}>
           <select
             id="country_product"

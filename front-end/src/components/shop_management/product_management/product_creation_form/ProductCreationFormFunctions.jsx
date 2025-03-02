@@ -1,6 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import AppContext from '../../../../app_context/AppContext';
 import axiosInstance from '../../../../utils/app/axiosConfig';
+// Import the required utilities for image upload
+import { uploadProductImage } from '../../../../utils/image/imageUploadService.js';
+import { validateImageFile } from '../../../../utils/image/imageValidation.js';
+import { optimizeImage } from '../../../../utils/image/imageOptimizer.js';
 
 const ProductCreationFormFunctions = () => {
   const { 
@@ -19,38 +23,51 @@ const ProductCreationFormFunctions = () => {
     isDeclined,
     setIsDeclined,
     currentUser,
-    shopToProductTypesMap // Add this to get access to the mapping
+    shopToProductTypesMap,
+    setUploading,
+    setSuccess,
+    setShowSuccessCard,
+    refreshProductList
   } = useContext(AppContext);
 
   // Estado para llevar la cuenta de productos y el límite
   const [productCount, setProductCount] = useState(0);
   const [productLimit, setProductLimit] = useState(7); // Valor por defecto para usuarios no sponsor
 
-    // Función para obtener productos por tienda
-    const fetchProductsByShop = async () => {
-      try {
-        if (!selectedShop?.id_shop) {
-          console.error('No hay comercio seleccionado');
-          setError(prevError => ({ ...prevError, shopError: "No hay comercio seleccionado" }));
-          setProducts([]);
-          return;
-        }
-        
-        const response = await axiosInstance.get(`/product/by-shop-id/${selectedShop.id_shop}`);
-        const fetchedProducts = response.data.data || [];
-        
-        console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
-        setProducts(fetchedProducts);
-        setProductCount(fetchedProducts.length);
-      } catch (err) {
-        console.error('Error fetching products:', err);
-        setError(prevError => ({ 
-          ...prevError, 
-          databaseResponseError: "Hubo un error al buscar los productos del comercio" 
-        }));
+  // Función para obtener productos por tienda
+  const fetchProductsByShop = async () => {
+    try {
+      if (!selectedShop?.id_shop) {
+        console.error('No hay comercio seleccionado');
+        setError(prevError => ({ ...prevError, shopError: "No hay comercio seleccionado" }));
         setProducts([]);
-      } 
-    };
+        return;
+      }
+      
+      const response = await axiosInstance.get(`/product/by-shop-id/${selectedShop.id_shop}`);
+      const fetchedProducts = response.data.data || [];
+      
+      console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
+      
+      // Sort products by ID (most recent first)
+      const sortedProducts = [...fetchedProducts].sort((a, b) => {
+        return b.id_product - a.id_product;
+      });
+      
+      setProducts(sortedProducts);
+      setProductCount(sortedProducts.length);
+      
+      return sortedProducts;
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError(prevError => ({ 
+        ...prevError, 
+        databaseResponseError: "Hubo un error al buscar los productos del comercio" 
+      }));
+      setProducts([]);
+      return [];
+    } 
+  };
 
   // Determinar el límite de productos basado en la categoría del usuario
   useEffect(() => {
@@ -301,7 +318,98 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  // Extracted the product creation logic to a separate function
+  // Function to handle image upload
+  const handleImageUpload = async (file, productId, onProgress) => {
+    if (!file || !productId) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "No hay archivo de imagen o producto seleccionado"
+      }));
+      return false;
+    }
+
+    if (!selectedShop?.id_shop) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "No hay comercio seleccionado"
+      }));
+      return false;
+    }
+
+    try {
+      // First validate the image
+      await validateImageFile(file);
+      
+      // Then optimize the image
+      let optimizedFile = file;
+      if (file.size > 150 * 1024) { // Only optimize if larger than 150KB
+        try {
+          optimizedFile = await optimizeImage(file, {
+            maxWidth: 1200,
+            maxHeight: 1200,
+            quality: 0.85
+          });
+          console.log('Image optimized:', {
+            originalSize: Math.round(file.size / 1024) + 'KB',
+            optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+          });
+        } catch (optimizeError) {
+          console.warn('Image optimization failed, using original file:', optimizeError);
+        }
+      }
+
+      setUploading(true);
+      
+      // Use the uploadProductImage function from your existing utilities
+      const imagePath = await uploadProductImage({
+        file: optimizedFile,
+        shopId: selectedShop.id_shop,
+        shopName: selectedShop.name_shop,
+        productId: productId,
+        onProgress: onProgress,
+        onError: (errorMsg) => {
+          setError(prevError => ({ ...prevError, imageError: errorMsg }));
+        }
+      });
+
+      if (imagePath) {
+        // Update the product in the products array with the new image
+        const updatedProducts = products.map(product => {
+          if (product.id_product === productId) {
+            return { ...product, image_product: imagePath };
+          }
+          return product;
+        });
+        
+        setProducts(updatedProducts);
+        
+        // Force refresh the product list in other components
+        refreshProductList();
+        
+        setSuccess(prevSuccess => ({
+          ...prevSuccess,
+          imageSuccess: "Imagen subida correctamente"
+        }));
+        setShowSuccessCard(true);
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setError(prevError => ({
+        ...prevError,
+        imageError: error.message || "Error al subir la imagen"
+      }));
+      setShowErrorCard(true);
+      return false;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Create a new product
   const createProduct = async () => {
     try {
       // Verificar que no se haya alcanzado el límite
@@ -318,7 +426,6 @@ const ProductCreationFormFunctions = () => {
       const formattedData = {
         ...newProductData,
         price_product: Number(newProductData.price_product).toFixed(2),
-        // second_hand: 0
       };
 
       const response = await axiosInstance.post('/product/create', formattedData);
@@ -333,12 +440,26 @@ const ProductCreationFormFunctions = () => {
       }
 
       if (response.data.data) {
-        setProducts(prevProducts => [...prevProducts, response.data.data]);
+        const createdProduct = response.data.data;
+        
+        // After successfully creating a product, fetch fresh product list from the server
+        await fetchProductsByShop();
+        
+        // Force refresh the product list in other components
+        refreshProductList();
+        
+        // Show success message
+        setSuccess(prevSuccess => ({
+          ...prevSuccess,
+          productSuccess: "Producto creado exitosamente"
+        }));
+        setShowSuccessCard(true);
+        
         resetNewProductData();
-        setShowProductManagement(false);
-        // Actualizar el contador después de crear un producto
-        setProductCount(prev => prev + 1);
-        return true;
+        setShowProductManagement(true);
+        
+        // Return the created product so we can access its ID
+        return createdProduct;
       }
       
       return false;
@@ -355,10 +476,11 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  // Handle form submission for creating a new product
+  const handleSubmit = async (e, imageFile = null) => {
     e.preventDefault();
     try {
-      if (!validateProductData(newProductData)) return;
+      if (!validateProductData(newProductData)) return false;
 
       // Check if a product with the same name already exists
       const nameExists = await verifyProductName(newProductData.name_product, newProductData.id_shop);
@@ -369,10 +491,28 @@ const ProductCreationFormFunctions = () => {
           `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la creación de este producto?`
         );
         setIsModalOpen(true);
-        // The actual product creation will be handled by the useEffect watching isAccepted
+        
+        // Store the image file for later use
+        if (imageFile) {
+          sessionStorage.setItem('pendingProductImage', JSON.stringify({
+            pending: true,
+            timestamp: Date.now()
+          }));
+        }
+        
+        return false; // Wait for confirmation
       } else {
         // If no duplicate, proceed with creation directly
-        await createProduct();
+        const result = await createProduct();
+        
+        // If product was created successfully and we have an image to upload
+        if (result && imageFile && result.id_product) {
+          await handleImageUpload(imageFile, result.id_product, (progress) => {
+            console.log(`Upload progress: ${progress}%`);
+          });
+        }
+        
+        return result ? true : false;
       }
     } catch (err) {
       setError(prevError => ({
@@ -381,13 +521,15 @@ const ProductCreationFormFunctions = () => {
       }));
       setShowErrorCard(true);
       console.error('ProductCreationFormFunctions - handleSubmit() - Error al crear el producto =', err);
+      return false;
     }
   };
 
-  const handleUpdate = async (e) => {
+  // Handle updating an existing product
+  const handleUpdate = async (e, imageFile = null) => {
     e.preventDefault();
     try {
-      if (!validateProductData(newProductData)) return;
+      if (!validateProductData(newProductData)) return false;
 
       const id_product = selectedProductToUpdate.id_product;
       
@@ -405,7 +547,7 @@ const ProductCreationFormFunctions = () => {
             `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la actualización de este producto?`
           );
           setIsModalOpen(true);
-          return; // Exit and wait for modal response in useEffect
+          return false; // Exit and wait for modal response in useEffect
         }
       }
       
@@ -416,7 +558,16 @@ const ProductCreationFormFunctions = () => {
         price_product: Number(newProductData.price_product).toFixed(2)
       };
       
-      await updateProductInDB(updateData);
+      const result = await updateProductInDB(updateData);
+      
+      // Handle image upload if provided
+      if (result && imageFile) {
+        await handleImageUpload(imageFile, id_product, (progress) => {
+          console.log(`Upload progress: ${progress}%`);
+        });
+      }
+      
+      return result ? true : false;
     } catch (err) {
       setError(prevError => ({
         ...prevError,
@@ -424,10 +575,11 @@ const ProductCreationFormFunctions = () => {
       }));
       setShowErrorCard(true);
       console.error('ProductCreationFormFunctions - handleUpdate() - Error al actualizar el producto =', err);
+      return false;
     }
   };
   
-  // Extracted update logic to a separate function
+  // Update a product in the database
   const updateProductInDB = async (updateData) => {
     try {
       const response = await axiosInstance.patch('/product/update', updateData);
@@ -446,19 +598,23 @@ const ProductCreationFormFunctions = () => {
       }
     
       if (response.data.data) {
-        const id_product = updateData.id_product;
-        setProducts(prevProducts => 
-          prevProducts.map(product => 
-            product.id_product === id_product 
-              ? response.data.data 
-              : product
-          )
-        );
+        // After successfully updating a product, fetch fresh product list
+        await fetchProductsByShop();
+        
+        // Force refresh the product list in other components
+        refreshProductList();
         
         resetNewProductData();
-        setShowProductManagement(false);
+        setShowProductManagement(true);
         setIsUpdatingProduct(false);
         setSelectedProductToUpdate(null);
+        
+        setSuccess(prevSuccess => ({
+          ...prevSuccess,
+          updateSuccess: "Producto actualizado correctamente"
+        }));
+        setShowSuccessCard(true);
+        
         return true;
       }
       
@@ -486,7 +642,8 @@ const ProductCreationFormFunctions = () => {
     productCount,
     productLimit,
     fetchProductsByShop,
-    getAvailableProductTypesForShop
+    getAvailableProductTypesForShop,
+    handleImageUpload
   };
 };
 

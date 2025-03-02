@@ -102,6 +102,14 @@ export const AppContextProvider = ({ children }) => {
     imageInfo: ''
   });
 
+  // New state for product list refresh
+  const [productListKey, setProductListKey] = useState(0);
+
+  // Function to force refresh of product list components
+  const refreshProductList = () => {
+    setProductListKey(prevKey => prevKey + 1);
+  };
+
   const clearInfo = () => {
     setInfo({
       loginInfo: '',
@@ -493,7 +501,8 @@ export const AppContextProvider = ({ children }) => {
     showInfoCard, setShowInfoCard,
     clearInfo,
     selectedProductDetails, setSelectedProductDetails,
-    shopToProductTypesMap, setShopToProductTypesMap
+    shopToProductTypesMap, setShopToProductTypesMap,
+    productListKey, refreshProductList
   };
 
   return (

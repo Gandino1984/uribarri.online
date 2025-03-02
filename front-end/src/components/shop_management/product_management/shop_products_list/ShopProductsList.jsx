@@ -28,7 +28,8 @@ const ShopProductList = () => {
     selectedProductDetails, setSelectedProductDetails,
     setSelectedProductForImageUpload,
     isModalOpen, setIsModalOpen,
-    setModalMessage
+    setModalMessage,
+    productListKey // Add this new key from context
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
@@ -65,12 +66,12 @@ const ShopProductList = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch products when shop changes
+  // Fetch products when shop changes or when productListKey changes
   useEffect(() => {
     if (selectedShop?.id_shop) {
       fetchProductsByShop();
     }
-  }, [selectedShop]);
+  }, [selectedShop, productListKey]); // Add productListKey as a dependency
 
   // Filter products when products or filters change
   useEffect(() => {
