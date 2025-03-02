@@ -12,12 +12,14 @@ export const ShopCoverImageFunctions = () => {
     selectedShop,
     setShops,
     shops,
-    uploading
+    uploading,
+    setSelectedShop  // This is already available in the AppContext
   } = useContext(AppContext);
 
   const [showUploadButton, setShowUploadButton] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [localImageUrl, setLocalImageUrl] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(Date.now());
 
   // Toggle the upload button visibility when clicking the container
   const handleContainerClick = useCallback((id_shop) => {
@@ -83,6 +85,12 @@ export const ShopCoverImageFunctions = () => {
 
       console.log('Upload successful, received path:', imagePath);
 
+      // Create a new objects to ensure React detects the state change
+      const updatedSelectedShop = {
+        ...selectedShop,
+        image_shop: imagePath
+      };
+      
       // Update the shops list with the new image
       const updatedShops = shops.map(shop =>
         shop.id_shop === selectedShop.id_shop
@@ -90,13 +98,20 @@ export const ShopCoverImageFunctions = () => {
           : shop
       );
       
-      console.log('Updating shops with new image path');
-      setShops(updatedShops);
+      // Debug logging
+      console.log('Updating shop states with new image path:', imagePath);
+      console.log('Updated selected shop:', updatedSelectedShop);
       
-      // Clean up local URL after server image is set
+      // Update all state in sequence to ensure UI reflects changes
+      setShops(updatedShops);
+      setSelectedShop(updatedSelectedShop);
+      setLastUpdated(Date.now());
+      
+      // Keep the local image URL a bit longer for a smoother transition
+      // but eventually clear it so the server image is used
       setTimeout(() => {
         setLocalImageUrl(null);
-      }, 1000);
+      }, 3000);
       
       setShowUploadButton(false);
     } catch (error) {
@@ -111,9 +126,9 @@ export const ShopCoverImageFunctions = () => {
       setUploading(false);
       setUploadProgress(0);
     }
-  }, [selectedShop, shops, setShops, setError, setUploading]);
+  }, [selectedShop, shops, setShops, setSelectedShop, setError, setUploading]);
 
-  // Get the URL for the shop cover image - added support for local temp URL
+  // Get the URL for the shop cover image with cache busting
   const getShopCoverUrl = useCallback((imagePath) => {
     // If we have a local image URL (from recent upload), use that first
     if (localImageUrl) {
@@ -121,12 +136,24 @@ export const ShopCoverImageFunctions = () => {
       return localImageUrl;
     }
     
-    // Otherwise format the server image path
-    const result = formatImageUrl(imagePath);
+    if (!imagePath) {
+      return null;
+    }
+    
+    // Format the server image path with a cache-busting parameter
+    let result = formatImageUrl(imagePath);
+    
+    // Add a timestamp query parameter to prevent browser caching
+    if (result) {
+      result = result.includes('?') 
+        ? `${result}&t=${lastUpdated}` 
+        : `${result}?t=${lastUpdated}`;
+    }
+    
     console.log('getShopCoverUrl input:', imagePath);
-    console.log('getShopCoverUrl output:', result);
+    console.log('getShopCoverUrl output with cache busting:', result);
     return result;
-  }, [localImageUrl]);
+  }, [localImageUrl, lastUpdated]);
 
   // Clean up object URLs when component unmounts
   useEffect(() => {
@@ -145,6 +172,7 @@ export const ShopCoverImageFunctions = () => {
     showUploadButton,
     uploading,
     uploadProgress,
-    localImageUrl
+    localImageUrl,
+    lastUpdated
   };
 };
