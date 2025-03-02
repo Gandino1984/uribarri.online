@@ -1,7 +1,6 @@
-import axiosInstance from '../../../../utils/app/axiosConfig.js';
-import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import { useContext } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
+import { uploadProductImage, formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 export const ProductImageFunctions = () => {
   const {
@@ -13,7 +12,7 @@ export const ProductImageFunctions = () => {
     setProducts,
   } = useContext(AppContext);
 
-  const handleProductImageUpload = async (file) => {
+  const handleProductImageUpload = async (file, onProgressCallback = null) => {
     if (!file) {
       throw new Error("No file provided");
     }
@@ -22,65 +21,77 @@ export const ProductImageFunctions = () => {
       throw new Error("No product selected for image upload");
     }
 
-    if (!selectedShop?.name_shop) {
+    if (!selectedShop?.id_shop) {
       throw new Error("No shop selected");
     }
 
     try {
-      await validateImageFile(file);
-
-      const formData = new FormData();
-      formData.append('productImage', file);
-
       setUploading(true);
+      console.log('Starting image upload for product:', selectedProductForImageUpload);
+      console.log('Shop info:', {
+        id: selectedShop.id_shop,
+        name: selectedShop.name_shop
+      });
 
-      const response = await axiosInstance.post(
-        '/product/upload-product-image',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'X-Shop-Name': selectedShop.name_shop,
-            'X-Product-ID': selectedProductForImageUpload,
-          },
+      // Use the unified upload service
+      const imagePath = await uploadProductImage({
+        file,
+        shopId: selectedShop.id_shop,
+        shopName: selectedShop.name_shop,
+        productId: selectedProductForImageUpload,
+        onProgress: (progress) => {
+          console.log('Upload progress:', progress);
+          if (onProgressCallback) onProgressCallback(progress);
+        },
+        onError: (errorMessage) => {
+          console.error('Upload error:', errorMessage);
+          setError(prevError => ({
+            ...prevError,
+            imageError: errorMessage
+          }));
         }
-      );
+      });
 
-      if (response.data.data?.image_product) {
-        // Update the products list with the new image
-        const updatedProducts = products.map(product =>
-          product.id_product === selectedProductForImageUpload
-            ? { ...product, image_product: response.data.data.image_product }
-            : product
-        );
-        setProducts(updatedProducts);
+      console.log('Image upload successful, path:', imagePath);
 
-        return response.data.data.image_product;
-      }
+      // Create a completely new array to ensure React detects the state change
+      const updatedProducts = products.map(product => {
+        if (product.id_product === selectedProductForImageUpload) {
+          // Create a new product object with the updated image_product
+          return { ...product, image_product: imagePath };
+        }
+        return product;
+      });
+      
+      // Force a state update with the new array
+      setProducts(updatedProducts);
+      
+      // Log the updated products to verify
+      console.log('Products state updated with new image path');
+      
+      return imagePath;
     } catch (err) {
       console.error('Error uploading product image:', err);
+      const errorMessage = err.response?.data?.error || err.message || "Error uploading file";
       setError(prevError => ({
         ...prevError,
-        imageError: err.response?.data?.error || err.message || "Error uploading file",
+        imageError: errorMessage,
       }));
-      throw err;
+      throw new Error(errorMessage);
     } finally {
       setUploading(false);
     }
   };
 
   const getProductImageUrl = (imagePath) => {
-    if (!imagePath) {
-      console.warn('No image path provided');
-      return null;
-    }
-
-    const cleanPath = imagePath.replace(/^\/+/, ''); // Remove leading slashes
-    const baseUrl = axiosInstance.defaults.baseURL || ''; // Get the base URL from axios config
-    const imageUrl = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1"); // Construct the full URL
-
-    console.log('Generated Image URL:', imageUrl); // Log the generated URL for debugging
-    return imageUrl;
+    if (!imagePath) return null;
+    
+    // Debug info
+    console.log('Formatting image URL for path:', imagePath);
+    const formattedUrl = formatImageUrl(imagePath);
+    console.log('Formatted URL:', formattedUrl);
+    
+    return formattedUrl;
   };
 
   return {

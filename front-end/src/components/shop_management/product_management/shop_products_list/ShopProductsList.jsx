@@ -4,14 +4,12 @@ import ShopProductListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
 import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
-// import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
 import ProductCard from '../product_card/ProductCard.jsx';
-import { useSpring, animated, config } from '@react-spring/web';
+import { useSpring, animated } from '@react-spring/web';
 import ShopCard from '../../shop_card/ShopCard.jsx'; 
-
-
+import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
 
 const ShopProductList = () => {
   const {
@@ -20,22 +18,21 @@ const ShopProductList = () => {
     selectedShop,
     filters,
     filteredProducts, setFilteredProducts,
-    selectedProducts,
-    isAccepted,
-    setIsAccepted,
-    isDeclined,
-    setIsDeclined,
-    clearError,
-    isImageModalOpen,
-    setIsImageModalOpen,
+    selectedProducts, setSelectedProducts,
+    isAccepted, setIsAccepted,
+    isDeclined, setIsDeclined,
+    clearError, setError,
+    isImageModalOpen, setIsImageModalOpen,
     productToDelete, setProductToDelete,
     selectedImageForModal, setSelectedImageForModal,
-    // Añadimos el nuevo estado para el producto seleccionado
-    selectedProductDetails, setSelectedProductDetails
+    selectedProductDetails, setSelectedProductDetails,
+    setSelectedProductForImageUpload,
+    isModalOpen, setIsModalOpen,
+    setModalMessage,
+    productListKey // Add this new key from context
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
-  // Estado para controlar la visibilidad del ProductCard
   const [showProductCard, setShowProductCard] = useState(false);
 
   // Animation for main content
@@ -47,7 +44,6 @@ const ShopProductList = () => {
     },
     config: { tension: 280, friction: 20 },
   });
-
 
   const {
     filterProducts,
@@ -70,12 +66,12 @@ const ShopProductList = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch products when shop changes
+  // Fetch products when shop changes or when productListKey changes
   useEffect(() => {
     if (selectedShop?.id_shop) {
       fetchProductsByShop();
     }
-  }, [selectedShop]);
+  }, [selectedShop, productListKey]); // Add productListKey as a dependency
 
   // Filter products when products or filters change
   useEffect(() => {
@@ -129,46 +125,68 @@ const ShopProductList = () => {
     }
   }, [isDeclined]);
 
-  // Función para manejar el clic en una fila de producto
+  // Function to handle row click
   const handleProductRowClick = (product) => {
     setSelectedProductDetails(product);
     setShowProductCard(true);
   };
 
-  // Función para formatear la fecha
+  // Function to format date
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     try {
-      // Convierte la fecha en un objeto Date y luego la formatea
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) return '-'; // Si la fecha no es válida
-      return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      if (isNaN(date.getTime())) return '-';
+      return date.toISOString().split('T')[0];
     } catch (error) {
-      console.error('Error formateando fecha:', error);
+      console.error('Error formatting date:', error);
       return '-';
     }
   };
 
-  // Función para formatear el campo second_hand
+  // Function to format second_hand field
   const formatSecondHand = (value) => {
     return value ? 'Sí' : 'No';
   };
 
+  // Select a product for image upload - this is a new function to isolate image upload selection
+  const handleSelectForImageUpload = (id_product) => {
+    setSelectedProductForImageUpload(id_product);
+    
+    // Also ensure it's in the selected products set
+    setSelectedProducts(prev => {
+      const newSelected = new Set(prev);
+      if (!newSelected.has(id_product)) {
+        newSelected.add(id_product);
+      }
+      return newSelected;
+    });
+  };
+
   return (
     <div className={styles.container}>
-        {/* <ConfirmationModal /> */}
+        <ConfirmationModal 
+          isOpen={isModalOpen}
+          onConfirm={() => {
+            setIsModalOpen(false);
+            setIsAccepted(true);
+          }}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setIsDeclined(true);
+          }}
+        />
 
         <ImageModal
           isOpen={isImageModalOpen}
           onClose={() => {
             setIsImageModalOpen(false);
-            setSelectedImageForModal(null); // Clear the image when closing
+            setSelectedImageForModal(null);
           }}
           imageUrl={selectedImageForModal}
           altText="Product full size image"
         />
 
-        {/* Integración del nuevo componente ProductCard */}
         {showProductCard && selectedProductDetails && (
           <ProductCard 
             onClose={() => {
@@ -202,7 +220,6 @@ const ShopProductList = () => {
                 </button>
 
                 <button
-                  // onClick={handleBulkUpdate}
                   className={`${styles.actionButton} ${styles.updateButton}`}
                   disabled={selectedProducts.size === 0}
                 >
@@ -215,7 +232,6 @@ const ShopProductList = () => {
 
         <FiltersForProducts />
         
-
         {filteredProducts.length === 0 ? (
           <p className={styles.noProducts}>No hay productos disponibles</p>
         ) : (       
@@ -245,64 +261,72 @@ const ShopProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                    {filteredProducts.map((product) => (
-                      <tr
-                        key={product.id_product}
-                        className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
-                        onClick={() => handleProductRowClick(product)}
-                        style={{ cursor: 'pointer' }}
+                {filteredProducts.map((product) => (
+                  <tr
+                    key={product.id_product}
+                    className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
+                    onClick={() => handleProductRowClick(product)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => handleUpdateProduct(product.id_product)}
+                        className={`${styles.actionButton} ${styles.updateButton}`}
+                        title="Actualizar producto"
                       >
-                        <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => handleUpdateProduct(product.id_product)}
-                            className={`${styles.actionButton} ${styles.updateButton}`}
-                            title="Actualizar producto"
-                          >
-                            <Pencil size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product.id_product)}
-                            className={`${styles.actionButton} ${styles.deleteButton}`}
-                            title="Eliminar producto"
-                            type="button"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleSelectProduct(product.id_product)}
-                            className={`${styles.actionButton} ${styles.selectButton} ${
-                              selectedProducts.has(product.id_product) ? styles.selected : ''
-                            }`}
-                            title="Seleccionar producto"
-                          >
-                            <CheckCircle size={18} />
-                          </button>
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              handleProductImageDoubleClick(product);
-                            }}
-                        >
-                          <ProductImage id_product={product.id_product} />
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.mediumCell}`}>{product.name_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>&euro;{product.price_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.type_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.subtype_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.country_product || '-'}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.locality_product || '-'}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.season_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>
-                          {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
-                        </td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.sold_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatSecondHand(product.second_hand)}</td>
-                        <td className={`${styles.tableCell} ${styles.largeCell}`}>{product.info_product}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatDate(product.expiration_product)}</td>
-                        <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.surplus_product}</td>
-                      </tr>
-                    ))}
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product.id_product)}
+                        className={`${styles.actionButton} ${styles.deleteButton}`}
+                        title="Eliminar producto"
+                        type="button"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleSelectProduct(product.id_product)}
+                        className={`${styles.actionButton} ${styles.selectButton} ${
+                          selectedProducts.has(product.id_product) ? styles.selected : ''
+                        }`}
+                        title="Seleccionar producto"
+                      >
+                        <CheckCircle size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleSelectForImageUpload(product.id_product)}
+                        className={`${styles.actionButton} ${styles.imageButton}`}
+                        title="Seleccionar para subir imagen"
+                      >
+                        <ImagePlus size={18} />
+                      </button>
+                    </td>
+                    <td 
+                      className={`${styles.tableCell} ${styles.smallCell}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProductImageDoubleClick(product);
+                      }}
+                    >
+                      <ProductImage id_product={product.id_product} />
+                    </td>
+                    <td className={`${styles.tableCell} ${styles.mediumCell}`}>{product.name_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>&euro;{product.price_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.type_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.subtype_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.country_product || '-'}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.locality_product || '-'}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.season_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>
+                      {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
+                    </td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.sold_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatSecondHand(product.second_hand)}</td>
+                    <td className={`${styles.tableCell} ${styles.largeCell}`}>{product.info_product}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatDate(product.expiration_product)}</td>
+                    <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.surplus_product}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </animated.div>

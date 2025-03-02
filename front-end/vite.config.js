@@ -1,22 +1,41 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// Get API URL from environment or use default
+const apiUrl = process.env.VITE_API_URL || 'http://localhost:3007';
 
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,
+    host: true, // Listen on all addresses
+    port: 5173,
     proxy: {
-      '/user': {
-        target: 'http://localhost:3007',
+      // Proxy all API requests to the backend server
+      '/shop': {
+        target: apiUrl,
         changeOrigin: true,
         secure: false,
-        ws: true,
       },
-      '/uploads': {
-        target: 'http://localhost:3007',
+      '/user': {
+        target: apiUrl,
+        changeOrigin: true,
+        secure: false,
+      },
+      '/product': {
+        target: apiUrl,
+        changeOrigin: true,
+        secure: false,
+      },
+      '/auth': {
+        target: apiUrl,
+        changeOrigin: true,
+        secure: false,
+      },
+      '/images': {
+        target: apiUrl,
         changeOrigin: true,
         secure: false,
       }
     }
   }
-})
+});

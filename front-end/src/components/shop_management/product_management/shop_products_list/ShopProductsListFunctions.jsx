@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 import AppContext from '../../../../app_context/AppContext';
 import ProductCreationFormFunctions from '../product_creation_form/ProductCreationFormFunctions.jsx';
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 const ShopProductsListFunctions = () => {
   const { 
@@ -25,7 +26,8 @@ const ShopProductsListFunctions = () => {
     setIsImageModalOpen,
     productToDelete,
     selectedImageForModal, setSelectedImageForModal,
-    setIsUpdatingProduct
+    setIsUpdatingProduct,
+    refreshProductList
   } = useContext(AppContext);
 
   const { resetNewProductData } = ProductCreationFormFunctions();
@@ -95,11 +97,23 @@ const ShopProductsListFunctions = () => {
       
       console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
       
-      setProducts(fetchedProducts);
+      // Always sort the products to maintain consistent order after updates
+      // Most recent products first (assuming higher ID means more recent)
+      const sortedProducts = [...fetchedProducts].sort((a, b) => {
+        return b.id_product - a.id_product;
+      });
+      
+      setProducts(sortedProducts);
+      
+      // Clear any selections when refreshing the product list
+      setSelectedProducts(new Set());
+      
+      return sortedProducts;
     } catch (err) {
       console.error('Error fetching products:', err);
       setError(prevError => ({ ...prevError, databaseResponseError: "Hubo un error al buscar los productos del comercio" }));
       setProducts([]);
+      return [];
     } 
   };
 
@@ -133,6 +147,9 @@ const ShopProductsListFunctions = () => {
 
       // Refresh the products list
       await fetchProductsByShop();
+      
+      // Force refresh of the product list in ShopProductsList component
+      refreshProductList();
 
       // Show result message
       const message = `${successCount} productos eliminados exitosamente${failCount > 0 ? `, ${failCount} fallos` : ''}`;
@@ -263,17 +280,9 @@ const ShopProductsListFunctions = () => {
     }
   };
 
+  // Use the formatImageUrl function from imageUploadService.js for consistency
   const getImageUrl = (imagePath) => {
-    if (!imagePath) {
-      console.error('-> ShopProductsListFunctions - getImageUrl() - No se ha proporcionado una ruta de imagen');
-      return null;
-    }
-        
-    const cleanPath = imagePath.replace(/^\/+/, '');
-    const baseUrl = axiosInstance.defaults.baseURL || '';
-    const imageUrl = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1");
-    
-    return imageUrl;
+    return formatImageUrl(imagePath);
   };
 
   const handleProductImageDoubleClick = (product) => {
