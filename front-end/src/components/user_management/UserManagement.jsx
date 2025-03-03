@@ -7,7 +7,7 @@ import { UserManagementFunctions } from './UserManagementFunctions.jsx';
 
 const UserManagement = () => {
   const { 
-    selectedShopType, shopTypes 
+    selectedShopType, shopTypes, shopType
   } = useContext(AppContext);
 
   const { handleBusinessTypeSelect, fetchShopTypes } = UserManagementFunctions();
@@ -17,8 +17,8 @@ const UserManagement = () => {
     fetchShopTypes();
   }, []);
 
-
-  if (selectedShopType) {
+  // Si ya hay un tipo de tienda seleccionado, mostrar ShopsByType
+  if (selectedShopType || shopType) {
     return <ShopsByType />;
   }
 

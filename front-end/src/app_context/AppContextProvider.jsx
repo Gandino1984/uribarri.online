@@ -181,9 +181,13 @@ export const AppContextProvider = ({ children }) => {
     setShowSuccessCard(false);
   };
 
-  const login = (userData) => {
-    console.log('Incoming userData:', userData);
+  const login = async (userData) => {
+    console.log('Incoming userData for login:', userData);
   
+    // First, ensure user type is set immediately for component routing decisions
+    console.log('Setting user type in login function:', userData.type_user);
+    setUserType(userData.type_user);
+
     // Remove the password field but keep all other original data
     const { pass_user, ...userWithoutPassword } = userData;
     
@@ -196,7 +200,6 @@ export const AppContextProvider = ({ children }) => {
       image_user: userData.image_user, 
       category_user: userData.category_user, 
     };
-
     
     // Create timestamp data for localStorage
     const userDataWithTimestamp = {
@@ -208,11 +211,26 @@ export const AppContextProvider = ({ children }) => {
     localStorage.setItem('currentUser', JSON.stringify(userDataWithTimestamp));
     
     // Update state with verified data
+    console.log('Setting currentUser to:', userStateData);
     setCurrentUser(userStateData);
     setNameUser(userData.name_user);
     setIsLoggingIn(false);
-    setshowShopManagement(true);
-    clearError();
+    
+    // Use promise to ensure the state updates are completed
+    return new Promise(resolve => {
+      // Use setTimeout to ensure these state changes happen after currentUser is set
+      setTimeout(() => {
+        if (userData.type_user === 'seller') {
+          console.log('User is seller, showing shop management UI');
+          setshowShopManagement(true);
+        } else {
+          console.log('User is not seller, showing regular UI');
+          setshowShopManagement(true);
+        }
+        clearError();
+        resolve();
+      }, 0);
+    });
   };
 
   const logout = () => {

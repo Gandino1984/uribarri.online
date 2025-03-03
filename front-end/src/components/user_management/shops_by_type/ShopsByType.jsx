@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopsByType.module.css';
 import UserProductsList from '../user_product_management/user_products_list/UserProductsList.jsx'; 
-import { ShopsByTypeFunctions } from './ShopsByTypeFunctions.jsx';
+import {ShopsByTypeFunctions} from './ShopsByTypeFunctions.jsx';
 
 const ShopsByType = () => {
   const { 

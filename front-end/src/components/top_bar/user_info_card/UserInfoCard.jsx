@@ -126,7 +126,7 @@ const UserInfoCard = () => {
       ? `${currentUser.name_user}`
       : '¡Bienvenida!'
     : currentUser
-      ? `¡Te damos la bienvenida, ${currentUser.name_user || 'Usuaria'}!`
+      ? `¡Te damos la bienvenida, ${currentUser.name_user || 'usuario'}!`
       : '¡Te damos la bienvenida! Inicia sesión';
 
   return (

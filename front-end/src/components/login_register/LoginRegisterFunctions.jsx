@@ -19,7 +19,9 @@ export const LoginRegisterFunctions = () => {
     location_user, setLocationUser,
     setShowRepeatPasswordMessage,
     clearUserSession,
-    setPasswordIcons
+    setPasswordIcons,
+    setShopType, // Agregamos setShopType para establecer el tipo de tienda
+    setSelectedShopType // Added for proper navigation
   } = useContext(AppContext);
 
   const { validateUsername } = useUsernameValidation();
@@ -77,7 +79,7 @@ export const LoginRegisterFunctions = () => {
     }
     
     setDisplayedPassword(displayedPassword);
-};
+  };
 
   const handleRepeatPasswordChange = (newPassword) => {
     setPasswordRepeat(newPassword);
@@ -130,7 +132,9 @@ export const LoginRegisterFunctions = () => {
             throw new Error('Datos de usuario incompletos o inválidos');
         }
   
+        // Set user type first, before any other state updates
         setUserType(userData.type_user);
+        console.log('Setting user type to:', userData.type_user);
   
         // Normalize user data structure using the server-provided user type
         const normalizedUserData = {
@@ -142,10 +146,15 @@ export const LoginRegisterFunctions = () => {
           category_user: userData.category_user       
         };
   
-        login(normalizedUserData);
+        // Call login to setup user data
+        await login(normalizedUserData);
   
+        // Store the user type to avoid race conditions
+        const userType = userData.type_user;
+        
         // Special handling for seller type
-        if (userData.type_user === 'seller') {
+        if (userType === 'seller') {
+            console.log('User is seller, setting up seller view');
             try {
                 // Fetch shops specifically for the logged-in seller
                 const shopsResponse = await axiosInstance.post('/shop/user', {
@@ -156,21 +165,24 @@ export const LoginRegisterFunctions = () => {
                 
                 // If no shops exist, open the shop creation form
                 if (userShops.length === 0) {
+                    console.log('Seller has no shops, showing shop creation form');
                     setIsAddingShop(true);
-                    setshowShopManagement(false);
+                    // Important: we must set showShopManagement to true for ShopsListBySeller to render
+                    setshowShopManagement(true);
                 } else {
+                    console.log('Seller has shops, showing shops list');
                     // Set the shops owned by this specific seller
                     setShops(userShops);
                     setshowShopManagement(true);
                     setIsAddingShop(false);
                 }
             } catch (err) {
-                // setError(prevError => ({ ...prevError, databaseResponseError: "Error al obtener los comercios del usuario" }));
                 console.warn('-> handleLoginResponse() - El usuario no tiene comercios:', err);
                 setIsAddingShop(true);
-                setshowShopManagement(false);
+                setshowShopManagement(true); // Ensure this is true to show ShopsListBySeller
             }
-        }else {
+        } else {
+            console.log('User is not a seller, showing business selector');
             // For other user types (user, provider), show business selector
             setshowShopManagement(true);
         }
@@ -218,7 +230,7 @@ export const LoginRegisterFunctions = () => {
         if (loginResponse.data.error) {
           setError(prevError => ({ ...prevError, userError: "Error al iniciar sesión" }));
           return;
-        }else {
+        } else {
           setSuccess(prevSuccess => ({ ...prevSuccess, loginSuccess: "Sesión iniciada" }));
         }
 
@@ -231,6 +243,63 @@ export const LoginRegisterFunctions = () => {
           databaseResponseError: "Error al iniciar sesión" 
         }));
       }
+  };
+
+  const handleRegistrationResponse = async (response) => {
+    try {
+      if (!response.data) {
+        setError(prevError => ({ ...prevError, databaseResponseError: "No se recibió respuesta del servidor" }));
+        throw new Error('No se recibió respuesta del servidor');
+      }
+      if (response.data.error) {
+        setError(prevError => ({ ...prevError, databaseResponseError: "Error en el registro" }));
+        throw new Error(response.data.error);
+      }
+
+      const userData = response.data.data;
+      
+      if (!userData || !userData.id_user) {
+        setError(prevError => ({ ...prevError, userError: "Datos de usuario incompletos" }));
+        throw new Error('Error en el registro: datos de usuario incompletos');
+      }
+
+      // Set user type first to ensure it's available for component rendering decisions
+      setUserType(userData.type_user);
+      console.log('Registration success. Setting user type to:', userData.type_user);
+      
+      const normalizedUserData = {
+        id_user: userData.id_user,
+        name_user: userData.name_user,
+        type_user: userData.type_user,
+        location_user: userData.location_user,
+        category_user: userData.category_user
+      };
+
+      // Login the user - ensure we await this to complete before proceeding
+      await login(normalizedUserData);
+      
+      // Store user type to avoid race conditions
+      const userType = userData.type_user;
+      
+      // Adjust routing logic based on the confirmed user type
+      if (userType === 'seller') {
+        console.log('User registered as seller, setting up seller view');
+        // For sellers, we want to show ShopsListBySeller and allow adding shops
+        setshowShopManagement(true);
+        setIsAddingShop(true);
+      } else if (userType === 'user') {
+        console.log('User registered as regular user, setting up user view');
+        // For regular users, show UserManagement for shop type selection
+        setshowShopManagement(true);
+        setSelectedShopType(null);
+      } else {
+        console.log('User registered as other type, setting up general view');
+        // For other types, show general screen
+        setshowShopManagement(true);
+      }
+    } catch (err) {
+      console.error('-> handleRegistrationResponse() - Error = ', err);
+    }
   };
 
   const handleRegistration = async (cleanedUsername, password, type_user, userLocation) => {
@@ -261,38 +330,6 @@ export const LoginRegisterFunctions = () => {
       console.error('-> LoginRegisterFunctions.jsx - handleRegistration() - Error = ', err);
       setError(prevError => ({ ...prevError, userError: "Error al registrar el usuario" }));
     }     
-  };
-
-  const handleRegistrationResponse = async (response) => {
-    try {
-      if (!response.data) {
-          setError(prevError => ({ ...prevError, databaseResponseError: "No se recibió respuesta del servidor" }));
-          throw new Error('No se recibió respuesta del servidor');
-      }
-      if (response.data.error) {
-          setError(prevError => ({ ...prevError, databaseResponseError: "Error en el registro" }));
-          throw new Error(response.data.error);
-      }
-
-      const userData = response.data.data;
-      
-      if (!userData || !userData.id_user) {
-          setError(prevError => ({ ...prevError, userError: "Datos de usuario incompletos" }));
-          throw new Error('Error en el registro: datos de usuario incompletos');
-      }
-      const normalizedUserData = {
-          id_user: userData.id_user,
-          name_user: userData.name_user,
-          // password: password,
-          type_user: userData.type_user,
-      };
-
-      login(normalizedUserData);
-      
-      setshowShopManagement(true);
-    } catch (err) {
-      console.error('-> handleRegistrationResponse() - Error = ', err);
-    }
   };
     
   const handleFormSubmit = async (e) => {

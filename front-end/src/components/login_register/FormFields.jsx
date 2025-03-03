@@ -28,7 +28,7 @@ export const FormFields = () => {
           value={name_user}
           onChange={handleUsernameChange}
           className={usernameError ? styles.inputError : styles.nameInput}
-          placeholder={type_user === 'seller' ? 'Nombre de vendedora:' : 'Nombre de Usuaria:'}
+          placeholder={type_user === 'seller' ? 'Nombre de vendedor:' : 'Nombre de usuario:'}
           required
         />
 
@@ -39,9 +39,9 @@ export const FormFields = () => {
               onChange={handleUserTypeChange}
               required
             >
-              <option value="" disabled>Tipo de usuaria</option>
-              <option value="user">Usuaria</option>
-              <option value="seller">vendedora</option>
+              <option value="" disabled>Tipo de usuario</option>
+              <option value="user">usuario</option>
+              <option value="seller">vendedor</option>
               <option value="provider" disabled>Productora</option>
             </select>
           
@@ -51,7 +51,7 @@ export const FormFields = () => {
               value={location_user}
               onChange={handleUserLocationChange}
               className={userlocationError ? styles.inputError : ''}
-              placeholder={type_user === 'seller' ? 'Dirección de vendedora:' : 'Dirección de Usuaria:'}
+              placeholder={type_user === 'seller' ? 'Dirección de vendedor:' : 'Dirección de usuario:'}
               required 
             />
           </>
