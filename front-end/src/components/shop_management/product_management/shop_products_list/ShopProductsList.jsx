@@ -1,8 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
-import ShopProductListFunctions from './ShopProductsListFunctions.jsx';
+import ShopProductsListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
-import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus } from 'lucide-react';
+import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
@@ -10,8 +10,9 @@ import ProductCard from '../product_card/ProductCard.jsx';
 import { useSpring, animated } from '@react-spring/web';
 import ShopCard from '../../shop_card/ShopCard.jsx'; 
 import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
+import ProductManagementFunctions from '../ProductManagementFunctions.jsx';
 
-const ShopProductList = () => {
+const ShopProductsList = () => {
   const {
     currentUser,
     products,
@@ -29,11 +30,37 @@ const ShopProductList = () => {
     setSelectedProductForImageUpload,
     isModalOpen, setIsModalOpen,
     setModalMessage,
-    productListKey // Add this new key from context
+    productListKey,
+    setShowProductManagement,
+    setshowShopManagement
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
   const [showProductCard, setShowProductCard] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+
+  // Get functions from both hook files
+  const {
+    filterProducts,
+    deleteProduct,
+    bulkDeleteProducts,
+    handleSelectProduct,
+    handleDeleteProduct,
+    handleBulkDelete,
+    handleAddProduct,
+    handleUpdateProduct,
+    getImageUrl,
+    handleProductImageDoubleClick,
+  } = ShopProductsListFunctions();
+
+  const { fetchProductsByShop } = ProductManagementFunctions();
+
+  // Function to handle going back to shops list
+  const handleBack = () => {
+    console.log('Going back to shops list');
+    setShowProductManagement(false);
+  };
 
   // Animation for main content
   const mainContentAnimation = useSpring({
@@ -45,20 +72,6 @@ const ShopProductList = () => {
     config: { tension: 280, friction: 20 },
   });
 
-  const {
-    filterProducts,
-    fetchProductsByShop,
-    deleteProduct,
-    bulkDeleteProducts,
-    handleSelectProduct,
-    handleDeleteProduct,
-    handleBulkDelete,
-    handleAddProduct,
-    handleUpdateProduct,
-    getImageUrl,
-    handleProductImageDoubleClick,
-  } = ShopProductListFunctions();
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setContentVisible(true);
@@ -68,20 +81,40 @@ const ShopProductList = () => {
 
   // Fetch products when shop changes or when productListKey changes
   useEffect(() => {
+    console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
     if (selectedShop?.id_shop) {
       fetchProductsByShop();
     }
-  }, [selectedShop, productListKey]); // Add productListKey as a dependency
+  }, [selectedShop, productListKey]); 
 
-  // Filter products when products or filters change
+  // Update displayed products based on search and filters
   useEffect(() => {
-    if (Array.isArray(products) && products.length > 0) {
-      const filtered = filterProducts(products, filters);
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts([]);
+    if (!Array.isArray(products)) {
+      console.log('Products is not an array:', products);
+      setDisplayedProducts([]);
+      return;
     }
-  }, [products, filters]);
+
+    console.log(`Filtering ${products.length} products with filters:`, filters);
+    
+    // First apply filters
+    let filtered = filterProducts(products, filters);
+    
+    // Then apply search term if provided
+    if (searchTerm && searchTerm.trim() !== '') {
+      const term = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(product => 
+        product.name_product?.toLowerCase().includes(term) || 
+        product.type_product?.toLowerCase().includes(term) ||
+        product.subtype_product?.toLowerCase().includes(term) ||
+        product.info_product?.toLowerCase().includes(term)
+      );
+    }
+    
+    console.log(`Filtered to ${filtered.length} products`);
+    setFilteredProducts(filtered);
+    setDisplayedProducts(filtered);
+  }, [products, filters, searchTerm]);
 
   // Handle deletion confirmation
   useEffect(() => {
@@ -163,6 +196,24 @@ const ShopProductList = () => {
     });
   };
 
+  // If there is no selected shop, show a message
+  if (!selectedShop) {
+    console.log('No shop selected in ShopProductsList');
+    return (
+      <div className={styles.noShopSelected || styles.noProducts}>
+        <h2>No hay comercio seleccionado</h2>
+        <button 
+          className={styles.actionButton}
+          onClick={() => {
+            setShowProductManagement(false);
+          }}
+        >
+          Volver a la lista de comercios
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
         <ConfirmationModal 
@@ -226,18 +277,42 @@ const ShopProductList = () => {
                   <Pencil size={17} />
                   <span className={styles.buttonText}>Actualizar Productos</span>
                 </button>
+
+                <button
+                  onClick={handleBack}
+                  className={`${styles.actionButton} ${styles.backButton || ''}`}
+                  title="Volver a la lista de comercios"
+                >
+                  <ArrowLeft size={17} />
+                  <span className={styles.buttonText}>Volver</span>
+                </button>
               </div>
+            </div>
+            
+            {/* Search input */}
+            <div className={styles.searchContainer || ''}>
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchInput || ''}
+              />
             </div>
         </animated.div>
 
         <FiltersForProducts />
         
-        {filteredProducts.length === 0 ? (
-          <p className={styles.noProducts}>No hay productos disponibles</p>
+        {displayedProducts.length === 0 ? (
+          <p className={styles.noProducts}>
+            {products.length === 0 
+              ? "No hay productos disponibles. Añade un producto para comenzar."
+              : "No se encontraron productos que coincidan con tu búsqueda."}
+          </p>
         ) : (       
           <animated.div style={mainContentAnimation} className={styles.tableContainer}>
             <p className={styles.productsCount}>
-                Productos mostrados: {filteredProducts.length}
+                Productos mostrados: {displayedProducts.length}
                 {selectedProducts.size > 0 && ` | Seleccionados: ${selectedProducts.size}`}
             </p>
             <table className={styles.table}>
@@ -261,7 +336,7 @@ const ShopProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
+                {displayedProducts.map((product) => (
                   <tr
                     key={product.id_product}
                     className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
@@ -335,4 +410,4 @@ const ShopProductList = () => {
   );
 };
 
-export default ShopProductList;
+export default ShopProductsList;

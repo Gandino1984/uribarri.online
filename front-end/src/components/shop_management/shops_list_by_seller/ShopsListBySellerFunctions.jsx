@@ -21,6 +21,55 @@ export const ShopsListBySellerFunctions = () => {
   const [shopCount, setShopCount] = useState(0);
   const [shopLimit, setShopLimit] = useState(1); // Valor por defecto para usuarios no sponsor
 
+  // New function to fetch shops for the current user
+  const fetchUserShops = async () => {
+    try {
+      if (!currentUser?.id_user) {
+        console.error('No hay usuarios activos');
+        setShops([]);
+        return;
+      }
+
+      console.log('Fetching shops for user ID:', currentUser.id_user);
+
+      // Try with /shop/by-user-id endpoint
+      const response = await axiosInstance.post('/shop/by-user-id', {
+        id_user: currentUser.id_user
+      });
+
+      console.log('Shop API response:', response.data);
+
+      if (response.data.error) {
+        console.error('Error fetching shops:', response.data.error);
+        return;
+      }
+
+      const userShops = response.data.data || [];
+      console.log('Fetched shops:', userShops);
+      
+      if (Array.isArray(userShops) && userShops.length > 0) {
+        setShops(userShops);
+      } else {
+        // If first endpoint returns empty, try with /shop/user
+        try {
+          const altResponse = await axiosInstance.post('/shop/user', {
+            id_user: currentUser.id_user
+          });
+          
+          if (!altResponse.data.error) {
+            const altShops = altResponse.data.data || [];
+            console.log('Fetched alternative shops:', altShops);
+            setShops(altShops);
+          }
+        } catch (err) {
+          console.warn('Error with alternative endpoint:', err);
+        }
+      }
+    } catch (err) {
+      console.warn('Fetching shops error:', err);
+    }
+  };
+
   // Determinar el límite de tiendas basado en la categoría del usuario
   useEffect(() => {
     if (currentUser?.category_user) {
@@ -38,9 +87,18 @@ export const ShopsListBySellerFunctions = () => {
   }, [shops]);
 
   const handleSelectShop = (shop) => {
+    console.log('ShopsListBySellerFunctions - handleSelectShop called with shop:', shop);
+    
+    // First set the selected shop
     setSelectedShop(shop);
+    
+    // Then enable product management mode
     setShowProductManagement(true);
+    
+    // Make sure shop creation form is hidden
     setShowShopCreationForm(false);
+    
+    console.log('Navigation states updated: showProductManagement=true, showShopCreationForm=false');
   };
 
   const handleAddShop = () => {
@@ -60,6 +118,7 @@ export const ShopsListBySellerFunctions = () => {
   const handleUpdateShop = (shop) => {
     setSelectedShop(shop); // Set the selected shop to be updated
     setShowShopCreationForm(true); // Show the ShopCreationForm for updating
+    setShowProductManagement(false); // Ensure product management is hidden
   };
 
   // Keep track of the shop to be deleted
@@ -97,6 +156,7 @@ export const ShopsListBySellerFunctions = () => {
 
 
   return {
+    fetchUserShops, // Export the new function
     handleSelectShop,
     handleDeleteShop,
     handleAddShop,

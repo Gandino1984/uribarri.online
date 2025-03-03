@@ -4,7 +4,6 @@ import { useTransition, animated } from '@react-spring/web';
 import AppContext from '../../app_context/AppContext.js';
 import UserManagement from "../user_management/UserManagement.jsx";
 import ShopManagement from "../shop_management/ShopManagement.jsx";
-import ShopsListBySeller from "../shop_management/shops_list_by_seller/ShopsListBySeller.jsx";
 import ShopsByType from "../user_management/shops_by_type/ShopsByType.jsx";
 
 import { LoginRegisterFunctions } from './LoginRegisterFunctions.jsx';
@@ -43,9 +42,9 @@ const LoginRegisterForm = () => {
     console.log('Determined userType for routing:', userType);
     
     if (userType === 'seller') {
-      console.log('Rendering ShopsListBySeller for seller');
-      // Los vendedores ven la lista de sus tiendas
-      return <ShopsListBySeller />;
+      console.log('Rendering ShopManagement for seller');
+      // Los vendedores ven ShopManagement, que a su vez renderizará ShopsListBySeller
+      return <ShopManagement />;
     } else if (userType === 'user') {
       console.log('Rendering UserManagement for user');
       // Los usuarios regulares ven UserManagement para seleccionar tipo de comercio

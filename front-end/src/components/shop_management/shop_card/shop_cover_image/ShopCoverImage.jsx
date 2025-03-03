@@ -105,7 +105,7 @@ const ShopCoverImage = ({ id_shop }) => {
         ) : (
           <div className={styles.noImage}>
             <span className={styles.noImageText}>
-              {isSelected ? 'Click to add cover image' : 'No cover image available'}
+              {isSelected ? 'Imagen de portada de comercio' : 'No hay imagen'}
             </span>
           </div>
         )}

@@ -15,6 +15,7 @@ const ShopsListBySeller = () => {
   } = useContext(AppContext);
 
   const { 
+    fetchUserShops, // Use the new function
     handleSelectShop,
     handleDeleteShop,
     handleAddShop,
@@ -39,6 +40,12 @@ const ShopsListBySeller = () => {
       friction: 20
     }
   });
+
+  // Add useEffect to fetch shops when component mounts
+  useEffect(() => {
+    console.log('ShopsListBySeller component mounted - fetching shops');
+    fetchUserShops();
+  }, [currentUser]); // Re-fetch when currentUser changes
 
   useEffect(() => {
     console.log('-> ShopsListBySeller.jsx - currentUser = ', currentUser);
@@ -100,7 +107,7 @@ const ShopsListBySeller = () => {
           {renderShopLimitInfo()}
         </div>
 
-        {shops.length === 0 ? (
+        {(!shops || shops.length === 0) ? (
           <div className={styles.messageNoShops}>
             No tienes comercios registrados. ¡Agrega uno para comenzar!
           </div>
