@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import ShopsListBySeller from './shops_list_by_seller/ShopsListBySeller.jsx';
 import ShopCreationForm from './shop_creation_form/ShopCreationForm.jsx';
@@ -18,27 +18,25 @@ const ShopManagement = () => {
     selectedShop
   } = useContext(AppContext);
   
-  // Use ShopManagementFunctions to get fetchUserShops
-  const { fetchUserShops } = ShopManagementFunctions ? ShopManagementFunctions() : { fetchUserShops: null };
-
-  // UPDATE: Optimizar para reducir llamadas innecesarias
-  useEffect(() => {
-    // Solo hacer log de eventos clave, no cada renderizado
-    console.log('ShopManagement navigation state changed', {
-      showShopCreationForm,
-      showProductManagement,
-      selectedShopId: selectedShop?.id_shop
-    });
-  }, [showShopCreationForm, showProductManagement, selectedShop?.id_shop]);
+  // UPDATE: Usar un ref para rastrear si ya hemos buscado las tiendas
+  const hasInitiallyFetchedShops = useRef(false);
   
-  // UPDATE: Solo ejecutar la búsqueda de tiendas si no hay tiendas cargadas
+  // Use ShopManagementFunctions to get fetchUserShops, but don't destructure it
+  // to avoid recreation on each render
+  const shopManagementFunctions = ShopManagementFunctions ? ShopManagementFunctions() : {};
+
+  // UPDATE: Un solo efecto para el fetch inicial, usando hasInitiallyFetchedShops.current para evitar fetch redundantes
   useEffect(() => {
-    if (fetchUserShops && currentUser?.id_user && (!shops || shops.length === 0)) {
-      console.log('Initial shop fetch for user:', currentUser.id_user);
-      fetchUserShops();
+    if (
+      !hasInitiallyFetchedShops.current && 
+      shopManagementFunctions.fetchUserShops && 
+      currentUser?.id_user
+    ) {
+      console.log('Initial fetch of shops (once only) for user:', currentUser.id_user);
+      shopManagementFunctions.fetchUserShops();
+      hasInitiallyFetchedShops.current = true;
     }
-    // Eliminar shops de la dependencia para evitar llamadas repetidas
-  }, [currentUser?.id_user, fetchUserShops]);
+  }, [currentUser?.id_user, shopManagementFunctions]);
 
   // Check if the user is a seller
   if (!currentUser || currentUser.type_user !== 'seller') {
@@ -59,7 +57,7 @@ const ShopManagement = () => {
   }
 
   // Always show the seller's shops list by default, even if empty
-  return <ShopsListBySeller />;
+  return <ShopsListBySeller fetchUserShops={false} />;
 };
 
 export default ShopManagement;
