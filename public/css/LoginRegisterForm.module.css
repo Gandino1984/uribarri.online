@@ -8,6 +8,9 @@
   padding: 1rem 1rem;
   transform-origin: center center;
   will-change: transform, opacity;
+  /* UPDATE: Asegurando que el contenido comience debajo del top bar */
+  padding-top: 70px;
+  margin-top: 0;
 }
 
 .header {
@@ -160,6 +163,8 @@
   .container {
     padding: 0 2rem;
     justify-content: center;
+    /* UPDATE: Ajustando espacio superior para pantallas medianas */
+    padding-top: 80px;
   }
 
   .formContent {
@@ -196,6 +201,8 @@
 @media screen and (min-width: 768px) {
   .container {
     justify-content: center;
+    /* UPDATE: Ajustando espacio superior para tablets */
+    padding-top: 90px;
   }
 
   .formActions {
@@ -230,6 +237,8 @@
   .container {
     min-height: 100vh;
     justify-content: center;
+    /* UPDATE: Ajustando espacio superior para escritorio */
+    padding-top: 100px;
   }
 
   .formContainer {

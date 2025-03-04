@@ -28,9 +28,9 @@ const FiltersForProducts = () => {
 
   // Animation for the entire filters container
   const containerAnimation = useSpring({
-    from: { transform: 'translateY(50px)', opacity: 0 },
+    from: { transform: 'translateY(30px)', opacity: 0 },
     to: { 
-      transform: isVisible ? 'translateY(0px)' : 'translateY(50px)',
+      transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
       opacity: isVisible ? 1 : 0 
     },
     config: config.gentle,
@@ -40,98 +40,103 @@ const FiltersForProducts = () => {
   return (
     <animated.div style={containerAnimation} className={styles.filtersContainer}>
       <div className={styles.filterControls}>
-          {/* Reset Filters Button */}
-          <button
-          onClick={handleResetFilters}
-          className={styles.resetButton}
-          type="button"
-        >
-          Borrar filtros
-        </button>
-        {/* Search Input */}
-        <div className={`${styles.filterWrapper} ${styles.searchWrapper}`}>
-          <div className={styles.searchInputContainer}>
-            <input
-              type="text"
-              placeholder="Buscar en todos los campos..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className={styles.searchInput}
-            />
-            <Search size={18} className={styles.searchIcon} />
+        {/* UPDATE: Reorganized top row with search and reset button */}
+        <div className={styles.topFilterRow}>
+          <div className={`${styles.filterWrapper} ${styles.searchWrapper}`}>
+            <div className={styles.searchInputContainer}>
+              <input
+                type="text"
+                placeholder="Buscar en todos los campos..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className={styles.searchInput}
+              />
+              <Search size={18} className={styles.searchIcon} />
+            </div>
           </div>
-        </div>
 
-        {/* Season Filter */}
-        <div className={styles.filterWrapper}>
-          <select
-            value={filters.temporada || ""}
-            onChange={(e) => handleFilterChange('temporada', e.target.value)}
-            className={`${styles.filterSelect} ${filters.temporada ? styles.hasValue : ''}`}
+          <button
+            onClick={handleResetFilters}
+            className={styles.resetButton}
+            type="button"
           >
-            <option value="">Temporada</option>
-            {filterOptions.temporada.options.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            Borrar filtros
+          </button>
         </div>
 
-        {/* Type Filter */}
-        <div className={styles.filterWrapper}>
-          <select
-            value={filters.tipo || ""}
-            onChange={(e) => handleFilterChange('tipo', e.target.value)}
-            className={styles.filterSelect}
-          >
-            <option value="">Tipo de producto</option>
-            {Object.keys(productTypesAndSubtypes).map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Subtype Filter */}
-        {filters.tipo && (
+        {/* UPDATE: Reorganized select filters into a row */}
+        <div className={styles.selectFiltersRow}>
+          {/* Season Filter */}
           <div className={styles.filterWrapper}>
             <select
-              value={filters.subtipo || ""}
-              onChange={(e) => handleFilterChange('subtipo', e.target.value)}
-              className={styles.filterSelect}
+              value={filters.temporada || ""}
+              onChange={(e) => handleFilterChange('temporada', e.target.value)}
+              className={`${styles.filterSelect} ${filters.temporada ? styles.hasValue : ''}`}
             >
-              <option value="">Subtipo</option>
-              {getAvailableSubtypes().map((subtype) => (
-                <option key={subtype} value={subtype}>
-                  {subtype}
+              <option value="">Temporada</option>
+              {filterOptions.temporada.options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
                 </option>
               ))}
             </select>
           </div>
-        )}
 
-        {/* Rating Filter */}
-        <div className={styles.filterWrapper}>
-          <select
-            value={filters.calificacion || ""}
-            onChange={(e) => handleFilterChange('calificacion', e.target.value)}
-            className={styles.filterSelect}
-          >
-            <option value="">Calificación</option>
-            {filterOptions.calificacion.options.map((option) => (
-              <option key={option} value={option}>
-                {option} ⭐ o más
-              </option>
-            ))}
-          </select>
+          {/* Type Filter */}
+          <div className={styles.filterWrapper}>
+            <select
+              value={filters.tipo || ""}
+              onChange={(e) => handleFilterChange('tipo', e.target.value)}
+              className={styles.filterSelect}
+            >
+              <option value="">Tipo de producto</option>
+              {Object.keys(productTypesAndSubtypes).map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Subtype Filter */}
+          {filters.tipo && (
+            <div className={styles.filterWrapper}>
+              <select
+                value={filters.subtipo || ""}
+                onChange={(e) => handleFilterChange('subtipo', e.target.value)}
+                className={styles.filterSelect}
+              >
+                <option value="">Subtipo</option>
+                {getAvailableSubtypes().map((subtype) => (
+                  <option key={subtype} value={subtype}>
+                    {subtype}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Rating Filter */}
+          <div className={styles.filterWrapper}>
+            <select
+              value={filters.calificacion || ""}
+              onChange={(e) => handleFilterChange('calificacion', e.target.value)}
+              className={styles.filterSelect}
+            >
+              <option value="">Calificación</option>
+              {filterOptions.calificacion.options.map((option) => (
+                <option key={option} value={option}>
+                  {option} ⭐ o más
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Checkbox Filters Row */}
+        {/* UPDATE: Checkbox Filters Row with improved structure */}
         <div className={styles.checkboxFiltersRow}>
           {/* Discount Checkbox */}
-          <div className={styles.filterWrapper}>
+          <div className={styles.checkboxWrapper}>
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
@@ -144,7 +149,7 @@ const FiltersForProducts = () => {
           </div>
 
           {/* Surplus Checkbox */}
-          <div className={styles.filterWrapper}>
+          <div className={styles.checkboxWrapper}>
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
@@ -158,7 +163,7 @@ const FiltersForProducts = () => {
           </div>
 
           {/* Near Expiration Checkbox */}
-          <div className={styles.filterWrapper}>
+          <div className={styles.checkboxWrapper}>
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
@@ -172,7 +177,7 @@ const FiltersForProducts = () => {
           </div>
         </div>
 
-        {/* Expiration Date Range */}
+        {/* Expiration Date Range with improved structure */}
         <div className={styles.dateRangeContainer}>
           <div className={styles.dateLabel}>
             <Calendar size={14} />
@@ -198,8 +203,6 @@ const FiltersForProducts = () => {
             />
           </div>
         </div>
-
-      
       </div>
     </animated.div>
   );

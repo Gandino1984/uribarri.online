@@ -1,9 +1,47 @@
+/* App.module.css - Mobile-first approach */
+
 .mainContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    width: 100vw;
-    background-color: var(--superlight-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background-color: var(--superlight-gray);
+  position: relative;
+  padding: 0;
+  /* UPDATE: Aseguramos que todos los componentes tengan suficiente espacio desde el top 
+     para no quedar debajo del TopBar con posición fija */
+  padding-top: var(--topbar-height);
+}
+
+/* UPDATE: Mejoras para dispositivos móviles */
+@media (max-width: 640px) {
+  .mainContainer {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en móviles */
+    padding-top: var(--topbar-height);
   }
-  
+}
+
+/* UPDATE: Mejoras para tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .mainContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en tablets */
+    padding-top: var(--topbar-height);
+  }
+}
+
+/* UPDATE: Mejoras para dispositivos de escritorio */
+@media (min-width: 1025px) {
+  .mainContainer {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en desktop */
+    padding-top: var(--topbar-height);
+  }
+}

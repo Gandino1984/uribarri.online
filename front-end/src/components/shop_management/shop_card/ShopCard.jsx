@@ -59,9 +59,9 @@ const ShopCard = ({ shop }) => {
             <button 
               className={styles.minimizeButton} 
               onClick={toggleMinimized}
-              aria-label="Minimizar tarjeta"
+              title="Minimizar tarjeta"
             >
-              <Minimize2 size={18} />
+              <Minimize2 size={16} />
             </button>
           </div>
           <ShopCoverImage id_shop={shop.id_shop} />

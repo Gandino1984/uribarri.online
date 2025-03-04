@@ -3,5 +3,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 5rem;
+    /* UPDATE: Ajustando el margen superior para evitar solapamiento con el top bar */
+    margin-top: 70px;
+}
+
+/* UPDATE: Añadiendo media queries para diferentes tamaños de pantalla */
+@media screen and (min-width: 768px) {
+    .container {
+        margin-top: 90px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .container {
+        margin-top: 100px;
+    }
 }
