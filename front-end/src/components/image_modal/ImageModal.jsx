@@ -72,7 +72,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, altText }) => {
         <button
           className={styles.closeButton}
           onClick={onClose}
-          aria-label="Close modal"
+          title="Cerrar"
         >
           ✕
         </button>

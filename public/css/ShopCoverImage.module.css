@@ -1,12 +1,11 @@
-/* public/css/ShopCoverImage.module.css */
-/* Mobile-first approach */
+/* ShopCoverImage.module.css - Mobile-first approach */
 
 .container {
   position: relative;
   width: 100%;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
-  /* Use aspect ratio instead of fixed height for better responsiveness */
+  /* UPDATE: Improved aspect ratio handling for different devices */
   aspect-ratio: 16/9;
 }
 
@@ -196,8 +195,10 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
-/* Responsive styles using a mobile-first approach */
+/* UPDATE: Improved responsive styles using a mobile-first approach */
 /* Default is mobile, then we enhance for larger screens */
+
+/* Small devices (phones, up to 639px) - Default mobile styling already defined above */
 
 /* Small tablets (640px and up) */
 @media (min-width: 640px) {
@@ -207,6 +208,10 @@
   
   .uploadText {
     font-size: 14px;
+  }
+
+  .uploadButtonContainer {
+    padding: 14px;
   }
 }
 
@@ -241,7 +246,7 @@
   }
 }
 
-/* Portrait orientation override for tablets and mobiles */
+/* UPDATE: Better portrait orientation override for tablets and mobiles */
 @media (orientation: portrait) and (max-width: 1023px) {
   .container {
     aspect-ratio: 4/3;

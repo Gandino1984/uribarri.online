@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 
 const FiltersForProductsFunctions = () => {
@@ -13,6 +13,9 @@ const FiltersForProductsFunctions = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [expirationDateRange, setExpirationDateRange] = useState({ start: '', end: '' });
+  
+  // UPDATE: Usando useRef para evitar demasiadas actualizaciones
+  const [filterUpdateTimeout, setFilterUpdateTimeout] = useState(null);
 
   // Set visibility after mount
   useEffect(() => {
@@ -22,14 +25,28 @@ const FiltersForProductsFunctions = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle search term changes and filter products
+  // UPDATE: Aplicar los filtros con un pequeño debounce para mejor rendimiento
   useEffect(() => {
-    // Apply all filters including search term
-    applyFilters();
+    if (filterUpdateTimeout) {
+      clearTimeout(filterUpdateTimeout);
+    }
+    
+    // Debounce de 300ms para evitar demasiadas actualizaciones durante cambios rápidos
+    const newTimeout = setTimeout(() => {
+      applyFilters();
+    }, 300);
+    
+    setFilterUpdateTimeout(newTimeout);
+    
+    return () => {
+      if (filterUpdateTimeout) {
+        clearTimeout(filterUpdateTimeout);
+      }
+    };
   }, [searchTerm, filters, products, expirationDateRange]);
 
   // Handle main filter changes
-  const handleFilterChange = (filterName, option) => {
+  const handleFilterChange = useCallback((filterName, option) => {
     const normalizedOption = option === "" ? null : option;
     
     setFilters(prevFilters => {
@@ -44,42 +61,42 @@ const FiltersForProductsFunctions = () => {
 
       return newFilters;
     });
-  };
+  }, [setFilters]);
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = useCallback((e) => {
     setSearchTerm(e.target.value);
-  };
+  }, []);
 
-  const handleOnSaleChange = (e) => {
+  const handleOnSaleChange = useCallback((e) => {
     setFilters(prevFilters => ({
       ...prevFilters,
       oferta: e.target.checked ? 'Sí' : null
     }));
-  };
+  }, [setFilters]);
 
-  const handleExcessChange = (e) => {
+  const handleExcessChange = useCallback((e) => {
     setFilters(prevFilters => ({
       ...prevFilters,
       excedente: e.target.checked ? 'Sí' : null
     }));
-  };
+  }, [setFilters]);
 
-  const handleExpirationChange = (e) => {
+  const handleExpirationChange = useCallback((e) => {
     const { name, value } = e.target;
     setExpirationDateRange(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleNearExpirationChange = (e) => {
+  const handleNearExpirationChange = useCallback((e) => {
     setFilters(prevFilters => ({
       ...prevFilters,
       proxima_caducidad: e.target.checked ? 'Sí' : null
     }));
-  };
+  }, [setFilters]);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setFilters({
       temporada: null,
       tipo: null,
@@ -91,17 +108,17 @@ const FiltersForProductsFunctions = () => {
     });
     setSearchTerm('');
     setExpirationDateRange({ start: '', end: '' });
-  };
+  }, [setFilters]);
 
-  const getAvailableSubtypes = () => {
+  const getAvailableSubtypes = useCallback(() => {
     if (!filters.tipo || !productTypesAndSubtypes[filters.tipo]) {
       return [];
     }
     return productTypesAndSubtypes[filters.tipo];
-  };
+  }, [filters.tipo, productTypesAndSubtypes]);
 
   // Check if a product is near expiration (within 7 days)
-  const isNearExpiration = (expirationDate) => {
+  const isNearExpiration = useCallback((expirationDate) => {
     if (!expirationDate) return false;
     
     const today = new Date();
@@ -110,10 +127,10 @@ const FiltersForProductsFunctions = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return diffDays >= 0 && diffDays <= 7;
-  };
+  }, []);
 
   // Function to apply all filters including search term
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     if (!products || products.length === 0) {
       setFilteredProducts([]);
       return;
@@ -205,7 +222,7 @@ const FiltersForProductsFunctions = () => {
     }
 
     setFilteredProducts(filtered);
-  };
+  }, [filters, products, searchTerm, expirationDateRange, isNearExpiration, setFilteredProducts]);
 
   return {
     isVisible,

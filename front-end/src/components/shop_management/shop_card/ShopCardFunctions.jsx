@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useCallback, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import { validateImageFile } from '../../../../../front-end/src/utils/image/imageUploadService.js';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
@@ -11,14 +11,23 @@ const ShopCardFunctions = () => {
     setShops,
     shops,
   } = useContext(AppContext);
+  
+  // UPDATE: Añadir un ref para evitar múltiples subidas simultáneas
+  const uploadInProgress = useRef(false);
 
-  const handleShopImageUpload = async (file) => {
+  const handleShopImageUpload = useCallback(async (file) => {
     if (!file) {
       throw new Error("No file provided");
     }
 
     if (!selectedShop?.id_shop) {
       throw new Error("No shop selected");
+    }
+    
+    // UPDATE: Evitar múltiples cargas simultáneas
+    if (uploadInProgress.current) {
+      console.log('Upload already in progress, ignoring new request');
+      return;
     }
 
     try {
@@ -28,6 +37,7 @@ const ShopCardFunctions = () => {
       formData.append('shopImage', file);
 
       setUploading(true);
+      uploadInProgress.current = true;
 
       const response = await axiosInstance.post(
         '/shop/upload-image',
@@ -61,10 +71,11 @@ const ShopCardFunctions = () => {
       throw err;
     } finally {
       setUploading(false);
+      uploadInProgress.current = false;
     }
-  };
+  }, [selectedShop, shops, setShops, setUploading, setError]);
 
-  const getShopImageUrl = (imagePath) => {
+  const getShopImageUrl = useCallback((imagePath) => {
     if (!imagePath) {
       console.warn('No image path provided');
       return null;
@@ -75,12 +86,11 @@ const ShopCardFunctions = () => {
     const imageUrl = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1");
 
     return imageUrl;
-  };
+  }, []);
 
   return {
     getShopImageUrl,
     handleShopImageUpload
-   
   };
 };
 

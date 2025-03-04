@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import AppContext from '../../../app_context/AppContext.js';
 
@@ -13,7 +13,7 @@ export const ShopsByTypeFunctions = () => {
   } = useContext(AppContext);
 
   const handleShopSelect = (shop) => {
-      setSelectedShop(shop);
+    setSelectedShop(shop);
   };
 
   const handleBack = () => {
@@ -23,16 +23,18 @@ export const ShopsByTypeFunctions = () => {
   
   const fetchShopsByType = async () => {
     if (!shopType) {
-      // warning card
+      console.log('-> ShopsByTypeFunctions.jsx - fetchShopsByType() - No hay tipo de tienda seleccionado');
       setShops([]);
       return;
     }
 
     console.log('-> ShopsByTypeFunctions.jsx - fetchShopsByType() - Buscando comercios del tipo = ', shopType);
+    setLoading(true);
     
     try {
-
-      setError({
+      // Limpiar errores previos
+      setError(prevError => ({
+        ...prevError,
         userError: '',
         passwordError: '',
         passwordRepeatError: '',
@@ -40,7 +42,8 @@ export const ShopsByTypeFunctions = () => {
         userlocationError: '',
         userTypeError: '',
         databaseResponseError: '',
-      });
+        shopError: ''
+      }));
 
       const response = await axiosInstance.post('/shop/by-type', {
         type_shop: shopType
@@ -74,7 +77,10 @@ export const ShopsByTypeFunctions = () => {
     } catch (err) {
       console.error('-> ShopsByTypeFunctions.jsx - fetchShopsByType() - Error = ', err);
       setShops([]);
-    } 
+      setError(prevError => ({ ...prevError, shopError: "Error al cargar las tiendas" }));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {

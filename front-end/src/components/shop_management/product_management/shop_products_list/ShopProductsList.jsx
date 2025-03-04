@@ -1,8 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
-import ShopProductListFunctions from './ShopProductsListFunctions.jsx';
+import ShopProductsListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
-import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus } from 'lucide-react';
+import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft, Search } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
@@ -10,8 +10,9 @@ import ProductCard from '../product_card/ProductCard.jsx';
 import { useSpring, animated } from '@react-spring/web';
 import ShopCard from '../../shop_card/ShopCard.jsx'; 
 import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
+import ProductManagementFunctions from '../ProductManagementFunctions.jsx';
 
-const ShopProductList = () => {
+const ShopProductsList = () => {
   const {
     currentUser,
     products,
@@ -29,25 +30,19 @@ const ShopProductList = () => {
     setSelectedProductForImageUpload,
     isModalOpen, setIsModalOpen,
     setModalMessage,
-    productListKey // Add this new key from context
+    productListKey,
+    setShowProductManagement,
+    setshowShopManagement
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
   const [showProductCard, setShowProductCard] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [displayedProducts, setDisplayedProducts] = useState([]);
 
-  // Animation for main content
-  const mainContentAnimation = useSpring({
-    from: { transform: 'translateY(100px)', opacity: 0 },
-    to: { 
-      transform: contentVisible ? 'translateY(0px)' : 'translateY(100px)', 
-      opacity: contentVisible ? 1 : 0 
-    },
-    config: { tension: 280, friction: 20 },
-  });
-
+  
   const {
     filterProducts,
-    fetchProductsByShop,
     deleteProduct,
     bulkDeleteProducts,
     handleSelectProduct,
@@ -57,7 +52,29 @@ const ShopProductList = () => {
     handleUpdateProduct,
     getImageUrl,
     handleProductImageDoubleClick,
-  } = ShopProductListFunctions();
+  } = ShopProductsListFunctions();
+
+  const { fetchProductsByShop } = ProductManagementFunctions();
+
+  
+  const handleBack = () => {
+    setShowProductManagement(false);
+  };
+
+  
+  const mainContentAnimation = useSpring({
+    from: { transform: 'translateY(100px)', opacity: 0 },
+    to: { 
+      transform: contentVisible ? 'translateY(0px)' : 'translateY(100px)', 
+      opacity: contentVisible ? 1 : 0 
+    },
+    config: { tension: 280, friction: 20 },
+  });
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,22 +83,52 @@ const ShopProductList = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch products when shop changes or when productListKey changes
+  
   useEffect(() => {
+    console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
     if (selectedShop?.id_shop) {
       fetchProductsByShop();
     }
-  }, [selectedShop, productListKey]); // Add productListKey as a dependency
+  }, [selectedShop, productListKey]); 
 
-  // Filter products when products or filters change
+  // Update displayed products based on search and filters
   useEffect(() => {
-    if (Array.isArray(products) && products.length > 0) {
-      const filtered = filterProducts(products, filters);
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts([]);
+    if (!Array.isArray(products)) {
+      console.log('Products is not an array:', products);
+      setDisplayedProducts([]);
+      return;
     }
-  }, [products, filters]);
+
+    console.log(`Filtering ${products.length} products with filters:`, filters);
+    
+    // First apply filters
+    let filtered = filterProducts(products, filters);
+    
+    // Then apply search term if provided
+    if (searchTerm && searchTerm.trim() !== '') {
+      const term = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(product => {
+        // Search in all text and number fields (convert numbers to strings)
+        return (
+          (product.name_product && product.name_product.toLowerCase().includes(term)) || 
+          (product.type_product && product.type_product.toLowerCase().includes(term)) ||
+          (product.subtype_product && product.subtype_product.toLowerCase().includes(term)) ||
+          (product.info_product && product.info_product.toLowerCase().includes(term)) ||
+          (product.country_product && product.country_product.toLowerCase().includes(term)) ||
+          (product.locality_product && product.locality_product.toLowerCase().includes(term)) ||
+          (product.season_product && product.season_product.toLowerCase().includes(term)) ||
+          (product.price_product && product.price_product.toString().includes(term)) ||
+          (product.discount_product && product.discount_product.toString().includes(term)) ||
+          (product.sold_product && product.sold_product.toString().includes(term)) ||
+          (product.surplus_product && product.surplus_product.toString().includes(term))
+        );
+      });
+    }
+    
+    console.log(`Filtered to ${filtered.length} products`);
+    setFilteredProducts(filtered);
+    setDisplayedProducts(filtered);
+  }, [products, filters, searchTerm]);
 
   // Handle deletion confirmation
   useEffect(() => {
@@ -125,13 +172,13 @@ const ShopProductList = () => {
     }
   }, [isDeclined]);
 
-  // Function to handle row click
+  
   const handleProductRowClick = (product) => {
     setSelectedProductDetails(product);
     setShowProductCard(true);
   };
 
-  // Function to format date
+  
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     try {
@@ -144,16 +191,16 @@ const ShopProductList = () => {
     }
   };
 
-  // Function to format second_hand field
+  
   const formatSecondHand = (value) => {
     return value ? 'Sí' : 'No';
   };
 
-  // Select a product for image upload - this is a new function to isolate image upload selection
+  
   const handleSelectForImageUpload = (id_product) => {
     setSelectedProductForImageUpload(id_product);
     
-    // Also ensure it's in the selected products set
+    
     setSelectedProducts(prev => {
       const newSelected = new Set(prev);
       if (!newSelected.has(id_product)) {
@@ -162,6 +209,24 @@ const ShopProductList = () => {
       return newSelected;
     });
   };
+
+
+  if (!selectedShop) {
+    console.log('No shop selected in ShopProductsList');
+    return (
+      <div className={styles.noShopSelected || styles.noProducts}>
+        <h2>No hay comercio seleccionado</h2>
+        <button 
+          className={styles.actionButton}
+          onClick={() => {
+            setShowProductManagement(false);
+          }}
+        >
+          Volver
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -207,16 +272,7 @@ const ShopProductList = () => {
                   className={styles.actionButton}
                 >
                   <PackagePlus size={17} />
-                  <span className={styles.buttonText}>Añadir Producto</span>
-                </button>
-
-                <button
-                  onClick={handleBulkDelete}
-                  className={`${styles.actionButton} ${styles.deleteButton}`}
-                  disabled={selectedProducts.size === 0}
-                >
-                  <Trash2 size={17} />
-                  <span className={styles.buttonText}>Borrar Productos</span>
+                  <span className={styles.buttonText}>Añadir</span>
                 </button>
 
                 <button
@@ -224,20 +280,56 @@ const ShopProductList = () => {
                   disabled={selectedProducts.size === 0}
                 >
                   <Pencil size={17} />
-                  <span className={styles.buttonText}>Actualizar Productos</span>
+                  <span className={styles.buttonText}>Actualizar</span>
                 </button>
+                <button
+                      onClick={handleBulkDelete}
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                      disabled={selectedProducts.size === 0}
+                    >
+                      <Trash2 size={17} />
+                      <span className={styles.buttonText}>Borrar</span>
+                    </button>
+                  <div className={styles.searchInputWrapper}>
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder="Buscar productos..."
+                        className={styles.searchInput}
+                      />
+                      <Search size={18} className={styles.searchIcon} />
+                  </div>   
               </div>
             </div>
         </animated.div>
 
         <FiltersForProducts />
         
-        {filteredProducts.length === 0 ? (
-          <p className={styles.noProducts}>No hay productos disponibles</p>
+        {/* Add search box for products */}
+        {/* <div className={styles.searchContainer}>
+          <div className={styles.searchInputWrapper}>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Buscar productos..."
+              className={styles.searchInput}
+            />
+            <Search size={18} className={styles.searchIcon} />
+          </div>
+        </div> */}
+        
+        {displayedProducts.length === 0 ? (
+          <p className={styles.noProducts}>
+            {products.length === 0 
+              ? "No hay productos disponibles. Añade un producto para comenzar."
+              : "No se encontraron productos que coincidan con tu búsqueda."}
+          </p>
         ) : (       
           <animated.div style={mainContentAnimation} className={styles.tableContainer}>
             <p className={styles.productsCount}>
-                Productos mostrados: {filteredProducts.length}
+                Productos mostrados: {displayedProducts.length}
                 {selectedProducts.size > 0 && ` | Seleccionados: ${selectedProducts.size}`}
             </p>
             <table className={styles.table}>
@@ -261,7 +353,7 @@ const ShopProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
+                {displayedProducts.map((product) => (
                   <tr
                     key={product.id_product}
                     className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
@@ -335,4 +427,4 @@ const ShopProductList = () => {
   );
 };
 
-export default ShopProductList;
+export default ShopProductsList;

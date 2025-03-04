@@ -1,50 +1,32 @@
 import React, { useContext, useEffect } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
-import ProductManagementFunctions from './ProductManagementFunctions.jsx';
+import ShopProductsList from './shop_products_list/ShopProductsList.jsx';
 import ProductCreationForm from './product_creation_form/ProductCreationForm.jsx';
-import ShopProductList from './shop_products_list/ShopProductsList.jsx';
-import styles from '../../../../../public/css/ProductManagement.module.css';
-import ConfirmationModal from '../../confirmation_modal/ConfirmationModal.jsx';
 
-function ProductManagement() {
+const ProductManagement = () => {
   const { 
-    selectedShop, 
     showProductManagement,
-    setIsUpdatingProduct,
-    setSelectedProductToUpdate,
-    setNewProductData
+    isUpdatingProduct,
+    selectedShop
   } = useContext(AppContext);
-  
-  const { fetchProductsByShop } = ProductManagementFunctions();
 
+  // Debug logs to help troubleshoot
   useEffect(() => {
-    // Reset product management state when changing shops
-    if (selectedShop) {
-      setIsUpdatingProduct(false);
-      setSelectedProductToUpdate(null);
-      setNewProductData({
-        name_product: '',
-        price_product: '',
-        discount_product: 0,
-        season_product: '',
-        calification_product: 0,
-        type_product: '',
-        sold_product: 0,
-        info_product: '',
-        id_shop: selectedShop.id_shop
-      });
-    }
-  }, [selectedShop]);
+    console.log("ProductManagement rendering with states:", {
+      showProductManagement,
+      isUpdatingProduct,
+      hasSelectedShop: !!selectedShop
+    });
+  }, [showProductManagement, isUpdatingProduct, selectedShop]);
 
-  return (
-    <div className={styles.container}>  
-      {showProductManagement ? (
-        <ShopProductList />
-      ) : (
-        <ProductCreationForm />
-      )}
-    </div>
-  );
-}
+  // CLEAR CONDITIONAL LOGIC: If showProductManagement is true, show the list,
+  // otherwise show the creation/update form
+  if (showProductManagement) {
+    return <ShopProductsList />;
+  } else {
+    // When showProductManagement is false, show the product creation/update form
+    return <ProductCreationForm />;
+  }
+};
 
 export default ProductManagement;
