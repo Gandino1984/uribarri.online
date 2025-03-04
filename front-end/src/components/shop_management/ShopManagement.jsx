@@ -15,7 +15,9 @@ const ShopManagement = () => {
     setIsAddingShop,
     setShowShopCreationForm,
     showProductManagement,
-    selectedShop
+    selectedShop,
+    // Add this to track if we should show the product form
+    isUpdatingProduct
   } = useContext(AppContext);
   
   // UPDATE: Usar un ref para rastrear si ya hemos buscado las tiendas
@@ -46,8 +48,9 @@ const ShopManagement = () => {
     return null;
   }
 
-  // Check if we need to show ProductManagement based on showProductManagement state
-  if (showProductManagement && selectedShop) {
+  // MODIFIED LOGIC: Always render ProductManagement if a shop is selected,
+  // regardless of showProductManagement state
+  if (selectedShop) {
     return <ProductManagement />;
   }
 

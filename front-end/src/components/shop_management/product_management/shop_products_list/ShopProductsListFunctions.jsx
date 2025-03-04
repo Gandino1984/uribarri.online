@@ -27,7 +27,9 @@ const ShopProductsListFunctions = () => {
     productToDelete,
     selectedImageForModal, setSelectedImageForModal,
     setIsUpdatingProduct,
-    refreshProductList
+    refreshProductList,
+    // Add the missing context values
+    setIsAddingShop
   } = useContext(AppContext);
 
   const { resetNewProductData } = ProductCreationFormFunctions();
@@ -266,8 +268,26 @@ const ShopProductsListFunctions = () => {
     confirmBulkDelete();
   };
 
+  // Modified function to actually show the ProductCreationForm
   const handleAddProduct = () => {
+    console.log('handleAddProduct clicked - Preparing to show product creation form');
+    // We need to set isUpdatingProduct to false to ensure we're in "create" mode
+    setIsUpdatingProduct(false);
+    // Clear any previously selected product to update
+    setSelectedProductToUpdate(null);
+    // Reset any form errors
+    setError(prevError => ({
+      ...prevError,
+      productError: '',
+      imageError: ''
+    }));
+    // Hide the product management screen - this should trigger ProductCreationForm to render
     setShowProductManagement(false);
+    // Set isAddingShop to false to prevent the ShopCreationForm from showing
+    setIsAddingShop(false);
+    
+    // Add debug log to confirm state changes
+    console.log('Product form should now be displayed');
   };
 
   const handleUpdateProduct = (id_product) => {

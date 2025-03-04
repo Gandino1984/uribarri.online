@@ -276,15 +276,6 @@ const ShopProductsList = () => {
                   <Pencil size={17} />
                   <span className={styles.buttonText}>Actualizar Productos</span>
                 </button>
-
-                <button
-                  onClick={handleBack}
-                  className={`${styles.actionButton} ${styles.backButton || ''}`}
-                  title="Volver a la lista de comercios"
-                >
-                  <ArrowLeft size={17} />
-                  <span className={styles.buttonText}>Volver</span>
-                </button>
               </div>
             </div>
           
