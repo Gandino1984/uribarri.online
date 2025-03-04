@@ -53,15 +53,16 @@ const FiltersForProducts = () => {
               />
               <Search size={18} className={styles.searchIcon} />
             </div>
-          </div>
-
-          <button
+            <button
             onClick={handleResetFilters}
             className={styles.resetButton}
             type="button"
           >
             Borrar filtros
           </button>
+          </div>
+
+          
         </div>
 
         {/* UPDATE: Reorganized select filters into a row */}
