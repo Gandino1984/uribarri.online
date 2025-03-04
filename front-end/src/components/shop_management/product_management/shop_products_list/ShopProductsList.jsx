@@ -272,16 +272,7 @@ const ShopProductsList = () => {
                   className={styles.actionButton}
                 >
                   <PackagePlus size={17} />
-                  <span className={styles.buttonText}>Añadir Producto</span>
-                </button>
-
-                <button
-                  onClick={handleBulkDelete}
-                  className={`${styles.actionButton} ${styles.deleteButton}`}
-                  disabled={selectedProducts.size === 0}
-                >
-                  <Trash2 size={17} />
-                  <span className={styles.buttonText}>Borrar Productos</span>
+                  <span className={styles.buttonText}>Añadir</span>
                 </button>
 
                 <button
@@ -289,19 +280,35 @@ const ShopProductsList = () => {
                   disabled={selectedProducts.size === 0}
                 >
                   <Pencil size={17} />
-                  <span className={styles.buttonText}>Actualizar Productos</span>
-                </button>   
+                  <span className={styles.buttonText}>Actualizar</span>
+                </button>
+                <button
+                      onClick={handleBulkDelete}
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                      disabled={selectedProducts.size === 0}
+                    >
+                      <Trash2 size={17} />
+                      <span className={styles.buttonText}>Borrar</span>
+                    </button>
+                  <div className={styles.searchInputWrapper}>
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder="Buscar productos..."
+                        className={styles.searchInput}
+                      />
+                      <Search size={18} className={styles.searchIcon} />
+                  </div>   
               </div>
             </div>
-          
         </animated.div>
 
         <FiltersForProducts />
         
         {/* Add search box for products */}
-        <div className={styles.searchContainer}>
+        {/* <div className={styles.searchContainer}>
           <div className={styles.searchInputWrapper}>
-            <Search size={18} className={styles.searchIcon} />
             <input
               type="text"
               value={searchTerm}
@@ -309,16 +316,9 @@ const ShopProductsList = () => {
               placeholder="Buscar productos..."
               className={styles.searchInput}
             />
-            {searchTerm && (
-              <button 
-                className={styles.clearSearchButton}
-                onClick={() => setSearchTerm('')}
-              >
-                ×
-              </button>
-            )}
+            <Search size={18} className={styles.searchIcon} />
           </div>
-        </div>
+        </div> */}
         
         {displayedProducts.length === 0 ? (
           <p className={styles.noProducts}>

@@ -40,31 +40,6 @@ const FiltersForProducts = () => {
   return (
     <animated.div style={containerAnimation} className={styles.filtersContainer}>
       <div className={styles.filterControls}>
-        {/* UPDATE: Reorganized top row with search and reset button */}
-        <div className={styles.topFilterRow}>
-          <div className={`${styles.filterWrapper} ${styles.searchWrapper}`}>
-            <div className={styles.searchInputContainer}>
-              <input
-                type="text"
-                placeholder="Buscar en todos los campos..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className={styles.searchInput}
-              />
-              <Search size={18} className={styles.searchIcon} />
-            </div>
-            <button
-            onClick={handleResetFilters}
-            className={styles.resetButton}
-            type="button"
-          >
-            Borrar filtros
-          </button>
-          </div>
-
-          
-        </div>
-
         {/* UPDATE: Reorganized select filters into a row */}
         <div className={styles.selectFiltersRow}>
           {/* Season Filter */}
@@ -204,6 +179,16 @@ const FiltersForProducts = () => {
             />
           </div>
         </div>
+
+        <div className={styles.resetButtonWrapper}>
+            <button
+            onClick={handleResetFilters}
+            className={styles.resetButton}
+            type="button"
+            >
+                Borrar filtros
+            </button>
+          </div>
       </div>
     </animated.div>
   );

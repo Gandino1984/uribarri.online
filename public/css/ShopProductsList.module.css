@@ -56,8 +56,10 @@
 
 .buttonGroup {
     display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
 }
 
 .listTitle {
@@ -225,11 +227,15 @@
     max-width: 500px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
   }
   
   .searchIcon {
-    position: absolute;
-    left: 12px;
+    /* position: absolute; */
+    /* left: 12px; */
+    margin-left: 0.5rem;
     color: #666;
     pointer-events: none;
   }
