@@ -218,6 +218,7 @@ const ShopProductsList = () => {
         <h2>No hay comercio seleccionado</h2>
         <button 
           className={styles.actionButton}
+          title="Volver"
           onClick={() => {
             setShowProductManagement(false);
           }}
@@ -270,6 +271,7 @@ const ShopProductsList = () => {
                 <button
                   onClick={handleAddProduct}
                   className={styles.actionButton}
+                  title="Añadir producto"
                 >
                   <PackagePlus size={17} />
                   <span className={styles.buttonText}>Añadir</span>
@@ -278,6 +280,7 @@ const ShopProductsList = () => {
                 <button
                   className={`${styles.actionButton} ${styles.updateButton}`}
                   disabled={selectedProducts.size === 0}
+                  title="Actualizar producto"
                 >
                   <Pencil size={17} />
                   <span className={styles.buttonText}>Actualizar</span>
@@ -286,6 +289,7 @@ const ShopProductsList = () => {
                       onClick={handleBulkDelete}
                       className={`${styles.actionButton} ${styles.deleteButton}`}
                       disabled={selectedProducts.size === 0}
+                      title="Borrar producto"
                     >
                       <Trash2 size={17} />
                       <span className={styles.buttonText}>Borrar</span>
@@ -305,20 +309,6 @@ const ShopProductsList = () => {
         </animated.div>
 
         <FiltersForProducts />
-        
-        {/* Add search box for products */}
-        {/* <div className={styles.searchContainer}>
-          <div className={styles.searchInputWrapper}>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder="Buscar productos..."
-              className={styles.searchInput}
-            />
-            <Search size={18} className={styles.searchIcon} />
-          </div>
-        </div> */}
         
         {displayedProducts.length === 0 ? (
           <p className={styles.noProducts}>
