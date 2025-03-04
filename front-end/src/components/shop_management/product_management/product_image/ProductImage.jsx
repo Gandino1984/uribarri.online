@@ -97,7 +97,7 @@ const ProductImage = ({ id_product }) => {
             
             // Add fallback content
             const fallback = document.createElement('span');
-            fallback.textContent = 'Image failed to load';
+            fallback.textContent = 'Sin imagen';
             e.target.parentNode.appendChild(fallback);
           }}
         />

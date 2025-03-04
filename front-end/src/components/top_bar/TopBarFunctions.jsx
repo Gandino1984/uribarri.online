@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import AppContext from '../../app_context/AppContext.js';
+// import { useSpring, animated } from '@react-spring/web';
 
 export const TopBarFunctions = () => {
     const {
@@ -11,19 +12,46 @@ export const TopBarFunctions = () => {
         showShopManagement, setShowShopCreationForm,
         showShopCreationForm, selectedShop, setSelectedShop,
         setCurrentUser, setShops, setSelectedShopType, 
-        setError, setSuccess, setShowProductManagement, currentUser
+        setError, setSuccess, setShowProductManagement, currentUser,
+        isUpdatingProduct, setIsUpdatingProduct, setSelectedProductToUpdate,
+        showProductManagement
     } = useContext(AppContext);
 
     const handleBack = () => {
+        // If we're in the product creation/update form, go back to the products list
+        if (selectedShop && !showShopCreationForm && !isUpdatingProduct && !showProductManagement) {
+            // We're in the ProductCreationForm and need to go back to ShopProductsList
+            setShowProductManagement(true);
+            return;
+        }
+        
+        // Handle the product update form case
+        if (selectedShop && isUpdatingProduct) {
+            setIsUpdatingProduct(false);
+            setSelectedProductToUpdate(null);
+            setShowProductManagement(true);
+            return;
+        }
+        
+        // If we're creating a shop, go back to shop management
         if (showShopCreationForm) {
             setShowShopCreationForm(false);
             setshowShopManagement(true);
-        } else if (selectedShop) {
+            return;
+        }
+        
+        // If we have a selected shop, go back to shop selection
+        if (selectedShop) {
             setSelectedShop(null);
             setshowShopManagement(true);
-        } else if (showShopManagement) {
+            return;
+        }
+        
+        // If we're in shop management, go back to login
+        if (showShopManagement) {
             setshowShopManagement(false);
             setIsLoggingIn(true);
+            return;
         }
     };
 

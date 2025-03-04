@@ -120,7 +120,7 @@ const FiltersForProducts = () => {
                 onChange={handleOnSaleChange}
                 className={styles.checkbox}
               />
-              En oferta
+            Oferta
             </label>
           </div>
 
@@ -134,21 +134,22 @@ const FiltersForProducts = () => {
                 className={styles.checkbox}
               />
               <Package size={14} />
-              Con excedente
+              Excedente
             </label>
           </div>
 
           {/* Near Expiration Checkbox */}
           <div className={styles.checkboxWrapper}>
-            <label className={styles.checkboxLabel}>
+            <label className={styles.checkboxLabel} title="Caducidad de 7 días">
               <input
                 type="checkbox"
                 checked={filters.proxima_caducidad === 'Sí'}
                 onChange={handleNearExpirationChange}
                 className={styles.checkbox}
+                
               />
               <Calendar size={14} />
-              Próxima caducidad (7 días)
+              Caducidad
             </label>
           </div>
         </div>

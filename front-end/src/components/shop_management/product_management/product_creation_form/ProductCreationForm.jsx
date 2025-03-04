@@ -149,7 +149,14 @@ const ProductCreationForm = () => {
   }, [selectedShop, isUpdatingProduct, setNewProductData]);
 
   const handleViewProductList = () => {
+    // Simply set showProductManagement to true to show the product list
     setShowProductManagement(true);
+    
+    // If we're in update mode, also reset those states
+    if (isUpdatingProduct) {
+      setIsUpdatingProduct(false);
+      setSelectedProductToUpdate(null);
+    }
   };
 
   const handleFormSubmit = async (e) => {
