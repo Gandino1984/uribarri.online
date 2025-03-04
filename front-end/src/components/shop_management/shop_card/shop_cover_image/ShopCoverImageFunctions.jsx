@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback, useEffect } from 'react';
+import { useState, useContext, useCallback, useEffect, useRef } from 'react';
 import AppContext from '../../../../app_context/AppContext';
 import { 
   uploadShopCover, 
@@ -13,13 +13,16 @@ export const ShopCoverImageFunctions = () => {
     setShops,
     shops,
     uploading,
-    setSelectedShop  // This is already available in the AppContext
+    setSelectedShop
   } = useContext(AppContext);
 
   const [showUploadButton, setShowUploadButton] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [localImageUrl, setLocalImageUrl] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(Date.now());
+  
+  // UPDATE: Añadir un ref para rastrear la operación en curso
+  const uploadInProgress = useRef(false);
 
   // Toggle the upload button visibility when clicking the container
   const handleContainerClick = useCallback((id_shop) => {
@@ -36,6 +39,12 @@ export const ShopCoverImageFunctions = () => {
   // Handle the image upload process
   const handleImageUpload = useCallback(async (event, id_shop) => {
     event.stopPropagation();
+    
+    // UPDATE: Evitar múltiples cargas simultáneas
+    if (uploadInProgress.current) {
+      console.log('Upload already in progress, ignoring new request');
+      return;
+    }
     
     const file = event.target.files[0];
     
@@ -62,6 +71,7 @@ export const ShopCoverImageFunctions = () => {
 
     setUploading(true);
     setUploadProgress(0);
+    uploadInProgress.current = true;
 
     try {
       // Use the direct approach to ensure the field name is correct
@@ -125,6 +135,7 @@ export const ShopCoverImageFunctions = () => {
     } finally {
       setUploading(false);
       setUploadProgress(0);
+      uploadInProgress.current = false;
     }
   }, [selectedShop, shops, setShops, setSelectedShop, setError, setUploading]);
 
@@ -132,7 +143,6 @@ export const ShopCoverImageFunctions = () => {
   const getShopCoverUrl = useCallback((imagePath) => {
     // If we have a local image URL (from recent upload), use that first
     if (localImageUrl) {
-      console.log('Using local image URL for immediate display:', localImageUrl);
       return localImageUrl;
     }
     
@@ -150,8 +160,6 @@ export const ShopCoverImageFunctions = () => {
         : `${result}?t=${lastUpdated}`;
     }
     
-    console.log('getShopCoverUrl input:', imagePath);
-    console.log('getShopCoverUrl output with cache busting:', result);
     return result;
   }, [localImageUrl, lastUpdated]);
 

@@ -4,6 +4,9 @@
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .infoContainer {
@@ -11,6 +14,7 @@
   border-radius: 0 0 0.5rem 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 1rem;
+  transition: all 0.3s ease;
 }
 
 .header {
@@ -64,6 +68,78 @@
   color: #4b5563;
 }
 
+/* UPDATE: Estilos para el botón y control de minimizar */
+.headerControls {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.minimizeButton {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.minimizeButton:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+}
+
+/* UPDATE: Estilos para el estado minimizado */
+.minimized {
+  max-width: 200px;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.minimizedCard {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.minimizedCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.15);
+}
+
+.minimizedContent {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.minimizedText {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.toggleIcon {
+  color: #4b5563;
+  transition: transform 0.2s ease;
+}
+
+.minimizedContent:hover .toggleIcon {
+  transform: scale(1.1);
+}
+
 /* Responsive styles */
 /* Small tablets (640px and up) */
 @media (min-width: 640px) {
@@ -77,6 +153,10 @@
   
   .title {
     font-size: 1.375rem;
+  }
+
+  .minimized {
+    max-width: 220px;
   }
 }
 
@@ -94,6 +174,10 @@
   
   .infoContainer {
     padding: 1.5rem;
+  }
+
+  .minimized {
+    max-width: 240px;
   }
 }
 

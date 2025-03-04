@@ -40,7 +40,7 @@ const ShopProductsList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
 
-  // Get functions from both hook files
+  
   const {
     filterProducts,
     deleteProduct,
@@ -56,13 +56,12 @@ const ShopProductsList = () => {
 
   const { fetchProductsByShop } = ProductManagementFunctions();
 
-  // Function to handle going back to shops list
+  
   const handleBack = () => {
-    console.log('Going back to shops list');
     setShowProductManagement(false);
   };
 
-  // Animation for main content
+  
   const mainContentAnimation = useSpring({
     from: { transform: 'translateY(100px)', opacity: 0 },
     to: { 
@@ -79,7 +78,7 @@ const ShopProductsList = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch products when shop changes or when productListKey changes
+  
   useEffect(() => {
     console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
     if (selectedShop?.id_shop) {
@@ -158,13 +157,13 @@ const ShopProductsList = () => {
     }
   }, [isDeclined]);
 
-  // Function to handle row click
+  
   const handleProductRowClick = (product) => {
     setSelectedProductDetails(product);
     setShowProductCard(true);
   };
 
-  // Function to format date
+  
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     try {
@@ -177,16 +176,16 @@ const ShopProductsList = () => {
     }
   };
 
-  // Function to format second_hand field
+  
   const formatSecondHand = (value) => {
     return value ? 'Sí' : 'No';
   };
 
-  // Select a product for image upload - this is a new function to isolate image upload selection
+  
   const handleSelectForImageUpload = (id_product) => {
     setSelectedProductForImageUpload(id_product);
     
-    // Also ensure it's in the selected products set
+    
     setSelectedProducts(prev => {
       const newSelected = new Set(prev);
       if (!newSelected.has(id_product)) {
@@ -196,7 +195,7 @@ const ShopProductsList = () => {
     });
   };
 
-  // If there is no selected shop, show a message
+
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
     return (
@@ -208,7 +207,7 @@ const ShopProductsList = () => {
             setShowProductManagement(false);
           }}
         >
-          Volver a la lista de comercios
+          Volver
         </button>
       </div>
     );
@@ -288,17 +287,7 @@ const ShopProductsList = () => {
                 </button>
               </div>
             </div>
-            
-            {/* Search input */}
-            <div className={styles.searchContainer || ''}>
-              <input
-                type="text"
-                placeholder="Buscar productos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={styles.searchInput || ''}
-              />
-            </div>
+          
         </animated.div>
 
         <FiltersForProducts />

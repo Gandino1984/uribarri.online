@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useRef, useCallback } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
@@ -11,8 +11,18 @@ export const ShopManagementFunctions = () => {
     setshowShopManagement, 
     setShowProductManagement
   } = useContext(AppContext);
+  
+  // UPDATE: Usar un ref para rastrear si ya se ha hecho la petición
+  const fetchInProgress = useRef(false);
 
-  const fetchUserShops = async () => {
+  // UPDATE: Uso de useCallback para prevenir recreaciones innecesarias de la función
+  const fetchUserShops = useCallback(async () => {
+    // UPDATE: Evitar múltiples solicitudes simultáneas
+    if (fetchInProgress.current) {
+      console.log('Shop fetch already in progress, skipping redundant call');
+      return;
+    }
+    
     try {
       if (!currentUser?.id_user) {
         console.error('No hay usuarios activos');
@@ -20,6 +30,8 @@ export const ShopManagementFunctions = () => {
         return;      
       }
 
+      // UPDATE: Marcar que la petición está en progreso
+      fetchInProgress.current = true;
       console.log('ShopManagementFunctions - Fetching shops for user ID:', currentUser.id_user);
 
       // Try both endpoints for better compatibility
@@ -39,6 +51,8 @@ export const ShopManagementFunctions = () => {
           
           if (Array.isArray(userShops) && userShops.length > 0) {
             setShops(userShops);
+            // UPDATE: Desmarcar el progreso y retornar
+            fetchInProgress.current = false;
             return;
           }
         }
@@ -70,20 +84,23 @@ export const ShopManagementFunctions = () => {
     } catch (err) {
       console.warn('Fetching shops error:', err);
       setShops([]);
-    } 
-  };
+    } finally {
+      // UPDATE: Asegurarse de que siempre se desmarca el progreso
+      fetchInProgress.current = false;
+    }
+  }, [currentUser, setShops]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setshowShopManagement(false);
     setShowProductManagement(false);
     setSelectedShop(null);
-  };
+  }, [setshowShopManagement, setShowProductManagement, setSelectedShop]);
 
-  const handleSelectShop = (shop) => {
+  const handleSelectShop = useCallback((shop) => {
     console.log('Selecting shop:', shop);
     setSelectedShop(shop);
     setShowProductManagement(true);
-  };
+  }, [setSelectedShop, setShowProductManagement]);
 
   return {
     fetchUserShops,

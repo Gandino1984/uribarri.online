@@ -23,26 +23,18 @@ const ShopCoverImage = ({ id_shop }) => {
   const shop = shops.find(s => s.id_shop === id_shop);
   const isSelected = selectedShop?.id_shop === id_shop;
   
-  // Update image key when any of these dependencies change to force re-render
+  // UPDATE: Solo actualizar la clave de imagen cuando realmente sea necesario
   useEffect(() => {
-    setImageKey(Date.now());
-    console.log(`Shop image key updated to: ${Date.now()}`);
-  }, [shop?.image_shop, localImageUrl, lastUpdated, selectedShop?.image_shop]);
+    const newKey = Date.now();
+    setImageKey(newKey);
+  }, [shop?.image_shop, localImageUrl, lastUpdated]);
   
-  // Debug logging for image path changes
+  // UPDATE: Reducir registro de logs innecesarios
   useEffect(() => {
-    if (shop?.image_shop) {
-      console.log(`Shop ${id_shop} image path updated:`, shop.image_shop);
-      console.log('Formatted URL:', getShopCoverUrl(shop.image_shop));
+    if (isSelected && shop?.image_shop) {
+      console.log(`Selected shop ${id_shop} image path:`, getShopCoverUrl(shop.image_shop));
     }
-  }, [shop?.image_shop, getShopCoverUrl, id_shop]);
-  
-  // Debug selected shop state
-  useEffect(() => {
-    if (isSelected && selectedShop) {
-      console.log('Selected shop state:', selectedShop);
-    }
-  }, [isSelected, selectedShop]);
+  }, [isSelected, shop?.image_shop, getShopCoverUrl, id_shop]);
 
   // Get the appropriate image URL with fallbacks
   const getImageSource = () => {
@@ -65,18 +57,6 @@ const ShopCoverImage = ({ id_shop }) => {
   };
 
   const imageSource = getImageSource();
-  
-  // Debug the image source determination
-  useEffect(() => {
-    if (isSelected) {
-      console.log('Image source determination for selected shop:', {
-        localImageUrl,
-        'shop?.image_shop': shop?.image_shop,
-        'selectedShop?.image_shop': selectedShop?.image_shop,
-        finalImageSource: imageSource
-      });
-    }
-  }, [isSelected, localImageUrl, shop?.image_shop, selectedShop?.image_shop, imageSource]);
 
   return (
     <div className={styles.container}>
@@ -90,22 +70,11 @@ const ShopCoverImage = ({ id_shop }) => {
             src={imageSource}
             alt={`${shop?.name_shop || 'Shop'} cover`}
             className={styles.image}
-            onError={(e) => {
-              console.error('Image failed to load:', e.target.src);
-              console.error('Original image path:', shop?.image_shop);
-              e.target.style.display = 'none';
-              // Show fallback content when image fails to load
-              e.target.parentNode.classList.add(styles.noImage);
-              const fallback = document.createElement('span');
-              fallback.className = styles.noImageText;
-              fallback.textContent = 'Image failed to load';
-              e.target.parentNode.appendChild(fallback);
-            }}
           />
         ) : (
           <div className={styles.noImage}>
             <span className={styles.noImageText}>
-              {isSelected ? 'Imagen de portada de comercio' : 'No hay imagen'}
+              {isSelected ? 'Imagen de portada' : 'No hay imagen'}
             </span>
           </div>
         )}
@@ -161,9 +130,8 @@ const ShopCoverImage = ({ id_shop }) => {
   );
 };
 
-// Use React.memo with a custom comparison function that always re-renders
-// when the shop ID changes or when forced by parent
+// UPDATE: Mejorar la función de comparación de memoización para evitar rerenderizados innecesarios
 export default memo(ShopCoverImage, (prevProps, nextProps) => {
-  // Always re-render when the shop ID changes
+  // Solo re-renderizar cuando cambia el ID de la tienda
   return prevProps.id_shop === nextProps.id_shop;
 });

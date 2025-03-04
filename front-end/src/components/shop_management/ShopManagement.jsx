@@ -21,22 +21,24 @@ const ShopManagement = () => {
   // Use ShopManagementFunctions to get fetchUserShops
   const { fetchUserShops } = ShopManagementFunctions ? ShopManagementFunctions() : { fetchUserShops: null };
 
+  // UPDATE: Optimizar para reducir llamadas innecesarias
   useEffect(() => {
-    console.log('ShopManagement rendered with:', {
-      currentUser,
+    // Solo hacer log de eventos clave, no cada renderizado
+    console.log('ShopManagement navigation state changed', {
       showShopCreationForm,
-      isAddingShop,
       showProductManagement,
-      selectedShop: selectedShop?.id_shop,
-      shopCount: shops?.length
+      selectedShopId: selectedShop?.id_shop
     });
-    
-    // Fetch shops when the component mounts if fetchUserShops is available
-    if (fetchUserShops && currentUser?.id_user) {
-      console.log('Fetching shops for user:', currentUser.id_user);
+  }, [showShopCreationForm, showProductManagement, selectedShop?.id_shop]);
+  
+  // UPDATE: Solo ejecutar la búsqueda de tiendas si no hay tiendas cargadas
+  useEffect(() => {
+    if (fetchUserShops && currentUser?.id_user && (!shops || shops.length === 0)) {
+      console.log('Initial shop fetch for user:', currentUser.id_user);
       fetchUserShops();
     }
-  }, [currentUser, showShopCreationForm, isAddingShop, shops, showProductManagement, selectedShop, fetchUserShops]);
+    // Eliminar shops de la dependencia para evitar llamadas repetidas
+  }, [currentUser?.id_user, fetchUserShops]);
 
   // Check if the user is a seller
   if (!currentUser || currentUser.type_user !== 'seller') {
@@ -48,18 +50,15 @@ const ShopManagement = () => {
 
   // Check if we need to show ProductManagement based on showProductManagement state
   if (showProductManagement && selectedShop) {
-    console.log('Rendering ProductManagement for shop:', selectedShop.id_shop);
     return <ProductManagement />;
   }
 
   // Only render ShopCreationForm if explicitly requested via showShopCreationForm flag
   if (showShopCreationForm) {
-    console.log('Rendering ShopCreationForm');
     return <ShopCreationForm />;
   }
 
   // Always show the seller's shops list by default, even if empty
-  console.log('Rendering ShopsListBySeller');
   return <ShopsListBySeller />;
 };
 

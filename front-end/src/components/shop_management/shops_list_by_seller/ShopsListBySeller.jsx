@@ -15,7 +15,7 @@ const ShopsListBySeller = () => {
   } = useContext(AppContext);
 
   const { 
-    fetchUserShops, // Use the new function
+    fetchUserShops,
     handleSelectShop,
     handleDeleteShop,
     handleAddShop,
@@ -41,20 +41,22 @@ const ShopsListBySeller = () => {
     }
   });
 
-  // Add useEffect to fetch shops when component mounts
+  // UPDATE: Controlar cuándo se hacen las llamadas a la API
   useEffect(() => {
-    console.log('ShopsListBySeller component mounted - fetching shops');
-    fetchUserShops();
-  }, [currentUser]); // Re-fetch when currentUser changes
+    console.log('ShopsListBySeller component mounted - checking if fetch is needed');
+    // Solo hacer la llamada si no hay tiendas cargadas o si el usuario cambió
+    if ((!shops || shops.length === 0) && currentUser?.id_user) {
+      console.log('Fetching shops because none exist or user changed');
+      fetchUserShops();
+    }
+  }, [currentUser?.id_user]); // UPDATE: Solo depender del ID del usuario, no del objeto completo
 
+  // UPDATE: Limitar los logs a lo esencial
   useEffect(() => {
-    console.log('-> ShopsListBySeller.jsx - currentUser = ', currentUser);
-    console.log('-> ShopsListBySeller.jsx - selectedShop = ', selectedShop);
-  }, [currentUser, selectedShop]);
-
-  useEffect(() => {
-    console.log('Shops state updated:', shops);
-  }, [shops]);
+    if (selectedShop) {
+      console.log('Selected shop updated:', selectedShop.id_shop);
+    }
+  }, [selectedShop]);
 
   // Función para mostrar información sobre el límite de tiendas
   const renderShopLimitInfo = () => {
