@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
 import ShopProductsListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
-import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft } from 'lucide-react';
+import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft, Search } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
@@ -71,6 +71,11 @@ const ShopProductsList = () => {
     config: { tension: 280, friction: 20 },
   });
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setContentVisible(true);
@@ -102,12 +107,22 @@ const ShopProductsList = () => {
     // Then apply search term if provided
     if (searchTerm && searchTerm.trim() !== '') {
       const term = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(product => 
-        product.name_product?.toLowerCase().includes(term) || 
-        product.type_product?.toLowerCase().includes(term) ||
-        product.subtype_product?.toLowerCase().includes(term) ||
-        product.info_product?.toLowerCase().includes(term)
-      );
+      filtered = filtered.filter(product => {
+        // Search in all text and number fields (convert numbers to strings)
+        return (
+          (product.name_product && product.name_product.toLowerCase().includes(term)) || 
+          (product.type_product && product.type_product.toLowerCase().includes(term)) ||
+          (product.subtype_product && product.subtype_product.toLowerCase().includes(term)) ||
+          (product.info_product && product.info_product.toLowerCase().includes(term)) ||
+          (product.country_product && product.country_product.toLowerCase().includes(term)) ||
+          (product.locality_product && product.locality_product.toLowerCase().includes(term)) ||
+          (product.season_product && product.season_product.toLowerCase().includes(term)) ||
+          (product.price_product && product.price_product.toString().includes(term)) ||
+          (product.discount_product && product.discount_product.toString().includes(term)) ||
+          (product.sold_product && product.sold_product.toString().includes(term)) ||
+          (product.surplus_product && product.surplus_product.toString().includes(term))
+        );
+      });
     }
     
     console.log(`Filtered to ${filtered.length} products`);
@@ -275,13 +290,35 @@ const ShopProductsList = () => {
                 >
                   <Pencil size={17} />
                   <span className={styles.buttonText}>Actualizar Productos</span>
-                </button>
+                </button>   
               </div>
             </div>
           
         </animated.div>
 
         <FiltersForProducts />
+        
+        {/* Add search box for products */}
+        <div className={styles.searchContainer}>
+          <div className={styles.searchInputWrapper}>
+            <Search size={18} className={styles.searchIcon} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Buscar productos..."
+              className={styles.searchInput}
+            />
+            {searchTerm && (
+              <button 
+                className={styles.clearSearchButton}
+                onClick={() => setSearchTerm('')}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        </div>
         
         {displayedProducts.length === 0 ? (
           <p className={styles.noProducts}>
