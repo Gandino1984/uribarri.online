@@ -1,16 +1,18 @@
-/* FiltersForProducts.module.css - Improved Mobile-first approach */
+/* FiltersForProducts.module.css - Enhanced with folding animation effects */
 
 .filtersContainer {
   width: 100%;
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  will-change: transform, opacity;
-  background-color: #f9fafb;
+  margin-bottom: 1rem;
+  padding: 0;
+  background-color: white;
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  will-change: height, transform, opacity;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  /* Enhanced with subtle gradient for 3D effect */
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
 }
 
 .filterControls {
@@ -18,14 +20,10 @@
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
-}
-
-/* Top row with search and reset button */
-.topFilterRow {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 100%;
+  padding: 1rem;
+  will-change: transform, opacity;
+  /* Add subtle shadow inside to enhance 3D folding effect */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Row for select filters */
@@ -34,15 +32,18 @@
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
+  /* Add small delay to each child when animating */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* Row for checkbox filters */
 .checkboxFiltersRow {
   display: flex;
-  /* flex-direction: column;   */
   gap: 0.75rem;
   width: 100%;
   margin-top: 0.5rem;
+  /* Add small delay to each child when animating */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.05s;
 }
 
 .filterWrapper {
@@ -50,42 +51,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.searchWrapper {
-  width: 100%;
-}
-
-.searchInputContainer {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* width: 100%; */
-}
-
-.searchInput {
-  /* width: 100%; */
-  padding: 0.6rem 2.2rem 0.6rem 0.75rem;
-  border: 1px solid #e2e2e2;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.searchInput:focus {
-  border-color: #2563eb;
-  /* box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); */
-}
-
-.searchIcon {
-  /* position: absolute; */
-  /* right: 0.75rem; */
-  color: #7c7c7c;
-  margin-left: .5rem;
-  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .filterSelect {
@@ -98,10 +64,14 @@
   background-color: white;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  /* Add subtle shadow for depth */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .filterSelect:hover {
   border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .filterSelect:focus {
@@ -137,11 +107,23 @@
   transition: transform 0.2s ease;
 }
 
+.checkboxLabel:hover {
+  transform: translateX(2px);
+}
+
 .checkbox {
   width: 1rem;
   height: 1rem;
   cursor: pointer;
   accent-color: #2563eb;
+}
+
+.resetButtonWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  /* Add small delay to button when animating */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
 }
 
 .resetButton {
@@ -155,12 +137,17 @@
   transition: all 0.2s ease-in-out;
   text-align: center;
   width: 100%;
+  max-width: 200px;
+  /* Add subtle shadow for depth */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .resetButton:hover {
   background-color: #2563eb;
   border-color: #2563eb;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .dateRangeContainer {
@@ -171,6 +158,10 @@
   border-radius: 0.375rem;
   background-color: white;
   border: 1px solid #e2e2e2;
+  /* Add subtle shadow for depth */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* Add small delay when animating */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.08s;
 }
 
 .dateLabel {
@@ -196,7 +187,7 @@
   border-radius: 0.375rem;
   font-size: 0.875rem;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .dateInput:focus {
@@ -204,30 +195,16 @@
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
+.dateInput:hover {
+  border-color: #d1d5db;
+}
+
 /* Responsive improvements */
 /* Small tablets (640px and up) */
 @media (min-width: 640px) {
-  .filtersContainer {
-    padding: 1rem;
-    gap: 1rem;
-  }
-  
   .filterControls {
     gap: 1rem;
-  }
-  
-  .topFilterRow {
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .searchWrapper {
-    flex-direction: row;
-    flex: 1;
-  }
-  
-  .resetButton {
-    width: auto;
+    padding: 1.25rem;
   }
   
   .checkboxFiltersRow {
@@ -252,11 +229,6 @@
 
 /* Tablets (768px and up) */
 @media (min-width: 768px) {
-  .topFilterRow {
-    flex-direction: row;
-    align-items: center;
-  }
-
   .selectFiltersRow {
     flex-direction: row;
     flex-wrap: wrap;
@@ -271,12 +243,8 @@
 
 /* Laptops/Desktops (1024px and up) */
 @media (min-width: 1024px) {
-  .topFilterRow {
-    flex-direction: row;
-    align-items: center;
-  }
-  .filtersContainer {
-    padding: 1.25rem;
+  .filterControls {
+    padding: 1.5rem;
   }
   
   .filterWrapper {

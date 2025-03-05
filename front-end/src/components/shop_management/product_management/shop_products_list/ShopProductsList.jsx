@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState, useRef } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
 import ShopProductsListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
-import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft, Search } from 'lucide-react';
+import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
@@ -42,6 +42,28 @@ const ShopProductsList = () => {
   const [showProductCard, setShowProductCard] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
+  
+  // NEW: State to manage filter visibility
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // NEW: Function to toggle filter visibility
+  const toggleFilters = () => {
+    setShowFilters(prevState => !prevState);
+  };
+  
+  // NEW: Get active filters count
+  const getActiveFiltersCount = () => {
+    return Object.values(filters).filter(value => value !== null).length;
+  };
+  
+  // NEW: Active filters count
+  const activeFiltersCount = getActiveFiltersCount();
+  
+  // NEW: Animate the filter button
+  const filterButtonAnimation = useSpring({
+    transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
+    config: { tension: 300, friction: 10 }
+  });
   
   // NEW: Add a ref to track deletion in progress
   const deletionInProgress = useRef(false);
@@ -88,6 +110,12 @@ const ShopProductsList = () => {
     }, 300);
     return () => clearTimeout(timer);
   }, []);
+
+  // Update displayed products based on filters
+  useEffect(() => {
+    // Re-calculate active filter count when filters change
+    getActiveFiltersCount();
+  }, [filters]);
 
   useEffect(() => {
     console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
@@ -386,29 +414,47 @@ const ShopProductsList = () => {
                   <span className={styles.buttonText}>Actualizar</span>
                 </button>
                 <button
-                      onClick={handleBulkDelete}
-                      className={`${styles.actionButton} ${styles.deleteButton}`}
-                      disabled={selectedProducts.size === 0}
-                      title="Borrar producto"
-                    >
-                      <Trash2 size={17} />
-                      <span className={styles.buttonText}>Borrar</span>
-                    </button>
-                  <div className={styles.searchInputWrapper}>
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        placeholder="Buscar productos..."
-                        className={styles.searchInput}
-                      />
-                      <Search size={18} className={styles.searchIcon} />
-                  </div>   
+                  onClick={handleBulkDelete}
+                  className={`${styles.actionButton} ${styles.deleteButton}`}
+                  disabled={selectedProducts.size === 0}
+                  title="Borrar producto"
+                >
+                  <Trash2 size={17} />
+                  <span className={styles.buttonText}>Borrar</span>
+                </button>
+                <div className={styles.searchInputWrapper}>
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    placeholder="Buscar productos..."
+                    className={styles.searchInput}
+                  />
+                  <Search size={18} className={styles.searchIcon} />
+                </div>
+                
+                {/* NEW: Enhanced Filter Toggle Button with Animation */}
+                <button
+                  onClick={toggleFilters}
+                  className={`${styles.actionButton} ${styles.filterButton} ${showFilters ? styles.active : ''}`}
+                  title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+                >
+                  <Filter size={17} />
+                  <span className={styles.buttonText}>Más filtros</span>
+                  {activeFiltersCount > 0 && (
+                    <span className={styles.filterBadge}>{activeFiltersCount}</span>
+                  )}
+                  {/* Animated chevron that rotates when filters are toggled */}
+                  <animated.div style={filterButtonAnimation} className={styles.filterButtonIcon}>
+                    <ChevronDown size={14} />
+                  </animated.div>
+                </button>
               </div>
             </div>
         </animated.div>
 
-        <FiltersForProducts />
+        {/* Only show filters when showFilters is true */}
+        {showFilters && <FiltersForProducts isVisible={showFilters} />}
         
         {displayedProducts.length === 0 ? (
           <p className={styles.noProducts}>

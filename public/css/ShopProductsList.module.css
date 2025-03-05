@@ -84,6 +84,7 @@
     border: none;
     cursor: pointer;
     transition: all 0.15s ease;
+    position: relative;
 }
 
 .actionButton:disabled {
@@ -107,6 +108,59 @@
 
 .updateButton:not(:disabled):hover {
     background-color: var(--saturated-blue);
+}
+
+/* NEW: Enhanced Filter button styles */
+.filterButton {
+    color: #2563eb;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 1.8rem; /* Accommodate chevron */
+}
+
+.filterButton.active {
+    background-color: #dbeafe;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filterButton:not(:disabled):hover {
+    background-color: #2563eb;
+}
+
+/* NEW: Filter button icon container for rotation animation */
+.filterButtonIcon {
+    position: absolute;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+    will-change: transform;
+}
+
+/* NEW: Filter badge with enhanced style */
+.filterBadge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.25rem;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1;
 }
 
 .tableContainer {
@@ -305,10 +359,26 @@
     .buttonGroup {
         width: 100%;
         justify-content: flex-start;
+        flex-wrap: wrap;
     }
     
     .shopInfoHeader {
         flex-direction: column;
         text-align: center;
+    }
+    
+    /* Adjust filter badge position on mobile */
+    .filterBadge {
+        top: -5px;
+        right: -5px;
+    }
+    
+    /* Ensure chevron is visible on small screens */
+    .filterButton {
+        padding-right: 1.5rem;
+    }
+    
+    .filterButtonIcon {
+        right: 0.3rem;
     }
 }

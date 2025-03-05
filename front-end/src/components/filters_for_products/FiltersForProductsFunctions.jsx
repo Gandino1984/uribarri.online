@@ -25,6 +25,22 @@ const FiltersForProductsFunctions = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // UPDATE: Function to count active filters
+  const getActiveFiltersCount = useCallback(() => {
+    let count = 0;
+    
+    // Count each non-null filter
+    Object.values(filters).forEach(value => {
+      if (value !== null) count++;
+    });
+    
+    // Count date range filters
+    if (expirationDateRange.start) count++;
+    if (expirationDateRange.end) count++;
+    
+    return count;
+  }, [filters, expirationDateRange]);
+
   // UPDATE: Aplicar los filtros con un pequeño debounce para mejor rendimiento
   useEffect(() => {
     if (filterUpdateTimeout) {
@@ -235,7 +251,8 @@ const FiltersForProductsFunctions = () => {
     handleExpirationChange,
     handleNearExpirationChange,
     handleResetFilters,
-    getAvailableSubtypes
+    getAvailableSubtypes,
+    getActiveFiltersCount
   };
 };
 
