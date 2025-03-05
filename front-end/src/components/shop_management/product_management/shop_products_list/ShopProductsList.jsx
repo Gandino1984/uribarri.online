@@ -271,6 +271,43 @@ const ShopProductsList = () => {
     });
   };
 
+  // UPDATE: Handler for bulk update button
+  const handleBulkUpdate = () => {
+    // Check if a product is selected
+    if (selectedProducts.size === 1) {
+      // Get the selected product ID (first item in the Set)
+      const selectedProductId = Array.from(selectedProducts)[0];
+      
+      // Find the product in the products array
+      const productToUpdate = products.find(product => product.id_product === selectedProductId);
+      
+      // If product found, call the update handler
+      if (productToUpdate) {
+        handleUpdateProduct(selectedProductId);
+      } else {
+        console.error('Selected product not found in products array');
+        setError(prevError => ({
+          ...prevError,
+          productError: "No se encontró el producto seleccionado"
+        }));
+      }
+    } else if (selectedProducts.size > 1) {
+      // Multiple products selected
+      setError(prevError => ({
+        ...prevError,
+        productError: "Solo puedes actualizar un producto a la vez. Por favor selecciona solo un producto."
+      }));
+      setShowErrorCard(true);
+    } else {
+      // No products selected
+      setError(prevError => ({
+        ...prevError,
+        productError: "No hay productos seleccionados para actualizar"
+      }));
+      setShowErrorCard(true);
+    }
+  };
+  
   // Rest of component remains the same...
   
   if (!selectedShop) {
@@ -340,6 +377,7 @@ const ShopProductsList = () => {
                 </button>
 
                 <button
+                  onClick={handleBulkUpdate}
                   className={`${styles.actionButton} ${styles.updateButton}`}
                   disabled={selectedProducts.size === 0}
                   title="Actualizar producto"
