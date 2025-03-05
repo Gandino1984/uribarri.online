@@ -275,31 +275,36 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  const resetNewProductData = () => {
-    setNewProductData({
-      name_product: '',
-      price_product: '',
-      discount_product: 0,
-      season_product: 'Todo el Año',
-      calification_product: 0,
-      type_product: '',
-      sold_product: 0,
-      info_product: '',
-      id_shop: selectedShop?.id_shop || '',
-      subtype_product: '',
-      second_hand: 0,
-      surplus_product: 0,
-      expiration_product: null,
-      country_product: '',  // Añadido campo de país de origen
-      locality_product: ''  // Añadido campo de localidad de origen
-    });
-    setError(prevError => ({
-      ...prevError,
-      productError: '',
-    }));
-    setIsUpdatingProduct(false);
-    setSelectedProductToUpdate(null);
-  };
+
+const resetNewProductData = () => {
+  setNewProductData({
+    name_product: '',
+    price_product: '',
+    discount_product: 0,
+    season_product: 'Todo el Año',
+    calification_product: 0,
+    type_product: '',
+    sold_product: 0,
+    info_product: '',
+    id_shop: selectedShop?.id_shop || '',
+    subtype_product: '',
+    second_hand: 0,
+    surplus_product: 0,
+    expiration_product: null,
+    country_product: '',
+    locality_product: ''  
+  });
+  
+  setError(prevError => ({
+    ...prevError,
+    productError: '',
+  }));
+  
+  // IMPORTANT: We no longer reset isUpdatingProduct here
+  // This prevents the conflict with handleAddProduct
+  setSelectedProductToUpdate(null);
+};
+
 
   // Function to check if a product with the same name exists
   const verifyProductName = async (name_product, id_shop) => {
@@ -643,7 +648,7 @@ const ProductCreationFormFunctions = () => {
     productLimit,
     fetchProductsByShop,
     getAvailableProductTypesForShop,
-    handleImageUpload
+    handleImageUpload,
   };
 };
 

@@ -1,32 +1,62 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
-import ShopProductsList from './shop_products_list/ShopProductsList.jsx';
 import ProductCreationForm from './product_creation_form/ProductCreationForm.jsx';
+import ShopProductsList from './shop_products_list/ShopProductsList.jsx';
+import ProductManagementFunctions from './ProductManagementFunctions.jsx';
 
 const ProductManagement = () => {
   const { 
-    showProductManagement,
+    currentUser,
+    selectedShop,
     isUpdatingProduct,
-    selectedShop
+    selectedProductToUpdate,
+    showProductManagement,
+    setShowProductManagement,
+    setIsUpdatingProduct,
+    setSelectedShop,
+    setSelectedProductToUpdate
   } = useContext(AppContext);
 
-  // Debug logs to help troubleshoot
-  useEffect(() => {
-    console.log("ProductManagement rendering with states:", {
-      showProductManagement,
-      isUpdatingProduct,
-      hasSelectedShop: !!selectedShop
-    });
-  }, [showProductManagement, isUpdatingProduct, selectedShop]);
+  const { fetchProductsByShop } = ProductManagementFunctions();
+  const initialFetchDone = useRef(false);
 
-  // CLEAR CONDITIONAL LOGIC: If showProductManagement is true, show the list,
-  // otherwise show the creation/update form
-  if (showProductManagement) {
-    return <ShopProductsList />;
-  } else {
-    // When showProductManagement is false, show the product creation/update form
+  // Fetch products once when the component mounts or when selectedShop changes
+  useEffect(() => {
+    if (selectedShop?.id_shop && !initialFetchDone.current) {
+      console.log('ProductManagement - Fetching products for shop:', selectedShop.id_shop);
+      fetchProductsByShop();
+      initialFetchDone.current = true;
+    }
+  }, [selectedShop?.id_shop, fetchProductsByShop]);
+
+  // Reset initialFetchDone when shop changes
+  useEffect(() => {
+    if (selectedShop?.id_shop) {
+      initialFetchDone.current = false;
+    }
+  }, [selectedShop?.id_shop]);
+
+  // Log the current state for debugging
+  console.log('ProductManagement rendering with state:', {
+    isUpdatingProduct,
+    selectedProductToUpdate: selectedProductToUpdate?.id_product || null
+  });
+
+  // If no shop is selected, we can't manage products
+  if (!selectedShop) {
+    console.log('ProductManagement - No shop selected, cannot manage products');
+    return null;
+  }
+
+  // Simple conditional rendering based on isUpdatingProduct flag
+  // This flag now indicates both creation and update modes
+  if (isUpdatingProduct === true) {
+    console.log('ProductManagement - Showing ProductCreationForm');
     return <ProductCreationForm />;
   }
+
+  console.log('ProductManagement - Showing ShopProductsList');
+  return <ShopProductsList />;
 };
 
 export default ProductManagement;

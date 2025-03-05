@@ -29,7 +29,8 @@ const ShopProductsListFunctions = () => {
     setIsUpdatingProduct,
     refreshProductList,
     // Add the missing context values
-    setIsAddingShop
+    setIsAddingShop,
+    newProductData, setNewProductData
   } = useContext(AppContext);
 
   const { resetNewProductData } = ProductCreationFormFunctions();
@@ -268,35 +269,56 @@ const ShopProductsListFunctions = () => {
     confirmBulkDelete();
   };
 
-  // Modified function to actually show the ProductCreationForm
+  // UPDATE: Modified function to correctly handle product creation mode
   const handleAddProduct = () => {
     console.log('handleAddProduct clicked - Preparing to show product creation form');
-    // We need to set isUpdatingProduct to false to ensure we're in "create" mode
-    setIsUpdatingProduct(false);
-    // Clear any previously selected product to update
+    
+    // 1. First prepare an empty product with defaults and shop ID
+    const emptyProduct = {
+      name_product: '',
+      price_product: '',
+      discount_product: 0,
+      season_product: 'Todo el Año',
+      calification_product: 0,
+      type_product: '',
+      subtype_product: '',
+      sold_product: 0,
+      info_product: '',
+      id_shop: selectedShop?.id_shop || '',
+      second_hand: false,
+      surplus_product: 0,
+      expiration_product: null,
+      country_product: '',
+      locality_product: ''
+    };
+    
+    // 2. Set the new product data
+    setNewProductData(emptyProduct);
+    
+    // 3. Clear any product for update
     setSelectedProductToUpdate(null);
-    // Reset any form errors
+    
+    // 4. Reset errors
     setError(prevError => ({
       ...prevError,
       productError: '',
       imageError: ''
     }));
-    // Hide the product management screen - this should trigger ProductCreationForm to render
-    setShowProductManagement(false);
-    // Set isAddingShop to false to prevent the ShopCreationForm from showing
+    
+    // 5. Make sure we're not adding a shop
     setIsAddingShop(false);
     
-    // Add debug log to confirm state changes
-    console.log('Product form should now be displayed');
+    // 6. Set the mode flag to trigger ProductCreationForm display
+    setIsUpdatingProduct(true);
+    
+    console.log('Product creation mode activated');
   };
 
   const handleUpdateProduct = (id_product) => {
     const productToUpdate = products.find(p => p.id_product === id_product);
     if (productToUpdate) {
-      resetNewProductData();
       setSelectedProductToUpdate(productToUpdate);
       setIsUpdatingProduct(true);
-      setShowProductManagement(false);
     }
   };
 

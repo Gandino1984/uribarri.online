@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import ProductCreationFormFunctions from './ProductCreationFormFunctions.jsx';
 import AppContext from '../../../../app_context/AppContext';
 import styles from '../../../../../../public/css/ProductCreationForm.module.css';
-import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle, Camera, ImagePlus, Trash2 } from 'lucide-react';
+import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle, Camera, ImagePlus, Trash2, ArrowLeft } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 import CustomNumberInput from '../../../custom_number_input/CustomNumberInput';
 import { countries } from '../../../../../src/utils/app/countries.js';
@@ -26,7 +26,9 @@ const ProductCreationForm = () => {
     filterOptions,
     setShowProductManagement,
     isUpdatingProduct,
+    setIsUpdatingProduct,
     selectedProductToUpdate,
+    setSelectedProductToUpdate,
     productTypesAndSubtypes,
     setNewProductData,
     currentUser,
@@ -43,6 +45,23 @@ const ProductCreationForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
+  
+  // Animation configuration
+  const formAnimation = useSpring({
+    from: { 
+      opacity: 0,
+      transform: 'translateY(40px)'
+    },
+    to: { 
+      opacity: 1,
+      transform: 'translateY(0px)'
+    },
+    config: {
+      mass: 1,
+      tension: 280,
+      friction: 20
+    }
+  });
 
   // Get available product types based on shop type
   const availableProductTypes = selectedShop?.type_shop 
@@ -113,6 +132,7 @@ const ProductCreationForm = () => {
     }
   }, [isUpdatingProduct, selectedProductToUpdate]);
 
+  // Load data for editing if in update mode
   useEffect(() => {
     if (isUpdatingProduct && selectedProductToUpdate) {
       Object.keys(selectedProductToUpdate).forEach(key => {
@@ -125,8 +145,9 @@ const ProductCreationForm = () => {
           });
         }
       });
-    } else {
-      resetNewProductData();
+    } else if (isUpdatingProduct && !selectedProductToUpdate) {
+      // We're in "create new product" mode (isUpdatingProduct is true but no selectedProductToUpdate)
+      console.log('ProductCreationForm - In create new product mode');
     }
   }, [isUpdatingProduct, selectedProductToUpdate]);
 
@@ -139,24 +160,27 @@ const ProductCreationForm = () => {
 
   // Reset product type when shop changes
   useEffect(() => {
-    if (selectedShop && !isUpdatingProduct) {
+    if (selectedShop && !selectedProductToUpdate) {
       setNewProductData(prev => ({
         ...prev,
         type_product: '',
         subtype_product: ''
       }));
     }
-  }, [selectedShop, isUpdatingProduct, setNewProductData]);
+  }, [selectedShop, selectedProductToUpdate, setNewProductData]);
 
+  // UPDATE: Corrected handleViewProductList function
   const handleViewProductList = () => {
-    // Simply set showProductManagement to true to show the product list
+    console.log('Returning to product list from ProductCreationForm');
+    
+    // First reset product-related states
+    setIsUpdatingProduct(false);
+    setSelectedProductToUpdate(null);
+    
+    // Then set showProductManagement to ensure ProductManagement renders ShopProductsList
     setShowProductManagement(true);
     
-    // If we're in update mode, also reset those states
-    if (isUpdatingProduct) {
-      setIsUpdatingProduct(false);
-      setSelectedProductToUpdate(null);
-    }
+    console.log('Navigation back to product list complete');
   };
 
   const handleFormSubmit = async (e) => {
@@ -165,7 +189,7 @@ const ProductCreationForm = () => {
     try {
       let success;
       
-      if (isUpdatingProduct) {
+      if (selectedProductToUpdate) {
         // Update existing product with image if selected
         success = await handleUpdate(e, selectedImage);
         
@@ -196,7 +220,7 @@ const ProductCreationForm = () => {
 
   // Function to display product limit information
   const renderProductLimitInfo = () => {
-    if (isUpdatingProduct) return null; // Don't show during updates
+    if (selectedProductToUpdate) return null; // Don't show during updates
     
     // Determine indicator color based on how close user is to limit
     const percentUsed = (productCount / productLimit) * 100;
@@ -224,27 +248,27 @@ const ProductCreationForm = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.formField}>
+    <animated.div style={formAnimation} className={styles.container}>
+      <div className={styles.header}>
         <button 
           type="button" 
-          className={styles.submitButton}
+          className={styles.backButton}
           onClick={handleViewProductList}
+          title="Volver a la lista de productos"
         >
-          Ver Lista de Productos
-          <ScrollText size={20}/>
+          <ArrowLeft size={20} />
         </button>
+        
+        <h2 className={styles.formTitle}>
+          {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
+        </h2>
       </div>
-
-      <h2 className={styles.formTitle}>
-        {isUpdatingProduct ? 'Actualizar Producto' : '¿O quieres crear un nuevo producto?'}
-      </h2>
       
       {/* Product limit information */}
       {renderProductLimitInfo()}
       
       {/* Shop type guidance */}
-      {selectedShop && !isUpdatingProduct && (
+      {selectedShop && !selectedProductToUpdate && (
         <div className={styles.shopTypeGuidance}>
           <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
         </div>
@@ -356,7 +380,7 @@ const ProductCreationForm = () => {
             </div>
             
             <p className={styles.imageHelpText}>
-              {isUpdatingProduct 
+              {selectedProductToUpdate 
                 ? "La imagen se actualizará al guardar cambios" 
                 : "La imagen se subirá al crear el producto"}
               <br/>
@@ -516,9 +540,9 @@ const ProductCreationForm = () => {
           <button 
             type="submit" 
             className={styles.submitButton}
-            disabled={!isUpdatingProduct && productCount >= productLimit}
+            disabled={!selectedProductToUpdate && productCount >= productLimit}
           >
-            {isUpdatingProduct ? (
+            {selectedProductToUpdate ? (
               <>
                 Actualizar Producto
                 <Save size={16}/>
@@ -530,14 +554,14 @@ const ProductCreationForm = () => {
               </>
             )}
           </button>
-          {!isUpdatingProduct && productCount >= productLimit && (
+          {!selectedProductToUpdate && productCount >= productLimit && (
             <p className={styles.errorMessage}>
               Has alcanzado el límite de productos permitidos
             </p>
           )}
         </div>
       </form>
-    </div>
+    </animated.div>
   );
 };
 

@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormFunctions } from './ShopCreationFormFunctions.jsx';
-import { Box } from 'lucide-react';
+import { Box, ArrowLeft } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 
 const ShopCreationForm = () => {
@@ -13,7 +13,10 @@ const ShopCreationForm = () => {
     selectedShop,
     setError,
     setShowErrorCard,
-    currentUser
+    currentUser,
+    // UPDATE: Agregamos los estados necesarios para el botón volver
+    setShowShopCreationForm,
+    setSelectedShop
   } = useContext(AppContext);
 
   const {
@@ -117,6 +120,31 @@ useEffect(() => {
     }
   };
 
+  // UPDATE: Función para manejar el botón volver
+  const handleBack = () => {
+    // Limpiar el estado del formulario
+    setNewShop({
+      name_shop: '',
+      type_shop: '',
+      subtype_shop: '',
+      location_shop: '',
+      id_user: currentUser?.id_user || '',
+      calification_shop: 0, 
+      image_shop: '',
+      morning_open: '00:00',
+      morning_close: '00:00',
+      afternoon_open: '00:00',
+      afternoon_close: '00:00',
+      has_delivery: false,
+    });
+    
+    // Limpiar la tienda seleccionada
+    setSelectedShop(null);
+    
+    // Ocultar el formulario para volver a la lista
+    setShowShopCreationForm(false);
+  };
+
   // Get the list of shop types
   const shopTypes = Object.keys(shopTypesAndSubtypes);
   const subtypes = newShop.type_shop ? shopTypesAndSubtypes[newShop.type_shop] : [];
@@ -125,6 +153,14 @@ useEffect(() => {
     <animated.div style={formAnimation} className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>   
+          {/* UPDATE: Agregamos el botón de volver */}
+          <button 
+            onClick={handleBack}
+            className={styles.backButton}
+            title="Volver a la lista de comercios"
+          >
+            <ArrowLeft size={20} />
+          </button>
           <h3 className={styles.headerTitle}>
             {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
           </h3>

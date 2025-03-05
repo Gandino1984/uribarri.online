@@ -9,15 +9,10 @@ const ShopManagement = () => {
   const { 
     currentUser, 
     showShopCreationForm, 
-    isAddingShop,
     shops,
     setshowShopManagement,
-    setIsAddingShop,
-    setShowShopCreationForm,
     showProductManagement,
     selectedShop,
-    // Add this to track if we should show the product form
-    isUpdatingProduct
   } = useContext(AppContext);
   
   // UPDATE: Usar un ref para rastrear si ya hemos buscado las tiendas
@@ -48,19 +43,23 @@ const ShopManagement = () => {
     return null;
   }
 
-  // MODIFIED LOGIC: Always render ProductManagement if a shop is selected,
-  // regardless of showProductManagement state
-  if (selectedShop) {
-    return <ProductManagement />;
+  // UPDATE: Implementar lógica de renderizado que respete la jerarquía completa
+  
+  // Determinar qué componente renderizar basado en las banderas de estado
+  let componentToRender;
+  
+  if (showProductManagement && selectedShop) {
+    // Si estamos en gestión de productos y hay una tienda seleccionada, mostrar ProductManagement
+    componentToRender = <ProductManagement />;
+  } else if (showShopCreationForm) {
+    // Si estamos en creación/edición de tienda, mostrar el formulario
+    componentToRender = <ShopCreationForm />;
+  } else {
+    // Por defecto, mostrar la lista de tiendas
+    componentToRender = <ShopsListBySeller />;
   }
-
-  // Only render ShopCreationForm if explicitly requested via showShopCreationForm flag
-  if (showShopCreationForm) {
-    return <ShopCreationForm />;
-  }
-
-  // Always show the seller's shops list by default, even if empty
-  return <ShopsListBySeller fetchUserShops={false} />;
+  
+  return componentToRender;
 };
 
 export default ShopManagement;
