@@ -6,6 +6,8 @@
     width: 100%;
     gap: 1rem;
     padding: 1rem;
+    max-width: 72rem; /* UPDATE: Set consistent max-width for the entire container */
+    margin: 0 auto; /* UPDATE: Center container horizontally */
 }
 
 .shopInfo {
@@ -37,7 +39,7 @@
 
 .listHeader {
     width: 100%;
-    max-width: 72rem;
+    max-width: 100%; /* UPDATE: Match container width */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -110,7 +112,7 @@
     background-color: var(--saturated-blue);
 }
 
-/* NEW: Enhanced Filter button styles */
+/* Enhanced Filter button styles */
 .filterButton {
     color: #2563eb;
     position: relative;
@@ -131,7 +133,7 @@
     background-color: #2563eb;
 }
 
-/* NEW: Filter button icon container for rotation animation */
+/* Filter button icon container for rotation animation */
 .filterButtonIcon {
     position: absolute;
     right: 0.5rem;
@@ -142,7 +144,7 @@
     will-change: transform;
 }
 
-/* NEW: Filter badge with enhanced style */
+/* Filter badge with enhanced style */
 .filterBadge {
     position: absolute;
     top: -8px;
@@ -163,9 +165,10 @@
     z-index: 1;
 }
 
+/* UPDATE: Table container with fixed width */
 .tableContainer {
     width: 100%;
-    max-width: 72rem;
+    max-width: 100%; /* Match container width */
     overflow-x: auto;
 }
 
@@ -240,6 +243,8 @@
 
 .noProducts {
     color: #666;
+    width: 100%; /* UPDATE: Match container width */
+    text-align: center; /* Center text */
 }
 
 .actionsCell {
@@ -266,8 +271,7 @@
     color: var(--saturated-blue);
 }
 
-/* Add these styles to your ShopProductsList.module.css file */
-
+/* Search input styles */
 .searchContainer {
     margin: 1rem 0;
     width: 100%;
@@ -275,7 +279,7 @@
     justify-content: center;
   }
   
-  .searchInputWrapper {
+.searchInputWrapper {
     position: relative;
     width: 100%;
     max-width: 500px;
@@ -284,32 +288,30 @@
     justify-content: center;
     padding-top: 0.5rem;
     padding-left: 0.5rem;
-  }
+}
   
-  .searchIcon {
-    /* position: absolute; */
-    /* left: 12px; */
+.searchIcon {
     margin-left: 0.5rem;
     color: #666;
     pointer-events: none;
-  }
+}
   
-  .searchInput {
+.searchInput {
     width: 100%;
     padding: 10px 35px 10px 40px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
     transition: all 0.3s ease;
-  }
+}
   
-  .searchInput:focus {
+.searchInput:focus {
     outline: none;
     border-color: #4a90e2;
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-  }
+}
   
-  .clearSearchButton {
+.clearSearchButton {
     position: absolute;
     right: 10px;
     background: none;
@@ -323,12 +325,24 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-  }
+}
   
-  .clearSearchButton:hover {
+.clearSearchButton:hover {
     color: #666;
     background-color: #f1f1f1;
-  }
+}
+
+/* UPDATE: Style for the 'no shop selected' message */
+.noShopSelected {
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 
 @media (max-width: 768px) {
     .buttonText {

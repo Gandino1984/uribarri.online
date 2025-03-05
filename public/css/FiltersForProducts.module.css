@@ -1,7 +1,8 @@
-/* FiltersForProducts.module.css - Enhanced with folding animation effects */
+/* FiltersForProducts.module.css - Updated for consistent width */
 
 .filtersContainer {
   width: 100%;
+  max-width: 100%; /* UPDATE: Match parent container width */
   margin-bottom: 1rem;
   padding: 0;
   background-color: white;
