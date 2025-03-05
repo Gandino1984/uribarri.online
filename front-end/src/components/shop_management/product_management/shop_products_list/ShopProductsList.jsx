@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
 import ShopProductsListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
@@ -32,15 +32,22 @@ const ShopProductsList = () => {
     setModalMessage,
     productListKey,
     setShowProductManagement,
-    setshowShopManagement
+    setshowShopManagement,
+    refreshProductList,
+    success, setSuccess,
+    setShowSuccessCard
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
   const [showProductCard, setShowProductCard] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
-
   
+  // NEW: Add a ref to track deletion in progress
+  const deletionInProgress = useRef(false);
+  // NEW: Add a ref to track what product we're deleting
+  const currentDeletingProduct = useRef(null);
+
   const {
     filterProducts,
     deleteProduct,
@@ -52,16 +59,15 @@ const ShopProductsList = () => {
     handleUpdateProduct,
     getImageUrl,
     handleProductImageDoubleClick,
+    fetchProductsByShop
   } = ShopProductsListFunctions();
 
-  const { fetchProductsByShop } = ProductManagementFunctions();
+  const { fetchProductsByShop: fetchProducts } = ProductManagementFunctions();
 
-  
   const handleBack = () => {
     setShowProductManagement(false);
   };
 
-  
   const mainContentAnimation = useSpring({
     from: { transform: 'translateY(100px)', opacity: 0 },
     to: { 
@@ -83,7 +89,6 @@ const ShopProductsList = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  
   useEffect(() => {
     console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
     if (selectedShop?.id_shop) {
@@ -99,8 +104,6 @@ const ShopProductsList = () => {
       return;
     }
 
-    console.log(`Filtering ${products.length} products with filters:`, filters);
-    
     // First apply filters
     let filtered = filterProducts(products, filters);
     
@@ -125,43 +128,102 @@ const ShopProductsList = () => {
       });
     }
     
-    console.log(`Filtered to ${filtered.length} products`);
     setFilteredProducts(filtered);
     setDisplayedProducts(filtered);
   }, [products, filters, searchTerm]);
 
-  // Handle deletion confirmation
+  // FIXED: Completely rewritten deletion handler to prevent multiple deletion attempts
   useEffect(() => {
-    const handleConfirmedDelete = async () => {
-      if (isAccepted) {
-        if (productToDelete) {
-          // Single product deletion
-          console.log('Deleting product:', productToDelete);
-          try {
+    // Only run if isAccepted changes to true and we're not already in the middle of deletion
+    if (isAccepted && !deletionInProgress.current) {
+      const handleConfirmedDelete = async () => {
+        try {
+          // Set flag to prevent duplicate deletions
+          deletionInProgress.current = true;
+          
+          // Clear any existing success messages
+          setSuccess(prev => ({
+            ...prev,
+            productSuccess: '',
+            createSuccess: '',
+            updateSuccess: '',
+            deleteSuccess: ''
+          }));
+          
+          console.log('Beginning product deletion process');
+          
+          if (productToDelete) {
+            // Store current product ID being deleted to avoid re-processing
+            currentDeletingProduct.current = productToDelete;
+            console.log('Deleting single product with ID:', productToDelete);
+            
             const result = await deleteProduct(productToDelete);
-
-            console.log('Delete result:', result);
+            console.log('Delete API result:', result);
+            
             if (result.success) {
+              console.log('Product deleted successfully, fetching updated product list');
+              
+              // First fetch updated products
               await fetchProductsByShop();
+              
+              // Set a success message for deletion
+              setSuccess(prev => ({
+                ...prev,
+                deleteSuccess: "Producto eliminado exitosamente" 
+              }));
+              setShowSuccessCard(true);
+              
+              // Refresh UI
+              refreshProductList();
+            } else {
+              console.error('Product deletion failed:', result.message);
+              setError(prevError => ({
+                ...prevError,
+                productError: result.message || "Error al eliminar el producto"
+              }));
             }
-          } catch (error) {
-            console.error('Error deleting product:', error);
-          } finally {
-            setProductToDelete(null);
-            setIsAccepted(false);
-            clearError();
+          } else if (selectedProducts.size > 0) {
+            // Bulk deletion
+            console.log('Performing bulk deletion of products');
+            const bulkResult = await bulkDeleteProducts();
+            
+            if (bulkResult.success) {
+              console.log(`Bulk deletion successful: ${bulkResult.successCount} products deleted`);
+              
+              // Set success message for bulk deletion
+              setSuccess(prev => ({
+                ...prev,
+                deleteSuccess: `${bulkResult.successCount} productos eliminados exitosamente`
+              }));
+              setShowSuccessCard(true);
+              
+              // Refresh product list
+              refreshProductList();
+            } else {
+              console.error('Bulk deletion failed:', bulkResult.message);
+            }
           }
-        } else {
-          // Bulk deletion
-          await bulkDeleteProducts();
+        } catch (error) {
+          console.error('Error during product deletion process:', error);
+          setError(prevError => ({
+            ...prevError,
+            productError: "Error al eliminar el producto: " + (error.message || "Error desconocido")
+          }));
+        } finally {
+          // Reset all delete-related state
+          setProductToDelete(null);
           setIsAccepted(false);
           clearError();
+          
+          // Reset our deletion flags
+          deletionInProgress.current = false;
+          currentDeletingProduct.current = null;
         }
-      }
-    };
+      };
 
-    handleConfirmedDelete();
-  }, [isAccepted, productToDelete]);
+      handleConfirmedDelete();
+    }
+  }, [isAccepted]);
 
   // Handle deletion cancellation
   useEffect(() => {
@@ -169,16 +231,18 @@ const ShopProductsList = () => {
       setProductToDelete(null);
       setIsDeclined(false);
       clearError();
+      
+      // Reset deletion flags on cancel
+      deletionInProgress.current = false;
+      currentDeletingProduct.current = null;
     }
   }, [isDeclined]);
 
-  
   const handleProductRowClick = (product) => {
     setSelectedProductDetails(product);
     setShowProductCard(true);
   };
 
-  
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     try {
@@ -191,15 +255,12 @@ const ShopProductsList = () => {
     }
   };
 
-  
   const formatSecondHand = (value) => {
     return value ? 'Sí' : 'No';
   };
 
-  
   const handleSelectForImageUpload = (id_product) => {
     setSelectedProductForImageUpload(id_product);
-    
     
     setSelectedProducts(prev => {
       const newSelected = new Set(prev);
@@ -210,7 +271,8 @@ const ShopProductsList = () => {
     });
   };
 
-
+  // Rest of component remains the same...
+  
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
     return (
@@ -363,6 +425,8 @@ const ShopProductsList = () => {
                         className={`${styles.actionButton} ${styles.deleteButton}`}
                         title="Eliminar producto"
                         type="button"
+                        // Disable if we're already deleting this product
+                        disabled={currentDeletingProduct.current === product.id_product}
                       >
                         <Trash2 size={18} />
                       </button>

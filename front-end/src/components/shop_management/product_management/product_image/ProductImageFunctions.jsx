@@ -83,15 +83,30 @@ export const ProductImageFunctions = () => {
     }
   };
 
+  // UPDATE: Improved getProductImageUrl function with better error handling
   const getProductImageUrl = (imagePath) => {
-    if (!imagePath) return null;
+    // Handle null/undefined paths gracefully
+    if (!imagePath) {
+      console.log('No image path provided to format');
+      return null;
+    }
     
-    // Debug info
-    console.log('Formatting image URL for path:', imagePath);
-    const formattedUrl = formatImageUrl(imagePath);
-    console.log('Formatted URL:', formattedUrl);
+    // Handle empty strings
+    if (typeof imagePath === 'string' && imagePath.trim() === '') {
+      console.log('Empty image path provided to format');
+      return null;
+    }
     
-    return formattedUrl;
+    try {
+      // Format the image URL
+      const formattedUrl = formatImageUrl(imagePath);
+      return formattedUrl;
+    } catch (error) {
+      // Log but don't crash
+      console.error('Error formatting image URL:', error);
+      console.error('Problem image path:', imagePath);
+      return null;
+    }
   };
 
   return {
