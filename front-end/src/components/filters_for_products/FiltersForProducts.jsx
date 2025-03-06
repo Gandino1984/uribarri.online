@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
 import { useSpring, animated, config } from '@react-spring/web';
-import { Search, Calendar, Package } from 'lucide-react';
+import { Search, Calendar, Package, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsFunctions';
 
 const FiltersForProducts = () => {
@@ -23,24 +23,54 @@ const FiltersForProducts = () => {
     handleExpirationChange,
     handleNearExpirationChange,
     handleResetFilters,
-    getAvailableSubtypes
+    getAvailableSubtypes,
+    getActiveFiltersCount
   } = useFiltersForProducts();
 
-  // Animation for the entire filters container
+  // Enhanced folding animation
   const containerAnimation = useSpring({
-    from: { transform: 'translateY(30px)', opacity: 0 },
-    to: { 
-      transform: isVisible ? 'translateY(0px)' : 'translateY(30px)',
-      opacity: isVisible ? 1 : 0 
+    from: { 
+      opacity: 0,
+      height: 0,
+      transform: 'perspective(500px) rotateX(-10deg)',
+      transformOrigin: 'top'
     },
-    config: config.gentle,
-    delay: 200
+    to: { 
+      opacity: isVisible ? 1 : 0,
+      height: isVisible ? 'auto' : 0,
+      transform: isVisible 
+        ? 'perspective(500px) rotateX(0deg)' 
+        : 'perspective(500px) rotateX(-10deg)',
+      transformOrigin: 'top'
+    },
+    config: {
+      tension: 280,
+      friction: 30,
+      clamp: true
+    }
+  });
+
+  // Content opacity and transform - separate to allow different timing
+  const contentAnimation = useSpring({
+    from: { 
+      opacity: 0,
+      transform: 'translateY(-20px)'
+    },
+    to: { 
+      opacity: isVisible ? 1 : 0,
+      transform: isVisible ? 'translateY(0px)' : 'translateY(-20px)'
+    },
+    config: {
+      tension: 280,
+      friction: 30
+    },
+    delay: isVisible ? 100 : 0 // Small delay on appearance for better sequential animation
   });
 
   return (
     <animated.div style={containerAnimation} className={styles.filtersContainer}>
-      <div className={styles.filterControls}>
-        {/* UPDATE: Reorganized select filters into a row */}
+      <animated.div style={contentAnimation} className={styles.filterControls}>
+        {/* Select Filters Row */}
         <div className={styles.selectFiltersRow}>
           {/* Season Filter */}
           <div className={styles.filterWrapper}>
@@ -109,7 +139,7 @@ const FiltersForProducts = () => {
           </div>
         </div>
 
-        {/* UPDATE: Checkbox Filters Row with improved structure */}
+        {/* Checkbox Filters Row */}
         <div className={styles.checkboxFiltersRow}>
           {/* Discount Checkbox */}
           <div className={styles.checkboxWrapper}>
@@ -120,7 +150,7 @@ const FiltersForProducts = () => {
                 onChange={handleOnSaleChange}
                 className={styles.checkbox}
               />
-            Oferta
+              Oferta
             </label>
           </div>
 
@@ -154,7 +184,7 @@ const FiltersForProducts = () => {
           </div>
         </div>
 
-        {/* Expiration Date Range with improved structure */}
+        {/* Expiration Date Range */}
         <div className={styles.dateRangeContainer}>
           <div className={styles.dateLabel}>
             <Calendar size={14} />
@@ -181,16 +211,17 @@ const FiltersForProducts = () => {
           </div>
         </div>
 
+        {/* Reset Button */}
         <div className={styles.resetButtonWrapper}>
-            <button
+          <button
             onClick={handleResetFilters}
             className={styles.resetButton}
             type="button"
-            >
-                Borrar filtros
-            </button>
-          </div>
-      </div>
+          >
+            Borrar filtros
+          </button>
+        </div>
+      </animated.div>
     </animated.div>
   );
 };

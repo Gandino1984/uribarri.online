@@ -13,7 +13,10 @@ export const ShopCreationFormFunctions = () => {
     selectedShop,
     setInfo,
     setShowInfoCard,
-    shops
+    shops,
+    // UPDATE: Agregamos setSuccess y setShowSuccessCard para mostrar mensajes de éxito
+    setSuccess,
+    setShowSuccessCard
   } = useContext(AppContext);
 
   const validateSchedule = (formData) => {
@@ -122,6 +125,14 @@ export const ShopCreationFormFunctions = () => {
         throw new Error(response.data.error);
       }
   
+      // UPDATE: Agregar mensaje de éxito
+      setSuccess(prevSuccess => ({
+        ...prevSuccess,
+        shopSuccess: "¡Comercio creado exitosamente!"
+      }));
+      setShowSuccessCard(true);
+      
+      // Actualizar la lista de tiendas y cerrar el formulario
       setShops(prevShops => [...(Array.isArray(prevShops) ? prevShops : []), response.data.data]);
       setShowShopCreationForm(false);
   
@@ -185,11 +196,21 @@ export const ShopCreationFormFunctions = () => {
         throw new Error(response.data.error);
       }
   
+      // UPDATE: Actualizar la tienda en el estado
       setShops(prevShops => 
         prevShops.map(shop => 
           shop.id_shop === id_shop ? { ...shop, ...updateData } : shop
         )
       );
+      
+      // UPDATE: Mostrar mensaje de éxito
+      setSuccess(prevSuccess => ({
+        ...prevSuccess,
+        shopSuccess: "¡Comercio actualizado exitosamente!"
+      }));
+      setShowSuccessCard(true);
+      
+      // Cerrar el formulario y limpiar la selección
       setShowShopCreationForm(false);
       setSelectedShop(null);
     } catch (err) {

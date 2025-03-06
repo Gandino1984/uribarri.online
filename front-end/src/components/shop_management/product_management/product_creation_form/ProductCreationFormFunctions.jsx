@@ -33,6 +33,8 @@ const ProductCreationFormFunctions = () => {
   // Estado para llevar la cuenta de productos y el límite
   const [productCount, setProductCount] = useState(0);
   const [productLimit, setProductLimit] = useState(7); // Valor por defecto para usuarios no sponsor
+  // UPDATE: Add state to track current operation type to prevent conflicts
+  const [currentOperation, setCurrentOperation] = useState(null); // can be 'create', 'update', or null
 
   // Función para obtener productos por tienda
   const fetchProductsByShop = async () => {
@@ -49,8 +51,17 @@ const ProductCreationFormFunctions = () => {
       
       console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
       
+      // UPDATE: Filter out invalid empty products
+      const validProducts = fetchedProducts.filter(product => 
+        product.name_product && product.name_product.trim() !== ''
+      );
+      
+      if (validProducts.length !== fetchedProducts.length) {
+        console.warn(`Filtered out ${fetchedProducts.length - validProducts.length} empty products`);
+      }
+      
       // Sort products by ID (most recent first)
-      const sortedProducts = [...fetchedProducts].sort((a, b) => {
+      const sortedProducts = [...validProducts].sort((a, b) => {
         return b.id_product - a.id_product;
       });
       
@@ -98,27 +109,41 @@ const ProductCreationFormFunctions = () => {
   }, [selectedShop, setNewProductData]);
 
 
-  // Enhanced effect to handle modal responses for both create and update
+  // UPDATE: Completely revised effect to handle modal responses with operation type tracking
   useEffect(() => {
     const handleModalResponse = async () => {
-      // Only proceed if we have a modal response (accepted or declined)
-      if (isAccepted) {
-        if (selectedProductToUpdate) {
-          // Update case
-          const updateData = {
-            ...newProductData,
-            id_product: selectedProductToUpdate.id_product,
-            price_product: Number(newProductData.price_product).toFixed(2)
-          };
-          await updateProductInDB(updateData);
-        } else {
-          // Create case
-          await createProduct();
+      // Only proceed if we have a modal response (accepted or declined) AND an active operation
+      if (isAccepted && currentOperation) {
+        console.log(`Handling confirmed ${currentOperation} operation`);
+        
+        try {
+          if (currentOperation === 'update' && selectedProductToUpdate) {
+            // Update case
+            const updateData = {
+              ...newProductData,
+              id_product: selectedProductToUpdate.id_product,
+              price_product: Number(newProductData.price_product).toFixed(2)
+            };
+            await updateProductInDB(updateData);
+          } else if (currentOperation === 'create') {
+            // Create case
+            await createProduct();
+          }
+        } catch (error) {
+          console.error(`Error in ${currentOperation} operation:`, error);
+          setError(prevError => ({
+            ...prevError,
+            productError: `Error en la operación de ${currentOperation === 'update' ? 'actualización' : 'creación'}: ${error.message}`
+          }));
+          setShowErrorCard(true);
+        } finally {
+          // Reset operation and modal state
+          setCurrentOperation(null);
+          setIsAccepted(false);
         }
-        // Reset the modal response state
-        setIsAccepted(false);
       } else if (isDeclined) {
-        // User canceled, reset modal response state
+        // User canceled, reset operation and modal state
+        setCurrentOperation(null);
         setIsDeclined(false);
       }
     };
@@ -275,31 +300,36 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  const resetNewProductData = () => {
-    setNewProductData({
-      name_product: '',
-      price_product: '',
-      discount_product: 0,
-      season_product: 'Todo el Año',
-      calification_product: 0,
-      type_product: '',
-      sold_product: 0,
-      info_product: '',
-      id_shop: selectedShop?.id_shop || '',
-      subtype_product: '',
-      second_hand: 0,
-      surplus_product: 0,
-      expiration_product: null,
-      country_product: '',  // Añadido campo de país de origen
-      locality_product: ''  // Añadido campo de localidad de origen
-    });
-    setError(prevError => ({
-      ...prevError,
-      productError: '',
-    }));
-    setIsUpdatingProduct(false);
-    setSelectedProductToUpdate(null);
-  };
+
+const resetNewProductData = () => {
+  setNewProductData({
+    name_product: '',
+    price_product: '',
+    discount_product: 0,
+    season_product: 'Todo el Año',
+    calification_product: 0,
+    type_product: '',
+    sold_product: 0,
+    info_product: '',
+    id_shop: selectedShop?.id_shop || '',
+    subtype_product: '',
+    second_hand: 0,
+    surplus_product: 0,
+    expiration_product: null,
+    country_product: '',
+    locality_product: ''  
+  });
+  
+  setError(prevError => ({
+    ...prevError,
+    productError: '',
+  }));
+  
+  // IMPORTANT: We no longer reset isUpdatingProduct here
+  // This prevents the conflict with handleAddProduct
+  setSelectedProductToUpdate(null);
+};
+
 
   // Function to check if a product with the same name exists
   const verifyProductName = async (name_product, id_shop) => {
@@ -409,7 +439,7 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  // Create a new product
+  // UPDATE: Updated createProduct with better success message handling
   const createProduct = async () => {
     try {
       // Verificar que no se haya alcanzado el límite
@@ -428,6 +458,7 @@ const ProductCreationFormFunctions = () => {
         price_product: Number(newProductData.price_product).toFixed(2),
       };
 
+      console.log('Creating product with data:', formattedData);
       const response = await axiosInstance.post('/product/create', formattedData);
 
       if (response.data.error) {
@@ -448,10 +479,14 @@ const ProductCreationFormFunctions = () => {
         // Force refresh the product list in other components
         refreshProductList();
         
-        // Show success message
+        // UPDATE: Use createSuccess for creation operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          productSuccess: "Producto creado exitosamente"
+          createSuccess: "Producto creado exitosamente",
+          // Clear other operations to avoid confusion
+          productSuccess: '',
+          updateSuccess: '',
+          deleteSuccess: ''
         }));
         setShowSuccessCard(true);
         
@@ -476,7 +511,7 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  // Handle form submission for creating a new product
+  // UPDATE: Updated handleSubmit with operation tracking
   const handleSubmit = async (e, imageFile = null) => {
     e.preventDefault();
     try {
@@ -490,6 +525,9 @@ const ProductCreationFormFunctions = () => {
         setModalMessage(
           `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la creación de este producto?`
         );
+        
+        // UPDATE: Set current operation type before showing modal
+        setCurrentOperation('create');
         setIsModalOpen(true);
         
         // Store the image file for later use
@@ -525,7 +563,7 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-  // Handle updating an existing product
+  // UPDATE: Updated handleUpdate with operation tracking
   const handleUpdate = async (e, imageFile = null) => {
     e.preventDefault();
     try {
@@ -546,6 +584,9 @@ const ProductCreationFormFunctions = () => {
           setModalMessage(
             `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la actualización de este producto?`
           );
+          
+          // UPDATE: Set current operation type before showing modal
+          setCurrentOperation('update');
           setIsModalOpen(true);
           return false; // Exit and wait for modal response in useEffect
         }
@@ -579,7 +620,7 @@ const ProductCreationFormFunctions = () => {
     }
   };
   
-  // Update a product in the database
+  // UPDATE: Updated updateProductInDB with improved success message handling
   const updateProductInDB = async (updateData) => {
     try {
       const response = await axiosInstance.patch('/product/update', updateData);
@@ -609,9 +650,14 @@ const ProductCreationFormFunctions = () => {
         setIsUpdatingProduct(false);
         setSelectedProductToUpdate(null);
         
+        // UPDATE: Use updateSuccess for update operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          updateSuccess: "Producto actualizado correctamente"
+          updateSuccess: "Producto actualizado correctamente",
+          // Clear other operations to avoid confusion
+          productSuccess: '',
+          createSuccess: '',
+          deleteSuccess: ''
         }));
         setShowSuccessCard(true);
         
@@ -643,7 +689,7 @@ const ProductCreationFormFunctions = () => {
     productLimit,
     fetchProductsByShop,
     getAvailableProductTypesForShop,
-    handleImageUpload
+    handleImageUpload,
   };
 };
 

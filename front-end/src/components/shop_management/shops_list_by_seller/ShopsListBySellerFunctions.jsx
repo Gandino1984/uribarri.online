@@ -15,7 +15,10 @@ export const ShopsListBySellerFunctions = () => {
     setModalMessage,
     isAccepted,
     setIsAccepted,
-    currentUser
+    currentUser,
+    // UPDATE: Añadimos setSuccess y setShowSuccessCard para mostrar mensajes de éxito
+    setSuccess,
+    setShowSuccessCard
   } = useContext(AppContext);
 
   // Estado para llevar la cuenta de tiendas y el límite
@@ -77,14 +80,24 @@ export const ShopsListBySellerFunctions = () => {
       return;
     }
     
+    // UPDATE: Limpiar la tienda seleccionada antes de mostrar el formulario
+    setSelectedShop(null);
     setShowShopCreationForm(true);
     setShowProductManagement(false);
-  }, [shopCount, shopLimit, currentUser, setError, setShowShopCreationForm, setShowProductManagement]);
+  }, [shopCount, shopLimit, currentUser, setError, setShowShopCreationForm, setShowProductManagement, setSelectedShop]);
 
+  // UPDATE: Mejorada la función handleUpdateShop
   const handleUpdateShop = useCallback((shop) => {
-    setSelectedShop(shop); // Set the selected shop to be updated
-    setShowShopCreationForm(true); // Show the ShopCreationForm for updating
-    setShowProductManagement(false); // Ensure product management is hidden
+    console.log('ShopsListBySellerFunctions - handleUpdateShop called with shop:', shop);
+    
+    // Primero configuramos la tienda seleccionada
+    setSelectedShop(shop);
+    
+    // Luego mostramos el formulario y ocultamos la gestión de productos
+    setShowShopCreationForm(true);
+    setShowProductManagement(false);
+    
+    console.log('Navigation states updated for edit: showShopCreationForm=true, showProductManagement=false');
   }, [setSelectedShop, setShowShopCreationForm, setShowProductManagement]);
 
   // Keep track of the shop to be deleted
@@ -111,6 +124,10 @@ export const ShopsListBySellerFunctions = () => {
         }
     
         setShops(existingShops => existingShops.filter(shop => shop.id_shop !== shopToDelete));
+        
+        // UPDATE: Mostrar mensaje de éxito
+        setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado correctamente" }));
+        setShowSuccessCard(true);
       } catch (err) {
         console.error('Error deleting shop:', err);
       } finally {
@@ -121,7 +138,7 @@ export const ShopsListBySellerFunctions = () => {
     };
 
     deleteShop();
-  }, [isAccepted, shopToDelete, setError, setShops, setIsAccepted]);
+  }, [isAccepted, shopToDelete, setError, setShops, setIsAccepted, setSuccess, setShowSuccessCard]);
 
   return {
     fetchUserShops,

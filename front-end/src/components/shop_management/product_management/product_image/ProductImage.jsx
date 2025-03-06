@@ -25,11 +25,13 @@ const ProductImage = ({ id_product }) => {
   } = ProductImageFunctions();
 
   // Find the product based on id_product
-  const product = products.find(p => p.id_product === id_product);
+  // UPDATE: Add a null check to prevent errors when product is not found
+  const product = products?.find(p => p.id_product === id_product) || null;
 
   // Update imageUrl when product changes or after upload
   useEffect(() => {
-    if (product?.image_product) {
+    // UPDATE: Only try to get image URL if product exists and has an image
+    if (product && product.image_product) {
       const url = getProductImageUrl(product.image_product);
       setImageUrl(url);
       
@@ -43,7 +45,7 @@ const ProductImage = ({ id_product }) => {
     } else {
       setImageUrl(null);
     }
-  }, [product, product?.image_product, lastUpdated]);
+  }, [product, lastUpdated]);
 
   const handleImageUpload = async (event) => {
     event.stopPropagation(); // Prevent event bubbling
@@ -87,12 +89,13 @@ const ProductImage = ({ id_product }) => {
       {imageUrl ? (
         <img
           src={imageUrl}
-          alt={`Product image for ${product.name_product || 'product'}`}
+          // UPDATE: Safe access to product name with fallback
+          alt={`Product image for ${product?.name_product || 'product'}`}
           className={styles.productImage}
           key={`product-image-${id_product}-${lastUpdated}`} // Force re-render when updated
           onError={(e) => {
             console.error('Image failed to load:', e.target.src);
-            console.error('Original image path:', product.image_product);
+            console.error('Original image path:', product?.image_product);
             e.target.style.display = 'none';
             
             // Add fallback content

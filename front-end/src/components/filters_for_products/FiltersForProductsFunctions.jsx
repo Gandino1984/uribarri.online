@@ -14,7 +14,7 @@ const FiltersForProductsFunctions = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expirationDateRange, setExpirationDateRange] = useState({ start: '', end: '' });
   
-  // UPDATE: Usando useRef para evitar demasiadas actualizaciones
+  // UPDATE: Using useState instead of a ref for the timeout
   const [filterUpdateTimeout, setFilterUpdateTimeout] = useState(null);
 
   // Set visibility after mount
@@ -24,6 +24,27 @@ const FiltersForProductsFunctions = () => {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // UPDATE: Fixed function to count active filters
+  const getActiveFiltersCount = useCallback(() => {
+    let count = 0;
+    
+    // Count each actively selected filter
+    Object.entries(filters).forEach(([key, value]) => {
+      // Only count values that represent a user's active selection
+      // Numbers like 0 and booleans like false should not be counted as active selections
+      // unless they're meant to be actual filter values
+      if (value !== null && value !== '' && value !== 0 && value !== false) {
+        count++;
+      }
+    });
+    
+    // Count date range filters
+    if (expirationDateRange.start) count++;
+    if (expirationDateRange.end) count++;
+    
+    return count;
+  }, [filters, expirationDateRange]);
 
   // UPDATE: Aplicar los filtros con un pequeño debounce para mejor rendimiento
   useEffect(() => {
@@ -235,7 +256,8 @@ const FiltersForProductsFunctions = () => {
     handleExpirationChange,
     handleNearExpirationChange,
     handleResetFilters,
-    getAvailableSubtypes
+    getAvailableSubtypes,
+    getActiveFiltersCount
   };
 };
 

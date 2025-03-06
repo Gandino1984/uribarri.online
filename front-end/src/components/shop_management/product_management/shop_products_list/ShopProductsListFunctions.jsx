@@ -29,7 +29,10 @@ const ShopProductsListFunctions = () => {
     setIsUpdatingProduct,
     refreshProductList,
     // Add the missing context values
-    setIsAddingShop
+    setIsAddingShop,
+    newProductData, setNewProductData,
+    setSuccess, // For showing success messages
+    setShowSuccessCard
   } = useContext(AppContext);
 
   const { resetNewProductData } = ProductCreationFormFunctions();
@@ -85,23 +88,35 @@ const ShopProductsListFunctions = () => {
     });
   };
 
+  // UPDATE: Improved fetchProductsByShop function with validation for empty products
   const fetchProductsByShop = async () => {
     try {
       if (!selectedShop?.id_shop) {
         console.error('-> ShopProductsListFunctions.jsx - fetchProductsByShop - No hay comercio seleccionado');
         setError(prevError => ({ ...prevError, shopError: "No hay comercio seleccionado" }));
         setProducts([]);
-        return;
+        return [];
       }
+      
+      console.log(`Fetching products for shop ID: ${selectedShop.id_shop}`);
       const response = await axiosInstance.get(`/product/by-shop-id/${selectedShop.id_shop}`);
 
       const fetchedProducts = response.data.data || [];
       
-      console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
+      // Additional validation - skip empty products
+      const validProducts = fetchedProducts.filter(product => 
+        product.name_product && product.name_product.trim() !== ''
+      );
       
-      // Always sort the products to maintain consistent order after updates
+      if (validProducts.length !== fetchedProducts.length) {
+        console.warn(`Filtered out ${fetchedProducts.length - validProducts.length} empty products`);
+      }
+      
+      console.log(`Successfully fetched ${validProducts.length} valid products for shop ${selectedShop.name_shop}`);
+      
+      // Sort the products to maintain consistent order after updates
       // Most recent products first (assuming higher ID means more recent)
-      const sortedProducts = [...fetchedProducts].sort((a, b) => {
+      const sortedProducts = [...validProducts].sort((a, b) => {
         return b.id_product - a.id_product;
       });
       
@@ -127,7 +142,7 @@ const ShopProductsListFunctions = () => {
         productError: "No hay productos seleccionados para eliminar"
       }));
       setShowErrorCard(true);
-      return false;
+      return { success: false, message: "No products selected" };
     }
 
     try {
@@ -155,16 +170,32 @@ const ShopProductsListFunctions = () => {
 
       // Show result message
       const message = `${successCount} productos eliminados exitosamente${failCount > 0 ? `, ${failCount} fallos` : ''}`;
-      setError(prevError => ({
-        ...prevError,
-        productError: failCount > 0 ? message : ''
-      }));
       
       if (failCount > 0) {
+        setError(prevError => ({
+          ...prevError,
+          productError: message
+        }));
         setShowErrorCard(true);
+      } else {
+        // Set success message for the deletion
+        setSuccess(prev => ({
+          ...prev,
+          deleteSuccess: message,
+          // Clear any other product messages to avoid confusion
+          productSuccess: '',
+          createSuccess: '',
+          updateSuccess: ''
+        }));
+        setShowSuccessCard(true);
       }
 
-      return successCount > 0;
+      return { 
+        success: successCount > 0, 
+        message, 
+        successCount, 
+        failCount 
+      };
     } catch (err) {
       console.error('Error in bulk deletion:', err);
       setError(prevError => ({
@@ -172,7 +203,7 @@ const ShopProductsListFunctions = () => {
         productError: "Error al eliminar los productos seleccionados"
       }));
       setShowErrorCard(true);
-      return false;
+      return { success: false, message: "Error in bulk deletion" };
     }
   };
 
@@ -207,56 +238,127 @@ const ShopProductsListFunctions = () => {
     });
   };
 
-  const deleteProduct = async (id_product) => {
-    try {
-      // Fetch the product to get the image path
-      const product = products.find((p) => p.id_product === id_product);
-      if (!product) {
-        throw new Error("Producto no encontrado");
-      }
-  
-      // Delete the image and folder if the product has an image
-      if (product.image_product) {
-        // Get the image path without the host prefix
+
+// UPDATE: Improved deleteProduct function that handles race conditions
+const deleteProduct = async (id_product) => {
+  try {
+    console.log(`Starting deletion of product with ID: ${id_product}`);
+    
+    // Input validation
+    if (!id_product) {
+      console.error('Invalid product ID for deletion');
+      return { success: false, message: "ID de producto inválido" };
+    }
+    
+    // Find the product in the current state
+    const product = products.find(p => p.id_product === id_product);
+    if (!product) {
+      console.error(`Product with ID ${id_product} not found in current products list`);
+      return { success: false, message: "Producto no encontrado" };
+    }
+    
+    // If the product has an image, handle image deletion
+    if (product.image_product) {
+      try {
+        // Parse image path information
         const imagePath = product.image_product;
-        // Get the folder path without the file name
         const folderPath = imagePath.split('/').slice(0, -1).join('/');
         
-        // Send the relative paths to the backend
-        await axiosInstance.delete(`/product/delete-image/${id_product}`, {
-          data: {
-            imagePath: imagePath,
-            folderPath: folderPath
-          }
+        console.log(`Deleting image for product ${id_product}:`, { imagePath, folderPath });
+        
+        // First delete the image via the dedicated endpoint
+        const imageDeleteResponse = await axiosInstance.delete(`/product/delete-image/${id_product}`, {
+          data: { imagePath, folderPath }
         });
+        
+        console.log('Image deletion response:', imageDeleteResponse.data);
+      } catch (imageError) {
+        // Log error but continue with product deletion
+        console.error('Error deleting product image (continuing with deletion):', imageError);
       }
-  
-      // Delete the product from the database
+    }
+
+    // Now delete the actual product from the database with error handling for race conditions
+    try {
+      console.log(`Sending API request to delete product with ID: ${id_product}`);
       const response = await axiosInstance.delete(`/product/remove-by-id/${id_product}`);
-  
-      if (response.data.success) {
-        return { success: true, message: response.data.success };
+      
+      // Verify deletion success
+      if (response.data && response.data.success) {
+        console.log('Product deletion API success response:', response.data);
+        
+        // Verify the ID returned matches what we sent
+        if (response.data.data && response.data.data.toString() === id_product.toString()) {
+          console.log('Deletion verified by matching IDs');
+          
+          // Apply proper success message for deletion
+          setSuccess(prev => ({
+            ...prev,
+            deleteSuccess: "Producto eliminado exitosamente",
+            // Clear other product-related messages to avoid confusion
+            productSuccess: '',
+            createSuccess: '',
+            updateSuccess: ''
+          }));
+          setShowSuccessCard(true);
+          
+          return { 
+            success: true, 
+            message: response.data.success || "Producto eliminado exitosamente" 
+          };
+        } else {
+          console.warn('Product deletion API returned success but with unexpected data:', response.data);
+          return { success: true, message: "Producto eliminado" };
+        }
       } else {
-        setError((prevError) => ({
+        // This could be a race condition - check if product was already deleted
+        if (response.data && response.data.error === "Producto no encontrado") {
+          console.warn('Product not found in database. It may have been already deleted.');
+          // We'll count this as a successful deletion since the product is gone
+          return { success: true, message: "Producto eliminado (ya no existía)" };
+        }
+        
+        console.error('API reported error during product deletion:', response.data);
+        setError(prevError => ({
           ...prevError,
-          productError: response.data.error || "Error al eliminar el producto",
+          productError: response.data.error || "Error al eliminar el producto"
         }));
         setShowErrorCard(true);
-        return { success: false, message: response.data.error };
+        return { success: false, message: response.data.error || "Error al eliminar el producto" };
       }
-    } catch (err) {
-      console.error('Error deleting product:', err);
-      setError((prevError) => ({
-        ...prevError,
-        productError: "Error al eliminar el producto",
-      }));
-      setShowErrorCard(true);
-      return { success: false, message: "Error al eliminar el producto" };
+    } catch (apiError) {
+      // Check if the error is a 404, which could mean the product was already deleted
+      if (apiError.response && apiError.response.status === 404) {
+        console.warn('Got 404 response - product may have been already deleted');
+        // Even though we got an error, the product is gone, so technically this is a success
+        return { success: true, message: "Producto eliminado (ya no existía)" };
+      }
+      
+      throw apiError; // Re-throw for other errors
     }
-  };
+  } catch (err) {
+    console.error('Exception in deleteProduct function:', err);
+    setError(prevError => ({
+      ...prevError,
+      productError: "Error al eliminar el producto: " + (err.message || "Error desconocido")
+    }));
+    setShowErrorCard(true);
+    return { success: false, message: "Error al eliminar el producto" };
+  }
+};
 
   const handleDeleteProduct = async (id_product) => {
     console.log('Attempting to delete product:', id_product);
+    
+    // First clear any existing success or error messages
+    setSuccess(prev => ({
+      ...prev,
+      deleteSuccess: '',
+      productSuccess: '',
+      createSuccess: '',
+      updateSuccess: ''
+    }));
+    
     setProductToDelete(id_product);
     setModalMessage('¿Estás seguro que deseas eliminar este producto?');
     setIsModalOpen(true);
@@ -265,38 +367,67 @@ const ShopProductsListFunctions = () => {
   };
 
   const handleBulkDelete = () => {
+    // Clear success messages before starting the deletion process
+    setSuccess(prev => ({
+      ...prev,
+      deleteSuccess: '',
+      productSuccess: '',
+      createSuccess: '',
+      updateSuccess: ''
+    }));
+    
     confirmBulkDelete();
   };
 
-  // Modified function to actually show the ProductCreationForm
   const handleAddProduct = () => {
     console.log('handleAddProduct clicked - Preparing to show product creation form');
-    // We need to set isUpdatingProduct to false to ensure we're in "create" mode
-    setIsUpdatingProduct(false);
-    // Clear any previously selected product to update
+    
+    // 1. First prepare an empty product with defaults and shop ID
+    const emptyProduct = {
+      name_product: '',
+      price_product: '',
+      discount_product: 0,
+      season_product: 'Todo el Año',
+      calification_product: 0,
+      type_product: '',
+      subtype_product: '',
+      sold_product: 0,
+      info_product: '',
+      id_shop: selectedShop?.id_shop || '',
+      second_hand: false,
+      surplus_product: 0,
+      expiration_product: null,
+      country_product: '',
+      locality_product: ''
+    };
+    
+    // 2. Set the new product data
+    setNewProductData(emptyProduct);
+    
+    // 3. Clear any product for update
     setSelectedProductToUpdate(null);
-    // Reset any form errors
+    
+    // 4. Reset errors
     setError(prevError => ({
       ...prevError,
       productError: '',
       imageError: ''
     }));
-    // Hide the product management screen - this should trigger ProductCreationForm to render
-    setShowProductManagement(false);
-    // Set isAddingShop to false to prevent the ShopCreationForm from showing
+    
+    // 5. Make sure we're not adding a shop
     setIsAddingShop(false);
     
-    // Add debug log to confirm state changes
-    console.log('Product form should now be displayed');
+    // 6. Set the mode flag to trigger ProductCreationForm display
+    setIsUpdatingProduct(true);
+    
+    console.log('Product creation mode activated');
   };
 
   const handleUpdateProduct = (id_product) => {
     const productToUpdate = products.find(p => p.id_product === id_product);
     if (productToUpdate) {
-      resetNewProductData();
       setSelectedProductToUpdate(productToUpdate);
       setIsUpdatingProduct(true);
-      setShowProductManagement(false);
     }
   };
 
