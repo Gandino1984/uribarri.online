@@ -1,6 +1,13 @@
-import { useContext } from 'react';
+import { useContext, useCallback } from 'react';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import AppContext from '../../../app_context/AppContext.js';
+// UPDATE: Importamos las utilidades para gestión de imágenes correctamente
+import { 
+  uploadShopCover, 
+  formatImageUrl 
+} from '../../../utils/image/imageUploadService.js';
+import { validateImageFile } from '../../../utils/image/imageValidation.js';
+import { optimizeImage } from '../../../utils/image/imageOptimizer.js';
 
 export const ShopCreationFormFunctions = () => {
   const {
@@ -16,8 +23,44 @@ export const ShopCreationFormFunctions = () => {
     shops,
     // UPDATE: Agregamos setSuccess y setShowSuccessCard para mostrar mensajes de éxito
     setSuccess,
-    setShowSuccessCard
+    setShowSuccessCard,
+    // UPDATE: Agregamos los estados para gestión de subida de imágenes
+    setUploading
   } = useContext(AppContext);
+
+  // UPDATE: Función para refrescar la lista de tiendas desde el servidor
+  const refreshShopsList = useCallback(async () => {
+    try {
+      if (!currentUser?.id_user) {
+        console.warn('No se puede refrescar la lista de tiendas: falta el ID de usuario');
+        return;
+      }
+
+      console.log('Refrescando lista de tiendas para el usuario:', currentUser.id_user);
+      const response = await axiosInstance.get(`/shop/by-user-id/${currentUser.id_user}`);
+      
+      if (response?.data?.data) {
+        const fetchedShops = response.data.data;
+        console.log(`Se encontraron ${fetchedShops.length} tiendas para el usuario:`, fetchedShops);
+        
+        // Actualizar directamente el estado de tiendas (sin usar la función de estado anterior)
+        // Esto asegura que reemplazamos completamente el array de tiendas con los datos frescos
+        setShops(fetchedShops);
+        
+        // Forzar un re-render del componente ShopsListBySeller
+        // Podríamos añadir un estado adicional en el contexto para este propósito
+        // setShopListRefreshKey(Date.now()); // Si tuvieras este estado en el contexto
+        
+        return fetchedShops;
+      } else {
+        console.warn('Respuesta inválida al obtener tiendas:', response);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error al refrescar lista de tiendas:', error);
+      return [];
+    }
+  }, [currentUser?.id_user, setShops]);
 
   const validateSchedule = (formData) => {
     const {
@@ -66,6 +109,123 @@ export const ShopCreationFormFunctions = () => {
     };
   };
 
+  // UPDATE: Añadimos función para manejar la carga de imágenes
+  const handleImageUpload = async (file, shopId, onProgress) => {
+    if (!file || !shopId) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "No hay archivo de imagen o comercio seleccionado"
+      }));
+      return false;
+    }
+
+    try {
+      // Primero validamos la imagen
+      await validateImageFile(file);
+      
+      // Luego optimizamos la imagen si es necesario
+      let optimizedFile = file;
+      if (file.size > 150 * 1024) { // Solo optimizar si es mayor a 150KB
+        try {
+          // Optimizar imagen usando la función de imageOptimizer.js
+          optimizedFile = await optimizeImage(file, {
+            maxWidth: 1200,
+            maxHeight: 1200,
+            quality: 0.85
+          });
+          console.log('Imagen optimizada:', {
+            originalSize: Math.round(file.size / 1024) + 'KB',
+            optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+          });
+        } catch (optimizeError) {
+          console.warn('Falló la optimización de imagen, usando archivo original:', optimizeError);
+        }
+      }
+
+      setUploading(true);
+      
+      // Usamos la función uploadShopCover de las utilidades existentes
+      // Creamos FormData directamente para asegurarnos de que el campo tenga el nombre correcto
+      const formData = new FormData();
+      formData.append('shopCover', optimizedFile); // Este nombre debe coincidir con lo esperado en el backend
+      
+      // Configuramos la petición
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'X-Shop-ID': shopId
+        },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          if (onProgress) onProgress(progress);
+        }
+      };
+      
+      console.log('Enviando petición a /shop/upload-cover-image con formData:', {
+        file: optimizedFile.name,
+        size: optimizedFile.size,
+        type: optimizedFile.type,
+        shopId: shopId
+      });
+      
+      // Hacemos la petición directamente en lugar de usar la función de utilidad
+      const response = await axiosInstance.post('/shop/upload-cover-image', formData, config);
+      
+      console.log('Respuesta de subida de imagen:', response.data);
+      
+      if (!response.data?.data?.image_shop) {
+        throw new Error('Respuesta inválida del servidor: falta la ruta image_shop');
+      }
+      
+      const imagePath = response.data.data.image_shop;
+
+      if (imagePath) {
+        // Actualizamos la tienda en el array de tiendas con la nueva imagen
+        setShops(prevShops => {
+          // Si prevShops no es un array o está vacío, manejarlo
+          if (!Array.isArray(prevShops) || prevShops.length === 0) {
+            console.warn('Array de tiendas vacío o inválido al actualizar imagen');
+            return prevShops;
+          }
+          
+          console.log('Actualizando imagen de tienda:', shopId, 'Ruta:', imagePath);
+          
+          // Encontrar y actualizar la tienda
+          return prevShops.map(shop => {
+            if (shop.id_shop === shopId) {
+              console.log('Actualizando tienda con nueva imagen:', shop.name_shop);
+              return { ...shop, image_shop: imagePath };
+            }
+            return shop;
+          });
+        });
+        
+        setSuccess(prevSuccess => ({
+          ...prevSuccess,
+          imageSuccess: "Imagen subida correctamente"
+        }));
+        setShowSuccessCard(true);
+        
+        // UPDATE: Refrescar la lista de tiendas después de subir la imagen
+        await refreshShopsList();
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error al subir imagen:', error);
+      setError(prevError => ({
+        ...prevError,
+        imageError: error.message || "Error al subir la imagen"
+      }));
+      setShowErrorCard(true);
+      return false;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleCreateShop = async (formData) => {
     try {
       // Ensure we have a valid user ID and category information
@@ -76,7 +236,7 @@ export const ShopCreationFormFunctions = () => {
           shopError: 'Error: Usuario no identificado'
         }));
         setShowErrorCard(true);
-        return;
+        return false;
       }
   
       // Ensure the user ID matches the current user
@@ -110,7 +270,7 @@ export const ShopCreationFormFunctions = () => {
             : 'Para crear más comercios tienes que ser patrocinador del proyecto.'
         }));
         setShowErrorCard(true);
-        return;
+        return false;
       }
   
       // Create the shop
@@ -120,11 +280,31 @@ export const ShopCreationFormFunctions = () => {
         if (response.data.error.includes("Ya existe una comercio con ese nombre")) {
           setInfo(prevInfo => ({ ...prevInfo, shopInfo: "Ya existe una tienda con ese nombre" }));
           setShowInfoCard(true);
-          return;
+          return false;
         }
         throw new Error(response.data.error);
       }
   
+      // UPDATE: Obtener la tienda creada
+      const newShop = response.data.data;
+      console.log('Nueva tienda creada con éxito:', newShop);
+      
+      // IMPORTANT: Asegurarnos de que la tienda tenga todos los campos necesarios
+      if (!newShop || !newShop.id_shop) {
+        console.error('La respuesta del servidor no incluye los datos esperados de la tienda:', response.data);
+        throw new Error('Respuesta inválida del servidor');
+      }
+      
+      // UPDATE: Actualizar la lista de tiendas inmediatamente para que aparezca en la lista
+      // DEBUG: Mostrar la lista de tiendas antes de la actualización
+      console.log('Estado actual de las tiendas antes de agregar:', shops);
+      
+      const updatedShops = Array.isArray(shops) ? [...shops, newShop] : [newShop];
+      console.log('Lista actualizada de tiendas después de agregar:', updatedShops);
+      
+      // Actualizar el estado global con la nueva lista que incluye la tienda creada
+      setShops(updatedShops);
+      
       // UPDATE: Agregar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
@@ -132,10 +312,19 @@ export const ShopCreationFormFunctions = () => {
       }));
       setShowSuccessCard(true);
       
-      // Actualizar la lista de tiendas y cerrar el formulario
-      setShops(prevShops => [...(Array.isArray(prevShops) ? prevShops : []), response.data.data]);
+      // Cerrar el formulario después de actualizar la lista
       setShowShopCreationForm(false);
+      
+      // También intentamos refrescar desde el servidor para estar seguros
+      try {
+        await refreshShopsList();
+      } catch (refreshError) {
+        console.error('Error al refrescar la lista después de crear tienda:', refreshError);
+        // Continuamos incluso si el refresco falla, ya que agregamos manualmente
+      }
   
+      // UPDATE: Devolvemos el objeto tienda para poder utilizar el ID
+      return newShop;
     } catch (err) {
       console.error('Error creating shop:', err);
       setError(prevError => ({ 
@@ -143,6 +332,7 @@ export const ShopCreationFormFunctions = () => {
         shopError: 'Error al crear el comercio.' 
       }));
       setShowErrorCard(true);
+      return false;
     }
   };
 
@@ -189,19 +379,43 @@ export const ShopCreationFormFunctions = () => {
         if (response.data.error.includes("Ya existe una comercio con ese nombre")) {
           setInfo(prevInfo => ({ ...prevInfo, shopInfo: "Ya existe una tienda con ese nombre" }));
           setShowInfoCard(true);
-          return;
+          return false;
         }
         setError(prevError => ({ ...prevError, shopError: response.data.error }));
         setShowErrorCard(true);
         throw new Error(response.data.error);
       }
   
-      // UPDATE: Actualizar la tienda en el estado
-      setShops(prevShops => 
-        prevShops.map(shop => 
-          shop.id_shop === id_shop ? { ...shop, ...updateData } : shop
-        )
-      );
+      // UPDATE: Actualizar la tienda en el estado con los datos completos de la respuesta
+      const updatedShop = response.data.data || { ...updateData, id_shop };
+      
+      setShops(prevShops => {
+        if (!Array.isArray(prevShops)) {
+          console.warn('prevShops no es un array, inicializando un nuevo array');
+          return [updatedShop];
+        }
+        
+        // Crear una copia para no mutar el estado directamente
+        const updatedShops = [...prevShops];
+        
+        // Encontrar el índice de la tienda a actualizar
+        const shopIndex = updatedShops.findIndex(shop => shop.id_shop === id_shop);
+        
+        if (shopIndex !== -1) {
+          // Mantener los campos existentes y sobrescribir con los nuevos
+          updatedShops[shopIndex] = { 
+            ...updatedShops[shopIndex], 
+            ...updatedShop
+          };
+          console.log('Tienda actualizada en la posición', shopIndex, updatedShops[shopIndex]);
+        } else {
+          // Si no existe, agregarla (caso inusual pero posible)
+          console.log('La tienda no existía en la lista, agregándola');
+          updatedShops.push(updatedShop);
+        }
+        
+        return updatedShops;
+      });
       
       // UPDATE: Mostrar mensaje de éxito
       setSuccess(prevSuccess => ({
@@ -213,6 +427,12 @@ export const ShopCreationFormFunctions = () => {
       // Cerrar el formulario y limpiar la selección
       setShowShopCreationForm(false);
       setSelectedShop(null);
+      
+      // UPDATE: Refrescar la lista de tiendas desde el servidor
+      await refreshShopsList();
+      
+      // UPDATE: Devolver un objeto con el ID de la tienda para la subida de imagen
+      return { id_shop };
     } catch (err) {
       if (!err.message?.includes("Ya existe una comercio con ese nombre")) {
         console.error('Error updating shop:', err);
@@ -222,12 +442,17 @@ export const ShopCreationFormFunctions = () => {
         }));
         setShowErrorCard(true);
       }
+      return false;
     }
   };
 
   return {
     handleCreateShop,
     handleUpdateShop,
-    validateSchedule
+    validateSchedule,
+    // UPDATE: Exportamos la función de carga de imágenes
+    handleImageUpload,
+    // UPDATE: Exportamos la función para refrescar la lista de tiendas
+    refreshShopsList
   };
 };
