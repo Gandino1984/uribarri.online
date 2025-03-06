@@ -98,6 +98,47 @@
   transform: scale(1.05);
 }
 
+/* Styles for the update button */
+.updateButtonContainer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.updateButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--saturated-blue, #3b82f6);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.updateButton:hover {
+  background-color: var(--saturated-blue, #3b82f6);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.editIcon {
+  transition: transform 0.2s ease;
+}
+
+.updateButton:hover .editIcon {
+  transform: scale(1.1);
+}
+
+.updateButtonText {
+  font-size: 0.875rem;
+}
+
 /* UPDATE: Estilos para el estado minimizado */
 .minimized {
   max-width: 200px;
@@ -159,6 +200,10 @@
   .minimized {
     max-width: 220px;
   }
+  
+  .updateButton {
+    padding: 0.5rem 0.875rem;
+  }
 }
 
 /* Tablets (768px and up) */
@@ -179,6 +224,14 @@
 
   .minimized {
     max-width: 240px;
+  }
+  
+  .updateButton {
+    padding: 0.5rem 1rem;
+  }
+  
+  .updateButtonText {
+    font-size: 0.9375rem;
   }
 }
 

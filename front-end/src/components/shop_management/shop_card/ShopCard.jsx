@@ -1,14 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { MapPinned, Clock, Minimize2, Maximize2 } from 'lucide-react';
+import { MapPinned, Minimize2, Maximize2, Edit } from 'lucide-react';
 import styles from '../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from '../shop_card/shop_cover_image/ShopCoverImage.jsx';
+import AppContext from '../../../app_context/AppContext.js';
 
 const ShopCard = ({ shop }) => {
-  // UPDATE: Estado para controlar si la tarjeta está minimizada o no
+  // Estado para controlar si la tarjeta está minimizada o no
   const [minimized, setMinimized] = useState(false);
+  
+  // Get currentUser and functions needed for shop update
+  const { 
+    currentUser,
+    setSelectedShop,
+    setShowShopCreationForm,
+    setShowProductManagement
+  } = useContext(AppContext);
 
-  // UPDATE: Animación para la transición entre estados
+  // Check if the current user is a seller
+  const isSeller = currentUser?.type_user === 'seller';
+
+  // Function to handle edit button click
+  const handleUpdateShop = (e) => {
+    e.stopPropagation(); // Prevent any parent click handlers from firing
+    
+    console.log('ShopCard - handleUpdateShop called with shop:', shop);
+    
+    // Set the selected shop
+    setSelectedShop(shop);
+    
+    // Show the shop creation form (for editing) and hide product management
+    setShowShopCreationForm(true);
+    setShowProductManagement(false);
+    
+    console.log('Navigation states updated for edit: showShopCreationForm=true, showProductManagement=false');
+  };
+
+  // Animación para la transición entre estados
   const cardAnimation = useSpring({
     from: { 
       opacity: 0,
@@ -37,14 +65,14 @@ const ShopCard = ({ shop }) => {
     });
   };
 
-  // UPDATE: Función para alternar entre minimizado y maximizado
+  // Función para alternar entre minimizado y maximizado
   const toggleMinimized = () => {
     setMinimized(prevState => !prevState);
   };
 
   return (
     <div className={`${styles.container} ${minimized ? styles.minimized : ''}`}>
-      {/* UPDATE: Botón minimizado que aparece cuando la tarjeta está minimizada */}
+      {/* Botón minimizado que aparece cuando la tarjeta está minimizada */}
       {minimized ? (
         <animated.div style={cardAnimation} className={styles.minimizedCard} onClick={toggleMinimized}>
           <div className={styles.minimizedContent}>
@@ -55,7 +83,7 @@ const ShopCard = ({ shop }) => {
       ) : (
         <>
           <div className={styles.headerControls}>
-            {/* UPDATE: Botón para minimizar la tarjeta */}
+            {/* Botón para minimizar la tarjeta */}
             <button 
               className={styles.minimizeButton} 
               onClick={toggleMinimized}
@@ -63,6 +91,18 @@ const ShopCard = ({ shop }) => {
             >
               <Minimize2 size={16} />
             </button>
+            
+            {/* Edit button for sellers only */}
+            {isSeller && (
+              <button 
+                className={styles.minimizeButton} 
+                onClick={handleUpdateShop}
+                title="Editar comercio"
+                style={{ marginLeft: '8px' }}
+              >
+                <Edit size={16} />
+              </button>
+            )}
           </div>
           <ShopCoverImage id_shop={shop.id_shop} />
           
