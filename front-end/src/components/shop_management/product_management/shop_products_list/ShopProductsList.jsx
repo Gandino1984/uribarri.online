@@ -11,6 +11,7 @@ import { useSpring, animated } from '@react-spring/web';
 import ShopCard from '../../shop_card/ShopCard.jsx'; 
 import ConfirmationModal from '../../../confirmation_modal/ConfirmationModal.jsx';
 import ProductManagementFunctions from '../ProductManagementFunctions.jsx';
+import useFiltersForProducts from '../../../filters_for_products/FiltersForProductsFunctions.jsx';
 
 const ShopProductsList = () => {
   const {
@@ -35,7 +36,8 @@ const ShopProductsList = () => {
     setshowShopManagement,
     refreshProductList,
     success, setSuccess,
-    setShowSuccessCard
+    setShowSuccessCard,
+    setShowErrorCard
   } = useContext(AppContext);
 
   const [contentVisible, setContentVisible] = useState(false);
@@ -43,31 +45,29 @@ const ShopProductsList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
   
-  // NEW: State to manage filter visibility
+  // State to manage filter visibility
   const [showFilters, setShowFilters] = useState(false);
   
-  // NEW: Function to toggle filter visibility
+  // UPDATE: Use the hook from FiltersForProductsFunctions for consistent counting
+  const { getActiveFiltersCount } = useFiltersForProducts();
+  
+  // Function to toggle filter visibility
   const toggleFilters = () => {
     setShowFilters(prevState => !prevState);
   };
   
-  // NEW: Get active filters count
-  const getActiveFiltersCount = () => {
-    return Object.values(filters).filter(value => value !== null).length;
-  };
-  
-  // NEW: Active filters count
+  // UPDATE: Use the function to get active filters count
   const activeFiltersCount = getActiveFiltersCount();
   
-  // NEW: Animate the filter button
+  // Animate the filter button
   const filterButtonAnimation = useSpring({
     transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
     config: { tension: 300, friction: 10 }
   });
   
-  // NEW: Add a ref to track deletion in progress
+  // Add a ref to track deletion in progress
   const deletionInProgress = useRef(false);
-  // NEW: Add a ref to track what product we're deleting
+  // Add a ref to track what product we're deleting
   const currentDeletingProduct = useRef(null);
 
   const {
@@ -110,12 +110,6 @@ const ShopProductsList = () => {
     }, 300);
     return () => clearTimeout(timer);
   }, []);
-
-  // Update displayed products based on filters
-  useEffect(() => {
-    // Re-calculate active filter count when filters change
-    getActiveFiltersCount();
-  }, [filters]);
 
   useEffect(() => {
     console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
@@ -160,7 +154,7 @@ const ShopProductsList = () => {
     setDisplayedProducts(filtered);
   }, [products, filters, searchTerm]);
 
-  // FIXED: Completely rewritten deletion handler to prevent multiple deletion attempts
+  // Completely rewritten deletion handler to prevent multiple deletion attempts
   useEffect(() => {
     // Only run if isAccepted changes to true and we're not already in the middle of deletion
     if (isAccepted && !deletionInProgress.current) {
@@ -299,7 +293,7 @@ const ShopProductsList = () => {
     });
   };
 
-  // UPDATE: Handler for bulk update button
+  // Handler for bulk update button
   const handleBulkUpdate = () => {
     // Check if a product is selected
     if (selectedProducts.size === 1) {
@@ -335,8 +329,6 @@ const ShopProductsList = () => {
       setShowErrorCard(true);
     }
   };
-  
-  // Rest of component remains the same...
   
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
@@ -433,7 +425,7 @@ const ShopProductsList = () => {
                   <Search size={18} className={styles.searchIcon} />
                 </div>
                 
-                {/* NEW: Enhanced Filter Toggle Button with Animation */}
+                {/* Enhanced Filter Toggle Button with Animation */}
                 <button
                   onClick={toggleFilters}
                   className={`${styles.actionButton} ${styles.filterButton} ${showFilters ? styles.active : ''}`}

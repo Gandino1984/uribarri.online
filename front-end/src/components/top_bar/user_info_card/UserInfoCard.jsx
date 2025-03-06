@@ -26,67 +26,37 @@ const UserInfoCard = () => {
 
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768);
 
-  // Reference for tracking click timing
-  const clickRef = useRef({
-    count: 0,
-    timer: null,
-    lastClickTime: 0
-  });
-  
-  // Unified click handler with improved detection
+  // UPDATE: Simplified click handler to fix the repeated file dialog issue
   const handleImageClick = () => {
     // Do nothing if uploading or no user
     if (uploading || !currentUser) return;
     
-    const now = Date.now();
-    const timeSinceLastClick = now - clickRef.current.lastClickTime;
-    clickRef.current.lastClickTime = now;
-    
-    // Check if this is a double click (clicks within 300ms of each other)
-    if (timeSinceLastClick < 300) {
-      // This is a double click - clear any pending timer
-      if (clickRef.current.timer) {
-        clearTimeout(clickRef.current.timer);
-        clickRef.current.timer = null;
-      }
-      
-      clickRef.current.count = 0; // Reset counter
-      
-      // Handle double click - open modal
-      if (currentUser?.image_user) {
-        const imageUrl = getImageUrl(currentUser.image_user);
-        if (imageUrl) {
-          setModalImageUrl(imageUrl);
-          setIsImageModalOpen(true);
-        }
+    // For double-click (opening image modal)
+    if (currentUser?.image_user) {
+      // Open file selector on single click
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
       }
     } else {
-      // This is a first click or clicks spaced far apart
-      // Set a timer to handle as single click if no second click comes
-      if (clickRef.current.timer) {
-        clearTimeout(clickRef.current.timer);
+      // If no image yet, always just open file selector
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
       }
-      
-      clickRef.current.timer = setTimeout(() => {
-        // This is a single click - open file selection
-        console.log('Single click detected - opening file selector');
-        if (fileInputRef.current) {
-          fileInputRef.current.click();
-        }
-        clickRef.current.count = 0;
-        clickRef.current.timer = null;
-      }, 300);
     }
   };
   
-  // Clean up timer on unmount
-  useEffect(() => {
-    return () => {
-      if (clickRef.current.timer) {
-        clearTimeout(clickRef.current.timer);
+  // UPDATE: Added separate handler for viewing the image in modal
+  const handleImageDoubleClick = () => {
+    if (uploading || !currentUser) return;
+    
+    if (currentUser?.image_user) {
+      const imageUrl = getImageUrl(currentUser.image_user);
+      if (imageUrl) {
+        setModalImageUrl(imageUrl);
+        setIsImageModalOpen(true);
       }
-    };
-  }, []);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -139,6 +109,7 @@ const UserInfoCard = () => {
             <div 
               className={styles.profileImageContainer}
               onClick={handleImageClick}
+              onDoubleClick={handleImageDoubleClick}
             >
               {/* Profile image */}
               <img

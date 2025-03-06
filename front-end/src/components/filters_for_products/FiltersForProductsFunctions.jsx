@@ -14,7 +14,7 @@ const FiltersForProductsFunctions = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expirationDateRange, setExpirationDateRange] = useState({ start: '', end: '' });
   
-  // UPDATE: Usando useRef para evitar demasiadas actualizaciones
+  // UPDATE: Using useState instead of a ref for the timeout
   const [filterUpdateTimeout, setFilterUpdateTimeout] = useState(null);
 
   // Set visibility after mount
@@ -25,13 +25,18 @@ const FiltersForProductsFunctions = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // UPDATE: Function to count active filters
+  // UPDATE: Fixed function to count active filters
   const getActiveFiltersCount = useCallback(() => {
     let count = 0;
     
-    // Count each non-null filter
-    Object.values(filters).forEach(value => {
-      if (value !== null) count++;
+    // Count each actively selected filter
+    Object.entries(filters).forEach(([key, value]) => {
+      // Only count values that represent a user's active selection
+      // Numbers like 0 and booleans like false should not be counted as active selections
+      // unless they're meant to be actual filter values
+      if (value !== null && value !== '' && value !== 0 && value !== false) {
+        count++;
+      }
     });
     
     // Count date range filters
