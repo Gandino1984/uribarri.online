@@ -314,69 +314,7 @@ const ShopCreationForm = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formFields}>
             <div className={styles.formField}>
-              <input
-                type="text"
-                placeholder='Nombre del comercio:'
-                value={newShop.name_shop}
-                onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
-                className={styles.input}
-                required
-              />
-            </div>
-            
-            <div className={styles.formField}>
-              <select
-                value={newShop.type_shop}
-                onChange={(e) => {
-                  setNewShop({
-                    ...newShop, 
-                    type_shop: e.target.value,
-                    subtype_shop: ''
-                  })
-                }}
-                className={styles.input} 
-                required
-              >
-                <option value="" disabled>Categoría</option>
-                {shopTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-
-            {newShop.type_shop && (
-              <div className={styles.formField}>
-                <select
-                  value={newShop.subtype_shop}
-                  onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
-                  className={styles.input} 
-                  required
-                >
-                  <option value="" disabled>Subcategoría</option>
-                  {subtypes.map(subtype => (
-                    <option key={subtype} value={subtype}>{subtype}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-            
-            <div className={styles.formField}>
-              <input
-                type="text"
-                placeholder='Dirección del comercio:'
-                value={newShop.location_shop}
-                onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
-                className={styles.input}
-                required
-              />
-            </div>
-
-            {/* UPDATE: Añadimos la sección de carga de imagen */}
-            <div className={styles.formField}>
               <div className={styles.imageUploadContainer || styles.formField}>
-                <label className={styles.imageUploadLabel || styles.fieldLabel}>
-                  Imagen del Comercio
-                </label>
                 
                 <div className={styles.imagePreviewBox || styles.previewContainer} style={{
                   width: '100%',
@@ -456,66 +394,117 @@ const ShopCreationForm = () => {
                     disabled={uploading}
                   />
                   
-                  <label 
-                    htmlFor="shop_image" 
-                    className={styles.imageButton || styles.submitButton}
-                    style={{ 
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      opacity: uploading ? 0.6 : 1,
-                      cursor: uploading ? 'not-allowed' : 'pointer',
-                      padding: '8px 15px',
-                      backgroundColor: '#4A90E2',
-                      color: 'white',
-                      borderRadius: '4px',
-                      border: 'none',
-                      fontSize: '14px'
-                    }}
-                  >
-                    <Camera size={16} />
-                    Seleccionar imagen
-                  </label>
-                  
-                  {selectedImage && (
-                    <button
-                      type="button"
-                      className={styles.clearImageButton || styles.submitButton}
-                      onClick={handleClearImage}
-                      disabled={uploading}
+                  <div>
+                    <label 
+                      htmlFor="shop_image" 
+                      className={styles.imageButton || styles.submitButton}
                       style={{ 
                         display: 'flex',
                         alignItems: 'center',
                         gap: '5px',
-                        backgroundColor: '#E25549',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '8px 15px',
-                        cursor: uploading ? 'not-allowed' : 'pointer',
                         opacity: uploading ? 0.6 : 1,
+                        cursor: uploading ? 'not-allowed' : 'pointer',
+                        padding: '8px 15px',
+                        backgroundColor: '#4A90E2',
+                        color: 'white',
+                        borderRadius: '4px',
+                        border: 'none',
                         fontSize: '14px'
                       }}
                     >
-                      <Trash2 size={16} />
-                      Quitar imagen
-                    </button>
-                  )}
+                      <Camera size={16} />
+                      Seleccionar imagen
+                    </label>
+                    
+                    {selectedImage && (
+                      <button
+                        type="button"
+                        className={styles.clearImageButton || styles.submitButton}
+                        onClick={handleClearImage}
+                        disabled={uploading}
+                        style={{ 
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          backgroundColor: '#E25549',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '8px 15px',
+                          cursor: uploading ? 'not-allowed' : 'pointer',
+                          opacity: uploading ? 0.6 : 1,
+                          fontSize: '14px'
+                        }}
+                      >
+                        <Trash2 size={16} />
+                        Quitar imagen
+                      </button>
+                    )}
+                  </div>
+
                 </div>
-                
-                <p style={{ 
-                  fontSize: '12px', 
-                  color: '#666',
-                  marginTop: '0'
-                }}>
-                  {selectedShop 
-                    ? "La imagen se actualizará al guardar cambios" 
-                    : "La imagen se subirá al crear el comercio"}
-                  <br/>
-                  Formatos aceptados: JPG, PNG, WebP. Tamaño máx: 5MB
-                </p>
+              
               </div>
             </div>
+            
+            <div className={styles.formField}>
+              <input
+                type="text"
+                placeholder='Nombre del comercio:'
+                value={newShop.name_shop}
+                onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
+                className={styles.input}
+                required
+              />
+            </div>
+            
+            <div className={styles.formField}>
+              <select
+                value={newShop.type_shop}
+                onChange={(e) => {
+                  setNewShop({
+                    ...newShop, 
+                    type_shop: e.target.value,
+                    subtype_shop: ''
+                  })
+                }}
+                className={styles.input} 
+                required
+              >
+                <option value="" disabled>Categoría</option>
+                {shopTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            {newShop.type_shop && (
+              <div className={styles.formField}>
+                <select
+                  value={newShop.subtype_shop}
+                  onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
+                  className={styles.input} 
+                  required
+                >
+                  <option value="" disabled>Subcategoría</option>
+                  {subtypes.map(subtype => (
+                    <option key={subtype} value={subtype}>{subtype}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
+            <div className={styles.formField}>
+              <input
+                type="text"
+                placeholder='Dirección del comercio:'
+                value={newShop.location_shop}
+                onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
+                className={styles.input}
+                required
+              />
+            </div>
+
           </div>
 
           <div className={styles.scheduleContainer}>

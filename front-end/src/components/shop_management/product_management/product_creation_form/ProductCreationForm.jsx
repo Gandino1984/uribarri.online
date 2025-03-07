@@ -379,13 +379,13 @@ const ProductCreationForm = () => {
               )}
             </div>
             
-            <p className={styles.imageHelpText}>
+            {/* <p className={styles.imageHelpText}>
               {selectedProductToUpdate 
                 ? "La imagen se actualizará al guardar cambios" 
                 : "La imagen se subirá al crear el producto"}
               <br/>
               Formatos aceptados: JPG, PNG, WebP. Tamaño máx: 5MB
-            </p>
+            </p> */}
           </div>
         </div>
 

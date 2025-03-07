@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { MapPinned, Minimize2, Maximize2, Edit } from 'lucide-react';
+import { MapPinned, Minimize2, Maximize2, Edit, Store } from 'lucide-react';
 import styles from '../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from '../shop_card/shop_cover_image/ShopCoverImage.jsx';
 import AppContext from '../../../app_context/AppContext.js';
@@ -70,6 +70,17 @@ const ShopCard = ({ shop }) => {
     setMinimized(prevState => !prevState);
   };
 
+  // UPDATE: Helper function to format shop type and subtype
+  const formatShopType = () => {
+    if (!shop?.type_shop) return 'No especificado';
+    
+    if (shop?.subtype_shop) {
+      return `${shop.type_shop} - ${shop.subtype_shop}`;
+    }
+    
+    return shop.type_shop;
+  };
+
   return (
     <div className={`${styles.container} ${minimized ? styles.minimized : ''}`}>
       {/* Botón minimizado que aparece cuando la tarjeta está minimizada */}
@@ -113,6 +124,11 @@ const ShopCard = ({ shop }) => {
                 Calificación: {shop?.calification_shop || 'No disponible'}/5
               </p>
             </div>
+            {/* UPDATE: Added shop type information */}
+            <p className={styles.shopType}>
+              <Store size={16} className={styles.shopTypeIcon} />
+              {formatShopType()}
+            </p>
             <p className={styles.location}>
               <MapPinned size={16} className={styles.locationIcon} />
               {shop?.location_shop}

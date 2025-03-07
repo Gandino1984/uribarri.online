@@ -5,7 +5,7 @@ import { useSpring, animated, config } from '@react-spring/web';
 import { Search, Calendar, Package, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsFunctions';
 
-const FiltersForProducts = () => {
+const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
   const { 
     filterOptions, 
     filters, 
@@ -13,8 +13,6 @@ const FiltersForProducts = () => {
   } = useContext(AppContext);
 
   const {
-    isVisible,
-    searchTerm,
     expirationDateRange,
     handleFilterChange,
     handleSearchChange,
@@ -26,6 +24,17 @@ const FiltersForProducts = () => {
     getAvailableSubtypes,
     getActiveFiltersCount
   } = useFiltersForProducts();
+
+  // UPDATE: Custom reset function that uses the passed onResetFilters prop
+  const handleCompleteReset = () => {
+    // If we have the custom reset function from the parent, use it
+    if (typeof onResetFilters === 'function') {
+      onResetFilters();
+    } else {
+      // Otherwise fall back to the default reset
+      handleResetFilters();
+    }
+  };
 
   // Enhanced folding animation
   const containerAnimation = useSpring({
@@ -211,10 +220,10 @@ const FiltersForProducts = () => {
           </div>
         </div>
 
-        {/* Reset Button */}
+        {/* UPDATE: Changed to call handleCompleteReset instead of handleResetFilters */}
         <div className={styles.resetButtonWrapper}>
           <button
-            onClick={handleResetFilters}
+            onClick={handleCompleteReset}
             className={styles.resetButton}
             type="button"
           >

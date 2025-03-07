@@ -49,7 +49,7 @@ const ShopProductsList = () => {
   const [showFilters, setShowFilters] = useState(false);
   
   // UPDATE: Use the hook from FiltersForProductsFunctions for consistent counting
-  const { getActiveFiltersCount } = useFiltersForProducts();
+  const { getActiveFiltersCount, handleResetFilters } = useFiltersForProducts();
   
   // Function to toggle filter visibility
   const toggleFilters = () => {
@@ -102,6 +102,15 @@ const ShopProductsList = () => {
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  // UPDATE: Custom reset filters handler that also clears the search term
+  const handleResetAllFilters = () => {
+    // First reset the filters using the function from FiltersForProductsFunctions
+    handleResetFilters();
+    
+    // Then clear the search term in this component
+    setSearchTerm('');
   };
 
   useEffect(() => {
@@ -445,8 +454,8 @@ const ShopProductsList = () => {
             </div>
         </animated.div>
 
-        {/* Only show filters when showFilters is true */}
-        {showFilters && <FiltersForProducts isVisible={showFilters} />}
+        {/* UPDATE: Pass searchTerm and setSearchTerm to FiltersForProducts */}
+        {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
         
         {displayedProducts.length === 0 ? (
           <p className={styles.noProducts}>
