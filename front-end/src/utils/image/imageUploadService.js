@@ -59,22 +59,22 @@ export const uploadShopCover = async ({ file, shopId, onProgress, onError }) => 
     // First validate the image
     await validateImageFile(file);
     
-    // Then optimize the image
+    // UPDATE: Always optimize and convert to WebP (unless already small and WebP)
     let optimizedFile = file;
-    if (file.size > 150 * 1024) { // Only optimize if larger than 150KB
-      try {
-        optimizedFile = await optimizeImage(file, {
-          maxWidth: 1200,
-          maxHeight: 1200,
-          quality: 0.85
-        });
-        console.log('Image optimized:', {
-          originalSize: Math.round(file.size / 1024) + 'KB',
-          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
-        });
-      } catch (optimizeError) {
-        console.warn('Image optimization failed, using original file:', optimizeError);
-      }
+    try {
+      optimizedFile = await optimizeImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85,
+        format: 'image/webp',
+        maxSizeKB: 1024 // 1MB size limit
+      });
+      console.log('Image optimized:', {
+        originalSize: Math.round(file.size / 1024) + 'KB',
+        optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+      });
+    } catch (optimizeError) {
+      console.warn('Image optimization failed, using original file:', optimizeError);
     }
 
     // Create form data with the EXACT field name expected by the backend
@@ -147,22 +147,22 @@ export const uploadProductImage = async ({
     // First validate the image
     await validateImageFile(file);
     
-    // Then optimize the image
+    // UPDATE: Always optimize and convert to WebP (unless already small and WebP)
     let optimizedFile = file;
-    if (file.size > 150 * 1024) { // Only optimize if larger than 150KB
-      try {
-        optimizedFile = await optimizeImage(file, {
-          maxWidth: 1200,
-          maxHeight: 1200,
-          quality: 0.85
-        });
-        console.log('Image optimized:', {
-          originalSize: Math.round(file.size / 1024) + 'KB',
-          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
-        });
-      } catch (optimizeError) {
-        console.warn('Image optimization failed, using original file:', optimizeError);
-      }
+    try {
+      optimizedFile = await optimizeImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85,
+        format: 'image/webp',
+        maxSizeKB: 1024 // 1MB size limit
+      });
+      console.log('Image optimized:', {
+        originalSize: Math.round(file.size / 1024) + 'KB',
+        optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+      });
+    } catch (optimizeError) {
+      console.warn('Image optimization failed, using original file:', optimizeError);
     }
     
     // Create form data with the EXACT field name expected by the backend
@@ -237,22 +237,22 @@ export const uploadProfileImage = async ({
     // First validate the image
     await validateImageFile(file);
     
-    // Then optimize the image if needed
+    // UPDATE: Always optimize and convert to WebP for profile images
     let optimizedFile = file;
-    if (file.size > 150 * 1024) { // Only optimize if larger than 150KB
-      try {
-        optimizedFile = await optimizeImage(file, {
-          maxWidth: 600,  // Profile images don't need to be as large as shop images
-          maxHeight: 600,
-          quality: 0.85
-        });
-        console.log('Image optimized:', {
-          originalSize: Math.round(file.size / 1024) + 'KB',
-          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
-        });
-      } catch (optimizeError) {
-        console.warn('Image optimization failed, using original file:', optimizeError);
-      }
+    try {
+      optimizedFile = await optimizeImage(file, {
+        maxWidth: 600,  // Profile images don't need to be as large as shop images
+        maxHeight: 600,
+        quality: 0.85,
+        format: 'image/webp',
+        maxSizeKB: 512 // We can use a smaller size for profile images (0.5MB)
+      });
+      console.log('Image optimized:', {
+        originalSize: Math.round(file.size / 1024) + 'KB',
+        optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+      });
+    } catch (optimizeError) {
+      console.warn('Image optimization failed, using original file:', optimizeError);
     }
     
     // Create form data with the EXACT field name expected by the backend

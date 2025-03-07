@@ -31,6 +31,25 @@ export const UserInfoCardFunctions = () => {
             console.log('-> UserInfoCardFunctions - handleImageUpload() - El usuario canceló la selección de archivo');
             return; // Simplemente retornamos sin mostrar error si el usuario canceló
         }
+        
+        // UPDATE: Validate file type
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+          setError(prevError => ({
+            ...prevError,
+            imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
+          }));
+          return;
+        }
+        
+        // UPDATE: Validate file size (max 10MB before optimization)
+        if (file.size > 10 * 1024 * 1024) {
+          setError(prevError => ({
+            ...prevError,
+            imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
+          }));
+          return;
+        }
 
         try {
             if (!currentUser?.name_user) {

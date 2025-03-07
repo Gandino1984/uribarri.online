@@ -76,7 +76,7 @@ const ProductCreationForm = () => {
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
 
-  // Handle image selection
+  // UPDATE: Handle image selection with improved validation
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -91,13 +91,19 @@ const ProductCreationForm = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // UPDATE: Validate file size (max 10MB before optimization)
+    if (file.size > 10 * 1024 * 1024) {
       setError(prevError => ({
         ...prevError,
-        imageError: "La imagen es demasiado grande. Máximo 5MB."
+        imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
       }));
       return;
+    }
+    
+    // UPDATE: Inform user if image will be optimized
+    if (file.size > 1024 * 1024 || file.type !== 'image/webp') {
+      console.log(`Image will be optimized: ${Math.round(file.size/1024)}KB, type: ${file.type}`);
+      // We could show an info message here if desired
     }
 
     setSelectedImage(file);

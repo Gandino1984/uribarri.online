@@ -120,26 +120,26 @@ export const ShopCreationFormFunctions = () => {
     }
 
     try {
-      // Primero validamos la imagen
+      // UPDATE: Primero validamos la imagen
       await validateImageFile(file);
       
-      // Luego optimizamos la imagen si es necesario
+      // UPDATE: Siempre optimizamos y convertimos a WebP
       let optimizedFile = file;
-      if (file.size > 150 * 1024) { // Solo optimizar si es mayor a 150KB
-        try {
-          // Optimizar imagen usando la función de imageOptimizer.js
-          optimizedFile = await optimizeImage(file, {
-            maxWidth: 1200,
-            maxHeight: 1200,
-            quality: 0.85
+      try {
+        // Optimizar imagen usando la función de imageOptimizer.js
+        optimizedFile = await optimizeImage(file, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.85,
+          format: 'image/webp',
+          maxSizeKB: 1024 // Límite de 1MB
           });
-          console.log('Imagen optimizada:', {
-            originalSize: Math.round(file.size / 1024) + 'KB',
-            optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
-          });
-        } catch (optimizeError) {
-          console.warn('Falló la optimización de imagen, usando archivo original:', optimizeError);
-        }
+        console.log('Imagen optimizada:', {
+          originalSize: Math.round(file.size / 1024) + 'KB',
+          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+        });
+      } catch (optimizeError) {
+        console.warn('Falló la optimización de imagen, usando archivo original:', optimizeError);
       }
 
       setUploading(true);
