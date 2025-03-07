@@ -12,7 +12,7 @@ const FiltersForProductsFunctions = () => {
 
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [expirationDateRange, setExpirationDateRange] = useState({ start: '', end: '' });
+  // UPDATE: Removed expirationDateRange state since we're removing the interval filter
   
   // UPDATE: Using useState instead of a ref for the timeout
   const [filterUpdateTimeout, setFilterUpdateTimeout] = useState(null);
@@ -32,19 +32,13 @@ const FiltersForProductsFunctions = () => {
     // Count each actively selected filter
     Object.entries(filters).forEach(([key, value]) => {
       // Only count values that represent a user's active selection
-      // Numbers like 0 and booleans like false should not be counted as active selections
-      // unless they're meant to be actual filter values
       if (value !== null && value !== '' && value !== 0 && value !== false) {
         count++;
       }
     });
     
-    // Count date range filters
-    if (expirationDateRange.start) count++;
-    if (expirationDateRange.end) count++;
-    
     return count;
-  }, [filters, expirationDateRange]);
+  }, [filters]);
 
   // UPDATE: Aplicar los filtros con un pequeño debounce para mejor rendimiento
   useEffect(() => {
@@ -64,7 +58,7 @@ const FiltersForProductsFunctions = () => {
         clearTimeout(filterUpdateTimeout);
       }
     };
-  }, [searchTerm, filters, products, expirationDateRange]);
+  }, [searchTerm, filters, products]);
 
   // Handle main filter changes
   const handleFilterChange = useCallback((filterName, option) => {
@@ -102,14 +96,7 @@ const FiltersForProductsFunctions = () => {
     }));
   }, [setFilters]);
 
-  const handleExpirationChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setExpirationDateRange(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }, []);
-
+  // UPDATE: Improved near expiration change handler
   const handleNearExpirationChange = useCallback((e) => {
     setFilters(prevFilters => ({
       ...prevFilters,
@@ -128,7 +115,6 @@ const FiltersForProductsFunctions = () => {
       proxima_caducidad: null,
     });
     setSearchTerm('');
-    setExpirationDateRange({ start: '', end: '' });
   }, [setFilters]);
 
   const getAvailableSubtypes = useCallback(() => {
@@ -138,19 +124,35 @@ const FiltersForProductsFunctions = () => {
     return productTypesAndSubtypes[filters.tipo];
   }, [filters.tipo, productTypesAndSubtypes]);
 
-  // Check if a product is near expiration (within 7 days)
+  // UPDATE: Improved isNearExpiration function to handle date boundaries better
   const isNearExpiration = useCallback((expirationDate) => {
     if (!expirationDate) return false;
     
     const today = new Date();
-    const expDate = new Date(expirationDate);
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    // Handle different date formats
+    let expDate;
+    if (typeof expirationDate === 'string') {
+      // If it's an ISO string like "2025-03-11T00:00:00.000Z", extract just the date part
+      const dateStr = expirationDate.includes('T') ? 
+        expirationDate.split('T')[0] : 
+        expirationDate;
+        
+      expDate = new Date(dateStr);
+    } else {
+      expDate = new Date(expirationDate);
+    }
+    
+    expDate.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
     const diffTime = expDate - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return diffDays >= 0 && diffDays <= 7;
   }, []);
 
-  // Function to apply all filters including search term
+  // UPDATE: Simplified applyFilters function by removing date range logic
   const applyFilters = useCallback(() => {
     if (!products || products.length === 0) {
       setFilteredProducts([]);
@@ -208,52 +210,23 @@ const FiltersForProductsFunctions = () => {
       );
     }
 
-    // Filter for products near expiration
+    // UPDATE: Improved filter for products near expiration
     if (filters.proxima_caducidad === 'Sí') {
       filtered = filtered.filter(product => 
         product.expiration_product && isNearExpiration(product.expiration_product)
       );
     }
 
-    // Filter by expiration date range
-    if (expirationDateRange.start || expirationDateRange.end) {
-      filtered = filtered.filter(product => {
-        if (!product.expiration_product) return false;
-        
-        const expDate = new Date(product.expiration_product);
-        
-        if (expirationDateRange.start && expirationDateRange.end) {
-          const startDate = new Date(expirationDateRange.start);
-          const endDate = new Date(expirationDateRange.end);
-          startDate.setHours(0, 0, 0, 0);
-          endDate.setHours(23, 59, 59, 999);
-          return expDate >= startDate && expDate <= endDate;
-        } else if (expirationDateRange.start) {
-          const startDate = new Date(expirationDateRange.start);
-          startDate.setHours(0, 0, 0, 0);
-          return expDate >= startDate;
-        } else if (expirationDateRange.end) {
-          const endDate = new Date(expirationDateRange.end);
-          endDate.setHours(23, 59, 59, 999);
-          return expDate <= endDate;
-        }
-        
-        return true;
-      });
-    }
-
     setFilteredProducts(filtered);
-  }, [filters, products, searchTerm, expirationDateRange, isNearExpiration, setFilteredProducts]);
+  }, [filters, products, searchTerm, isNearExpiration, setFilteredProducts]);
 
   return {
     isVisible,
     searchTerm,
-    expirationDateRange,
     handleFilterChange,
     handleSearchChange,
     handleOnSaleChange,
     handleExcessChange,
-    handleExpirationChange,
     handleNearExpirationChange,
     handleResetFilters,
     getAvailableSubtypes,
