@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
 import { useSpring, animated, config } from '@react-spring/web';
-import { Search, Calendar, Package, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Calendar, Package, Percent, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsFunctions';
 
 const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
@@ -165,7 +165,8 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
                 onChange={handleOnSaleChange}
                 className={styles.checkbox}
               />
-              Oferta
+              <Percent size={14} />
+              Descuento
             </label>
           </div>
 
@@ -196,7 +197,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
                 className={styles.checkbox}
               />
               <Calendar size={14} />
-              Próxima Caducidad (7 días)
+              Caducidad (7 días)
             </label>
           </div>
         </div>

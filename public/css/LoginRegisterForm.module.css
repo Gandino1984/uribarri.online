@@ -44,7 +44,8 @@
 .formActions {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content:center;
+  margin-bottom: 1rem;
   width: 100%;
   gap: 1.7rem;
 }
@@ -152,7 +153,7 @@
 
 @media screen and (min-width: 400px) {
   .formActions {
-    justify-content: left;
+    justify-content: right;
     gap: 1rem;
   }
 
@@ -206,7 +207,7 @@
   }
 
   .formActions {
-    justify-content: left;
+    justify-content: right;
     /* margin-top: 1rem; */
     gap: 1rem;
   }
@@ -261,7 +262,7 @@
   }
 
   .formActions {
-    justify-content: left;
+    justify-content: right;
     /* margin-top: 1rem; */
     gap: 1rem;
   }
@@ -281,7 +282,7 @@
   }
 
   .formActions {
-    justify-content: left;
+    justify-content: right;
     gap: 1rem;
   }
 
