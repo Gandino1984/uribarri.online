@@ -9,6 +9,12 @@
   overflow: hidden;
 }
 
+/* UPDATE: Added responsive container class to control width based on device size */
+.responsiveContainer {
+  width: 100%;
+  margin: 0 auto;
+}
+
 .infoContainer {
   background-color: white;
   border-radius: 0 0 0.5rem 0.5rem;
@@ -46,6 +52,21 @@
 }
 
 .locationIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* UPDATE: Added shop type styling */
+.shopType {
+  color: #4b5563;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.shopTypeIcon {
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -182,10 +203,10 @@
   transform: scale(1.1);
 }
 
-/* Responsive styles */
+/* UPDATE: Responsive styles enhanced for consistent aspect ratio */
 /* Small tablets (640px and up) */
 @media (min-width: 640px) {
-  .container {
+  .responsiveContainer {
     max-width: 540px;
   }
   
@@ -208,7 +229,7 @@
 
 /* Tablets (768px and up) */
 @media (min-width: 768px) {
-  .container {
+  .responsiveContainer {
     max-width: 640px;
   }
   
@@ -237,7 +258,7 @@
 
 /* Laptops/Desktops (1024px and up) */
 @media (min-width: 1024px) {
-  .container {
+  .responsiveContainer {
     max-width: 700px;
   }
   
@@ -253,7 +274,19 @@
 
 /* Large screens (1280px and up) */
 @media (min-width: 1280px) {
-  .container {
+  .responsiveContainer {
     max-width: 800px;
+  }
+}
+
+/* UPDATE: Print styles to ensure proper rendering when printing */
+@media print {
+  .container {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  
+  .responsiveContainer {
+    max-width: 100%;
   }
 }

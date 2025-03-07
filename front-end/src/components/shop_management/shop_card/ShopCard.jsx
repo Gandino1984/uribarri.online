@@ -82,7 +82,7 @@ const ShopCard = ({ shop }) => {
   };
 
   return (
-    <div className={`${styles.container} ${minimized ? styles.minimized : ''}`}>
+    <div className={`${styles.container} ${minimized ? styles.minimized : ''} ${styles.responsiveContainer}`}>
       {/* Botón minimizado que aparece cuando la tarjeta está minimizada */}
       {minimized ? (
         <animated.div style={cardAnimation} className={styles.minimizedCard} onClick={toggleMinimized}>

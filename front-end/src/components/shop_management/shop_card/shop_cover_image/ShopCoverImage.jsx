@@ -59,6 +59,7 @@ const ShopCoverImage = ({ id_shop }) => {
   const imageSource = getImageSource();
 
   return (
+    // UPDATE: Added aspect-ratio container to maintain consistent 800x300 (2.67:1) ratio
     <div className={styles.container}>
       <div 
         className={`${styles.imageWrapper} ${isSelected ? styles.selectedShop : ''}`}
