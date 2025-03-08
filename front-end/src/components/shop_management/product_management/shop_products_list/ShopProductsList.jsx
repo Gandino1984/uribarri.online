@@ -394,8 +394,21 @@ const ShopProductsList = () => {
 
         <animated.div style={mainContentAnimation}>
             <div className={styles.listHeaderTop}>
-              <h2 className={styles.listTitle}>Lista de Productos</h2>
+              <div className={styles.listTitleWrapper}>
+                <h1 className={styles.listTitle}>Lista de Productos</h1>
+              </div>
               <div className={styles.buttonGroup}>
+                <div className={styles.searchInputWrapper}>
+                    <Search size={18} className={styles.searchIcon} />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={handleSearchChange}
+                      placeholder="Buscar productos..."
+                      className={styles.searchInput}
+                    />
+                    
+                </div>
                 <button
                   onClick={handleAddProduct}
                   className={styles.actionButton}
@@ -423,16 +436,6 @@ const ShopProductsList = () => {
                   <Trash2 size={17} />
                   <span className={styles.buttonText}>Borrar</span>
                 </button>
-                <div className={styles.searchInputWrapper}>
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    placeholder="Buscar productos..."
-                    className={styles.searchInput}
-                  />
-                  <Search size={18} className={styles.searchIcon} />
-                </div>
                 
                 {/* Enhanced Filter Toggle Button with Animation */}
                 <button

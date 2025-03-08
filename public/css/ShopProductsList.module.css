@@ -64,8 +64,16 @@
     /* flex-wrap: wrap; */
 }
 
+.listTitleWrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .listTitle {
-    font-size: 1.25rem;
+    /* font-size: 1.25rem; */
     font-weight: 600;
 }
 
@@ -291,7 +299,7 @@
 }
   
 .searchIcon {
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     color: #666;
     pointer-events: none;
 }

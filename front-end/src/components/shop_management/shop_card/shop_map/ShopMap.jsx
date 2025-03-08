@@ -3,7 +3,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { ArrowLeft } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import styles from '../../../../../../public/css/ShopMapComponent.module.css';
+import styles from '../../../../../../public/css/ShopMap.module.css';
 
 // Fix for Leaflet marker icons in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const ShopMapComponent = ({ shop, isSmallScreen, onBack, style }) => {
+const ShopMap = ({ shop, isSmallScreen, onBack, style }) => {
   // Default position is Uribarri neighborhood in Bilbao
   const defaultPosition = [43.26690065903094, -2.921624779164401];
   const [position, setPosition] = useState(defaultPosition);
@@ -125,4 +125,4 @@ const ShopMapComponent = ({ shop, isSmallScreen, onBack, style }) => {
   );
 };
 
-export default ShopMapComponent;
+export default ShopMap;

@@ -255,12 +255,14 @@ const ProductCreationForm = () => {
 
   return (
     <animated.div style={formAnimation} className={styles.container}>
+      {/* UPDATE: Improved header with better responsive layout */}
       <div className={styles.header}>
         <button 
           type="button" 
           className={styles.backButton}
           onClick={handleViewProductList}
           title="Volver a la lista de productos"
+          aria-label="Volver"
         >
           <ArrowLeft size={20} />
         </button>
@@ -318,7 +320,7 @@ const ProductCreationForm = () => {
           />
         </div>
 
-        {/* Image upload section */}
+        {/* Image upload section - UPDATE: Enhanced responsive layout */}
         <div className={styles.formField}>
           <div className={styles.imageUploadContainer}>
             <label className={styles.imageUploadLabel}>
@@ -385,13 +387,13 @@ const ProductCreationForm = () => {
               )}
             </div>
             
-            {/* <p className={styles.imageHelpText}>
+            <p className={styles.imageHelpText}>
               {selectedProductToUpdate 
                 ? "La imagen se actualizará al guardar cambios" 
                 : "La imagen se subirá al crear el producto"}
               <br/>
               Formatos aceptados: JPG, PNG, WebP. Tamaño máx: 5MB
-            </p> */}
+            </p>
           </div>
         </div>
 

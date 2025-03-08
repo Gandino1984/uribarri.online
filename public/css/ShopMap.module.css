@@ -2,7 +2,7 @@
 .mapContainer {
     position: relative;
     width: 40%;
-    height: auto;
+    height: 100%;
     min-height: 300px;
     border-radius: 10px;
     overflow: hidden;

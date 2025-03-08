@@ -4,7 +4,7 @@ import { MapPinned, Minimize2, Maximize2, Edit, Store, Map, ArrowLeft } from 'lu
 import styles from '../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from '../shop_card/shop_cover_image/ShopCoverImage.jsx';
 import AppContext from '../../../app_context/AppContext.js';
-import ShopMapComponent from './shop_map_component/ShopMapComponent.jsx';
+import ShopMap from './shop_map/ShopMap.jsx';
 
 const ShopCard = ({ shop }) => {
   // Estado para controlar si la tarjeta está minimizada o no
@@ -209,7 +209,7 @@ const ShopCard = ({ shop }) => {
       
       {/* UPDATE: Render map component when showMap is true, with back button on small screens */}
       {showMap && !minimized && (
-        <ShopMapComponent 
+        <ShopMap 
           shop={shop} 
           isSmallScreen={isSmallScreen} 
           onBack={() => setShowMap(false)}
