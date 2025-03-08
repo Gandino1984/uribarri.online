@@ -8,6 +8,13 @@
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
   /* UPDATE: Añadida variable para la altura del TopBar */
   --topbar-height: 60px;
+  
+  /* Responsive spacing units */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
 }
 
 * {
@@ -18,27 +25,51 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  width: 100%;
+  height: 100%;
+}
+
 /* UPDATE: Mejoras en responsive para el contenedor principal */
 .mainContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%; /* Changed from 100vw to prevent overflow */
   overflow-x: hidden;
+  overflow-y: auto; /* Changed from hidden to allow vertical scrolling */
+  min-height: calc(100vh - var(--topbar-height));
+  padding: var(--spacing-md);
+}
+
+/* Responsive container classes */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Responsive grid system */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--spacing-md);
+  width: 100%;
 }
 
 /* UPDATE: Mejoras en los inputs de texto para mejor experiencia móvil */
 input[type="text"] {
   color: var(--saturated-blue);
   border: 2px solid var(--medium-gray);
-  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   cursor: pointer;
   font-size: 0.9rem;
   min-height: 2.5rem;
   font-weight: 500;
   border-radius: 5px;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
   width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -61,7 +92,7 @@ input[type="number"] {
   min-width: 3rem;
   border-radius: 5px;
   border: 2px solid var(--medium-gray);
-  padding: 0.5rem 0.5rem;
+  padding: var(--spacing-sm);
   font-size: 0.9rem;
   min-height: 2.5rem;
   font-weight: 500;
@@ -98,7 +129,7 @@ textarea {
   border-radius: 5px;
   width: 100%;
   border: 2px solid var(--medium-gray);
-  padding: 0.5rem;
+  padding: var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -125,13 +156,13 @@ button {
   outline: none;
   border: none;
   background-color: var(--superlight-gray); 
-  padding: 0.5rem 0.75rem;
+  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   letter-spacing: 0.01rem;
-  min-height: 2.5rem;
+  height: 2rem; /* Fixed height of exactly 2rem */
   transition: all 0.15s ease;
   touch-action: manipulation;
 }
@@ -143,28 +174,22 @@ button:hover {
   transform: scale(1.05);
 }
 
-/* UPDATE: Evitar que la animación de escalado afecte en móviles */
-@media (max-width: 640px) {
-  button:hover {
-    transform: none;
-  }
-}
-
 /* UPDATE: Mejoras en selects */
 select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   width: 100%;
+  max-height: 2rem;
   min-height: 2.5rem;
-  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--saturated-blue);
   background-color: white;
   border: 2px solid var(--medium-gray);
   border-radius: 5px;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
   cursor: pointer;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -205,23 +230,186 @@ select.inputSuccess {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 
-/* UPDATE: Media queries para ajustar tamaños según el dispositivo */
+/* Enhanced Responsive Grid Classes */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -0.5rem;
+}
+
+.col {
+  flex: 1 0 0%;
+  padding: 0 0.5rem;
+}
+
+/* Responsive columns for different screen sizes */
+.col-12 { flex: 0 0 100%; max-width: 100%; }
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+.col-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+.col-3 { flex: 0 0 25%; max-width: 25%; }
+
+/* Spacing utilities */
+.m-0 { margin: 0; }
+.m-1 { margin: var(--spacing-xs); }
+.m-2 { margin: var(--spacing-sm); }
+.m-3 { margin: var(--spacing-md); }
+.m-4 { margin: var(--spacing-lg); }
+.m-5 { margin: var(--spacing-xl); }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: var(--spacing-xs); }
+.p-2 { padding: var(--spacing-sm); }
+.p-3 { padding: var(--spacing-md); }
+.p-4 { padding: var(--spacing-lg); }
+.p-5 { padding: var(--spacing-xl); }
+
+/* Responsive flexbox utilities */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.align-items-start { align-items: flex-start; }
+.align-items-end { align-items: flex-end; }
+
+/* Responsive Hide/Show Classes */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-grid { display: grid !important; }
+
+/* Enhanced Media Queries */
+
+/* Small devices (phones, up to 640px) */
 @media (max-width: 640px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  button:hover {
+    transform: none;
+  }
+  
+  /* Keep original font sizes for consistency */
   input[type="text"],
   input[type="number"],
   textarea,
-  button,
   select {
+    font-size: 0.9rem; /* Maintain original size */
+    padding: calc(var(--spacing-sm) + 2px); /* More padding for touch */
+  }
+  
+  /* Ensure buttons maintain exactly 2rem height on mobile */
+  button {
     font-size: 0.9rem;
+    height: 2rem;
+  }
+  
+  /* Responsive column adjustments for small screens */
+  .col-sm-12 { flex: 0 0 100%; max-width: 100%; }
+  .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+  
+  /* Responsive visibility classes */
+  .d-sm-none { display: none !important; }
+  .d-sm-block { display: block !important; }
+  .d-sm-flex { display: flex !important; }
+  
+  /* Adjust grid gap for mobile */
+  .grid {
+    gap: var(--spacing-sm);
+  }
+  
+  /* Stack elements better on mobile */
+  .stack-on-mobile {
+    flex-direction: column !important;
+  }
+  
+  .full-width-on-mobile {
+    width: 100% !important;
   }
 }
 
-@media (min-width: 641px) {
+/* Medium devices (tablets, 641px to 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Keep original font size */
   input[type="text"],
   input[type="number"],
   textarea,
-  button,
   select {
     font-size: 0.8rem;
   }
+  
+  /* Ensure buttons maintain exactly 2rem height on tablets */
+  button {
+    font-size: 0.8rem;
+    height: 2rem;
+  }
+  
+  /* Responsive column adjustments for medium screens */
+  .col-md-12 { flex: 0 0 100%; max-width: 100%; }
+  .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+  .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  
+  /* Responsive visibility classes */
+  .d-md-none { display: none !important; }
+  .d-md-block { display: block !important; }
+  .d-md-flex { display: flex !important; }
+}
+
+/* Large devices (desktops, 1025px and up) */
+@media (min-width: 1025px) {
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* Keep original font size */
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 0.8rem;
+  }
+  
+  /* Ensure buttons maintain exactly 2rem height on desktop */
+  button {
+    font-size: 0.8rem;
+    height: 2rem;
+  }
+  
+  /* Responsive visibility classes */
+  .d-lg-none { display: none !important; }
+  .d-lg-block { display: block !important; }
+  .d-lg-flex { display: flex !important; }
+}
+
+/* Print styles for better printing experience */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Accessibility improvements */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
 }

@@ -25,7 +25,7 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: .5rem;
+    margin-bottom: 1rem;
     /* flex-wrap: wrap; */
 }
 
@@ -102,6 +102,7 @@ textarea {
     border-radius: 8px;
     padding: 1rem;
     border: 1px dashed #ccc;
+    width: 100%;
   }
   
   .imageUploadLabel {
@@ -264,6 +265,7 @@ textarea {
 
     /* Add more spacing between form fields on mobile */
     .formField {
+      flex-direction: row;
         margin-bottom: .7rem;
     }
 
@@ -280,6 +282,7 @@ textarea {
     }
 
     .formField {
+        flex-direction: row;
         gap: 0.3rem;
     }
     
