@@ -238,10 +238,10 @@
 
 /* UPDATE: Estilos para el contenedor de la tarjeta de tienda */
 .shopCardContainer {
-  width: 100%;
+  /* width: 100%; */
   margin-top: 1rem;
   animation: fadeIn 0.3s ease;
-  max-width: 900px;
+  max-width: 500px;
   margin-left: auto;
   margin-right: auto;
 }
