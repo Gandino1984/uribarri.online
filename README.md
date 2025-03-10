@@ -9,7 +9,7 @@
 
 ## Descripción del Proyecto
 
-mibarrio.online es una plataforma de gestión de comercios online, agenda cultural y revista comunitaria diseñada específicamente para gestón local del distrito02 de Bilbao. Esta solución permite a los establecimientos y agentes culturales de la zona ofrecer sus servicios y actividades culturales en formato digital de forma eficiente y accesible.
+mibarrio.online es una plataforma de gestión de comercios online, agenda cultural y revista comunitaria diseñada específicamente para la gestión local del distrito02 de Bilbao. Esta solución permite a los establecimientos y agentes culturales de la zona ofrecer sus servicios y actividades culturales en formato digital de forma eficiente y accesible.
 
 ## Stack Tecnológico
 
