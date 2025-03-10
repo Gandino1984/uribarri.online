@@ -201,13 +201,10 @@
   .container {
     overflow-y:hidden;
     justify-content: center;
-    /* UPDATE: Ajustando espacio superior para tablets */
-    /* padding-top: 90px; */
   }
 
   .formActions {
     justify-content: right;
-    /* margin-top: 1rem; */
     gap: 1rem;
   }
 
@@ -236,10 +233,8 @@
 @media screen and (min-width: 1024px) {
   .container {
     overflow-y:hidden;
-    /* min-height: 100vh; */
+    min-height: 85vh;
     justify-content: center;
-    /* UPDATE: Ajustando espacio superior para escritorio */
-    /* padding-top: 100px; */
   }
 
   .formContainer {

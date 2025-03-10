@@ -9,7 +9,7 @@
     padding: .4rem 2rem;
     margin-bottom: 1rem;
     z-index: 9999999999999999;
-    height: 65px;
+    height: var(--topbar-height);   
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

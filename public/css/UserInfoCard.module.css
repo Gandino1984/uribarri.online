@@ -1,7 +1,6 @@
 .message {
   font-size: .8rem;
   user-select: none;
-  /* font-size: .9rem; */
   text-align: center;
 }
 
@@ -10,6 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
   font-size: .8rem;
   text-align: center;
 }
@@ -34,17 +34,10 @@
 }
 
 .profileImage {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  /* transition: all 0.2s ease;  */
-  /* margin: .2rem; */
-}
-
-.profileImage:hover {
-  /* outline: 2px solid var(--saturated-blue); */
-  /* border: 1px solid white; */
 }
 
 .uploadButton {
