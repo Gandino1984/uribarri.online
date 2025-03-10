@@ -230,12 +230,12 @@
 }
 
 .disabledButton {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .disabledButton:hover {
-  background-color: #e9ecef;
+  background-color: var(--dark-blue);
 }
 
 /* UPDATE: Estilos para el contenedor de la tarjeta de tienda */

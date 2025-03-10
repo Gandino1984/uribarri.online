@@ -33,7 +33,7 @@ const ProductCreationFormFunctions = () => {
   // Estado para llevar la cuenta de productos y el límite
   const [productCount, setProductCount] = useState(0);
   const [productLimit, setProductLimit] = useState(7); // Valor por defecto para usuarios no sponsor
-  // UPDATE: Add state to track current operation type to prevent conflicts
+  // Add state to track current operation type to prevent conflicts
   const [currentOperation, setCurrentOperation] = useState(null); // can be 'create', 'update', or null
 
   // Función para obtener productos por tienda
@@ -51,7 +51,7 @@ const ProductCreationFormFunctions = () => {
       
       console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
       
-      // UPDATE: Filter out invalid empty products
+      // Filter out invalid empty products
       const validProducts = fetchedProducts.filter(product => 
         product.name_product && product.name_product.trim() !== ''
       );
@@ -109,7 +109,7 @@ const ProductCreationFormFunctions = () => {
   }, [selectedShop, setNewProductData]);
 
 
-  // UPDATE: Completely revised effect to handle modal responses with operation type tracking
+  // Completely revised effect to handle modal responses with operation type tracking
   useEffect(() => {
     const handleModalResponse = async () => {
       // Only proceed if we have a modal response (accepted or declined) AND an active operation
@@ -300,36 +300,34 @@ const ProductCreationFormFunctions = () => {
     }
   };
 
-
-const resetNewProductData = () => {
-  setNewProductData({
-    name_product: '',
-    price_product: '',
-    discount_product: 0,
-    season_product: 'Todo el Año',
-    calification_product: 0,
-    type_product: '',
-    sold_product: 0,
-    info_product: '',
-    id_shop: selectedShop?.id_shop || '',
-    subtype_product: '',
-    second_hand: 0,
-    surplus_product: 0,
-    expiration_product: null,
-    country_product: '',
-    locality_product: ''  
-  });
-  
-  setError(prevError => ({
-    ...prevError,
-    productError: '',
-  }));
-  
-  // IMPORTANT: We no longer reset isUpdatingProduct here
-  // This prevents the conflict with handleAddProduct
-  setSelectedProductToUpdate(null);
-};
-
+  const resetNewProductData = () => {
+    setNewProductData({
+      name_product: '',
+      price_product: '',
+      discount_product: 0,
+      season_product: 'Todo el Año',
+      calification_product: 0,
+      type_product: '',
+      sold_product: 0,
+      info_product: '',
+      id_shop: selectedShop?.id_shop || '',
+      subtype_product: '',
+      second_hand: 0,
+      surplus_product: 0,
+      expiration_product: null,
+      country_product: '',
+      locality_product: ''  
+    });
+    
+    setError(prevError => ({
+      ...prevError,
+      productError: '',
+    }));
+    
+    // IMPORTANT: We no longer reset isUpdatingProduct here
+    // This prevents the conflict with handleAddProduct
+    setSelectedProductToUpdate(null);
+  };
 
   // Function to check if a product with the same name exists
   const verifyProductName = async (name_product, id_shop) => {
@@ -367,10 +365,10 @@ const resetNewProductData = () => {
     }
 
     try {
-      // UPDATE: First validate the image
+      // First validate the image
       await validateImageFile(file);
       
-      // UPDATE: Always optimize and convert to WebP
+      // Always optimize and convert to WebP
       let optimizedFile = file;
       try {
         optimizedFile = await optimizeImage(file, {
@@ -439,7 +437,7 @@ const resetNewProductData = () => {
     }
   };
 
-  // UPDATE: Updated createProduct with better success message handling
+  // Updated createProduct with better success message handling
   const createProduct = async () => {
     try {
       // Verificar que no se haya alcanzado el límite
@@ -479,7 +477,7 @@ const resetNewProductData = () => {
         // Force refresh the product list in other components
         refreshProductList();
         
-        // UPDATE: Use createSuccess for creation operations
+        // Use createSuccess for creation operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
           createSuccess: "Producto creado exitosamente",
@@ -511,7 +509,7 @@ const resetNewProductData = () => {
     }
   };
 
-  // UPDATE: Updated handleSubmit with operation tracking
+  // Updated handleSubmit with operation tracking
   const handleSubmit = async (e, imageFile = null) => {
     e.preventDefault();
     try {
@@ -526,7 +524,7 @@ const resetNewProductData = () => {
           `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la creación de este producto?`
         );
         
-        // UPDATE: Set current operation type before showing modal
+        // Set current operation type before showing modal
         setCurrentOperation('create');
         setIsModalOpen(true);
         
@@ -563,7 +561,7 @@ const resetNewProductData = () => {
     }
   };
 
-  // UPDATE: Updated handleUpdate with operation tracking
+  // Updated handleUpdate with operation tracking
   const handleUpdate = async (e, imageFile = null) => {
     e.preventDefault();
     try {
@@ -585,7 +583,7 @@ const resetNewProductData = () => {
             `Ya existe un producto con el nombre "${newProductData.name_product}" en tu tienda. ¿Deseas continuar con la actualización de este producto?`
           );
           
-          // UPDATE: Set current operation type before showing modal
+          // Set current operation type before showing modal
           setCurrentOperation('update');
           setIsModalOpen(true);
           return false; // Exit and wait for modal response in useEffect
@@ -620,7 +618,7 @@ const resetNewProductData = () => {
     }
   };
   
-  // UPDATE: Updated updateProductInDB with improved success message handling
+  // Updated updateProductInDB with improved success message handling
   const updateProductInDB = async (updateData) => {
     try {
       const response = await axiosInstance.patch('/product/update', updateData);
@@ -650,7 +648,7 @@ const resetNewProductData = () => {
         setIsUpdatingProduct(false);
         setSelectedProductToUpdate(null);
         
-        // UPDATE: Use updateSuccess for update operations
+        // Use updateSuccess for update operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
           updateSuccess: "Producto actualizado correctamente",
@@ -678,6 +676,70 @@ const resetNewProductData = () => {
     
     return shopToProductTypesMap[selectedShop.type_shop] || [];
   };
+  
+  // UPDATE: Added functions for handling image selection in the UI
+  const handleImageSelect = (file, setSelectedImage, setImagePreview, setShowImageUploadButton, setError) => {
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
+      }));
+      return;
+    }
+
+    // Validate file size (max 10MB before optimization)
+    if (file.size > 10 * 1024 * 1024) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
+      }));
+      return;
+    }
+    
+    // Inform user if image will be optimized
+    if (file.size > 1024 * 1024 || file.type !== 'image/webp') {
+      console.log(`Image will be optimized: ${Math.round(file.size/1024)}KB, type: ${file.type}`);
+    }
+
+    setSelectedImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+    
+    // Hide the upload button after selection
+    setShowImageUploadButton(false);
+  };
+
+  // UPDATE: Added function to clear image
+  const clearImage = (fileInputRef, setSelectedImage, setImagePreview) => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef && fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+  
+  // UPDATE: Added function to handle view product list navigation
+  const handleViewProductList = (setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement) => {
+    console.log('Returning to product list from ProductCreationForm');
+    
+    // First reset product-related states
+    setIsUpdatingProduct(false);
+    setSelectedProductToUpdate(null);
+    
+    // Then set showProductManagement to ensure ProductManagement renders ShopProductsList
+    setShowProductManagement(true);
+    
+    console.log('Navigation back to product list complete');
+  };
 
   return {
     handleChange,
@@ -690,6 +752,10 @@ const resetNewProductData = () => {
     fetchProductsByShop,
     getAvailableProductTypesForShop,
     handleImageUpload,
+    // UPDATE: Export new image-related functions
+    handleImageSelect,
+    clearImage,
+    handleViewProductList
   };
 };
 

@@ -18,7 +18,11 @@ const ProductCreationForm = () => {
     productCount,
     productLimit,
     fetchProductsByShop,
-    handleImageUpload
+    handleImageUpload,
+    // UPDATE: Import refactored image-related functions
+    handleImageSelect: processImageSelection,
+    clearImage,
+    handleViewProductList: navigateToProductList
   } = ProductCreationFormFunctions();
 
   const { 
@@ -44,7 +48,7 @@ const ProductCreationForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  // UPDATE: Added state for showing/hiding upload controls
+  // State for showing/hiding upload controls
   const [showImageUploadButton, setShowImageUploadButton] = useState(false);
   const fileInputRef = useRef(null);
   
@@ -78,62 +82,22 @@ const ProductCreationForm = () => {
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
 
-  // UPDATE: Added function to handle image container click
+  // Function to handle image container click
   const handleImageContainerClick = () => {
     setShowImageUploadButton(prev => !prev);
   };
 
-  // UPDATE: Enhanced image selection with improved validation
+  // Modified file selection handler using the refactored function
   const handleImageSelect = (e) => {
     e.stopPropagation(); // Prevent container click event
     const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      setError(prevError => ({
-        ...prevError,
-        imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
-      }));
-      return;
-    }
-
-    // Validate file size (max 10MB before optimization)
-    if (file.size > 10 * 1024 * 1024) {
-      setError(prevError => ({
-        ...prevError,
-        imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
-      }));
-      return;
-    }
-    
-    // Inform user if image will be optimized
-    if (file.size > 1024 * 1024 || file.type !== 'image/webp') {
-      console.log(`Image will be optimized: ${Math.round(file.size/1024)}KB, type: ${file.type}`);
-    }
-
-    setSelectedImage(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
-    
-    // Hide the upload button after selection
-    setShowImageUploadButton(false);
+    processImageSelection(file, setSelectedImage, setImagePreview, setShowImageUploadButton, setError);
   };
 
-  // UPDATE: Modified clear image function to stop propagation
+  // Modified clear image handler using the refactored function
   const handleClearImage = (e) => {
     if (e) e.stopPropagation(); // Prevent container click event
-    setSelectedImage(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    clearImage(fileInputRef, setSelectedImage, setImagePreview);
   };
 
   // Set image preview for product being updated
@@ -186,18 +150,9 @@ const ProductCreationForm = () => {
     }
   }, [selectedShop, selectedProductToUpdate, setNewProductData]);
 
-  // Corrected handleViewProductList function
+  // Using the refactored navigation handler
   const handleViewProductList = () => {
-    console.log('Returning to product list from ProductCreationForm');
-    
-    // First reset product-related states
-    setIsUpdatingProduct(false);
-    setSelectedProductToUpdate(null);
-    
-    // Then set showProductManagement to ensure ProductManagement renders ShopProductsList
-    setShowProductManagement(true);
-    
-    console.log('Navigation back to product list complete');
+    navigateToProductList(setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement);
   };
 
   const handleFormSubmit = async (e) => {
@@ -282,7 +237,7 @@ const ProductCreationForm = () => {
         </div>
       )}
       
-      {/* UPDATE: Form layout restructured with 3 main sections for responsive design */}
+      {/* Form layout restructured with 3 main sections for responsive design */}
       <form onSubmit={handleFormSubmit} className={styles.form}>
         <div className={styles.formLayout}>
           {/* SECTION 1: Image Upload (left column on desktop) */}
@@ -290,79 +245,33 @@ const ProductCreationForm = () => {
             <div 
               className={styles.imageUploadContainer}
               onClick={handleImageContainerClick}
-              style={{
-                cursor: 'pointer',
-                position: 'relative'
-              }}
             >
-              <div className={styles.imagePreviewBox} style={{
-                width: '100%',
-                height: '200px',
-                border: '1px dashed #ccc',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                position: 'relative',
-                backgroundColor: '#f5f5f5'
-              }}>
+              <div className={styles.imagePreviewBox}>
                 {imagePreview ? (
                   <img 
                     src={imagePreview} 
                     alt="Vista previa de imagen" 
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }}
+                    className={styles.imagePreview}
                   />
                 ) : (
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    color: '#666'
-                  }}>
-                    <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
+                  <div className={styles.noImagePlaceholder}>
+                    <ImagePlus size={40} className={styles.placeholderIcon} />
                     <span>Imagen de producto</span>
                   </div>
                 )}
                 
                 {/* Upload progress indicator */}
                 {uploading && (
-                  <div className={styles.loaderOverlay} style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(0,0,0,0.6)',
-                    borderRadius: '8px'
-                  }}>
-                    <div className={styles.spinner} style={{
-                      border: '4px solid rgba(255,255,255,0.3)',
-                      borderRadius: '50%',
-                      borderTop: '4px solid white',
-                      width: '32px',
-                      height: '32px',
-                      animation: 'spin 1.5s linear infinite',
-                      marginBottom: '15px'
-                    }}></div>
+                  <div className={styles.loaderOverlay}>
+                    <div className={styles.spinner}></div>
                     
-                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
-                      <div style={{ 
-                        width: `${uploadProgress}%`,
-                        height: '100%',
-                        backgroundColor: '#4CAF50',
-                        borderRadius: '4px'
-                      }}></div>
+                    <div className={styles.progressBar}>
+                      <div 
+                        className={styles.progressFill} 
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
                     </div>
-                    <span style={{ color: 'white', marginTop: '8px' }}>
+                    <span className={styles.progressText}>
                       {uploadProgress}%
                     </span>
                   </div>
@@ -373,16 +282,6 @@ const ProductCreationForm = () => {
                   <div 
                     className={styles.uploadButtonOverlay}
                     onClick={(e) => e.stopPropagation()}
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      padding: '10px',
-                      background: 'rgba(0,0,0,0.7)'
-                    }}
                   >
                     <input
                       type="file"
@@ -397,18 +296,6 @@ const ProductCreationForm = () => {
                     <label 
                       htmlFor="product_image" 
                       className={styles.imageButton}
-                      style={{ 
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        padding: '8px 15px',
-                        backgroundColor: '#4A90E2',
-                        color: 'white',
-                        borderRadius: '4px',
-                        border: 'none',
-                        fontSize: '14px',
-                        cursor: 'pointer'
-                      }}
                     >
                       <Camera size={16} />
                       {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
@@ -419,19 +306,7 @@ const ProductCreationForm = () => {
                         type="button"
                         onClick={handleClearImage}
                         disabled={uploading}
-                        style={{ 
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          backgroundColor: '#E25549',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '8px 15px',
-                          marginLeft: '10px',
-                          cursor: 'pointer',
-                          fontSize: '14px'
-                        }}
+                        className={styles.clearImageButton}
                       >
                         <Trash2 size={16} />
                         Quitar
@@ -442,19 +317,7 @@ const ProductCreationForm = () => {
                 
                 {/* Edit overlay hint */}
                 {!showImageUploadButton && !uploading && (
-                  <div className={styles.editOverlay} style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(0,0,0,0.5)',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '5px'
-                  }}>
+                  <div className={styles.editOverlay}>
                     <Camera size={18} />
                     <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
                   </div>
@@ -490,49 +353,6 @@ const ProductCreationForm = () => {
               />
             </div>
 
-            <div className={styles.formField}>
-              <textarea
-                id="info_product"
-                name="info_product"
-                value={productData.info_product}
-                onChange={handleChange}
-                rows="4"
-                width="100%"
-                placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
-              />
-            </div>
-
-            {/* Country and locality fields */}
-            <div className={styles.formField}>
-              <select
-                id="country_product"
-                name="country_product"
-                value={productData.country_product || ''}
-                onChange={handleChange}
-              >
-                <option value="">País de origen</option>
-                {countries.map(country => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.formField}>
-              <input
-                type="text"
-                id="locality_product"
-                name="locality_product"
-                placeholder='Localidad de origen:'
-                value={productData.locality_product || ''}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {/* SECTION 3: Additional Product Details (right column on desktop) */}
-          <div className={styles.detailsSection}>
             {/* Product Type Dropdown - Filtered by shop type */}
             <div className={styles.formField}>
               <select
@@ -578,6 +398,7 @@ const ProductCreationForm = () => {
               </div>
             )}
 
+
             <div className={styles.formField}>
               <select
                 id="season_product"
@@ -593,6 +414,66 @@ const ProductCreationForm = () => {
                 ))}
               </select>
             </div>
+
+            <div className={styles.formField}>
+              <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
+              <input
+                type="date"
+                id="expiration_product"
+                name="expiration_product"
+                value={productData.expiration_product || ''}
+                onChange={handleChange}
+                min={new Date().toISOString().split('T')[0]} // Set minimum date to today
+                className={styles.dateInput}
+              />
+            </div>
+          </div>
+
+          {/* SECTION 3: Additional Product Details (right column on desktop) */}
+          <div className={styles.detailsSection}>
+            {/* Country and locality fields */}
+            <div className={styles.formField}>
+              <select
+                id="country_product"
+                name="country_product"
+                value={productData.country_product || ''}
+                onChange={handleChange}
+              >
+                <option value="">País de origen</option>
+                {countries.map(country => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formField}>
+              <input
+                type="text"
+                id="locality_product"
+                name="locality_product"
+                placeholder='Localidad de origen:'
+                value={productData.locality_product || ''}
+                onChange={handleChange}
+              />
+            </div>
+
+
+
+            <div className={styles.formField}>
+              <textarea
+                id="info_product"
+                name="info_product"
+                value={productData.info_product}
+                onChange={handleChange}
+                rows="4"
+                width="100%"
+                placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
+              />
+            </div>
+
+            
 
             <div className={styles.formField}>
               <div className={styles.checkboxContainer}>
@@ -639,18 +520,7 @@ const ProductCreationForm = () => {
               />
             </div>
 
-            <div className={styles.formField}>
-              <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
-              <input
-                type="date"
-                id="expiration_product"
-                name="expiration_product"
-                value={productData.expiration_product || ''}
-                onChange={handleChange}
-                min={new Date().toISOString().split('T')[0]} // Set minimum date to today
-                className={styles.dateInput}
-              />
-            </div>
+
           </div>
         </div>
 
@@ -674,11 +544,11 @@ const ProductCreationForm = () => {
             )}
           </button>
           <button 
-          type="button" 
-          className={styles.backButton}
-          onClick={handleViewProductList}
-          title="Volver a la lista de productos"
-          aria-label="Volver"
+            type="button" 
+            className={styles.backButton}
+            onClick={handleViewProductList}
+            title="Volver a la lista de productos"
+            aria-label="Volver"
           >
             <ArrowLeft size={20} />
             Volver

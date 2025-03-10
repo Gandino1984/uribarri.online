@@ -6,18 +6,19 @@
     position: fixed;
     top: 0;
     background-color: white;
-    padding: .4rem 2rem;
+    padding: 0.4rem 2rem; /* UPDATE: Standardized decimal notation for consistency */
     margin-bottom: 1rem;
-    z-index: 9999999999999999;
-    height: var(--topbar-height);   
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* UPDATE: Simplified z-index to a more reasonable value */
+    min-height: var(--topbar-height); /* UPDATE: Changed from fixed height to minimum height */
+    height: auto; /* UPDATE: Allow height to grow based on content */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1); /* UPDATE: Converted px to rem units */
 }
 
 .errorWrapper {
     width: 100%;
     display: flex;
     justify-content: center;
-    z-index: 99999999999;
+    z-index: 100; /* UPDATE: Simplified z-index to a more reasonable value */
 }
 
 .contentWrapper {
@@ -26,11 +27,49 @@
     justify-content: space-between;
     width: 100%;
     gap: 1rem;
+    padding: 0.25rem 0; /* UPDATE: Added padding to ensure content has breathing room */
+    flex-wrap: wrap; /* UPDATE: Allow wrapping if needed on very small screens */
 }
 
 .messageWrapper {
     width: 100%;
     display: flex;
     justify-content: center;
-    z-index: 999999999999999999;
+    z-index: 500; /* UPDATE: Simplified z-index to a more reasonable value */
+}
+
+/* UPDATE: Added styles for the back button to use rem units */
+.backButton {
+    background: transparent;
+    border: none;
+    color: var(--saturated-blue);
+    margin-right: 0.5rem;
+    padding: 0.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+/* UPDATE: Added styles for the logout button to use rem units */
+.logoutButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+/* UPDATE: Added media query for mobile screens */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.4rem 1rem; /* Reduce horizontal padding on mobile */
+    }
+    
+    .contentWrapper {
+        padding: 0.5rem 0;
+    }
 }

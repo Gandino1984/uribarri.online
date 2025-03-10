@@ -91,13 +91,14 @@ const UserInfoCard = () => {
     setModalImageUrl(null);
   };
 
+  // UPDATE: Improved welcome message handling for long usernames
   const welcomeMessage = isSmallScreen
     ? currentUser
       ? `${currentUser.name_user}`
-      : '¡Bienvenida!'
+      : '¡Hola de nuevo!'
     : currentUser
-      ? `¡Te damos la bienvenida, ${currentUser.name_user || 'usuario'}!`
-      : '¡Te damos la bienvenida! Inicia sesión';
+      ? `¡Hola de nuevo, ${currentUser.name_user || 'usuario'}!`
+      : '¡Hola de nuevo! Inicia sesión';
 
   return (
     <div className={styles.userInfoCard}>
@@ -146,9 +147,6 @@ const UserInfoCard = () => {
               {!uploading && (
                 <div className={styles.editOverlay}>
                   <Camera size={16} className={styles.editIcon} />
-                  {/* <span className={styles.editText}>
-                    {currentUser.image_user ? 'Cambiar foto' : 'Añadir foto'}
-                  </span> */}
                 </div>
               )}
               
@@ -179,6 +177,7 @@ const UserInfoCard = () => {
               altText={`Imagen de perfil de ${currentUser?.name_user}`}
             />
           </div>
+          {/* UPDATE: Added welcomeMessage class for better styling control */}
           <p className={styles.welcomeMessage}>{welcomeMessage}</p>
         </>
       )}
