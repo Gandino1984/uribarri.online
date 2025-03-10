@@ -6,8 +6,7 @@
   --medium-gray: #d1d5db;
   --dark-gray: #4b5563;
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
-  --topbar-height: auto; /* UPDATE: Changed to auto to allow dynamic sizing */
-  --topbar-min-height: 80px; /* UPDATE: Added minimum height variable */
+  --topbar-height: 5rem;
   
   /* Responsive spacing units */
   --spacing-xs: 0.25rem;
@@ -39,14 +38,12 @@ html, body {
   height: 100vh;
   max-width: 100%; 
   overflow: hidden; 
-  padding-top: var(--topbar-min-height); /* UPDATE: Use min-height as the base padding */
-  transition: padding-top 0.3s ease; /* UPDATE: Smooth transition for padding changes */
 }
 
 .container {
   width: 100%;
   height: 100vh;
-  padding: 0 var(--topbar-min-height); /* UPDATE: Use min-height variable */
+  padding: 0 var(--topbar-height);
 }
 
 .grid {
@@ -279,8 +276,8 @@ select.inputSuccess {
 
 /* Small devices (phones, up to 640px) */
 @media (max-width: 640px) {
-  :root {
-    --topbar-min-height: 70px; /* UPDATE: Slightly smaller on mobile as base */
+  .container {
+    /* padding: 0 var(--spacing-sm); */
   }
   
   button:hover {
@@ -328,10 +325,6 @@ select.inputSuccess {
 
 /* Medium devices (tablets, 641px to 1024px) */
 @media (min-width: 641px) and (max-width: 1024px) {
-  :root {
-    --topbar-min-height: 75px; /* UPDATE: Medium size for tablets */
-  }
-  
   /* Keep original font size */
   input[type="text"],
   input[type="number"],
