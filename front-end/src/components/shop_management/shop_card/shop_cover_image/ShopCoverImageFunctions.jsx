@@ -58,6 +58,25 @@ export const ShopCoverImageFunctions = () => {
 
     console.log('Starting cover image upload for shop:', selectedShop);
     
+    // UPDATE: First validate file type before proceeding
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
+      }));
+      return;
+    }
+    
+    // UPDATE: Validate file size (max 10MB before optimization)
+    if (file.size > 10 * 1024 * 1024) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
+      }));
+      return;
+    }
+    
     // Create a temporary local URL for immediate display
     const localUrl = URL.createObjectURL(file);
     setLocalImageUrl(localUrl);

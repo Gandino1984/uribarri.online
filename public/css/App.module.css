@@ -4,16 +4,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
   background-color: var(--superlight-gray);
   position: relative;
-  padding: 0;
-  /* UPDATE: Aseguramos que todos los componentes tengan suficiente espacio desde el top 
-     para no quedar debajo del TopBar con posición fija */
-  padding-top: var(--topbar-height);
+  /* padding-top: var(--topbar-height); */
 }
 
 /* UPDATE: Mejoras para dispositivos móviles */

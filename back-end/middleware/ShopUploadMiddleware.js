@@ -19,6 +19,40 @@ const ensureDirectoryExists = async (dirPath) => {
     }
 };
 
+// Helper function to remove existing cover image files
+// UPDATE: Added function to clean existing cover images before saving new ones
+const cleanExistingCoverImages = async (dirPath) => {
+    try {
+        // Check if directory exists first
+        try {
+            await fs.access(dirPath);
+        } catch (err) {
+            // Directory doesn't exist, nothing to clean
+            return;
+        }
+        
+        // Read all files in the directory
+        const files = await fs.readdir(dirPath);
+        
+        // If directory is empty, nothing to clean
+        if (!files || files.length === 0) {
+            return;
+        }
+        
+        console.log(`Cleaning ${files.length} existing cover images in: ${dirPath}`);
+        
+        // Delete each file in the directory
+        for (const file of files) {
+            const filePath = path.join(dirPath, file);
+            await fs.unlink(filePath);
+            console.log(`Deleted existing cover image: ${filePath}`);
+        }
+    } catch (error) {
+        console.error('Error cleaning existing cover images:', error);
+        // Don't throw, just log error and continue
+    }
+};
+
 const shopCoverStorage = multer.diskStorage({
     destination: async function (req, file, cb) {
         console.log('Multer processing file:', file.fieldname, file.originalname);
@@ -58,6 +92,9 @@ const shopCoverStorage = multer.diskStorage({
             // Ensure the directory exists
             await ensureDirectoryExists(uploadsDir);
             
+            // UPDATE: Clean existing cover images before saving new one
+            await cleanExistingCoverImages(uploadsDir);
+            
             console.log(`Shop cover will be stored in: ${uploadsDir}`);
             
             // Make sure permissions are set correctly (important for Docker)
@@ -74,8 +111,10 @@ const shopCoverStorage = multer.diskStorage({
         }
     },
     filename: function (req, file, cb) {
-        // Use a consistent name for the cover image
-        const fileName = `cover${path.extname(file.originalname).toLowerCase()}`;
+        // UPDATE: Always use 'cover.ext' as filename to ensure consistent naming
+        // Use the original file extension but enforce lowercase
+        const ext = path.extname(file.originalname).toLowerCase();
+        const fileName = `cover${ext}`;
         console.log(`Generated filename: ${fileName}`);
         cb(null, fileName);
     }

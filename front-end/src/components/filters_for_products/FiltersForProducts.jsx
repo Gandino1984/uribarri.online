@@ -1,31 +1,46 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
 import { useSpring, animated, config } from '@react-spring/web';
-import { Search, Calendar, Package, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Calendar, Package, Percent, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsFunctions';
 
-const FiltersForProducts = () => {
+const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
   const { 
     filterOptions, 
     filters, 
     productTypesAndSubtypes,
   } = useContext(AppContext);
 
+  // UPDATE: Added state to track active filter count for UI
+  const [activeFilterCount, setActiveFilterCount] = useState(0);
+
   const {
-    isVisible,
-    searchTerm,
-    expirationDateRange,
     handleFilterChange,
     handleSearchChange,
     handleOnSaleChange,
     handleExcessChange,
-    handleExpirationChange,
     handleNearExpirationChange,
     handleResetFilters,
     getAvailableSubtypes,
     getActiveFiltersCount
   } = useFiltersForProducts();
+
+  // UPDATE: Effect to update active filter count when dependencies change
+  useEffect(() => {
+    setActiveFilterCount(getActiveFiltersCount());
+  }, [filters, getActiveFiltersCount]);
+
+  // UPDATE: Custom reset function that uses the passed onResetFilters prop
+  const handleCompleteReset = () => {
+    // If we have the custom reset function from the parent, use it
+    if (typeof onResetFilters === 'function') {
+      onResetFilters();
+    } else {
+      // Otherwise fall back to the default reset
+      handleResetFilters();
+    }
+  };
 
   // Enhanced folding animation
   const containerAnimation = useSpring({
@@ -132,7 +147,7 @@ const FiltersForProducts = () => {
               <option value="">Calificación</option>
               {filterOptions.calificacion.options.map((option) => (
                 <option key={option} value={option}>
-                  {option} ⭐ o más
+                  {option} ⭐
                 </option>
               ))}
             </select>
@@ -150,7 +165,8 @@ const FiltersForProducts = () => {
                 onChange={handleOnSaleChange}
                 className={styles.checkbox}
               />
-              Oferta
+              <Percent size={14} />
+              Descuento
             </label>
           </div>
 
@@ -168,57 +184,37 @@ const FiltersForProducts = () => {
             </label>
           </div>
 
-          {/* Near Expiration Checkbox */}
+          {/* UPDATE: Improved Near Expiration Checkbox with tooltip */}
           <div className={styles.checkboxWrapper}>
-            <label className={styles.checkboxLabel} title="Caducidad de 7 días">
+            <label 
+              className={styles.checkboxLabel} 
+              title="Productos que caducan en los próximos 7 días"
+            >
               <input
                 type="checkbox"
                 checked={filters.proxima_caducidad === 'Sí'}
                 onChange={handleNearExpirationChange}
                 className={styles.checkbox}
-                
               />
               <Calendar size={14} />
-              Caducidad
+              Caducidad (7 días)
             </label>
           </div>
         </div>
 
-        {/* Expiration Date Range */}
-        <div className={styles.dateRangeContainer}>
-          <div className={styles.dateLabel}>
-            <Calendar size={14} />
-            <span>Rango de caducidad:</span>
-          </div>
-          <div className={styles.dateInputs}>
-            <input
-              type="date"
-              name="start"
-              value={expirationDateRange.start}
-              onChange={handleExpirationChange}
-              className={styles.dateInput}
-              placeholder="Desde"
-            />
-            <span>-</span>
-            <input
-              type="date"
-              name="end"
-              value={expirationDateRange.end}
-              onChange={handleExpirationChange}
-              className={styles.dateInput}
-              placeholder="Hasta"
-            />
-          </div>
-        </div>
+        {/* UPDATE: Removed the date range container completely */}
 
-        {/* Reset Button */}
+        {/* UPDATE: Added active filter count to reset button */}
         <div className={styles.resetButtonWrapper}>
           <button
-            onClick={handleResetFilters}
+            onClick={handleCompleteReset}
             className={styles.resetButton}
             type="button"
           >
             Borrar filtros
+            {activeFilterCount > 0 && (
+              <span className={styles.filterCount}>{activeFilterCount}</span>
+            )}
           </button>
         </div>
       </animated.div>

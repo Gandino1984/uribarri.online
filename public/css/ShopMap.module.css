@@ -1,0 +1,63 @@
+/* ShopMap.module.css */
+.mapContainer {
+    position: relative;
+    width: 40%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-left: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  /* Ensure popup appears above other elements */
+  .mapContainer :global(.leaflet-popup) {
+    z-index: 1000;
+  }
+  
+  /* UPDATE: Back button styling - moved to right side on mobile */
+  .backButton {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Changed from left to right */
+    z-index: 1001;
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
+  }
+  
+  .backButton:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* UPDATE: Enhanced responsive styles */
+  @media (max-width: 768px) {
+    .mapContainer {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 10px;
+      min-height: 350px;
+      height: calc(100vh - 100px); /* Take up most of the viewport height */
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      border-radius: 0;
+    }
+    
+    /* Ensure the back button stays in top right on mobile */
+    .backButton {
+      right: 10px;
+    }
+  }

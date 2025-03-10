@@ -60,10 +60,11 @@ const LoginRegisterForm = () => {
     show && (
       <animated.div style={style} className={styles.container}>
         <div className={styles.formContainer}>
+          <FormActions />
           <div className={styles.formContentWrapper}>
             <FormContent />
           </div>
-          <FormActions />
+          
         </div>
       </animated.div>
     )

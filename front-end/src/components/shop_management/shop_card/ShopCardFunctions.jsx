@@ -29,6 +29,25 @@ const ShopCardFunctions = () => {
       console.log('Upload already in progress, ignoring new request');
       return;
     }
+    
+    // UPDATE: Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
+      }));
+      throw new Error("Formato de imagen no válido");
+    }
+    
+    // UPDATE: Validate file size (max 10MB before optimization)
+    if (file.size > 10 * 1024 * 1024) {
+      setError(prevError => ({
+        ...prevError,
+        imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
+      }));
+      throw new Error("Imagen demasiado grande");
+    }
 
     try {
       await validateImageFile(file);

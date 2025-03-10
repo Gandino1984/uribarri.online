@@ -438,7 +438,7 @@ export const AppContextProvider = ({ children }) => {
       options: ['Ropa', 'Comida', 'Bebida', 'Electrónica', 'Accesorio', 'Joyería', 'Muebles', 'Salud', 'Belleza', 'Complemento', 'Servicio', 'No Clasificado', 'Regular', 'Vegetariano', 'Vegano', 'Sin gluten', 'Kosher', 'Sin lactosa', 'Varios'],
     },
     oferta: {
-      label: 'Oferta',
+      label: 'Descuento',
       options: ['Descuento', 'Sin Descuento'], 
     },
     calificacion: {

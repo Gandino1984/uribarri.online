@@ -53,7 +53,7 @@ app.use(cors({
 async function initializeDatabase() {
     try {
         await sequelize.sync({ alter: true });
-        console.log('*******************************************************************');
+        
         console.log('-> SEQUELIZE: La base de datos ha sido sincronizada con el modelo');
     } catch (err) {
         console.error('!!! SEQUELIZE: Error en la sincronización de la base de datos = ', err);

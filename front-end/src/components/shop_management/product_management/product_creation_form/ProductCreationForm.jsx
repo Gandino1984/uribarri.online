@@ -76,7 +76,7 @@ const ProductCreationForm = () => {
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
 
-  // Handle image selection
+  // UPDATE: Handle image selection with improved validation
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -91,13 +91,19 @@ const ProductCreationForm = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // UPDATE: Validate file size (max 10MB before optimization)
+    if (file.size > 10 * 1024 * 1024) {
       setError(prevError => ({
         ...prevError,
-        imageError: "La imagen es demasiado grande. Máximo 5MB."
+        imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
       }));
       return;
+    }
+    
+    // UPDATE: Inform user if image will be optimized
+    if (file.size > 1024 * 1024 || file.type !== 'image/webp') {
+      console.log(`Image will be optimized: ${Math.round(file.size/1024)}KB, type: ${file.type}`);
+      // We could show an info message here if desired
     }
 
     setSelectedImage(file);
@@ -234,15 +240,15 @@ const ProductCreationForm = () => {
     
     return (
       <div className={styles.productLimitInfo}>
-        <div className={styles.limitHeader}>
-          <AlertCircle size={16} color={statusColor} />
-          <span>Límite de productos: {productCount} de {productLimit}</span>
-        </div>
-        {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
-          <p className={styles.upgradeMessage}>
-            Conviértete en sponsor para aumentar tu límite a 100 productos.
-          </p>
-        )}
+          <div className={styles.limitHeader}>
+              <AlertCircle size={16} color={statusColor} />
+              <span>Límite de productos: {productCount} de {productLimit}</span>
+          </div>
+          {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
+            <p className={styles.upgradeMessage}>
+              Conviértete en sponsor para aumentar tu límite a 100 productos.
+            </p>
+          )}
       </div>
     );
   };
@@ -250,18 +256,9 @@ const ProductCreationForm = () => {
   return (
     <animated.div style={formAnimation} className={styles.container}>
       <div className={styles.header}>
-        <button 
-          type="button" 
-          className={styles.backButton}
-          onClick={handleViewProductList}
-          title="Volver a la lista de productos"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        
-        <h2 className={styles.formTitle}>
-          {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
-        </h2>
+          <h1 className={styles.formTitle}>
+              {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
+          </h1>
       </div>
       
       {/* Product limit information */}
@@ -312,7 +309,7 @@ const ProductCreationForm = () => {
           />
         </div>
 
-        {/* Image upload section */}
+        {/* Image upload section - UPDATE: Enhanced responsive layout */}
         <div className={styles.formField}>
           <div className={styles.imageUploadContainer}>
             <label className={styles.imageUploadLabel}>
@@ -329,7 +326,7 @@ const ProductCreationForm = () => {
               ) : (
                 <div className={styles.noImagePlaceholder}>
                   <ImagePlus size={40} className={styles.placeholderIcon} />
-                  <span>Sin imagen seleccionada</span>
+                  <span>No hay imagen</span>
                 </div>
               )}
               
@@ -363,7 +360,7 @@ const ProductCreationForm = () => {
                 style={{ opacity: uploading ? 0.6 : 1 }}
               >
                 <Camera size={16} />
-                Seleccionar imagen
+                Subir imagen
               </label>
               
               {selectedImage && (
@@ -379,13 +376,13 @@ const ProductCreationForm = () => {
               )}
             </div>
             
-            <p className={styles.imageHelpText}>
+            {/* <p className={styles.imageHelpText}>
               {selectedProductToUpdate 
                 ? "La imagen se actualizará al guardar cambios" 
                 : "La imagen se subirá al crear el producto"}
               <br/>
               Formatos aceptados: JPG, PNG, WebP. Tamaño máx: 5MB
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -397,7 +394,7 @@ const ProductCreationForm = () => {
             value={productData.country_product || ''}
             onChange={handleChange}
           >
-            <option value="">Seleccionar país de origen</option>
+            <option value="">País de origen</option>
             {countries.map(country => (
               <option key={country} value={country}>
                 {country}
@@ -494,12 +491,12 @@ const ProductCreationForm = () => {
                 });
               }}
             />
-            <label htmlFor="second_hand">Producto de segunda mano</label>
+            <label htmlFor="second_hand">Segunda mano</label>
           </div>
         </div>
 
         <div className={styles.formField}>
-          <label htmlFor="discount_product">Descuento % (opcional)</label>
+          <label htmlFor="discount_product">% Descuento  (opcional)</label>
           <CustomNumberInput
             label="Descuento (%)"
             name="discount_product"
@@ -553,6 +550,16 @@ const ProductCreationForm = () => {
                 <PackagePlus size={16}/>
               </>
             )}
+          </button>
+          <button 
+          type="button" 
+          className={styles.backButton}
+          onClick={handleViewProductList}
+          title="Volver a la lista de productos"
+          aria-label="Volver"
+          >
+            <ArrowLeft size={20} />
+            Volver
           </button>
           {!selectedProductToUpdate && productCount >= productLimit && (
             <p className={styles.errorMessage}>

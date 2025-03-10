@@ -9,11 +9,9 @@
   --superlight-blue: rgb(220, 222, 255);
   --superlight-orange: #fff7ec;
   --saturated-orange: #F59925;
-  
-  
 }
 
-body {
+*{
   padding: 0;
   margin: 0;
   box-sizing: border-box;

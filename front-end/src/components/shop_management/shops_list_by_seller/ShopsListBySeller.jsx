@@ -1,9 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopsListBySeller.module.css';
 import { ShopsListBySellerFunctions } from './ShopsListBySellerFunctions.jsx';
 import { Box, Trash2, Edit, AlertCircle } from 'lucide-react';
+import ShopCard from '../shop_card/ShopCard.jsx';
 
 const ShopsListBySeller = () => {
   const { 
@@ -11,7 +12,8 @@ const ShopsListBySeller = () => {
     selectedShop, 
     currentUser,
     setShowShopCreationForm,
-    setSelectedShop
+    setSelectedShop,
+    showProductManagement
   } = useContext(AppContext);
 
   const { 
@@ -21,7 +23,10 @@ const ShopsListBySeller = () => {
     handleAddShop,
     handleUpdateShop,
     shopCount,
-    shopLimit
+    shopLimit,
+    // UPDATE: Utilizamos las nuevas funciones
+    isShopSelected,
+    shouldShowShopCard
   } = ShopsListBySellerFunctions();
 
   // Animation configuration
@@ -49,7 +54,7 @@ const ShopsListBySeller = () => {
       console.log('Fetching shops because none exist or user changed');
       fetchUserShops();
     }
-  }, [currentUser?.id_user]); // UPDATE: Solo depender del ID del usuario, no del objeto completo
+  }, [currentUser?.id_user, fetchUserShops, shops]); // UPDATE: Incluidas todas las dependencias
 
   // UPDATE: Limitar los logs a lo esencial
   useEffect(() => {
@@ -114,56 +119,66 @@ const ShopsListBySeller = () => {
             No tienes comercios registrados. ¡Agrega uno para comenzar!
           </div>
         ) : (
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr className={styles.tableHeader}>
-                  <th className={styles.tableHeaderCell}></th>
-                  <th className={styles.tableHeaderCell}>Nombre</th>
-                  <th className={styles.tableHeaderCell}>Ubicación</th>
-                  <th className={styles.tableHeaderCell}>Tipo</th>
-                  <th className={styles.tableHeaderCell}>Subtipo</th>
-                  <th className={styles.tableHeaderCell}>Calificación</th>
-                </tr>
-              </thead>
-              <tbody>
-                {shops.map((shop) => (
-                  <tr 
-                    key={shop.id_shop} 
-                    className={styles.tableRow}
-                    onClick={() => handleSelectShop(shop)}
-                  >
-                    <td className={styles.actionsCell}>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpdateShop(shop);
-                        }}
-                        className={styles.updateButton}
-                        title="Actualizar comercio"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteShop(shop.id_shop);
-                        }}
-                        className={styles.deleteButton}
-                        title="Eliminar comercio"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                    <td className={styles.tableCell}>{shop.name_shop}</td>
-                    <td className={styles.tableCell}>{shop.location_shop}</td>
-                    <td className={styles.tableCell}>{shop.type_shop}</td>
-                    <td className={styles.tableCell}>{shop.subtype_shop}</td>
-                    <td className={styles.tableCell}>{shop.calification_shop}/5</td>
+          <div className={styles.shopManagementContainer}>
+            <div className={styles.tableContainer}>
+            {selectedShop && shouldShowShopCard() && !showProductManagement && (
+              <div className={styles.shopCardContainer}>
+                <ShopCard shop={selectedShop} />
+                <div className={styles.shopCardInstructions}>
+                  <p>Haz click nuevamente en la tienda para administrar sus productos</p>
+                </div>
+              </div>
+            )}
+              <table className={styles.table}>
+                <thead>
+                  <tr className={styles.tableHeader}>
+                    <th className={styles.tableHeaderCell}></th>
+                    <th className={styles.tableHeaderCell}>Nombre</th>
+                    <th className={styles.tableHeaderCell}>Ubicación</th>
+                    <th className={styles.tableHeaderCell}>Tipo</th>
+                    <th className={styles.tableHeaderCell}>Subtipo</th>
+                    <th className={styles.tableHeaderCell}>Calificación</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {shops.map((shop) => (
+                    <tr 
+                      key={shop.id_shop} 
+                      className={`${styles.tableRow} ${isShopSelected(shop.id_shop) ? styles.selectedRow : ''}`}
+                      onClick={() => handleSelectShop(shop)}
+                    >
+                      <td className={styles.actionsCell}>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateShop(shop);
+                          }}
+                          className={styles.updateButton}
+                          title="Actualizar comercio"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteShop(shop.id_shop);
+                          }}
+                          className={styles.deleteButton}
+                          title="Eliminar comercio"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                      <td className={styles.tableCell}>{shop.name_shop}</td>
+                      <td className={styles.tableCell}>{shop.location_shop}</td>
+                      <td className={styles.tableCell}>{shop.type_shop}</td>
+                      <td className={styles.tableCell}>{shop.subtype_shop}</td>
+                      <td className={styles.tableCell}>{shop.calification_shop}/5</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>            
           </div>
         )}
       </div>

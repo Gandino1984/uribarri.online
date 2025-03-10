@@ -3,14 +3,11 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
   width: 100%;
-  padding: 1rem 1rem;
-  transform-origin: center center;
+  min-height: 80vh;
+  overflow: hidden;
   will-change: transform, opacity;
-  /* UPDATE: Asegurando que el contenido comience debajo del top bar */
-  padding-top: 70px;
-  margin-top: 0;
 }
 
 .header {
@@ -44,7 +41,8 @@
 .formActions {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content:center;
+  margin-bottom: 1rem;
   width: 100%;
   gap: 1.7rem;
 }
@@ -152,7 +150,7 @@
 
 @media screen and (min-width: 400px) {
   .formActions {
-    justify-content: left;
+    justify-content: right;
     gap: 1rem;
   }
 
@@ -161,10 +159,11 @@
 /* Medium Screen Breakpoint */
 @media screen and (min-width: 500px) {
   .container {
+    overflow-y:hidden;
     padding: 0 2rem;
     justify-content: center;
     /* UPDATE: Ajustando espacio superior para pantallas medianas */
-    padding-top: 80px;
+    /* padding-top: 80px; */
   }
 
   .formContent {
@@ -188,7 +187,7 @@
 
   .inputSection,
   .keyboardSection {
-    flex: 1;
+    /* flex: 1; */
     padding-right: 1rem;
   }
 
@@ -200,13 +199,14 @@
 /* Tablet Breakpoint */
 @media screen and (min-width: 768px) {
   .container {
+    overflow-y:hidden;
     justify-content: center;
     /* UPDATE: Ajustando espacio superior para tablets */
-    padding-top: 90px;
+    /* padding-top: 90px; */
   }
 
   .formActions {
-    justify-content: left;
+    justify-content: right;
     /* margin-top: 1rem; */
     gap: 1rem;
   }
@@ -235,10 +235,11 @@
 /* Desktop Breakpoint */
 @media screen and (min-width: 1024px) {
   .container {
-    min-height: 100vh;
+    overflow-y:hidden;
+    /* min-height: 100vh; */
     justify-content: center;
     /* UPDATE: Ajustando espacio superior para escritorio */
-    padding-top: 100px;
+    /* padding-top: 100px; */
   }
 
   .formContainer {
@@ -261,7 +262,7 @@
   }
 
   .formActions {
-    justify-content: left;
+    justify-content: right;
     /* margin-top: 1rem; */
     gap: 1rem;
   }
@@ -274,14 +275,22 @@
 
 /* Large Desktop Breakpoint */
 @media screen and (min-width: 1440px) {
+  .container {
+    overflow-y:hidden;
+    /* min-height: 100vh; */
+    justify-content: center;
+    align-items: center;
+    /* UPDATE: Ajustando espacio superior para escritorio */
+    /* padding-top: 100px; */
+  }
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
-    padding: 2rem;
+    /* padding: 2rem; */
   }
 
   .formActions {
-    justify-content: left;
+    justify-content: right;
     gap: 1rem;
   }
 
@@ -294,7 +303,7 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 2rem;
+    align-items: center;
+    /* padding-top: 2rem; */
   }
 }
