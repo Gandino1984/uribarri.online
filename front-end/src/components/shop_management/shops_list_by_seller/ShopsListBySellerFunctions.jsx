@@ -16,6 +16,7 @@ export const ShopsListBySellerFunctions = () => {
     isAccepted,
     setIsAccepted,
     currentUser,
+    selectedShop,
     // UPDATE: Añadimos setSuccess y setShowSuccessCard para mostrar mensajes de éxito
     setSuccess,
     setShowSuccessCard
@@ -24,6 +25,14 @@ export const ShopsListBySellerFunctions = () => {
   // Estado para llevar la cuenta de tiendas y el límite
   const [shopCount, setShopCount] = useState(0);
   const [shopLimit, setShopLimit] = useState(1); // Valor por defecto para usuarios no sponsor
+  
+  // UPDATE: Añadimos estado para gestionar el comportamiento de doble clic
+  const [shopClickState, setShopClickState] = useState({
+    lastClickedShopId: null,
+    showCard: false,
+    showProducts: false,
+    lastClickTime: 0
+  });
   
   // UPDATE: Utilizar la función fetchUserShops de ShopManagementFunctions para evitar duplicación
   const { fetchUserShops: fetchShopsFromManagement } = ShopManagementFunctions ? ShopManagementFunctions() : { fetchUserShops: null };
@@ -55,20 +64,82 @@ export const ShopsListBySellerFunctions = () => {
     }
   }, [shops]);
 
+  // UPDATE: Modificamos el handler para implementar la lógica de selección de tienda
   const handleSelectShop = useCallback((shop) => {
-    console.log('ShopsListBySellerFunctions - handleSelectShop called with shop:', shop);
+    const currentTime = new Date().getTime();
+    const sameShop = shopClickState.lastClickedShopId === shop.id_shop;
+    const isDoubleClick = sameShop && (currentTime - shopClickState.lastClickTime < 500); // 500ms threshold for double click
     
-    // First set the selected shop
+    console.log('ShopsListBySellerFunctions - handleSelectShop called with shop:', shop.id_shop);
+    console.log('Current click state:', {
+      sameShop,
+      lastClickedShop: shopClickState.lastClickedShopId,
+      timeDiff: currentTime - shopClickState.lastClickTime,
+      isDoubleClick
+    });
+    
+    // Set the selected shop in the context
     setSelectedShop(shop);
     
-    // Then enable product management mode
-    setShowProductManagement(true);
-    
-    // Make sure shop creation form is hidden
-    setShowShopCreationForm(false);
-    
-    console.log('Navigation states updated: showProductManagement=true, showShopCreationForm=false');
-  }, [setSelectedShop, setShowProductManagement, setShowShopCreationForm]);
+    if (isDoubleClick) {
+      // Double click or second click on the same shop - show products
+      setShopClickState({
+        lastClickedShopId: shop.id_shop,
+        showCard: false,
+        showProducts: true,
+        lastClickTime: currentTime
+      });
+      
+      // Show product management
+      setShowProductManagement(true);
+      setShowShopCreationForm(false);
+      
+      console.log('Double click or second selection - showing product management');
+    } else if (sameShop && shopClickState.showCard) {
+      // Second click on the same shop - transition to product management
+      setShopClickState({
+        lastClickedShopId: shop.id_shop,
+        showCard: false,
+        showProducts: true,
+        lastClickTime: currentTime
+      });
+      
+      // Show product management
+      setShowProductManagement(true);
+      setShowShopCreationForm(false);
+      
+      console.log('Second click on same shop - transitioning to product management');
+    } else {
+      // First click on a shop or click on a different shop - show shop card
+      setShopClickState({
+        lastClickedShopId: shop.id_shop,
+        showCard: true,
+        showProducts: false,
+        lastClickTime: currentTime
+      });
+      
+      // Hide product management
+      setShowProductManagement(false);
+      setShowShopCreationForm(false);
+      
+      console.log('First click or new shop - showing shop card');
+    }
+  }, [
+    shopClickState, 
+    setSelectedShop, 
+    setShowProductManagement, 
+    setShowShopCreationForm
+  ]);
+
+  // UPDATE: Método para comprobar si una tienda está seleccionada
+  const isShopSelected = useCallback((shopId) => {
+    return shopClickState.lastClickedShopId === shopId;
+  }, [shopClickState.lastClickedShopId]);
+
+  // UPDATE: Método para saber si mostrar la tarjeta de tienda
+  const shouldShowShopCard = useCallback(() => {
+    return !!shopClickState.showCard && !!shopClickState.lastClickedShopId;
+  }, [shopClickState]);
 
   const handleAddShop = useCallback(() => {
     // Verificar si el usuario ha alcanzado el límite
@@ -80,15 +151,39 @@ export const ShopsListBySellerFunctions = () => {
       return;
     }
     
+    // UPDATE: Resetear el estado de selección de tienda
+    setShopClickState({
+      lastClickedShopId: null,
+      showCard: false,
+      showProducts: false,
+      lastClickTime: 0
+    });
+    
     // UPDATE: Limpiar la tienda seleccionada antes de mostrar el formulario
     setSelectedShop(null);
     setShowShopCreationForm(true);
     setShowProductManagement(false);
-  }, [shopCount, shopLimit, currentUser, setError, setShowShopCreationForm, setShowProductManagement, setSelectedShop]);
+  }, [
+    shopCount, 
+    shopLimit, 
+    currentUser, 
+    setError, 
+    setShowShopCreationForm, 
+    setShowProductManagement, 
+    setSelectedShop
+  ]);
 
   // UPDATE: Mejorada la función handleUpdateShop
   const handleUpdateShop = useCallback((shop) => {
     console.log('ShopsListBySellerFunctions - handleUpdateShop called with shop:', shop);
+    
+    // UPDATE: Resetear el estado de selección de tienda
+    setShopClickState({
+      lastClickedShopId: null,
+      showCard: false,
+      showProducts: false,
+      lastClickTime: 0
+    });
     
     // Primero configuramos la tienda seleccionada
     setSelectedShop(shop);
@@ -125,6 +220,17 @@ export const ShopsListBySellerFunctions = () => {
     
         setShops(existingShops => existingShops.filter(shop => shop.id_shop !== shopToDelete));
         
+        // UPDATE: Si la tienda eliminada era la tienda seleccionada, limpiar los estados
+        if (selectedShop && selectedShop.id_shop === shopToDelete) {
+          setSelectedShop(null);
+          setShopClickState({
+            lastClickedShopId: null,
+            showCard: false,
+            showProducts: false,
+            lastClickTime: 0
+          });
+        }
+        
         // UPDATE: Mostrar mensaje de éxito
         setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado correctamente" }));
         setShowSuccessCard(true);
@@ -138,7 +244,7 @@ export const ShopsListBySellerFunctions = () => {
     };
 
     deleteShop();
-  }, [isAccepted, shopToDelete, setError, setShops, setIsAccepted, setSuccess, setShowSuccessCard]);
+  }, [isAccepted, shopToDelete, setError, setShops, setIsAccepted, setSuccess, setShowSuccessCard, selectedShop, setSelectedShop]);
 
   return {
     fetchUserShops,
@@ -147,6 +253,9 @@ export const ShopsListBySellerFunctions = () => {
     handleAddShop,
     handleUpdateShop,
     shopCount,
-    shopLimit
+    shopLimit,
+    // UPDATE: Exportamos las nuevas funciones
+    isShopSelected,
+    shouldShowShopCard
   };
 };
