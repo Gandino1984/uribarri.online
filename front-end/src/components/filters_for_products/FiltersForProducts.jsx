@@ -147,7 +147,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
               <option value="">Calificación</option>
               {filterOptions.calificacion.options.map((option) => (
                 <option key={option} value={option}>
-                  {option} ⭐ o más
+                  {option} ⭐
                 </option>
               ))}
             </select>

@@ -6,8 +6,7 @@
   --medium-gray: #d1d5db;
   --dark-gray: #4b5563;
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
-  /* UPDATE: Añadida variable para la altura del TopBar */
-  --topbar-height: 60px;
+  --topbar-height: 70px;
   
   /* Responsive spacing units */
   --spacing-xs: 0.25rem;
