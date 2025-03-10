@@ -14,6 +14,7 @@ export const FormActions = () => {
       <button
         onClick={handleFormSubmit}
         type="button"
+        title="Iniciar sesión"
         className={`${styles.submitButton} ${isButtonDisabled() ? styles.inactive : styles.active}`}
         disabled={isButtonDisabled()}
       >
@@ -25,6 +26,7 @@ export const FormActions = () => {
         type="button" 
         className={styles.toggleButton} 
         onClick={toggleForm}
+        title="Crea una cuenta"
       >
         {isLoggingIn ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
       </button>

@@ -35,6 +35,7 @@ function TopBar() {
             <button
               className={styles.backButton}
               onClick={handleBack}
+              title="Volver"
             >
               <ArrowLeft size={16} />
             </button>
@@ -46,6 +47,7 @@ function TopBar() {
             type="button" 
             className={styles.logoutButton} 
             onClick={clearUserSession}
+            title="Cerrar sesión"
           >
               Cerrar
               <DoorClosed size={16}/>
