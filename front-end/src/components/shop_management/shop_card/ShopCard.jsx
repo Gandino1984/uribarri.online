@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { MapPinned, Minimize2, Maximize2, Edit, Store, Map, ArrowLeft } from 'lucide-react';
+import { MapPinned, Minimize2, Maximize2, Edit, Store, Map, ArrowLeft, Clock } from 'lucide-react';
 import styles from '../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from '../shop_card/shop_cover_image/ShopCoverImage.jsx';
 import AppContext from '../../../app_context/AppContext.js';
@@ -121,6 +121,9 @@ const ShopCard = ({ shop }) => {
     return shop.type_shop;
   };
 
+  // UPDATE: Check if shop has a continuous schedule (no rest period)
+  const hasContinuousSchedule = !shop?.morning_close || !shop?.afternoon_open;
+
   // UPDATE: Container style to handle flex layout when map is shown
   const containerStyle = {
     display: 'flex',
@@ -194,12 +197,24 @@ const ShopCard = ({ shop }) => {
               </p>
               <div className={styles.scheduleContainer}>
                 <div className={styles.scheduleInfo}>
-                  <span className={styles.scheduleTime}>
-                    Mañana  {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
-                  </span>
-                  <span className={styles.scheduleTime}>
-                    Tarde  {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
-                  </span>
+                  {/* UPDATE: Display different schedule based on type */}
+                  {hasContinuousSchedule ? (
+                    // Continuous schedule (no rest period)
+                    <span className={styles.scheduleTime}>
+                      <Clock size={16} className={styles.scheduleIcon} />
+                      Horario: {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
+                    </span>
+                  ) : (
+                    // Schedule with rest period
+                    <>
+                      <span className={styles.scheduleTime}>
+                        Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
+                      </span>
+                      <span className={styles.scheduleTime}>
+                        Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </animated.div>

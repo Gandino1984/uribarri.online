@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormFunctions } from './ShopCreationFormFunctions.jsx';
-import { Box, ArrowLeft, Camera, ImagePlus, Trash2 } from 'lucide-react';
+import { Box, ArrowLeft, Camera, ImagePlus, Trash2, Clock } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 
 const ShopCreationForm = () => {
@@ -35,6 +35,9 @@ const ShopCreationForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
+  
+  // UPDATE: Añadimos estado para controlar si el horario es continuo o no
+  const [hasContinuousSchedule, setHasContinuousSchedule] = useState(false);
 
   // Animation configuration
   const formAnimation = useSpring({
@@ -72,6 +75,10 @@ const ShopCreationForm = () => {
 
   useEffect(() => {
   if (selectedShop && currentUser?.id_user) {
+    // UPDATE: Detectar si la tienda tiene horario continuo
+    const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
+    setHasContinuousSchedule(shopHasContinuousSchedule);
+    
     setNewShop({
       name_shop: selectedShop.name_shop,
       type_shop: selectedShop.type_shop,
@@ -153,6 +160,21 @@ const ShopCreationForm = () => {
       fileInputRef.current.value = '';
     }
   };
+  
+  // UPDATE: Función para manejar el cambio de tipo de horario
+  const handleScheduleTypeChange = (e) => {
+    const isContinuous = e.target.checked;
+    setHasContinuousSchedule(isContinuous);
+    
+    if (isContinuous) {
+      // Si cambiamos a horario continuo, limpiamos los campos de cierre matutino y apertura vespertina
+      setNewShop(prev => ({
+        ...prev,
+        morning_close: '',
+        afternoon_open: ''
+      }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -179,11 +201,17 @@ const ShopCreationForm = () => {
         ...newShop,
         id_user: currentUser.id_user
       };
+      
+      // UPDATE: Si el horario es continuo, establecemos morning_close y afternoon_open como null
+      if (hasContinuousSchedule) {
+        formData.morning_close = null;
+        formData.afternoon_open = null;
+      }
 
       console.log('Submitting form with data:', formData);
       
       // Validate schedule
-      const scheduleValidation = validateSchedule(newShop);
+      const scheduleValidation = validateSchedule(formData);
       
       if (!scheduleValidation.isValid) {
         setError(prevError => ({ 
@@ -200,7 +228,7 @@ const ShopCreationForm = () => {
 
       if (selectedShop) {
         // Updating existing shop
-        const result = await handleUpdateShop(selectedShop.id_shop, newShop);
+        const result = await handleUpdateShop(selectedShop.id_shop, formData);
         success = !!result;
         shopId = selectedShop.id_shop;
         
@@ -210,7 +238,7 @@ const ShopCreationForm = () => {
         }
       } else {
         // Creating new shop
-        const result = await handleCreateShop(newShop);
+        const result = await handleCreateShop(formData);
         success = !!result && !!result.id_shop;
         
         if (success) {
@@ -508,42 +536,111 @@ const ShopCreationForm = () => {
           </div>
 
           <div className={styles.scheduleContainer}>
-            <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
-            <div className={styles.scheduleFields}>
-              <input
-                type="time"
-                value={newShop.morning_open || ''}
-                onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                className={styles.timeInput}
-                required
+            {/* UPDATE: Toggle para horario continuo o con descanso */}
+            <div className={styles.scheduleTypeToggle} style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '15px',
+              gap: '8px'
+            }}>
+              <input 
+                type="checkbox"
+                id="continuous-schedule"
+                checked={hasContinuousSchedule}
+                onChange={handleScheduleTypeChange}
+                style={{ marginRight: '8px' }}
               />
-              <span>a</span>
-              <input
-                type="time"
-                value={newShop.morning_close || ''}
-                onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                className={styles.timeInput}
-                required
-              />
+              <label htmlFor="continuous-schedule" style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.9rem',
+                color: '#444'
+              }}>
+                <Clock size={16} />
+                Horario continuo (sin periodo de descanso)
+              </label>
             </div>
+          
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              {hasContinuousSchedule ? (
+                // Horario continuo: solo mostramos apertura y cierre
+                <div className={styles.scheduleSimple} style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  gap: '10px'
+                }}>
+                  <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4>
+                  <div className={styles.scheduleFields}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label style={{ fontSize: '0.85rem', color: '#555' }}>Abre:</label>
+                      <input
+                        type="time"
+                        value={newShop.morning_open || ''}
+                        onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
+                        className={styles.timeInput}
+                        required
+                      />
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <label style={{ fontSize: '0.85rem', color: '#555' }}>Cierra:</label>
+                      <input
+                        type="time"
+                        value={newShop.afternoon_close || ''}
+                        onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
+                        className={styles.timeInput}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Horario con descanso: mostramos los 4 campos
+                <>
+                  <div>
+                    <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
+                    <div className={styles.scheduleFields}>
+                      <input
+                        type="time"
+                        value={newShop.morning_open || ''}
+                        onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
+                        className={styles.timeInput}
+                        required
+                      />
+                      <span>a</span>
+                      <input
+                        type="time"
+                        value={newShop.morning_close || ''}
+                        onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
+                        className={styles.timeInput}
+                        required
+                      />
+                    </div>
+                  </div>
 
-            <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
-            <div className={styles.scheduleFields}>
-              <input
-                type="time"
-                value={newShop.afternoon_open || ''}
-                onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                className={styles.timeInput}
-                required
-              />
-              <span>a</span>
-              <input
-                type="time"
-                value={newShop.afternoon_close || ''}
-                onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                className={styles.timeInput}
-                required
-              />
+                  <div>
+                    <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
+                    <div className={styles.scheduleFields}>
+                      <input
+                        type="time"
+                        value={newShop.afternoon_open || ''}
+                        onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
+                        className={styles.timeInput}
+                        required
+                      />
+                      <span>a</span>
+                      <input
+                        type="time"
+                        value={newShop.afternoon_close || ''}
+                        onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
+                        className={styles.timeInput}
+                        required
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
             

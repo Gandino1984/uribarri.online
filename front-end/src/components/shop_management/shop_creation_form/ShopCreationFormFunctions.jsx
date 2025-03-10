@@ -62,6 +62,7 @@ export const ShopCreationFormFunctions = () => {
     }
   }, [currentUser?.id_user, setShops]);
 
+  // UPDATE: Función de validación actualizada para soportar horarios continuos
   const validateSchedule = (formData) => {
     const {
       morning_open,
@@ -70,37 +71,61 @@ export const ShopCreationFormFunctions = () => {
       afternoon_close
     } = formData;
 
+    // Check if we have at least opening and closing times
+    if (!morning_open || !afternoon_close) {
+      return {
+        isValid: false,
+        error: 'Se requieren al menos los horarios de apertura y cierre.'
+      };
+    }
+
     // Convert time strings to comparable values
     const convertTimeToMinutes = (timeStr) => {
+      if (!timeStr) return null;
       const [hours, minutes] = timeStr.split(':').map(Number);
       return hours * 60 + minutes;
     };
 
     const morningOpenTime = convertTimeToMinutes(morning_open);
-    const morningCloseTime = convertTimeToMinutes(morning_close);
-    const afternoonOpenTime = convertTimeToMinutes(afternoon_open);
     const afternoonCloseTime = convertTimeToMinutes(afternoon_close);
+    
+    // Check for continuous schedule (no rest period)
+    const hasContinuousSchedule = !morning_close || !afternoon_open || 
+                                  morning_close === '' || afternoon_open === '';
+    
+    if (hasContinuousSchedule) {
+      // For continuous schedule, just verify that opening is before closing
+      if (morningOpenTime >= afternoonCloseTime) {
+        return {
+          isValid: false,
+          error: 'El horario de apertura debe ser anterior al de cierre.'
+        };
+      }
+    } else {
+      // For schedules with rest periods, validate all four times
+      const morningCloseTime = convertTimeToMinutes(morning_close);
+      const afternoonOpenTime = convertTimeToMinutes(afternoon_open);
+      
+      if (morningOpenTime >= morningCloseTime) {
+        return {
+          isValid: false,
+          error: 'El horario de apertura de la mañana debe ser anterior al de cierre.'
+        };
+      }
 
-    // Validation checks
-    if (morningOpenTime >= morningCloseTime) {
-      return {
-        isValid: false,
-        error: 'El horario de apertura de la mañana debe ser anterior al de cierre.'
-      };
-    }
+      if (morningCloseTime >= afternoonOpenTime) {
+        return {
+          isValid: false,
+          error: 'El horario de cierre de la mañana debe ser anterior al de apertura de la tarde.'
+        };
+      }
 
-    if (morningCloseTime >= afternoonOpenTime) {
-      return {
-        isValid: false,
-        error: 'El horario de cierre de la mañana debe ser anterior al de apertura de la tarde.'
-      };
-    }
-
-    if (afternoonOpenTime >= afternoonCloseTime) {
-      return {
-        isValid: false,
-        error: 'El horario de apertura de la tarde debe ser anterior al de cierre.'
-      };
+      if (afternoonOpenTime >= afternoonCloseTime) {
+        return {
+          isValid: false,
+          error: 'El horario de apertura de la tarde debe ser anterior al de cierre.'
+        };
+      }
     }
 
     return {
@@ -450,9 +475,7 @@ export const ShopCreationFormFunctions = () => {
     handleCreateShop,
     handleUpdateShop,
     validateSchedule,
-    // UPDATE: Exportamos la función de carga de imágenes
     handleImageUpload,
-    // UPDATE: Exportamos la función para refrescar la lista de tiendas
     refreshShopsList
   };
 };

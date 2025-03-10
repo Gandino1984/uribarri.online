@@ -30,25 +30,24 @@ html, body {
   height: 100%;
 }
 
-/* UPDATE: Mejoras en responsive para el contenedor principal */
 .mainContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 100%; /* Changed from 100vw to prevent overflow */
-  overflow-x: hidden;
-  overflow-y: auto; /* Changed from hidden to allow vertical scrolling */
+  max-width: 100%; 
+  overflow: hidden; 
   min-height: calc(100vh - var(--topbar-height));
-  padding: var(--spacing-md);
+  /* padding: var(--spacing-md); */
 }
 
 /* Responsive container classes */
 .container {
   width: 100%;
-  margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  height: 100vh;
+  padding: 0 var(--topbar-height);
 }
+
 
 /* Responsive grid system */
 .grid {
@@ -94,7 +93,7 @@ input[type="number"] {
   padding: var(--spacing-sm);
   font-size: 0.9rem;
   min-height: 2.5rem;
-  font-weight: 500;
+  font-weight: 500;/* UPDATE: Mejoras en responsive para el contenedor principal */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   -moz-appearance: textfield;
 }
@@ -287,7 +286,7 @@ select.inputSuccess {
 /* Small devices (phones, up to 640px) */
 @media (max-width: 640px) {
   .container {
-    padding: 0 var(--spacing-sm);
+    /* padding: 0 var(--spacing-sm); */
   }
   
   button:hover {

@@ -5,13 +5,9 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  max-height: 80vh;
+  min-height: 80vh;
   overflow: hidden;
-  /* padding: 1rem 1rem; */
-  /* transform-origin: center center; */
   will-change: transform, opacity;
-  /* padding-top: 70px; */
-  /* margin-top: 0; */
 }
 
 .header {
@@ -167,7 +163,7 @@
     padding: 0 2rem;
     justify-content: center;
     /* UPDATE: Ajustando espacio superior para pantallas medianas */
-    padding-top: 80px;
+    /* padding-top: 80px; */
   }
 
   .formContent {
@@ -191,7 +187,7 @@
 
   .inputSection,
   .keyboardSection {
-    flex: 1;
+    /* flex: 1; */
     padding-right: 1rem;
   }
 
@@ -206,7 +202,7 @@
     overflow-y:hidden;
     justify-content: center;
     /* UPDATE: Ajustando espacio superior para tablets */
-    padding-top: 90px;
+    /* padding-top: 90px; */
   }
 
   .formActions {
@@ -240,10 +236,10 @@
 @media screen and (min-width: 1024px) {
   .container {
     overflow-y:hidden;
-    min-height: 100vh;
+    /* min-height: 100vh; */
     justify-content: center;
     /* UPDATE: Ajustando espacio superior para escritorio */
-    padding-top: 100px;
+    /* padding-top: 100px; */
   }
 
   .formContainer {
@@ -281,7 +277,7 @@
 @media screen and (min-width: 1440px) {
   .container {
     overflow-y:hidden;
-    min-height: 100vh;
+    /* min-height: 100vh; */
     justify-content: center;
     align-items: center;
     /* UPDATE: Ajustando espacio superior para escritorio */
@@ -290,7 +286,7 @@
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
-    padding: 2rem;
+    /* padding: 2rem; */
   }
 
   .formActions {
@@ -307,7 +303,7 @@
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 2rem;
+    align-items: center;
+    /* padding-top: 2rem; */
   }
 }
