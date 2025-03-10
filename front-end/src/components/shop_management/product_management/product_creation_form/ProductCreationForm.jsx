@@ -44,6 +44,8 @@ const ProductCreationForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  // UPDATE: Added state for showing/hiding upload controls
+  const [showImageUploadButton, setShowImageUploadButton] = useState(false);
   const fileInputRef = useRef(null);
   
   // Animation configuration
@@ -76,8 +78,14 @@ const ProductCreationForm = () => {
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
 
-  // UPDATE: Handle image selection with improved validation
+  // UPDATE: Added function to handle image container click
+  const handleImageContainerClick = () => {
+    setShowImageUploadButton(prev => !prev);
+  };
+
+  // UPDATE: Enhanced image selection with improved validation
   const handleImageSelect = (e) => {
+    e.stopPropagation(); // Prevent container click event
     const file = e.target.files[0];
     if (!file) return;
 
@@ -91,7 +99,7 @@ const ProductCreationForm = () => {
       return;
     }
 
-    // UPDATE: Validate file size (max 10MB before optimization)
+    // Validate file size (max 10MB before optimization)
     if (file.size > 10 * 1024 * 1024) {
       setError(prevError => ({
         ...prevError,
@@ -100,10 +108,9 @@ const ProductCreationForm = () => {
       return;
     }
     
-    // UPDATE: Inform user if image will be optimized
+    // Inform user if image will be optimized
     if (file.size > 1024 * 1024 || file.type !== 'image/webp') {
       console.log(`Image will be optimized: ${Math.round(file.size/1024)}KB, type: ${file.type}`);
-      // We could show an info message here if desired
     }
 
     setSelectedImage(file);
@@ -114,10 +121,14 @@ const ProductCreationForm = () => {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
+    
+    // Hide the upload button after selection
+    setShowImageUploadButton(false);
   };
 
-  // Clear image selection
-  const handleClearImage = () => {
+  // UPDATE: Modified clear image function to stop propagation
+  const handleClearImage = (e) => {
+    if (e) e.stopPropagation(); // Prevent container click event
     setSelectedImage(null);
     setImagePreview(null);
     if (fileInputRef.current) {
@@ -175,7 +186,7 @@ const ProductCreationForm = () => {
     }
   }, [selectedShop, selectedProductToUpdate, setNewProductData]);
 
-  // UPDATE: Corrected handleViewProductList function
+  // Corrected handleViewProductList function
   const handleViewProductList = () => {
     console.log('Returning to product list from ProductCreationForm');
     
@@ -271,269 +282,380 @@ const ProductCreationForm = () => {
         </div>
       )}
       
+      {/* UPDATE: Form layout restructured with 3 main sections for responsive design */}
       <form onSubmit={handleFormSubmit} className={styles.form}>
-        <div className={styles.formField}>
-          <input
-            type="text"
-            id="name_product"
-            name="name_product"
-            placeholder='Nombre del Producto:'
-            value={productData.name_product}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        
-        <div className={styles.formField}>
-          <label htmlFor="price_product">Precio</label>
-          <CustomNumberInput
-            label="Precio"
-            name="price_product"
-            value={productData.price_product}
-            onChange={handleNumericInputChange}
-            step={0.1}
-            min={0}
-            required
-          />
-        </div>
-
-        <div className={styles.formField}>
-          <textarea
-            id="info_product"
-            name="info_product"
-            value={productData.info_product}
-            onChange={handleChange}
-            rows="4"
-            width="100%"
-            placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
-          />
-        </div>
-
-        {/* Image upload section - UPDATE: Enhanced responsive layout */}
-        <div className={styles.formField}>
-          <div className={styles.imageUploadContainer}>
-            <label className={styles.imageUploadLabel}>
-              Imagen del Producto
-            </label>
-            
-            <div className={styles.imagePreviewBox}>
-              {imagePreview ? (
-                <img 
-                  src={imagePreview} 
-                  alt="Vista previa de imagen" 
-                  className={styles.imagePreview} 
-                />
-              ) : (
-                <div className={styles.noImagePlaceholder}>
-                  <ImagePlus size={40} className={styles.placeholderIcon} />
-                  <span>No hay imagen</span>
-                </div>
-              )}
-              
-              {uploading && (
-                <div className={styles.progressContainer}>
-                  <div className={styles.progressBar}>
-                    <div 
-                      className={styles.progressFill} 
-                      style={{ width: `${uploadProgress}%` }}
-                    ></div>
-                  </div>
-                  <span className={styles.progressText}>{uploadProgress}%</span>
-                </div>
-              )}
-            </div>
-            
-            <div className={styles.imageControlsContainer}>
-              <input
-                type="file"
-                id="product_image"
-                ref={fileInputRef}
-                accept="image/jpeg,image/png,image/jpg,image/webp"
-                style={{ display: 'none' }}
-                onChange={handleImageSelect}
-                disabled={uploading}
-              />
-              
-              <label 
-                htmlFor="product_image" 
-                className={styles.imageButton}
-                style={{ opacity: uploading ? 0.6 : 1 }}
-              >
-                <Camera size={16} />
-                Subir imagen
-              </label>
-              
-              {selectedImage && (
-                <button
-                  type="button"
-                  className={styles.clearImageButton}
-                  onClick={handleClearImage}
-                  disabled={uploading}
-                >
-                  <Trash2 size={16} />
-                  Quitar imagen
-                </button>
-              )}
-            </div>
-            
-            {/* <p className={styles.imageHelpText}>
-              {selectedProductToUpdate 
-                ? "La imagen se actualizará al guardar cambios" 
-                : "La imagen se subirá al crear el producto"}
-              <br/>
-              Formatos aceptados: JPG, PNG, WebP. Tamaño máx: 5MB
-            </p> */}
-          </div>
-        </div>
-
-        {/* Country and locality fields */}
-        <div className={styles.formField}>
-          <select
-            id="country_product"
-            name="country_product"
-            value={productData.country_product || ''}
-            onChange={handleChange}
-          >
-            <option value="">País de origen</option>
-            {countries.map(country => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.formField}>
-          <input
-            type="text"
-            id="locality_product"
-            name="locality_product"
-            placeholder='Localidad de origen:'
-            value={productData.locality_product || ''}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Product Type Dropdown - Filtered by shop type */}
-        <div className={styles.formField}>
-          <select
-            id="type_product"
-            name="type_product"
-            value={productData.type_product}
-            onChange={(e) => {
-              // Reset subtype when type changes
-              setNewProductData({
-                ...productData,
-                type_product: e.target.value,
-                subtype_product: '' // Clear subtype
-              });
-            }}
-            required
-          >
-            <option value="" disabled>Tipo:</option>
-            {filteredProductTypes.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Subtype Dropdown - Only show if a type is selected */}
-        {productData.type_product && (
-          <div className={styles.formField}>
-            <select
-              id="subtype_product"
-              name="subtype_product"
-              value={productData.subtype_product}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled>Subtipo:</option>
-              {subtypes.map(subtype => (
-                <option key={subtype} value={subtype}>
-                  {subtype}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className={styles.formField}>
-          <select
-            id="season_product"
-            name="season_product"
-            value={productData.season_product}
-            onChange={handleChange}
-          >
-            <option value="" disabled>Temporada:</option>
-            {filterOptions.temporada.options.map(season => (
-              <option key={season} value={season}>
-                {season}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.formField}>
-          <div className={styles.checkboxContainer}>
-            <input
-              type="checkbox"
-              id="second_hand"
-              name="second_hand"
-              checked={productData.second_hand === 1}
-              onChange={(e) => {
-                handleChange({
-                  target: {
-                    name: 'second_hand',
-                    value: e.target.checked ? 1 : 0
-                  }
-                });
+        <div className={styles.formLayout}>
+          {/* SECTION 1: Image Upload (left column on desktop) */}
+          <div className={styles.imageSection}>
+            <div 
+              className={styles.imageUploadContainer}
+              onClick={handleImageContainerClick}
+              style={{
+                cursor: 'pointer',
+                position: 'relative'
               }}
-            />
-            <label htmlFor="second_hand">Segunda mano</label>
+            >
+              <div className={styles.imagePreviewBox} style={{
+                width: '100%',
+                height: '200px',
+                border: '1px dashed #ccc',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                position: 'relative',
+                backgroundColor: '#f5f5f5'
+              }}>
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Vista previa de imagen" 
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    color: '#666'
+                  }}>
+                    <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
+                    <span>Imagen de producto</span>
+                  </div>
+                )}
+                
+                {/* Upload progress indicator */}
+                {uploading && (
+                  <div className={styles.loaderOverlay} style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.6)',
+                    borderRadius: '8px'
+                  }}>
+                    <div className={styles.spinner} style={{
+                      border: '4px solid rgba(255,255,255,0.3)',
+                      borderRadius: '50%',
+                      borderTop: '4px solid white',
+                      width: '32px',
+                      height: '32px',
+                      animation: 'spin 1.5s linear infinite',
+                      marginBottom: '15px'
+                    }}></div>
+                    
+                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
+                      <div style={{ 
+                        width: `${uploadProgress}%`,
+                        height: '100%',
+                        backgroundColor: '#4CAF50',
+                        borderRadius: '4px'
+                      }}></div>
+                    </div>
+                    <span style={{ color: 'white', marginTop: '8px' }}>
+                      {uploadProgress}%
+                    </span>
+                  </div>
+                )}
+                
+                {/* Image upload button */}
+                {showImageUploadButton && !uploading && (
+                  <div 
+                    className={styles.uploadButtonOverlay}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      padding: '10px',
+                      background: 'rgba(0,0,0,0.7)'
+                    }}
+                  >
+                    <input
+                      type="file"
+                      id="product_image"
+                      ref={fileInputRef}
+                      accept="image/jpeg,image/png,image/jpg,image/webp"
+                      style={{ display: 'none' }}
+                      onChange={handleImageSelect}
+                      disabled={uploading}
+                    />
+                    
+                    <label 
+                      htmlFor="product_image" 
+                      className={styles.imageButton}
+                      style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        padding: '8px 15px',
+                        backgroundColor: '#4A90E2',
+                        color: 'white',
+                        borderRadius: '4px',
+                        border: 'none',
+                        fontSize: '14px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Camera size={16} />
+                      {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                    </label>
+                    
+                    {imagePreview && (
+                      <button
+                        type="button"
+                        onClick={handleClearImage}
+                        disabled={uploading}
+                        style={{ 
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          backgroundColor: '#E25549',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '8px 15px',
+                          marginLeft: '10px',
+                          cursor: 'pointer',
+                          fontSize: '14px'
+                        }}
+                      >
+                        <Trash2 size={16} />
+                        Quitar
+                      </button>
+                    )}
+                  </div>
+                )}
+                
+                {/* Edit overlay hint */}
+                {!showImageUploadButton && !uploading && (
+                  <div className={styles.editOverlay} style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    padding: '10px',
+                    background: 'rgba(0,0,0,0.5)',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px'
+                  }}>
+                    <Camera size={18} />
+                    <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 2: Basic Product Information (middle column on desktop) */}
+          <div className={styles.basicInfoSection}>
+            <div className={styles.formField}>
+              <input
+                type="text"
+                id="name_product"
+                name="name_product"
+                placeholder='Nombre del Producto:'
+                value={productData.name_product}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div className={styles.formField}>
+              <label htmlFor="price_product">Precio</label>
+              <CustomNumberInput
+                label="Precio"
+                name="price_product"
+                value={productData.price_product}
+                onChange={handleNumericInputChange}
+                step={0.1}
+                min={0}
+                required
+              />
+            </div>
+
+            <div className={styles.formField}>
+              <textarea
+                id="info_product"
+                name="info_product"
+                value={productData.info_product}
+                onChange={handleChange}
+                rows="4"
+                width="100%"
+                placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
+              />
+            </div>
+
+            {/* Country and locality fields */}
+            <div className={styles.formField}>
+              <select
+                id="country_product"
+                name="country_product"
+                value={productData.country_product || ''}
+                onChange={handleChange}
+              >
+                <option value="">País de origen</option>
+                {countries.map(country => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formField}>
+              <input
+                type="text"
+                id="locality_product"
+                name="locality_product"
+                placeholder='Localidad de origen:'
+                value={productData.locality_product || ''}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* SECTION 3: Additional Product Details (right column on desktop) */}
+          <div className={styles.detailsSection}>
+            {/* Product Type Dropdown - Filtered by shop type */}
+            <div className={styles.formField}>
+              <select
+                id="type_product"
+                name="type_product"
+                value={productData.type_product}
+                onChange={(e) => {
+                  // Reset subtype when type changes
+                  setNewProductData({
+                    ...productData,
+                    type_product: e.target.value,
+                    subtype_product: '' // Clear subtype
+                  });
+                }}
+                required
+              >
+                <option value="" disabled>Tipo:</option>
+                {filteredProductTypes.map(type => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subtype Dropdown - Only show if a type is selected */}
+            {productData.type_product && (
+              <div className={styles.formField}>
+                <select
+                  id="subtype_product"
+                  name="subtype_product"
+                  value={productData.subtype_product}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="" disabled>Subtipo:</option>
+                  {subtypes.map(subtype => (
+                    <option key={subtype} value={subtype}>
+                      {subtype}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div className={styles.formField}>
+              <select
+                id="season_product"
+                name="season_product"
+                value={productData.season_product}
+                onChange={handleChange}
+              >
+                <option value="" disabled>Temporada:</option>
+                {filterOptions.temporada.options.map(season => (
+                  <option key={season} value={season}>
+                    {season}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formField}>
+              <div className={styles.checkboxContainer}>
+                <input
+                  type="checkbox"
+                  id="second_hand"
+                  name="second_hand"
+                  checked={productData.second_hand === 1}
+                  onChange={(e) => {
+                    handleChange({
+                      target: {
+                        name: 'second_hand',
+                        value: e.target.checked ? 1 : 0
+                      }
+                    });
+                  }}
+                />
+                <label htmlFor="second_hand">Segunda mano</label>
+              </div>
+            </div>
+
+            <div className={styles.formField}>
+              <label htmlFor="discount_product">% Descuento  (opcional)</label>
+              <CustomNumberInput
+                label="Descuento (%)"
+                name="discount_product"
+                value={productData.discount_product}
+                onChange={handleNumericInputChange}
+                step={1}
+                min={0}
+                max={100}
+              />
+            </div>
+
+            <div className={styles.formField}>
+              <label htmlFor="surplus_product">Excedente (opcional)</label>
+              <CustomNumberInput
+                label="Surplus"
+                name="surplus_product"
+                value={productData.surplus_product}
+                onChange={handleNumericInputChange}
+                min={0}
+                required
+              />
+            </div>
+
+            <div className={styles.formField}>
+              <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
+              <input
+                type="date"
+                id="expiration_product"
+                name="expiration_product"
+                value={productData.expiration_product || ''}
+                onChange={handleChange}
+                min={new Date().toISOString().split('T')[0]} // Set minimum date to today
+                className={styles.dateInput}
+              />
+            </div>
           </div>
         </div>
 
-        <div className={styles.formField}>
-          <label htmlFor="discount_product">% Descuento  (opcional)</label>
-          <CustomNumberInput
-            label="Descuento (%)"
-            name="discount_product"
-            value={productData.discount_product}
-            onChange={handleNumericInputChange}
-            step={1}
-            min={0}
-            max={100}
-          />
-        </div>
-
-        <div className={styles.formField}>
-          <label htmlFor="surplus_product">Excedente (opcional)</label>
-          <CustomNumberInput
-            label="Surplus"
-            name="surplus_product"
-            value={productData.surplus_product}
-            onChange={handleNumericInputChange}
-            min={0}
-            required
-          />
-        </div>
-
-        <div className={styles.formField}>
-          <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
-          <input
-            type="date"
-            id="expiration_product"
-            name="expiration_product"
-            value={productData.expiration_product || ''}
-            onChange={handleChange}
-            min={new Date().toISOString().split('T')[0]} // Set minimum date to today
-            className={styles.dateInput}
-          />
-        </div>
-
-        <div className={styles.formField}>
+        {/* Form Actions - Full width at bottom */}
+        <div className={styles.formActions}>
           <button 
             type="submit" 
             className={styles.submitButton}
