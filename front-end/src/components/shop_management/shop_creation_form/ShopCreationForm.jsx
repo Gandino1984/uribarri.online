@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormFunctions } from './ShopCreationFormFunctions.jsx';
-import { Box, ArrowLeft, Camera, ImagePlus, Trash2, Clock } from 'lucide-react';
+import { Box, ArrowLeft, Camera, ImagePlus, Trash2, Clock, Loader } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 
 const ShopCreationForm = () => {
@@ -14,10 +14,8 @@ const ShopCreationForm = () => {
     setError,
     setShowErrorCard,
     currentUser,
-    // UPDATE: Agregamos los estados necesarios para el botón volver
     setShowShopCreationForm,
     setSelectedShop,
-    // UPDATE: Agregamos estados para el manejo de imágenes
     uploading,
     setUploading
   } = useContext(AppContext);
@@ -26,17 +24,17 @@ const ShopCreationForm = () => {
     handleCreateShop,
     handleUpdateShop,
     validateSchedule,
-    // UPDATE: Añadimos la función de carga de imágenes
     handleImageUpload
   } = ShopCreationFormFunctions();
 
-  // UPDATE: Añadimos estados para la gestión de la imagen
+  // UPDATE: Enhanced image handling states
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showImageUploadButton, setShowImageUploadButton] = useState(false);
   const fileInputRef = useRef(null);
   
-  // UPDATE: Añadimos estado para controlar si el horario es continuo o no
+  // UPDATE: Added state for continuous schedule
   const [hasContinuousSchedule, setHasContinuousSchedule] = useState(false);
 
   // Animation configuration
@@ -56,68 +54,74 @@ const ShopCreationForm = () => {
     }
   });
 
- // Modified useEffect to properly handle user ID
- useEffect(() => {
-  if (currentUser?.id_user) {
-    setNewShop(prev => {
-      // Only update if the ID is different to avoid unnecessary rerenders
-      if (prev?.id_user !== currentUser.id_user) {
-        console.log('Updating user ID in form:', currentUser.id_user);
-        return {
-          ...prev,
-          id_user: currentUser.id_user
-        };
-      }
-      return prev;
-    });
-  }
-}, [currentUser?.id_user, setNewShop]); 
+  // Modified useEffect to properly handle user ID
+  useEffect(() => {
+    if (currentUser?.id_user) {
+      setNewShop(prev => {
+        // Only update if the ID is different to avoid unnecessary rerenders
+        if (prev?.id_user !== currentUser.id_user) {
+          console.log('Updating user ID in form:', currentUser.id_user);
+          return {
+            ...prev,
+            id_user: currentUser.id_user
+          };
+        }
+        return prev;
+      });
+    }
+  }, [currentUser?.id_user, setNewShop]); 
 
   useEffect(() => {
-  if (selectedShop && currentUser?.id_user) {
-    // UPDATE: Detectar si la tienda tiene horario continuo
-    const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
-    setHasContinuousSchedule(shopHasContinuousSchedule);
-    
-    setNewShop({
-      name_shop: selectedShop.name_shop,
-      type_shop: selectedShop.type_shop,
-      subtype_shop: selectedShop.subtype_shop,
-      location_shop: selectedShop.location_shop,
-      id_user: currentUser.id_user, // Ensure we always set the current user ID
-      calification_shop: selectedShop.calification_shop,
-      image_shop: selectedShop.image_shop,
-      morning_open: selectedShop.morning_open || '',
-      morning_close: selectedShop.morning_close || '',
-      afternoon_open: selectedShop.afternoon_open || '',
-      afternoon_close: selectedShop.afternoon_close || ''
-    });
+    if (selectedShop && currentUser?.id_user) {
+      // UPDATE: Detect if shop has continuous schedule
+      const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
+      setHasContinuousSchedule(shopHasContinuousSchedule);
+      
+      setNewShop({
+        name_shop: selectedShop.name_shop,
+        type_shop: selectedShop.type_shop,
+        subtype_shop: selectedShop.subtype_shop,
+        location_shop: selectedShop.location_shop,
+        id_user: currentUser.id_user, // Ensure we always set the current user ID
+        calification_shop: selectedShop.calification_shop,
+        image_shop: selectedShop.image_shop,
+        morning_open: selectedShop.morning_open || '',
+        morning_close: selectedShop.morning_close || '',
+        afternoon_open: selectedShop.afternoon_open || '',
+        afternoon_close: selectedShop.afternoon_close || ''
+      });
 
-    // UPDATE: Establecemos la imagen previa si existe
-    if (selectedShop.image_shop) {
-      try {
-        // Si la imagen ya es una URL completa
-        if (selectedShop.image_shop.startsWith('http') || 
-            selectedShop.image_shop.startsWith('data:') || 
-            selectedShop.image_shop.startsWith('blob:')) {
-          setImagePreview(selectedShop.image_shop);
-        } else {
-          // Construir la URL relativa a la base
-          const baseUrl = window.location.origin;
-          const cleanPath = selectedShop.image_shop.replace(/^\/+/, '');
-          const imageUrl = `${baseUrl}/${cleanPath}`;
-          console.log('Estableciendo URL de vista previa:', imageUrl);
-          setImagePreview(imageUrl);
+      // Set image preview if exists
+      if (selectedShop.image_shop) {
+        try {
+          // If the image is already a complete URL
+          if (selectedShop.image_shop.startsWith('http') || 
+              selectedShop.image_shop.startsWith('data:') || 
+              selectedShop.image_shop.startsWith('blob:')) {
+            setImagePreview(selectedShop.image_shop);
+          } else {
+            // Build the relative URL to the base
+            const baseUrl = window.location.origin;
+            const cleanPath = selectedShop.image_shop.replace(/^\/+/, '');
+            const imageUrl = `${baseUrl}/${cleanPath}`;
+            console.log('Setting preview URL:', imageUrl);
+            setImagePreview(imageUrl);
+          }
+        } catch (err) {
+          console.error('Error formatting image URL:', err);
         }
-      } catch (err) {
-        console.error('Error al formatear la URL de la imagen:', err);
       }
     }
-  }
-}, [selectedShop, currentUser?.id_user, setNewShop]);
+  }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // UPDATE: Manejador para seleccionar imagen
+  // UPDATE: Image container click handler - toggles upload button visibility
+  const handleImageContainerClick = () => {
+    setShowImageUploadButton(prev => !prev);
+  };
+
+  // UPDATE: Handle file selection and preview
   const handleImageSelect = (e) => {
+    e.stopPropagation(); // Prevent container click event
     const file = e.target.files[0];
     if (!file) return;
 
@@ -150,10 +154,14 @@ const ShopCreationForm = () => {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
+    
+    // Hide the upload button after selection
+    setShowImageUploadButton(false);
   };
 
-  // UPDATE: Función para limpiar la imagen seleccionada
-  const handleClearImage = () => {
+  // UPDATE: Function to clear the selected image
+  const handleClearImage = (e) => {
+    e.stopPropagation(); // Prevent container click event
     setSelectedImage(null);
     setImagePreview(null);
     if (fileInputRef.current) {
@@ -161,13 +169,13 @@ const ShopCreationForm = () => {
     }
   };
   
-  // UPDATE: Función para manejar el cambio de tipo de horario
+  // UPDATE: Function to handle schedule type change
   const handleScheduleTypeChange = (e) => {
     const isContinuous = e.target.checked;
     setHasContinuousSchedule(isContinuous);
     
     if (isContinuous) {
-      // Si cambiamos a horario continuo, limpiamos los campos de cierre matutino y apertura vespertina
+      // If changed to continuous schedule, clear morning closing and afternoon opening fields
       setNewShop(prev => ({
         ...prev,
         morning_close: '',
@@ -202,7 +210,7 @@ const ShopCreationForm = () => {
         id_user: currentUser.id_user
       };
       
-      // UPDATE: Si el horario es continuo, establecemos morning_close y afternoon_open como null
+      // UPDATE: If schedule is continuous, set morning_close and afternoon_open as null
       if (hasContinuousSchedule) {
         formData.morning_close = null;
         formData.afternoon_open = null;
@@ -233,7 +241,7 @@ const ShopCreationForm = () => {
         shopId = selectedShop.id_shop;
         
         if (success) {
-          console.log('Tienda actualizada exitosamente:', result);
+          console.log('Shop updated successfully:', result);
           createdOrUpdatedShop = result;
         }
       } else {
@@ -242,19 +250,19 @@ const ShopCreationForm = () => {
         success = !!result && !!result.id_shop;
         
         if (success) {
-          console.log('Nueva tienda creada exitosamente:', result);
+          console.log('New shop created successfully:', result);
           shopId = result.id_shop;
           createdOrUpdatedShop = result;
           
           // Force update the shops list in AppContext immediately
           // This is critical for ensuring the new shop appears in the list
-          console.log('Actualizando la lista de tiendas con la nueva tienda creada');
+          console.log('Updating shop list with newly created shop');
         }
       }
 
-      // UPDATE: Subir imagen si se seleccionó una y la operación de guardar fue exitosa
+      // Upload image if one was selected and the save operation was successful
       if (success && selectedImage && shopId) {
-        console.log(`Comercio ${selectedShop ? 'actualizado' : 'creado'} con éxito, ID: ${shopId}`);
+        console.log(`Shop ${selectedShop ? 'updated' : 'created'} successfully, ID: ${shopId}`);
         
         try {
           setUploading(true);
@@ -263,7 +271,7 @@ const ShopCreationForm = () => {
             shopId, 
             (progress) => setUploadProgress(progress)
           );
-          console.log('Imagen de comercio subida con éxito');
+          console.log('Shop image uploaded successfully');
           
           // Clear the image selection after successful upload
           setSelectedImage(null);
@@ -271,10 +279,10 @@ const ShopCreationForm = () => {
             fileInputRef.current.value = '';
           }
         } catch (error) {
-          console.error('Error al subir imagen del comercio:', error);
+          console.error('Error uploading shop image:', error);
           setError(prevError => ({
             ...prevError,
-            imageError: error.message || "Error al subir la imagen del comercio"
+            imageError: error.message || "Error uploading shop image"
           }));
           setShowErrorCard(true);
         } finally {
@@ -282,10 +290,10 @@ const ShopCreationForm = () => {
         }
       }
     } catch (error) {
-      console.error('Error al procesar el formulario:', error);
+      console.error('Error processing form:', error);
       setError(prevError => ({
         ...prevError,
-        shopError: error.message || "Error al procesar el formulario"
+        shopError: error.message || "Error processing form"
       }));
       setShowErrorCard(true);
     } finally {
@@ -294,9 +302,9 @@ const ShopCreationForm = () => {
     }
   };
 
-  // UPDATE: Función para manejar el botón volver
+  // UPDATE: Function to handle back button
   const handleBack = () => {
-    // Limpiar el estado del formulario
+    // Clear form state
     setNewShop({
       name_shop: '',
       type_shop: '',
@@ -312,10 +320,10 @@ const ShopCreationForm = () => {
       has_delivery: false,
     });
     
-    // Limpiar la tienda seleccionada
+    // Clear selected shop
     setSelectedShop(null);
     
-    // Ocultar el formulario para volver a la lista
+    // Hide form to return to list
     setShowShopCreationForm(false);
   };
 
@@ -327,127 +335,138 @@ const ShopCreationForm = () => {
     <animated.div style={formAnimation} className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>   
-          {/* UPDATE: Agregamos el botón de volver */}
-          <button 
-            onClick={handleBack}
-            className={styles.backButton}
-            title="Volver a la lista de comercios"
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <h3 className={styles.headerTitle}>
+          <h1 className={styles.headerTitle}>
             {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-          </h3>
+          </h1>
         </div>
+        
+        {/* UPDATE: Restructured form with 3 sections for desktop layout */}
         <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formFields}>
-            <div className={styles.formField}>
-              <div className={styles.imageUploadContainer || styles.formField}>
-                
-                <div className={styles.imagePreviewBox || styles.previewContainer} style={{
-                  width: '100%',
-                  height: '180px',
-                  border: '1px dashed #ccc',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  marginBottom: '10px',
-                  backgroundColor: '#f5f5f5'
-                }}>
-                  {imagePreview ? (
-                    <img 
-                      src={imagePreview} 
-                      alt="Vista previa de imagen" 
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                        objectFit: 'contain'
-                      }}
-                    />
-                  ) : (
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      color: '#666'
-                    }}>
-                      <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
-                      <span>Sin imagen seleccionada</span>
-                    </div>
-                  )}
-                  
-                  {uploading && (
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '0',
-                      left: '0',
+          {/* SECTION 1: Image Upload */}
+          <div className={styles.imageSection}>
+            {/* UPDATE: Improved image upload UI based on ShopCoverImage */}
+            <div 
+              className={styles.imageUploadContainer}
+              onClick={handleImageContainerClick}
+            >
+              <div className={styles.imagePreviewBox} style={{
+                width: '100%',
+                height: '200px',
+                border: '1px dashed #ccc',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                position: 'relative',
+                backgroundColor: '#f5f5f5',
+                cursor: 'pointer'
+              }}>
+                {imagePreview ? (
+                  <img 
+                    src={imagePreview} 
+                    alt="Vista previa de imagen" 
+                    style={{
                       width: '100%',
-                      background: 'rgba(0,0,0,0.7)',
-                      padding: '5px',
-                      color: 'white',
-                    }}>
-                      <div style={{ width: '100%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
-                        <div 
-                          style={{ 
-                            width: `${uploadProgress}%`,
-                            height: '100%',
-                            backgroundColor: '#4CAF50',
-                            borderRadius: '4px'
-                          }}
-                        ></div>
-                      </div>
-                      <span style={{ fontSize: '12px', textAlign: 'center', display: 'block', marginTop: '2px' }}>
-                        {uploadProgress}%
-                      </span>
-                    </div>
-                  )}
-                </div>
-                
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '10px', 
-                  marginBottom: '10px',
-                  flexWrap: 'wrap'
-                }}>
-                  <input
-                    type="file"
-                    id="shop_image"
-                    ref={fileInputRef}
-                    accept="image/jpeg,image/png,image/jpg,image/webp"
-                    style={{ display: 'none' }}
-                    onChange={handleImageSelect}
-                    disabled={uploading}
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
                   />
-                  
-                  <div>
+                ) : (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    color: '#666'
+                  }}>
+                    <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
+                    <span>Imagen de comercio</span>
+                  </div>
+                )}
+                
+                {/* Upload progress indicator */}
+                {uploading && (
+                  <div className={styles.loaderOverlay} style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.6)',
+                    borderRadius: '8px'
+                  }}>
+                    <Loader size={32} color="white" className={styles.spinningLoader} style={{
+                      animation: 'spin 1.5s linear infinite',
+                      marginBottom: '15px'
+                    }} />
+                    
+                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
+                      <div style={{ 
+                        width: `${uploadProgress}%`,
+                        height: '100%',
+                        backgroundColor: '#4CAF50',
+                        borderRadius: '4px'
+                      }}></div>
+                    </div>
+                    <span style={{ color: 'white', marginTop: '8px' }}>
+                      {uploadProgress}%
+                    </span>
+                  </div>
+                )}
+                
+                {/* Image upload button */}
+                {showImageUploadButton && !uploading && (
+                  <div 
+                    className={styles.uploadButtonOverlay}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      padding: '10px',
+                      background: 'rgba(0,0,0,0.7)'
+                    }}
+                  >
+                    <input
+                      type="file"
+                      id="shop_image"
+                      ref={fileInputRef}
+                      accept="image/jpeg,image/png,image/jpg,image/webp"
+                      style={{ display: 'none' }}
+                      onChange={handleImageSelect}
+                      disabled={uploading}
+                    />
+                    
                     <label 
                       htmlFor="shop_image" 
-                      className={styles.imageButton || styles.submitButton}
+                      className={styles.imageButton}
                       style={{ 
                         display: 'flex',
                         alignItems: 'center',
                         gap: '5px',
-                        opacity: uploading ? 0.6 : 1,
-                        cursor: uploading ? 'not-allowed' : 'pointer',
                         padding: '8px 15px',
                         backgroundColor: '#4A90E2',
                         color: 'white',
                         borderRadius: '4px',
                         border: 'none',
-                        fontSize: '14px'
+                        fontSize: '14px',
+                        cursor: 'pointer'
                       }}
                     >
                       <Camera size={16} />
-                      Seleccionar imagen
+                      {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
                     </label>
                     
-                    {selectedImage && (
+                    {imagePreview && (
                       <button
                         type="button"
-                        className={styles.clearImageButton || styles.submitButton}
                         onClick={handleClearImage}
                         disabled={uploading}
                         style={{ 
@@ -459,22 +478,43 @@ const ShopCreationForm = () => {
                           border: 'none',
                           borderRadius: '4px',
                           padding: '8px 15px',
-                          cursor: uploading ? 'not-allowed' : 'pointer',
-                          opacity: uploading ? 0.6 : 1,
+                          marginLeft: '10px',
+                          cursor: 'pointer',
                           fontSize: '14px'
                         }}
                       >
                         <Trash2 size={16} />
-                        Quitar imagen
+                        Quitar
                       </button>
                     )}
                   </div>
-
-                </div>
-              
+                )}
+                
+                {/* Edit overlay hint */}
+                {!showImageUploadButton && !uploading && (
+                  <div className={styles.editOverlay} style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    padding: '10px',
+                    background: 'rgba(0,0,0,0.5)',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px'
+                  }}>
+                    <Camera size={18} />
+                    <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
+                  </div>
+                )}
               </div>
             </div>
-            
+          </div>
+          
+          {/* SECTION 2: Basic Shop Information */}
+          <div className={styles.formFields}>
             <div className={styles.formField}>
               <input
                 type="text"
@@ -532,11 +572,11 @@ const ShopCreationForm = () => {
                 required
               />
             </div>
-
           </div>
 
+          {/* SECTION 3: Additional Information (Schedule) */}
           <div className={styles.scheduleContainer}>
-            {/* UPDATE: Toggle para horario continuo o con descanso */}
+            {/* Toggle for continuous or split schedule */}
             <div className={styles.scheduleTypeToggle} style={{
               display: 'flex',
               alignItems: 'center',
@@ -564,7 +604,7 @@ const ShopCreationForm = () => {
           
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {hasContinuousSchedule ? (
-                // Horario continuo: solo mostramos apertura y cierre
+                // Continuous schedule: only show opening and closing
                 <div className={styles.scheduleSimple} style={{ 
                   display: 'flex', 
                   flexDirection: 'column',
@@ -596,7 +636,7 @@ const ShopCreationForm = () => {
                   </div>
                 </div>
               ) : (
-                // Horario con descanso: mostramos los 4 campos
+                // Schedule with rest period: show all 4 fields
                 <>
                   <div>
                     <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
