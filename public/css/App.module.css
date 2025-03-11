@@ -9,7 +9,8 @@
   overflow-x: hidden;
   background-color: var(--superlight-gray);
   position: relative;
-  padding-top: var(--topbar-height);
+  /* UPDATE: Remove padding-top to avoid double spacing */
+  padding-top: 0;
 }
 
 /* UPDATE: Responsive improvements for mobile devices */

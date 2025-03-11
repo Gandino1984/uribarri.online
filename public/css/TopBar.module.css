@@ -9,6 +9,7 @@
     padding: 0.4rem 2rem;
     margin-bottom: 1rem;
     z-index: 1000;
+    /* UPDATE: Ensuring consistent height that matches CSS variable */
     min-height: var(--topbar-height);
     height: auto;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
@@ -36,6 +37,9 @@
     display: flex;
     justify-content: center;
     z-index: 500;
+    /* UPDATE: Adding max-height to prevent overflow */
+    max-height: calc(var(--topbar-height) - 3rem);
+    overflow-y: auto;
 }
 
 .backButton {
@@ -65,6 +69,11 @@
     white-space: nowrap;
 }
 
+/* UPDATE: Animation for smooth height transitions */
+.container {
+    transition: height 0.3s ease;
+}
+
 /* Mobile screens */
 @media (max-width: 640px) {
     .container {
@@ -80,11 +89,27 @@
         font-size: 0.75rem;
         padding: 0.25rem 0.35rem;
     }
+    
+    /* UPDATE: Adjusting message wrapper for small screens */
+    .messageWrapper {
+        max-height: calc(var(--topbar-height) - 2.5rem);
+    }
 }
 
 /* Tablet screens */
 @media (min-width: 641px) and (max-width: 1024px) {
     .container {
         padding: 0.4rem 1.5rem;
+    }
+}
+
+/* UPDATE: Large screens */
+@media (min-width: 1025px) {
+    .container {
+        padding: 0.4rem 2.5rem;
+    }
+    
+    .contentWrapper {
+        padding: 0.5rem 0;
     }
 }

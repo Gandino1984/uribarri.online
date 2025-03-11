@@ -5,11 +5,12 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  /* UPDATE: Adjusted min-height to account for TopBar height and removed redundant padding-top */
+  /* UPDATE: Calculate remaining viewport height while keeping original padding */
   min-height: calc(100vh - var(--topbar-height));
   overflow: hidden;
   will-change: transform, opacity;
-  padding-top: 0;
+  /* Keep the padding-top to maintain layout consistency */
+  padding-top: var(--topbar-height);
 }
 
 .header {
@@ -37,8 +38,6 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .formTitle {
@@ -169,6 +168,8 @@
   .container {
     overflow-y: hidden;
     padding: 0 2rem;
+    /* UPDATE: Keep top padding to work with fixed TopBar */
+    padding-top: var(--topbar-height);
     justify-content: center;
   }
 
@@ -212,6 +213,8 @@
   .container {
     overflow-y: hidden;
     justify-content: center;
+    /* UPDATE: Maintain vertical spacing with TopBar */
+    padding-top: var(--topbar-height);
   }
 
   .formField {
@@ -242,9 +245,11 @@
 @media screen and (min-width: 1024px) {
   .container {
     overflow-y: hidden;
-    /* UPDATE: Adjusted min-height to use full remaining viewport height */
+    /* UPDATE: Calculate height while preserving layout */
     min-height: calc(100vh - var(--topbar-height));
     justify-content: center;
+    /* UPDATE: Keep top padding to work with fixed TopBar */
+    padding-top: var(--topbar-height);
   }
 
   .formContainer {
@@ -279,12 +284,20 @@
     overflow-y: hidden;
     justify-content: center;
     align-items: center;
+    /* UPDATE: Keep top padding to work with fixed TopBar */
+    padding-top: var(--topbar-height);
   }
   
+  /* UPDATE: Preserve horizontal layout for large screens */
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
     max-width: 1200px;
+  }
+
+  .formContent {
+    flex-direction: row;
+    align-items: flex-start;
   }
 
   .formFields {
