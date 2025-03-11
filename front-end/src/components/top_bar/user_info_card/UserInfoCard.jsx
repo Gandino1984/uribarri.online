@@ -9,7 +9,8 @@ const UserInfoCard = () => {
   const { 
     currentUser,
     uploading,
-    setError
+    setError,
+    setInfo
   } = useContext(AppContext);
 
   const {
@@ -116,18 +117,18 @@ const UserInfoCard = () => {
               <img
                 key={imageKey}
                 src={getImageUrl(currentUser.image_user) || ''}
-                alt="Imagen de perfil"
+                alt="No hay imagen"
                 className={styles.profileImage}
                 onError={() => {
-                  setError(prevError => ({ 
-                    ...prevError, 
-                    imageError: "No tienes imagen de perfil" 
+                  setInfo(prevInfo => ({ 
+                    ...prevInfo, 
+                    imageInfo: "No tienes imagen de perfil" 
                   }));
                 }}
                 onLoad={() => {
-                  setError(prevError => ({
-                    ...prevError,
-                    imageError: ''
+                  setInfo(prevInfo => ({
+                    ...prevInfo,
+                    imageInfo: ''
                   }));
                 }}
               />

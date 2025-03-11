@@ -4,41 +4,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* min-height: 100vh; */
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
   background-color: var(--superlight-gray);
   position: relative;
-  /* padding-top: var(--topbar-height); */
+  padding-top: var(--topbar-height);
 }
 
-/* UPDATE: Mejoras para dispositivos móviles */
+/* UPDATE: Responsive improvements for mobile devices */
 @media (max-width: 640px) {
   .mainContainer {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en móviles */
-    padding-top: var(--topbar-height);
   }
 }
 
-/* UPDATE: Mejoras para tablets */
+/* UPDATE: Responsive improvements for tablets */
 @media (min-width: 641px) and (max-width: 1024px) {
   .mainContainer {
     padding-left: 1rem;
     padding-right: 1rem;
-    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en tablets */
-    padding-top: var(--topbar-height);
   }
 }
 
-/* UPDATE: Mejoras para dispositivos de escritorio */
+/* UPDATE: Responsive improvements for desktop devices */
 @media (min-width: 1025px) {
   .mainContainer {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en desktop */
-    padding-top: var(--topbar-height);
   }
 }

@@ -1,11 +1,24 @@
 :root {
+  /* UPDATE: Consolidated color variables */
   --saturated-blue: #2563eb;
   --dark-blue: #1641b8;
   --superlight-gray: #f1f1f1;
   --light-gray: #e2e2e2;
   --medium-gray: #d1d5db;
   --dark-gray: #4b5563;
+  --superlight-red: rgb(255, 244, 244);
+  --superlight-blue: rgb(220, 222, 255);
+  --superlight-orange: #fff7ec;
+  --saturated-orange: #F59925;
+  --filter-unselected: #9ca3af;
+  --filter-border: #e2e2e2;
+  --filter-text: #374151;
+  --filter-hover-bg: #f3f4f6;
+  
+  /* UPDATE: Shadows and effects */
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  
+  /* Layout measurements */
   --topbar-height: 5rem;
   
   /* Responsive spacing units */
@@ -16,6 +29,7 @@
   --spacing-xl: 2rem;
 }
 
+/* UPDATE: Enhanced reset for cross-browser consistency */
 * {
   margin: 0;
   padding: 0;
@@ -26,7 +40,7 @@
 
 html, body {
   overflow-x: hidden;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
 }
 
@@ -43,9 +57,10 @@ html, body {
 .container {
   width: 100%;
   height: 100vh;
-  padding: 0 var(--topbar-height);
+  padding: 0 var(--spacing-md);
 }
 
+/* UPDATE: Enhanced grid system */
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -53,7 +68,7 @@ html, body {
   width: 100%;
 }
 
-
+/* UPDATE: Improved form controls for better cross-browser compatibility */
 input[type="text"] {
   color: var(--saturated-blue);
   border: 2px solid var(--medium-gray);
@@ -66,6 +81,8 @@ input[type="text"] {
   margin-bottom: var(--spacing-sm);
   width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-appearance: none; /* Fixes iOS styling issues */
+  appearance: none;
 }
 
 input[type="text"]:focus {
@@ -80,7 +97,7 @@ input[type="text"]:hover {
   border: 2px solid var(--saturated-blue);
 }
 
-/* UPDATE: Mejoras en los inputs numéricos */
+/* UPDATE: Enhanced numeric inputs with better cross-browser support */
 input[type="number"] {
   width: auto;
   min-width: 3rem;
@@ -89,9 +106,11 @@ input[type="number"] {
   padding: var(--spacing-sm);
   font-size: 0.9rem;
   min-height: 2.5rem;
-  font-weight: 500;/* UPDATE: Mejoras en responsive para el contenedor principal */
+  font-weight: 500;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   -moz-appearance: textfield;
+  -webkit-appearance: none; /* Fixes iOS styling issues */
+  appearance: none;
 }
 
 input[type="number"]:hover {
@@ -106,16 +125,14 @@ input[type="number"]:focus {
   box-shadow: var(--focus-shadow);
 }
 
+/* UPDATE: Standardize number input appearance across browsers */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
+/* UPDATE: Enhanced textarea styling */
 textarea {
   min-height: 2.5rem;
   border-radius: 5px;
@@ -126,6 +143,8 @@ textarea {
   font-weight: 500;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   resize: vertical;
+  -webkit-appearance: none; /* Fixes iOS styling issues */
+  appearance: none;
 }
 
 textarea:focus {
@@ -140,6 +159,7 @@ textarea:hover {
   border: 2px solid var(--saturated-blue);
 }
 
+/* UPDATE: Improved button styling with touch-friendly adjustments */
 button {
   display: flex;
   align-items: center;
@@ -156,6 +176,9 @@ button {
   height: 2rem; /* Fixed height of exactly 2rem */
   transition: all 0.15s ease;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent; /* Removes tap highlight on mobile */
+  -webkit-appearance: none; /* Normalizes appearance on Safari */
+  appearance: none;
 }
 
 button:hover {
@@ -165,6 +188,7 @@ button:hover {
   transform: scale(1.05);
 }
 
+/* UPDATE: Enhanced select styling for cross-browser consistency */
 select {
   appearance: none;
   -webkit-appearance: none;
@@ -220,6 +244,7 @@ select.inputSuccess {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 
+/* Layout utilities */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -255,7 +280,7 @@ select.inputSuccess {
 .p-4 { padding: var(--spacing-lg); }
 .p-5 { padding: var(--spacing-xl); }
 
-/* Responsive flexbox utilities */
+/* Flexbox utilities */
 .d-flex { display: flex; }
 .flex-column { flex-direction: column; }
 .flex-row { flex-direction: row; }
@@ -266,37 +291,35 @@ select.inputSuccess {
 .align-items-start { align-items: flex-start; }
 .align-items-end { align-items: flex-end; }
 
-/* Responsive Hide/Show Classes */
+/* Visibility utilities */
 .d-none { display: none !important; }
 .d-block { display: block !important; }
 .d-flex { display: flex !important; }
 .d-grid { display: grid !important; }
 
-/* Enhanced Media Queries */
+/* UPDATE: Enhanced and optimized media queries */
 
 /* Small devices (phones, up to 640px) */
 @media (max-width: 640px) {
-  .container {
-    /* padding: 0 var(--spacing-sm); */
-  }
-  
+  /* UPDATE: Touch-optimized button behavior for mobile */
   button:hover {
-    transform: none;
+    transform: none; /* Remove hover scaling on touch devices */
   }
   
-  /* Keep original font sizes for consistency */
+  /* UPDATE: Optimized form controls for mobile touch */
   input[type="text"],
   input[type="number"],
   textarea,
   select {
-    font-size: 0.9rem; /* Maintain original size */
+    font-size: 16px; /* Prevents iOS zoom on input focus */
     padding: calc(var(--spacing-sm) + 2px); /* More padding for touch */
   }
   
-  /* Ensure buttons maintain exactly 2rem height on mobile */
+  /* UPDATE: Ensure buttons maintain exactly 2rem height on mobile */
   button {
     font-size: 0.9rem;
     height: 2rem;
+    min-width: 2.5rem; /* Ensures touch target size */
   }
   
   /* Responsive column adjustments for small screens */
@@ -325,7 +348,7 @@ select.inputSuccess {
 
 /* Medium devices (tablets, 641px to 1024px) */
 @media (min-width: 641px) and (max-width: 1024px) {
-  /* Keep original font size */
+  /* UPDATE: Optimized form controls for tablets */
   input[type="text"],
   input[type="number"],
   textarea,
@@ -354,9 +377,10 @@ select.inputSuccess {
 @media (min-width: 1025px) {
   .container {
     max-width: 1200px;
+    margin: 0 auto;
   }
   
-  /* Keep original font size */
+  /* UPDATE: Optimized form controls for desktop */
   input[type="text"],
   input[type="number"],
   textarea,
@@ -376,7 +400,7 @@ select.inputSuccess {
   .d-lg-flex { display: flex !important; }
 }
 
-/* Print styles for better printing experience */
+/* UPDATE: Enhanced print styles */
 @media print {
   * {
     background: transparent !important;
@@ -388,9 +412,22 @@ select.inputSuccess {
   .no-print {
     display: none !important;
   }
+  
+  /* UPDATE: Improved page breaks for printing */
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+  
+  .page-break {
+    page-break-before: always;
+  }
 }
 
-/* Accessibility improvements */
+/* UPDATE: Enhanced accessibility improvements */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -401,4 +438,10 @@ select.inputSuccess {
   clip: rect(0, 0, 0, 0);
   border: 0;
   white-space: nowrap;
+}
+
+/* UPDATE: Focus visible styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--saturated-blue);
+  outline-offset: 2px;
 }

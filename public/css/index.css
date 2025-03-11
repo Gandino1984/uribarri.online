@@ -1,3 +1,4 @@
+/* UPDATE: Consolidated CSS with variables from App.css */
 :root {
   --superlight-gray: #f4f4f4;
   --saturated-blue: #2564eb;
@@ -11,11 +12,9 @@
   --saturated-orange: #F59925;
 }
 
-*{
+* {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat';
-  background-color: var(--main-bg-gray);
+  font-family: 'Montserrat', sans-serif;
 }
-
