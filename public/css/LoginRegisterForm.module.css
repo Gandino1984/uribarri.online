@@ -27,11 +27,11 @@
 
 .formContent {
   display: flex;
+  flex-direction: column;
   gap: 3rem;
   align-items: stretch;
   justify-content: center;
   position: relative;
-  margin-bottom: 1rem;
   background-color: white;
 }
 
@@ -139,22 +139,13 @@
   opacity: 0.7;
 }
 
-@media screen and (min-width: 400px) {
-  .formActions {
-    justify-content: right;
-    /* gap: 1rem; */
-  }
-
-}
 
 /* Medium Screen Breakpoint */
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 400px) {
   .container {
     overflow-y:hidden;
     padding: 0 2rem;
     justify-content: center;
-    /* UPDATE: Ajustando espacio superior para pantallas medianas */
-    /* padding-top: 80px; */
   }
 
   .formContent {
@@ -163,7 +154,7 @@
     align-items: stretch;
     justify-content: center;
     position: relative;
-    margin-bottom: 1rem;
+    /* flex-direction: row; */
   }
 
   .formContent::after {
@@ -178,12 +169,13 @@
 
   .inputSection,
   .keyboardSection {
-    /* flex: 1; */
     padding-right: 1rem;
   }
+}
 
-  .formContainer {
-    /* padding: 1rem 2rem; */
+@media screen and (min-width: 500px) {
+  .formContent {
+    flex-direction: row;
   }
 }
 
@@ -193,14 +185,9 @@
     overflow-y:hidden;
     justify-content: center;
   }
-
-  .formActions {
-    justify-content: right;
-    /* gap: 1rem; */
-  }
+  
 
   .formField {
-    /* flex-direction: row; */
     justify-content: center;
     align-items: center;
   }
@@ -228,10 +215,6 @@
     justify-content: center;
   }
 
-  .formContainer {
-    /* box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); */
-  }
-
   .formTitle {
     font-size: 1.5rem;
     margin-bottom: 2rem;
@@ -247,12 +230,6 @@
     font-size: 1rem;
   }
 
-  .formActions {
-    justify-content: right;
-    /* margin-top: 1rem; */
-    /* gap: 1rem; */
-  }
-
   :global(.numericKeyboardContainer) {
     transform: scale(1.1);
     margin: 1rem 0;
@@ -263,23 +240,13 @@
 @media screen and (min-width: 1440px) {
   .container {
     overflow-y:hidden;
-    /* min-height: 100vh; */
     justify-content: center;
     align-items: center;
-    /* UPDATE: Ajustando espacio superior para escritorio */
-    /* padding-top: 100px; */
   }
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
-    /* padding: 2rem; */
   }
-
-  .formActions {
-    justify-content: right;
-    /* gap: 1rem; */
-  }
-
   .formFields {
     flex: 1;
     max-width: 500px;
@@ -290,6 +257,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* padding-top: 2rem; */
   }
 }
