@@ -2,7 +2,20 @@ import React, { useEffect, useContext, useState, useRef } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
 import ShopProductsListFunctions from './ShopProductsListFunctions.jsx';
 import FiltersForProducts from '../../../filters_for_products/FiltersForProducts.jsx';
-import { PackagePlus, Pencil, Trash2, CheckCircle, ImagePlus, ArrowLeft, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { 
+  PackagePlus, 
+  Pencil, 
+  Trash2, 
+  CheckCircle, 
+  ImagePlus, 
+  ArrowLeft, 
+  Search, 
+  Filter, 
+  ChevronDown, 
+  ChevronUp,
+  ArrowRightFromLine,
+  ArrowLeftFromLine 
+} from 'lucide-react';
 import styles from '../../../../../../public/css/ShopProductsList.module.css';
 import ProductImage from '../product_image/ProductImage.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
@@ -48,7 +61,10 @@ const ShopProductsList = () => {
   // State to manage filter visibility
   const [showFilters, setShowFilters] = useState(false);
   
-  // UPDATE: Use the hook from FiltersForProductsFunctions for consistent counting
+  // State to track which product's actions menu is active (for mobile)
+  const [activeActionsMenu, setActiveActionsMenu] = useState(null);
+  
+  // Use the hook from FiltersForProductsFunctions for consistent counting
   const { getActiveFiltersCount, handleResetFilters } = useFiltersForProducts();
   
   // Function to toggle filter visibility
@@ -56,7 +72,32 @@ const ShopProductsList = () => {
     setShowFilters(prevState => !prevState);
   };
   
-  // UPDATE: Use the function to get active filters count
+  // Function to toggle actions menu for a product
+  const toggleActionsMenu = (productId, e) => {
+    e.stopPropagation();
+    if (activeActionsMenu === productId) {
+      setActiveActionsMenu(null);
+    } else {
+      setActiveActionsMenu(productId);
+    }
+  };
+  
+  // Function to handle clicks outside active menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Only close menu if clicking outside of an actions cell
+      if (activeActionsMenu !== null && !event.target.closest(`.${styles.actionsCellWrapper}`)) {
+        setActiveActionsMenu(null);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeActionsMenu]);
+  
+  // Use the function to get active filters count
   const activeFiltersCount = getActiveFiltersCount();
   
   // Animate the filter button
@@ -104,7 +145,7 @@ const ShopProductsList = () => {
     setSearchTerm(e.target.value);
   };
 
-  // UPDATE: Custom reset filters handler that also clears the search term
+  // Custom reset filters handler that also clears the search term
   const handleResetAllFilters = () => {
     // First reset the filters using the function from FiltersForProductsFunctions
     handleResetFilters();
@@ -290,7 +331,8 @@ const ShopProductsList = () => {
     return value ? 'Sí' : 'No';
   };
 
-  const handleSelectForImageUpload = (id_product) => {
+  const handleSelectForImageUpload = (id_product, e) => {
+    e.stopPropagation();
     setSelectedProductForImageUpload(id_product);
     
     setSelectedProducts(prev => {
@@ -300,6 +342,9 @@ const ShopProductsList = () => {
       }
       return newSelected;
     });
+    
+    // Close the action menu after selection
+    setActiveActionsMenu(null);
   };
 
   // Handler for bulk update button
@@ -457,7 +502,7 @@ const ShopProductsList = () => {
             </div>
         </animated.div>
 
-        {/* UPDATE: Pass searchTerm and setSearchTerm to FiltersForProducts */}
+        {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
         {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
         
         {displayedProducts.length === 0 ? (
@@ -500,40 +545,75 @@ const ShopProductsList = () => {
                     onClick={() => handleProductRowClick(product)}
                     style={{ cursor: 'pointer' }}
                   >
+                    {/* Updated accordion-style action cell with arrow icons */}
                     <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => handleUpdateProduct(product.id_product)}
-                        className={`${styles.actionButton} ${styles.updateButton}`}
-                        title="Actualizar producto"
-                      >
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteProduct(product.id_product)}
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        title="Eliminar producto"
-                        type="button"
-                        // Disable if we're already deleting this product
-                        disabled={currentDeletingProduct.current === product.id_product}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleSelectProduct(product.id_product)}
-                        className={`${styles.actionButton} ${styles.selectButton} ${
-                          selectedProducts.has(product.id_product) ? styles.selected : ''
-                        }`}
-                        title="Seleccionar producto"
-                      >
-                        <CheckCircle size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleSelectForImageUpload(product.id_product)}
-                        className={`${styles.actionButton} ${styles.imageButton}`}
-                        title="Seleccionar para subir imagen"
-                      >
-                        <ImagePlus size={18} />
-                      </button>
+                      <div className={`${styles.actionsCellWrapper} ${activeActionsMenu === product.id_product ? styles.active : ''}`}>
+                        <button
+                          className={`${styles.mainActionButton} ${activeActionsMenu === product.id_product ? styles.active : ''}`}
+                          onClick={(e) => toggleActionsMenu(product.id_product, e)}
+                          title="Acciones"
+                          style={{ overflow: 'visible' }} // Add inline style to ensure visibility
+                        >
+                          {activeActionsMenu === product.id_product ? (
+                            /* When menu is open, show left arrow with explicit dimensions */
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <ArrowLeftFromLine size={22} strokeWidth={2} />
+                            </span>
+                          ) : (
+                            /* When menu is closed, show right arrow with explicit dimensions */
+                            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <ArrowRightFromLine size={22} strokeWidth={2} />
+                            </span>
+                          )}
+                        </button>
+                        
+                        <div className={styles.actionButtonsContainer}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpdateProduct(product.id_product);
+                              setActiveActionsMenu(null);
+                            }}
+                            className={`${styles.actionButton} ${styles.updateButton}`}
+                            title="Actualizar producto"
+                          >
+                            <Pencil size={20} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteProduct(product.id_product);
+                              setActiveActionsMenu(null);
+                            }}
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                            title="Eliminar producto"
+                            type="button"
+                            disabled={currentDeletingProduct.current === product.id_product}
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectProduct(product.id_product);
+                              setActiveActionsMenu(null);
+                            }}
+                            className={`${styles.actionButton} ${styles.selectButton} ${
+                              selectedProducts.has(product.id_product) ? styles.selected : ''
+                            }`}
+                            title="Seleccionar producto"
+                          >
+                            <CheckCircle size={20} />
+                          </button>
+                          <button
+                            onClick={(e) => handleSelectForImageUpload(product.id_product, e)}
+                            className={`${styles.actionButton} ${styles.imageButton}`}
+                            title="Seleccionar para subir imagen"
+                          >
+                            <ImagePlus size={20} />
+                          </button>
+                        </div>
+                      </div>
                     </td>
                     <td 
                       className={`${styles.tableCell} ${styles.smallCell}`}
