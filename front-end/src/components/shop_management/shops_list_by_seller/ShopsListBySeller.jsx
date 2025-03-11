@@ -121,14 +121,7 @@ const ShopsListBySeller = () => {
         ) : (
           <div className={styles.shopManagementContainer}>
             <div className={styles.tableContainer}>
-            {selectedShop && shouldShowShopCard() && !showProductManagement && (
-              <div className={styles.shopCardContainer}>
-                <ShopCard shop={selectedShop} />
-                <div className={styles.shopCardInstructions}>
-                  <p>Haz click nuevamente en la tienda para administrar sus productos</p>
-                </div>
-              </div>
-            )}
+            
               <table className={styles.table}>
                 <thead>
                   <tr className={styles.tableHeader}>
@@ -178,6 +171,14 @@ const ShopsListBySeller = () => {
                   ))}
                 </tbody>
               </table>
+              {selectedShop && shouldShowShopCard() && !showProductManagement && (
+              <div className={styles.shopCardContainer}>
+                <ShopCard shop={selectedShop} />
+                <div className={styles.shopCardInstructions}>
+                  <p>Haz click nuevamente en la tienda para administrar sus productos</p>
+                </div>
+              </div>
+            )}
             </div>            
           </div>
         )}

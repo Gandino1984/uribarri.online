@@ -41,9 +41,7 @@ const ShopMap = ({ shop, isSmallScreen, onBack, style }) => {
       mapInstanceRef.current = L.map(mapRef.current).setView(defaultPosition, 13);
       
       // Add tile layer
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(mapInstanceRef.current);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstanceRef.current);
       
       // Add initial marker
       markerRef.current = L.marker(defaultPosition).addTo(mapInstanceRef.current);

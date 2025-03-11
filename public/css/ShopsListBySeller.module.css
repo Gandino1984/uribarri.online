@@ -6,7 +6,7 @@
   width: 100%;
   height: calc(100vh - var(--topbar-height));
   gap: 1rem;
-  margin-top: 2.5rem;
+  /* margin-top: 2.5rem;   */
   z-index: 100;
 }
 
