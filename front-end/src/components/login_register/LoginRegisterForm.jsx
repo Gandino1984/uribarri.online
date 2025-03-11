@@ -1,5 +1,4 @@
-import React, { useContext, useEffect } from 'react';
-// import { useTransition, animated } from '@react-spring/web';
+import React, { useContext, useState } from 'react';
 
 import AppContext from '../../app_context/AppContext.js';
 import UserManagement from "../user_management/UserManagement.jsx";
@@ -11,7 +10,6 @@ import { KeyboardSection } from './KeyboardSection';
 import { FormActions } from './FormActions';
 
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
-// import { fadeInScale } from '../../utils/animation/transitions.js';
 
 const FormContent = () => {
 
@@ -33,8 +31,11 @@ const LoginRegisterForm = () => {
     type_user,
   } = useContext(AppContext);
 
+  const [toggleState, setToggleState] = useState(1);
 
-  // const transitions = useTransition(!showShopManagement && !currentUser, fadeInScale);
+  const toggleTab = (index) => {
+    setToggleState(index);
+  };
 
   // if logged
   if (showShopManagement || currentUser) { 

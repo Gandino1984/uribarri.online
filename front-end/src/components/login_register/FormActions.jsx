@@ -6,7 +6,9 @@ import AppContext from '../../app_context/AppContext.js';
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 export const FormActions = () => {
+
   const { isLoggingIn } = useContext(AppContext);
+
   const { handleFormSubmit, isButtonDisabled, toggleForm } = LoginRegisterFunctions();
 
   return (
@@ -25,7 +27,7 @@ export const FormActions = () => {
       <button 
         type="button" 
         className={styles.toggleButton} 
-        onClick={toggleForm}
+        onClick={toggleForm}    
         title="Crea una cuenta"
       >
         {isLoggingIn ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
