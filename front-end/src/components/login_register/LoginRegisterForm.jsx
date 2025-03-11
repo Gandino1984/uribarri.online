@@ -4,7 +4,7 @@ import { useTransition, animated } from '@react-spring/web';
 import AppContext from '../../app_context/AppContext.js';
 import UserManagement from "../user_management/UserManagement.jsx";
 import ShopManagement from "../shop_management/ShopManagement.jsx";
-import ShopsByType from "../user_management/shops_by_type/ShopsByType.jsx";
+// import ShopsByType from "../user_management/shops_by_type/ShopsByType.jsx";
 
 import { LoginRegisterFunctions } from './LoginRegisterFunctions.jsx';
 import { FormFields } from './FormFields.jsx';
@@ -52,20 +52,19 @@ const LoginRegisterForm = () => {
     } else {
       console.log('Rendering UserManagement for other type or unknown type:', userType);
       // Otros tipos usan el componente general de manejo de tiendas
-      return <UserManagement />;
+      // return <AdminManagement />;
     }
   }
 
   return transitions((style, show) =>
     show && (
       <animated.div style={style} className={styles.container}>
-        <div className={styles.formContainer}>
-          <FormActions />
-          <div className={styles.formContentWrapper}>
-            <FormContent />
+          <div className={styles.formContainer}>
+              <FormActions />
+              <div className={styles.formContentWrapper}>
+                  <FormContent />
+              </div>
           </div>
-          
-        </div>
       </animated.div>
     )
   );
@@ -73,7 +72,6 @@ const LoginRegisterForm = () => {
 
 const FormContent = () => {
   const { handleFormSubmit } = LoginRegisterFunctions();
-
   return (
     <form className={styles.formContent} onSubmit={handleFormSubmit}>
       <FormFields />
