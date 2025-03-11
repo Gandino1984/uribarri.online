@@ -5,10 +5,11 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  min-height: 80vh;
+  /* UPDATE: Adjusted min-height to account for TopBar height and removed redundant padding-top */
+  min-height: calc(100vh - var(--topbar-height));
   overflow: hidden;
   will-change: transform, opacity;
-  padding-top: var(--topbar-height);
+  padding-top: 0;
 }
 
 .header {
@@ -36,6 +37,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .formTitle {
@@ -239,7 +242,8 @@
 @media screen and (min-width: 1024px) {
   .container {
     overflow-y: hidden;
-    min-height: 85vh;
+    /* UPDATE: Adjusted min-height to use full remaining viewport height */
+    min-height: calc(100vh - var(--topbar-height));
     justify-content: center;
   }
 
