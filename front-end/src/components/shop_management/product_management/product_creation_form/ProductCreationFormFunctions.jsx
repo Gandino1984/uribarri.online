@@ -688,6 +688,7 @@ const ProductCreationFormFunctions = () => {
         ...prevError,
         imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
       }));
+      setShowErrorCard(true);
       return;
     }
 
@@ -697,6 +698,7 @@ const ProductCreationFormFunctions = () => {
         ...prevError,
         imageError: "La imagen es demasiado grande. Máximo 10MB antes de la optimización."
       }));
+      setShowErrorCard(true);
       return;
     }
     

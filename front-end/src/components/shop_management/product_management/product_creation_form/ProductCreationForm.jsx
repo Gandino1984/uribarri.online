@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import ProductCreationFormFunctions from './ProductCreationFormFunctions.jsx';
 import AppContext from '../../../../app_context/AppContext';
 import styles from '../../../../../../public/css/ProductCreationForm.module.css';
-import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle, Camera, ImagePlus, Trash2, ArrowLeft } from 'lucide-react';
+import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle, Camera, ImagePlus, Trash2, ArrowLeft, Loader } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 import CustomNumberInput from '../../../custom_number_input/CustomNumberInput';
 import { countries } from '../../../../../src/utils/app/countries.js';
@@ -82,19 +82,19 @@ const ProductCreationForm = () => {
   // Get subtypes based on selected product type
   const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
 
-  // Function to handle image container click
+  // UPDATE: Function to handle image container click - toggles upload button visibility
   const handleImageContainerClick = () => {
     setShowImageUploadButton(prev => !prev);
   };
 
-  // Modified file selection handler using the refactored function
+  // UPDATE: Modified file selection handler using the refactored function
   const handleImageSelect = (e) => {
     e.stopPropagation(); // Prevent container click event
     const file = e.target.files[0];
     processImageSelection(file, setSelectedImage, setImagePreview, setShowImageUploadButton, setError);
   };
 
-  // Modified clear image handler using the refactored function
+  // UPDATE: Modified clear image handler using the refactored function
   const handleClearImage = (e) => {
     if (e) e.stopPropagation(); // Prevent container click event
     clearImage(fileInputRef, setSelectedImage, setImagePreview);
@@ -242,6 +242,7 @@ const ProductCreationForm = () => {
         <div className={styles.formLayout}>
           {/* SECTION 1: Image Upload (left column on desktop) */}
           <div className={styles.imageSection}>
+            {/* UPDATE: Improved image upload UI to match ShopCreationForm */}
             <div 
               className={styles.imageUploadContainer}
               onClick={handleImageContainerClick}
@@ -262,26 +263,53 @@ const ProductCreationForm = () => {
                 
                 {/* Upload progress indicator */}
                 {uploading && (
-                  <div className={styles.loaderOverlay}>
-                    <div className={styles.spinner}></div>
+                  <div className={styles.loaderOverlay} style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.6)',
+                    borderRadius: '4px',
+                    zIndex: 10
+                  }}>
+                    <Loader size={32} color="white" className={styles.spinner} style={{
+                      marginBottom: '15px'
+                    }} />
                     
-                    <div className={styles.progressBar}>
-                      <div 
-                        className={styles.progressFill} 
-                        style={{ width: `${uploadProgress}%` }}
-                      ></div>
+                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
+                      <div style={{ 
+                        width: `${uploadProgress}%`,
+                        height: '100%',
+                        backgroundColor: '#4CAF50',
+                        borderRadius: '4px'
+                      }}></div>
                     </div>
-                    <span className={styles.progressText}>
+                    <span style={{ color: 'white', marginTop: '8px' }}>
                       {uploadProgress}%
                     </span>
                   </div>
                 )}
                 
-                {/* Image upload button */}
+                {/* Image upload button overlay */}
                 {showImageUploadButton && !uploading && (
                   <div 
                     className={styles.uploadButtonOverlay}
                     onClick={(e) => e.stopPropagation()}
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      padding: '10px',
+                      background: 'rgba(0,0,0,0.7)'
+                    }}
                   >
                     <input
                       type="file"
@@ -296,6 +324,18 @@ const ProductCreationForm = () => {
                     <label 
                       htmlFor="product_image" 
                       className={styles.imageButton}
+                      style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        padding: '8px 15px',
+                        backgroundColor: '#4A90E2',
+                        color: 'white',
+                        borderRadius: '4px',
+                        border: 'none',
+                        fontSize: '14px',
+                        cursor: 'pointer'
+                      }}
                     >
                       <Camera size={16} />
                       {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
@@ -306,7 +346,19 @@ const ProductCreationForm = () => {
                         type="button"
                         onClick={handleClearImage}
                         disabled={uploading}
-                        className={styles.clearImageButton}
+                        style={{ 
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          backgroundColor: '#E25549',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '8px 15px',
+                          marginLeft: '10px',
+                          cursor: 'pointer',
+                          fontSize: '14px'
+                        }}
                       >
                         <Trash2 size={16} />
                         Quitar
@@ -317,7 +369,19 @@ const ProductCreationForm = () => {
                 
                 {/* Edit overlay hint */}
                 {!showImageUploadButton && !uploading && (
-                  <div className={styles.editOverlay}>
+                  <div className={styles.editOverlay} style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    padding: '10px',
+                    background: 'rgba(0,0,0,0.5)',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px'
+                  }}>
                     <Camera size={18} />
                     <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
                   </div>
@@ -459,8 +523,6 @@ const ProductCreationForm = () => {
               />
             </div>
 
-
-
             <div className={styles.formField}>
               <textarea
                 id="info_product"
@@ -472,8 +534,6 @@ const ProductCreationForm = () => {
                 placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
               />
             </div>
-
-            
 
             <div className={styles.formField}>
               <div className={styles.checkboxContainer}>
@@ -519,8 +579,6 @@ const ProductCreationForm = () => {
                 required
               />
             </div>
-
-
           </div>
         </div>
 

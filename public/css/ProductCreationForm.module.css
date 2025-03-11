@@ -125,13 +125,19 @@ textarea {
   margin-bottom: 1rem;
 }
 
-/* Image upload container */
+/* UPDATE: Enhanced image upload container to match ShopCreationForm */
 .imageUploadContainer {
+  cursor: pointer;
   background-color: #f9f9f9;
   border-radius: 8px;
   padding: 1rem;
   border: 1px dashed #ccc;
   width: 100%;
+  transition: all 0.3s ease;
+}
+
+.imageUploadContainer:hover .editOverlay {
+  opacity: 1;
 }
 
 .imageUploadLabel {
@@ -141,7 +147,7 @@ textarea {
   color: #333;
 }
 
-/* Image preview box */
+/* UPDATE: Enhanced image preview box */
 .imagePreviewBox {
   width: 100%;
   height: 200px;
@@ -149,17 +155,17 @@ textarea {
   border-radius: 4px;
   overflow: hidden;
   position: relative;
-  margin-bottom: 1rem;
   background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
 .imagePreview {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .noImagePlaceholder {
@@ -174,31 +180,40 @@ textarea {
 .placeholderIcon {
   margin-bottom: 0.75rem;
   color: #aaa;
+  opacity: 0.5;
 }
 
-/* Image controls */
-.imageControlsContainer {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
+/* UPDATE: Enhanced overlays and transitions */
+.editOverlay {
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
+.uploadButtonOverlay {
+  transition: all 0.3s ease;
+}
+
+.loaderOverlay {
+  z-index: 10;
+}
+
+/* UPDATE: Enhanced image buttons */
 .imageButton {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: #4A90E2;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  color: #333;
+  color: white;
   transition: all 0.2s ease;
 }
 
 .imageButton:hover {
-  background-color: #e0e0e0;
+  background-color: #3A7BC8;
 }
 
 .clearImageButton {
@@ -206,17 +221,17 @@ textarea {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: #fff0f0;
-  border: 1px solid #ffdddd;
+  background-color: #E25549;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  color: #d32f2f;
+  color: white;
   transition: all 0.2s ease;
 }
 
 .clearImageButton:hover {
-  background-color: #ffe0e0;
+  background-color: #C43A30;
 }
 
 .clearImageButton:disabled,
@@ -225,18 +240,7 @@ textarea {
   cursor: not-allowed;
 }
 
-/* Upload progress */
-.progressContainer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-}
-
+/* UPDATE: Enhanced progress indicator */
 .progressBar {
   width: 100%;
   height: 6px;
@@ -256,14 +260,6 @@ textarea {
   font-size: 12px;
   text-align: center;
   margin-top: 2px;
-}
-
-.imageHelpText {
-  font-size: 12px;
-  color: #666;
-  margin-top: 0.5rem;
-  text-align: center;
-  font-style: italic;
 }
 
 /* UPDATE: Added animation for spinner */
@@ -421,5 +417,10 @@ textarea {
   .backButton {
       order: -1; /* Place back button above submit button on mobile */
       margin-bottom: 0.5rem;
+  }
+  
+  /* UPDATE: Adjust image container height for mobile */
+  .imagePreviewBox {
+      height: 180px;
   }
 }
