@@ -47,25 +47,26 @@ const InfoCard = () => {
   return (
     <div className={styles.container}>
       {shouldShowPasswordMessage ? (
-        // Password repeat message section
+
         <div className={styles.passwordMessageContainer}>
-          <KeyRound color="var(--saturated-orange)" size={20} />
-          <div className={styles.repeatPasswordMessage}>
-            Repite la contraseña
-          </div>
+            <KeyRound color="var(--saturated-orange)" size={20} />
+            <div className={styles.repeatPasswordMessage}>
+                Confirma la contraseña
+            </div>
         </div>
+
       ) : (
-        // Regular info messages section
+        
         activeInfoMessages.length > 0 && (
           <>
-            <MessageCircleWarning color="#F59925" size={20} />
-            <div className={styles.infoList}>
-              {activeInfoMessages.map(([key, value]) => (
-                <div className={styles.infoItem} key={key}>
-                  {value}
-                </div>
-              ))}
-            </div>
+              <MessageCircleWarning color="#F59925" size={20} />
+              <div className={styles.infoList}>
+                  {activeInfoMessages.map(([key, value]) => (
+                      <div className={styles.infoItem} key={key}>
+                          {value}
+                      </div>
+                  ))}
+              </div>
           </>
         )
       )}

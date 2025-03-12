@@ -39,7 +39,6 @@ const UserInfoCard = () => {
     }
   };
 
-  // UPDATE: Handle upload button click
   const handleUploadClick = (e) => {
     e.stopPropagation();
     if (fileInputRef.current) {
@@ -48,7 +47,7 @@ const UserInfoCard = () => {
     setShowButtons(false);
   };
 
-  // UPDATE: Handle view button click
+
   const handleViewClick = (e) => {
     e.stopPropagation();
     if (currentUser?.image_user) {
@@ -61,7 +60,7 @@ const UserInfoCard = () => {
     }
   };
 
-  // Close buttons popup when clicking outside
+  // to-do: update this
   useEffect(() => {
     const handleClickOutside = (e) => {
       const profileContainer = profileContainerRef.current;
@@ -75,8 +74,6 @@ const UserInfoCard = () => {
       }
     };
     
-    // Add the event listener after a short delay to prevent immediate closing
-    // This helps with proper animation rendering
     const timer = setTimeout(() => {
       document.addEventListener('click', handleClickOutside);
     }, 100);
@@ -91,7 +88,6 @@ const UserInfoCard = () => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 768);
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -119,6 +115,7 @@ const UserInfoCard = () => {
     setModalImageUrl(null);
   };
 
+  // to-do: update this
   const welcomeMessage = isSmallScreen
     ? currentUser
       ? `${currentUser.name_user}`
@@ -129,111 +126,109 @@ const UserInfoCard = () => {
 
   return (
     <div className={styles.userInfoCard}>
-      {!currentUser ? (
-        <div className={styles.message}>{welcomeMessage}</div>
-      ) : (
-        <>
-          <div className={styles.profileSection}>
-            {/* UPDATE: External popup menu for actions */}
-            {showButtons && (
-              <div id="profile-actions-popup" className={styles.actionsPopup}>
-                {/* Upload button */}
-                <div className={styles.actionButton} onClick={handleUploadClick}>
-                  <Camera size={16} className={styles.actionIcon} />
-                  <span className={styles.actionText}>Subir Imagen</span>
-                </div>
-                
-                {/* View button (only if there's an image) */}
-                {currentUser?.image_user && (
-                  <div className={styles.actionButton} onClick={handleViewClick}>
-                    <Eye size={16} className={styles.actionIcon} />
-                    <span className={styles.actionText}>Ver Imagen</span>
+        {!currentUser ? (
+            <div className={styles.message}>{welcomeMessage}</div>
+        ) : (
+          <>
+            <div className={styles.profileSection}>
+                {/* UPDATE: External popup menu for actions */}
+                {showButtons && (
+                  <div id="profile-actions-popup" className={styles.actionsPopup}>
+                      {/* Upload button */}
+                      <div className={styles.actionButton} onClick={handleUploadClick}>
+                          <Camera size={16} className={styles.actionIcon} />
+                          <span className={styles.actionText}>Subir Imagen</span>
+                      </div>
+                      
+                      {/* View button (only if there's an image) */}
+                      {currentUser?.image_user && (
+                      <div className={styles.actionButton} onClick={handleViewClick}>
+                          <Eye size={16} className={styles.actionIcon} />
+                          <span className={styles.actionText}>Ver Imagen</span>
+                      </div>
+                      )}
                   </div>
                 )}
-              </div>
-            )}
-            
-            <div 
-              ref={profileContainerRef}
-              className={styles.profileImageContainer}
-              onClick={toggleButtons}
-            >
-              {/* Profile image */}
-              <img
-                key={imageKey}
-                src={getImageUrl(currentUser.image_user) || ''}
-                alt="Imagen de perfil"
-                className={styles.profileImage}
-                onError={() => {
-                  setInfo(prevInfo => ({
-                    ...prevInfo,
-                    imageInfo: "No tienes imagen de perfil"
-                  }));
-                }}
-                onLoad={() => {
-                  setError(prevError => ({
-                    ...prevError,
-                    imageError: ''
-                  }));
-                  setInfo(prevInfo => ({
-                    ...prevInfo,
-                    imageInfo: ''
-                  }));
-                }}
-              />
-              
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/jpg,image/webp"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-                id="profile-image-input"
-                disabled={uploading}
-              />
-              
-              {/* UPDATE: Show the edit overlay with camera icon when hovering */}
-              {!uploading && (
-                <div className={styles.editOverlay}>
-                  <Camera size={16} className={styles.editIcon} />
-                  {/* <div className={styles.editText}>
-                    Click for options
-                  </div> */}
-                </div>
-              )}
-              
-              {/* Loader and progress bar during upload */}
-              {uploading && (
-                <div className={styles.loader}>
-                  <Loader size={16} className={styles.loaderIcon} />
+                
+                <div 
+                  ref={profileContainerRef}
+                  className={styles.profileImageContainer}
+                  onClick={toggleButtons}
+                >
+                  {/* Profile image */}
+                  <img
+                    key={imageKey}
+                    src={getImageUrl(currentUser.image_user) || ''}
+                    alt="Imagen de perfil"
+                    className={styles.profileImage}
+                    onError={() => {
+                      setInfo(prevInfo => ({
+                        ...prevInfo,
+                        imageInfo: "No tienes imagen de perfil"
+                      }));
+                    }}
+                    onLoad={() => {
+                      setError(prevError => ({
+                        ...prevError,
+                        imageError: ''
+                      }));
+                      setInfo(prevInfo => ({
+                        ...prevInfo,
+                        imageInfo: ''
+                      }));
+                    }}
+                  />
                   
-                  {uploadProgress > 0 && (
-                    <div className={styles.progressContainer}>
-                      <div 
-                        className={styles.progressBar} 
-                        style={{ width: `${uploadProgress}%` }}
-                      ></div>
-                      <span className={styles.progressText}>
-                        {uploadProgress}%
-                      </span>
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,image/webp"
+                    onChange={handleImageUpload}
+                    style={{ display: 'none' }}
+                    id="profile-image-input"
+                    disabled={uploading}
+                  />
+                  
+                  {/* UPDATE: Show the edit overlay with camera icon when hovering */}
+                  {!uploading && (
+                    <div className={styles.editOverlay}>
+                        <Camera size={16} className={styles.editIcon} />
+                    </div>
+                  )}
+                  
+                  {/* Loader and progress bar during upload */}
+                  {uploading && (
+                    <div className={styles.loader}>
+                        <Loader size={16} className={styles.loaderIcon} />
+                        
+                        {uploadProgress > 0 && (
+                          <div className={styles.progressContainer}>
+                              <div 
+                                className={styles.progressBar} 
+                                style={{ width: `${uploadProgress}%` }}
+                              >
+                              </div>
+                              <span className={styles.progressText}>
+                                  {uploadProgress}%
+                              </span>
+                          </div>
+                        )}
                     </div>
                   )}
                 </div>
-              )}
+                
+                <ImageModal
+                  isOpen={isImageModalOpen}
+                  onClose={handleModalClose}
+                  imageUrl={modalImageUrl}
+                  altText={`Imagen de perfil de ${currentUser?.name_user}`}
+                />
             </div>
-            
-            <ImageModal
-              isOpen={isImageModalOpen}
-              onClose={handleModalClose}
-              imageUrl={modalImageUrl}
-              altText={`Imagen de perfil de ${currentUser?.name_user}`}
-            />
-          </div>
-          {/* Welcome message */}
-          <p className={styles.welcomeMessage}>{welcomeMessage}</p>
-        </>
-      )}
+            {/* Welcome message */}
+            <p className={styles.welcomeMessage}>{welcomeMessage}</p>
+          </>
+        )}
     </div>
   );
 };

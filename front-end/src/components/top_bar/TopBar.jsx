@@ -26,33 +26,33 @@ function TopBar() {
     <div className={styles.container}>
     
         <div className={styles.messageWrapper}>
-          {error && <ErrorCard />}
-          {success && <SuccessCard />}
-          {info && <InfoCard />}
+            {error && <ErrorCard />}
+            {success && <SuccessCard />}
+            {info && <InfoCard />}
         </div>
         
         <div className={styles.contentWrapper}>
-          {(selectedShop || showShopCreationForm) && (
-            <button
-              className={styles.backButton}
-              onClick={handleBack}
-              title="Volver"
+            {(selectedShop || showShopCreationForm) && (
+              <button
+                className={styles.backButton}
+                onClick={handleBack}
+                title="Volver"
+              >
+                  <ArrowLeft size={16} />
+              </button>
+            )}
+
+            <UserInfoCard />
+
+            <button 
+              type="button" 
+              className={styles.logoutButton} 
+              onClick={clearUserSession}
+              title="Cerrar sesión"
             >
-              <ArrowLeft size={16} />
+                Cerrar
+                <DoorClosed size={16}/>
             </button>
-          )}
-
-          <UserInfoCard />
-
-          <button 
-            type="button" 
-            className={styles.logoutButton} 
-            onClick={clearUserSession}
-            title="Cerrar sesión"
-          >
-              Cerrar
-              <DoorClosed size={16}/>
-          </button>
         </div>
     </div>
   );

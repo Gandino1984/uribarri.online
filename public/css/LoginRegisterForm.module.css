@@ -3,10 +3,8 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* padding-top: 1rem; */
-  height: 100vh; /* UPDATE: Ensuring the component takes full viewport height */
+  height: 100%;
   width: 100%;
-  /* overflow-y: hidden; */
 }
 
 .formContainer {
@@ -24,18 +22,13 @@
   justify-content: center;
   position: relative;
   background-color: white;
-  margin: 0;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 1rem;
+  padding: 1rem;
 }
 
 .inputSection{
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
-
 }
 
 .formTitle {
@@ -179,9 +172,6 @@
 
 /* Desktop Breakpoint */
 @media screen and (min-width: 1024px) {
-  .container {
-    /* padding-top: 1rem; */
-  }
 
   .formTitle {
     font-size: 1.5rem;
