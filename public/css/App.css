@@ -1,6 +1,7 @@
 :root {
-  --saturated-blue: #2563eb;
-  --dark-blue: #1641b8;
+  --saturated-orange: #ee870a;
+  --dark-orange: #d06f00;
+  --superlight-orange: #f3e6d6;
   --superlight-gray: #f1f1f1;
   --light-gray: #e2e2e2;
   --medium-gray: #d1d5db;
@@ -22,13 +23,6 @@
   box-sizing: border-box;
   font-family: 'Montserrat', 'Roboto', sans-serif;
   -webkit-tap-highlight-color: transparent;
-}
-
-
-html, body {
-  overflow-x: hidden;
-  width: 100vw;
-  height: 100vh;
 }
 
 .mainContainer {
@@ -55,29 +49,28 @@ html, body {
 
 
 input[type="text"] {
-  color: var(--saturated-blue);
+  color: var(--dark-orange);
   border: 2px solid var(--medium-gray);
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   cursor: pointer;
   font-size: 0.9rem;
   min-height: 2.5rem;
   font-weight: 500;
-  /* border-radius: 5px; */
   margin-bottom: var(--spacing-sm);
   width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input[type="text"]:focus {
-  color: var(--saturated-blue);
-  border: 2px solid var(--saturated-blue);
+  color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
   outline: none;
   box-shadow: var(--focus-shadow);
 }
 
 input[type="text"]:hover { 
-  color: var(--saturated-blue);
-  border: 2px solid var(--saturated-blue);
+  color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
 }
 
 /* UPDATE: Mejoras en los inputs numéricos */
@@ -95,13 +88,13 @@ input[type="number"] {
 }
 
 input[type="number"]:hover {
-  color: var(--saturated-blue);
-  border: 2px solid var(--saturated-blue);
+  color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
 }
 
 input[type="number"]:focus {
-  color: var(--saturated-blue);
-  border: 2px solid var(--saturated-blue);
+  color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
   outline: none;
   box-shadow: var(--focus-shadow);
 }
@@ -129,15 +122,15 @@ textarea {
 }
 
 textarea:focus {
-  color: var(--saturated-blue);
-  border: 2px solid var(--saturated-blue);
+  color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
   outline: none;
   box-shadow: var(--focus-shadow);
 }
 
 textarea:hover {
-  color: var(--saturated-blue);
-  border: 2px solid var(--saturated-blue);
+  color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
 }
 
 button {
@@ -147,9 +140,11 @@ button {
   outline: none;
   border: none;
   background-color: white; 
+  color: var(--dark-orange);
   padding: var(--spacing-sm) var(--spacing-md);
   /* border-radius: 6px; */
   font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   gap: var(--spacing-sm);
   letter-spacing: 0.01rem;
@@ -161,7 +156,7 @@ button {
 button:hover {
   color: white;
   transition: all 0.2s ease;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   /* transform: scale(1.05); */
 }
 
@@ -175,7 +170,7 @@ select {
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--saturated-blue);
+  color: var(--dark-orange);
   background-color: white;
   border: 2px solid var(--medium-gray);
   /* border-radius: 5px; */
@@ -193,11 +188,11 @@ select:invalid {
 }
 
 select:hover {
-  border-color: var(--saturated-blue);
+  border-color: var(--saturated-orange);
 }
 
 select:focus {
-  border-color: var(--saturated-blue);
+  border-color: var(--saturated-orange);
   box-shadow: var(--focus-shadow);
   outline: none;
 }

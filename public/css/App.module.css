@@ -4,7 +4,7 @@
   align-items: center;
   height: 100%; /* UPDATE: Ensure container takes full height */
   width: 100%;
-  min-width: 100%;
+  /* min-width: 350px; */
   background-color: var(--superlight-gray);
   margin: 0;
   padding: 0;

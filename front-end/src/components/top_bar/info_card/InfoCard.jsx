@@ -1,63 +1,75 @@
 import React, { useContext, useEffect } from 'react';
-import { useSpring, animated } from '@react-spring/web';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/InfoCard.module.css';
-import { MessageCircleWarning } from 'lucide-react';
+import { MessageCircleWarning, KeyRound } from 'lucide-react';
 
 const InfoCard = () => {
   const {
     showInfoCard,
     setShowInfoCard,
     info,
+    isLoggingIn,
+    showRepeatPasswordMessage,
+    showPasswordRepeat
   } = useContext(AppContext);
+
+  // Determine if we should show the password repeat message
+  const shouldShowPasswordMessage = !isLoggingIn && showRepeatPasswordMessage && showPasswordRepeat;
 
   useEffect(() => {
     const hasInfo = Object.values(info).some(msg => msg !== '');
     
-    if (!hasInfo) {
+    // Only auto-hide the card if we're showing regular info messages
+    // and not the password repeat message (which should stay visible until password is completed)
+    if (!hasInfo && !shouldShowPasswordMessage) {
       setShowInfoCard(false);
     } else {
       setShowInfoCard(true);
       
-      const timer = setTimeout(() => {
-        setShowInfoCard(false);
-      }, 3500);
+      // Only set the timeout if we're not showing the password message
+      if (!shouldShowPasswordMessage && hasInfo) {
+        const timer = setTimeout(() => {
+          setShowInfoCard(false);
+        }, 3500);
 
-      return () => clearTimeout(timer);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [info, setShowInfoCard]);
-
-  const springProps = useSpring({
-    from: { 
-      opacity: 0,
-      transform: 'translateY(-50px)'
-    },
-    to: { 
-      opacity: showInfoCard ? 1 : 0,
-      transform: showInfoCard ? 'translateY(5px)' : 'translateY(-70px)'
-    },
-    config: {
-      mass: 1,
-      tension: 280,
-      friction: 20
-    }
-  });
+  }, [info, setShowInfoCard, shouldShowPasswordMessage]);
 
   const activeInfoMessages = Object.entries(info).filter(([_, value]) => value !== '');
 
+  // Don't render anything if there's nothing to show
+  if (!shouldShowPasswordMessage && !showInfoCard) {
+    return null;
+  }
+
   return (
-    showInfoCard && activeInfoMessages.length > 0 && (
-      <animated.div style={springProps} className={styles.container}>
-        <MessageCircleWarning color="#F59925" size={20} />
-        <div className={styles.infoList}>
-          {activeInfoMessages.map(([key, value]) => (
-            <div className={styles.infoItem} key={key}>
-              {value}
-            </div>
-          ))}
+    <div className={styles.container}>
+      {shouldShowPasswordMessage ? (
+        // Password repeat message section
+        <div className={styles.passwordMessageContainer}>
+          <KeyRound color="var(--saturated-orange)" size={20} />
+          <div className={styles.repeatPasswordMessage}>
+            Repite la contraseña
+          </div>
         </div>
-      </animated.div>
-    )
+      ) : (
+        // Regular info messages section
+        activeInfoMessages.length > 0 && (
+          <>
+            <MessageCircleWarning color="#F59925" size={20} />
+            <div className={styles.infoList}>
+              {activeInfoMessages.map(([key, value]) => (
+                <div className={styles.infoItem} key={key}>
+                  {value}
+                </div>
+              ))}
+            </div>
+          </>
+        )
+      )}
+    </div>
   );
 };
 

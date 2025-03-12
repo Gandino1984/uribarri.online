@@ -52,7 +52,7 @@
 .closeButton:hover {
   font-weight: 600;
   color: white;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
 }
 
 .modalContent {
@@ -122,7 +122,7 @@
 .cancelButton:hover {
   font-weight: 600;
   color: white;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
 }
 
 .continueButton {

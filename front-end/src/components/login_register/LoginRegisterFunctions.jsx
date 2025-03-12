@@ -22,7 +22,8 @@ export const LoginRegisterFunctions = () => {
     setPasswordIcons,
     setShopType, // Agregamos setShopType para establecer el tipo de tienda
     setSelectedShopType,
-    setShowShopCreationForm
+    setShowShopCreationForm,
+    setShowInfoCard, // UPDATE: Added setShowInfoCard to handle InfoCard visibility
   } = useContext(AppContext);
 
   const { validateUsername } = useUsernameValidation();
@@ -60,6 +61,8 @@ export const LoginRegisterFunctions = () => {
       setDisplayedPassword('');
       setShowPasswordRepeat(true);
       setShowRepeatPasswordMessage(true);
+      // UPDATE: Show the InfoCard when we need to display the repeat password message
+      setShowInfoCard(true);
       setKeyboardKey((prev) => prev + 1);
     } else {
       setShowPasswordLabel(false);
@@ -72,6 +75,8 @@ export const LoginRegisterFunctions = () => {
     if (!isLogin && showPasswordRepeat) {
         setPasswordRepeat(newPassword);
         setShowRepeatPasswordMessage(newPassword.length < 4);
+        // UPDATE: Manage InfoCard visibility
+        setShowInfoCard(newPassword.length < 4);
     } else {
         setPassword(newPassword);
         if (isLogin && newPassword.length !== 4) {
@@ -89,8 +94,12 @@ export const LoginRegisterFunctions = () => {
     // Update message visibility based on password completion
     if (newPassword.length === 4) {
       setShowRepeatPasswordMessage(false);
+      // UPDATE: Hide the InfoCard when password is complete
+      setShowInfoCard(false);
     } else {
       setShowRepeatPasswordMessage(true);
+      // UPDATE: Show the InfoCard when password is not complete
+      setShowInfoCard(true);
     }
   };
 

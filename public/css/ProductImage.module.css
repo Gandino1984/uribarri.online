@@ -45,7 +45,7 @@
 }
 
 .productImage:hover {
-  border: 2px solid var(--saturated-blue);
+  border: 2px solid var(--saturated-orange);
 }
 
 /* Style for upload button */
@@ -53,7 +53,7 @@
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   width: 32px;
   height: 32px;
   border-radius: 50%;

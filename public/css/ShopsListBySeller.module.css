@@ -42,16 +42,16 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   color: white;
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .addButton:hover {
-  background-color: var(--dark-blue);
+  background-color: var(--dark-orange);
   color: white;
   transform: scale(1.05);
 }
@@ -148,7 +148,7 @@
 /* UPDATE: Estilos para la fila seleccionada */
 .selectedRow {
   background-color: rgba(59, 130, 246, 0.08);
-  border-left: 3px solid var(--saturated-blue);
+  border-left: 3px solid var(--saturated-orange);
 }
 
 .selectedRow:hover {
@@ -188,11 +188,11 @@
 
 .updateButton {
   composes: actionButton;
-  color: var(--saturated-blue);
+  color: var(--saturated-orange);
 }
 
 .updateButton:hover {
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   color: white;
   transform: scale(1.05);
 }
@@ -235,7 +235,7 @@
 }
 
 .disabledButton:hover {
-  background-color: var(--dark-blue);
+  background-color: var(--dark-orange);
 }
 
 /* UPDATE: Estilos para el contenedor de la tarjeta de tienda */

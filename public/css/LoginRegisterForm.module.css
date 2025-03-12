@@ -3,9 +3,10 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  /* padding-top: 1rem; */
   height: 100vh; /* UPDATE: Ensuring the component takes full viewport height */
   width: 100%;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
 }
 
 .formContainer {
@@ -18,12 +19,15 @@
 .formContent {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 1.5rem;
   align-items: stretch;
   justify-content: center;
   position: relative;
   background-color: white;
   margin: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1rem;
 }
 
 .inputSection{
@@ -31,7 +35,7 @@
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 0;
+
 }
 
 .formTitle {
@@ -45,6 +49,10 @@
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.formActions button :hover{
+  color: white;
 }
 
 .formField {
@@ -116,13 +124,13 @@
 
 .active {
   color: rgb(247, 247, 247);
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   color: white;
 }
 
 .active:hover {
   color: black;
-  background-color: var(--dark-blue);
+  background-color: var(--dark-orange);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

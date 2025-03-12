@@ -7,7 +7,6 @@ import styles from '../../../../public/css/LoginRegisterForm.module.css';
 export const KeyboardSection = () => {
   const {
     isLoggingIn,
-    showRepeatPasswordMessage,
     keyboardKey,
     passwordRepeat,
     password,
@@ -24,11 +23,7 @@ export const KeyboardSection = () => {
 
   return (
     <div className={styles.keyboardSection}>
-      {!isLoggingIn && showRepeatPasswordMessage && (
-        <div className={styles.repeatPasswordMessage}>
-          Repite la contraseña
-        </div>
-      )}
+      {/* UPDATE: Removed the repeatPasswordMessage div as it will be shown in InfoCard component */}
 
       <div className={styles.numericKeyboardWrapper}>
         <NumericKeyboard

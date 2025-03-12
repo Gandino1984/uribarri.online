@@ -115,7 +115,7 @@
 
 .minimizeButton:hover {
   color: white;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   transform: scale(1.05);
 }
 

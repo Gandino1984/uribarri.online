@@ -1,5 +1,5 @@
 import React from 'react';
-import { DoorOpen } from 'lucide-react';
+import { DoorOpen, ChevronLeft } from 'lucide-react';
 import { LoginRegisterFunctions } from '../login_register/LoginRegisterFunctions.jsx';
 import { useContext } from 'react';
 import AppContext from '../../app_context/AppContext.js';
@@ -30,6 +30,7 @@ export const FormActions = () => {
         onClick={toggleForm}    
         title="Crea una cuenta"
       >
+        <ChevronLeft size={16} />
         {isLoggingIn ? 'Registrarme' : 'Inicio'}
       </button>
     </div>

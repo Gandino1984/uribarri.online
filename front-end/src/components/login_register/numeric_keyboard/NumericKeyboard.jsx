@@ -49,7 +49,7 @@ const NumericKeyboard = ({
 
   useEffect(() => {
     if (showMaskedPassword) {
-      setDisplayedPassword(passwordIcons.map((Icon, index) => <Icon key={index} size={16} />));
+      setDisplayedPassword(passwordIcons.map((Icon, index) => <Icon key={index} size={18} />));
     } else {
       setDisplayedPassword(value);
     }
