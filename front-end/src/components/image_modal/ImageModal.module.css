@@ -16,7 +16,7 @@
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
   overflow: hidden;
   background-color: transparent;
   display: flex;
@@ -51,7 +51,7 @@
   max-width: 100%;
   max-height: calc(90vh - 2rem);
   object-fit: contain;
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
 }
 
 .loadingSpinner {
