@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Camera, Loader } from 'lucide-react';
+import { Camera, Loader, Eye } from 'lucide-react';
 import AppContext from '../../../app_context/AppContext.js';
 import ImageModal from '../../image_modal/ImageModal.jsx';
 import styles from '../../../../../public/css/UserInfoCard.module.css';
@@ -24,40 +24,68 @@ const UserInfoCard = () => {
   const [modalImageUrl, setModalImageUrl] = useState(null);
   const fileInputRef = useRef(null);
   const [imageKey, setImageKey] = useState(Date.now()); 
-
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768);
-
-  // UPDATE: Simplified click handler to fix the repeated file dialog issue
-  const handleImageClick = () => {
-    // Do nothing if uploading or no user
-    if (uploading || !currentUser) return;
-    
-    // For double-click (opening image modal)
-    if (currentUser?.image_user) {
-      // Open file selector on single click
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
-    } else {
-      // If no image yet, always just open file selector
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
+  
+  // UPDATE: Add state for showing the action buttons
+  const [showButtons, setShowButtons] = useState(false);
+  
+  // Reference to the profile container for positioning popup
+  const profileContainerRef = useRef(null);
+  
+  // UPDATE: Toggle button visibility
+  const toggleButtons = () => {
+    if (!uploading) {
+      setShowButtons(!showButtons);
     }
   };
-  
-  // UPDATE: Added separate handler for viewing the image in modal
-  const handleImageDoubleClick = () => {
-    if (uploading || !currentUser) return;
-    
+
+  // UPDATE: Handle upload button click
+  const handleUploadClick = (e) => {
+    e.stopPropagation();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+    setShowButtons(false);
+  };
+
+  // UPDATE: Handle view button click
+  const handleViewClick = (e) => {
+    e.stopPropagation();
     if (currentUser?.image_user) {
       const imageUrl = getImageUrl(currentUser.image_user);
       if (imageUrl) {
         setModalImageUrl(imageUrl);
         setIsImageModalOpen(true);
+        setShowButtons(false);
       }
     }
   };
+
+  // Close buttons popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      const profileContainer = profileContainerRef.current;
+      const popupMenu = document.getElementById('profile-actions-popup');
+      
+      // Check if click is outside both the profile container and popup menu
+      if ((profileContainer && !profileContainer.contains(e.target)) && 
+          (popupMenu && !popupMenu.contains(e.target)) && 
+          showButtons) {
+        setShowButtons(false);
+      }
+    };
+    
+    // Add the event listener after a short delay to prevent immediate closing
+    // This helps with proper animation rendering
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showButtons]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,7 +96,6 @@ const UserInfoCard = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Force re-render when image path changes or local image is available
   useEffect(() => {
     if (currentUser?.image_user || localImageUrl) {
       setImageKey(Date.now());
@@ -92,7 +119,6 @@ const UserInfoCard = () => {
     setModalImageUrl(null);
   };
 
-  // UPDATE: Improved welcome message handling for long usernames
   const welcomeMessage = isSmallScreen
     ? currentUser
       ? `${currentUser.name_user}`
@@ -108,10 +134,29 @@ const UserInfoCard = () => {
       ) : (
         <>
           <div className={styles.profileSection}>
+            {/* UPDATE: External popup menu for actions */}
+            {showButtons && (
+              <div id="profile-actions-popup" className={styles.actionsPopup}>
+                {/* Upload button */}
+                <div className={styles.actionButton} onClick={handleUploadClick}>
+                  <Camera size={16} className={styles.actionIcon} />
+                  <span className={styles.actionText}>Subir Imagen</span>
+                </div>
+                
+                {/* View button (only if there's an image) */}
+                {currentUser?.image_user && (
+                  <div className={styles.actionButton} onClick={handleViewClick}>
+                    <Eye size={16} className={styles.actionIcon} />
+                    <span className={styles.actionText}>Ver Imagen</span>
+                  </div>
+                )}
+              </div>
+            )}
+            
             <div 
+              ref={profileContainerRef}
               className={styles.profileImageContainer}
-              onClick={handleImageClick}
-              onDoubleClick={handleImageDoubleClick}
+              onClick={toggleButtons}
             >
               {/* Profile image */}
               <img
@@ -148,10 +193,13 @@ const UserInfoCard = () => {
                 disabled={uploading}
               />
               
-              {/* Hover overlay - similar to ShopCoverImage */}
+              {/* UPDATE: Show the edit overlay with camera icon when hovering */}
               {!uploading && (
                 <div className={styles.editOverlay}>
                   <Camera size={16} className={styles.editIcon} />
+                  {/* <div className={styles.editText}>
+                    Click for options
+                  </div> */}
                 </div>
               )}
               
@@ -182,7 +230,7 @@ const UserInfoCard = () => {
               altText={`Imagen de perfil de ${currentUser?.name_user}`}
             />
           </div>
-          {/* UPDATE: Added welcomeMessage class for better styling control */}
+          {/* Welcome message */}
           <p className={styles.welcomeMessage}>{welcomeMessage}</p>
         </>
       )}

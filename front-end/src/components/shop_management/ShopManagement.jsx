@@ -15,14 +15,12 @@ const ShopManagement = () => {
     selectedShop,
   } = useContext(AppContext);
   
-  // UPDATE: Usar un ref para rastrear si ya hemos buscado las tiendas
+
   const hasInitiallyFetchedShops = useRef(false);
   
-  // Use ShopManagementFunctions to get fetchUserShops, but don't destructure it
-  // to avoid recreation on each render
   const shopManagementFunctions = ShopManagementFunctions ? ShopManagementFunctions() : {};
 
-  // UPDATE: Un solo efecto para el fetch inicial, usando hasInitiallyFetchedShops.current para evitar fetch redundantes
+  
   useEffect(() => {
     if (
       !hasInitiallyFetchedShops.current && 
@@ -35,17 +33,12 @@ const ShopManagement = () => {
     }
   }, [currentUser?.id_user, shopManagementFunctions]);
 
-  // Check if the user is a seller
+  
   if (!currentUser || currentUser.type_user !== 'seller') {
     console.log('Non-seller user in ShopManagement, redirecting to login');
-    // Redirect to login if not a seller
     setshowShopManagement(false);
     return null;
   }
-
-  // UPDATE: Implementar lógica de renderizado que respete la jerarquía completa
-  
-  // Determinar qué componente renderizar basado en las banderas de estado
   let componentToRender;
   
   if (showProductManagement && selectedShop) {

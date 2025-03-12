@@ -24,6 +24,7 @@ function TopBar() {
 
   return (
     <div className={styles.container}>
+    
         <div className={styles.messageWrapper}>
           {error && <ErrorCard />}
           {success && <SuccessCard />}

@@ -1,5 +1,5 @@
 .message {
-  font-size: 0.8rem; /* UPDATE: Standardized decimal notation */
+  font-size: 0.8rem;
   user-select: none;
   text-align: center;
 }
@@ -8,45 +8,43 @@
   user-select: none;
   display: flex;
   align-items: center;
-  justify-content: center; /* UPDATE: Ensures content is properly centered */
+  justify-content: center;
   height: 100%;
-  font-size: 0.8rem; /* UPDATE: Standardized decimal notation */
+  font-size: 0.8rem;
   text-align: center;
-  gap: 0.5rem; /* UPDATE: Added consistent gap between elements */
+  gap: 0.5rem;
 }
 
 .userInfoCard p span {
   font-weight: 600;
 }
 
-/* UPDATE: Added specific class for welcome message styling */
 .welcomeMessage {
   margin: 0;
   font-size: 0.8rem;
-  max-width: 100%; /* UPDATE: Ensure text doesn't overflow */
-  word-wrap: break-word; /* UPDATE: Allow long words to break */
-  overflow-wrap: break-word; /* UPDATE: Modern property for word wrapping */
-  line-height: 1.2; /* UPDATE: Provide sufficient line height */
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
 }
 
-/* UPDATE: Added media query for responsive layout */
 @media (max-width: 768px) {
   .userInfoCard {
     flex-direction: column;
     gap: 0.25rem;
-    margin: 0.25rem 0; /* UPDATE: Add vertical margin for better spacing */
+    margin: 0.25rem 0;
   }
   
   .profileSection {
-    margin-right: 0 !important; /* Override margin for mobile */
+    margin-right: 0 !important;
   }
   
   .welcomeMessage {
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
-    padding: 0 0.5rem; /* UPDATE: Add horizontal padding */
-    max-width: 90vw; /* UPDATE: Limit width on mobile */
-    font-size: 0.75rem; /* UPDATE: Slightly smaller font for very long names */
+    padding: 0 0.5rem;
+    max-width: 90vw;
+    font-size: 0.75rem;
   }
 }
 
@@ -63,26 +61,26 @@
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  width: 3.75rem; /* UPDATE: Converted 60px to rem */
-  height: 3.75rem; /* UPDATE: Converted 60px to rem */
-  border-radius: 50%; /* UPDATE: Ensures container is round */
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
 }
 
 .profileImage {
-  width: 3.75rem; /* UPDATE: Converted 60px to rem */
-  height: 3.75rem; /* UPDATE: Converted 60px to rem */
+  width: 3.75rem;
+  height: 3.75rem;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .uploadButton {
   position: absolute;
-  bottom: -0.313rem; /* UPDATE: Converted -5px to rem */
-  right: -0.313rem; /* UPDATE: Converted -5px to rem */
+  bottom: -0.313rem;
+  right: -0.313rem;
   background-color: #007bff;
   color: white;
   border-radius: 50%;
-  padding: 0.25rem; /* UPDATE: Converted 4px to rem */
+  padding: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,15 +90,13 @@
 }
 
 .uploadButton:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
 }
 
-/* Additional styles for the upload button when visible */
 .uploadButton.visible {
-  opacity: 1; /* Fully visible */
+  opacity: 1;
 }
 
-/* Optional: Add a small animation for the upload button */
 @keyframes fadeIn {
   from {
       opacity: 0;
@@ -112,11 +108,21 @@
   }
 }
 
-.uploadButton {
-  animation: fadeIn 0.2s ease; /* Smooth fade-in animation */
+/* UPDATE: Separate animation for popup to maintain positioning */
+@keyframes popupFade {
+  from {
+      opacity: 0;
+      transform: translateX(-50%) scale(0.8);
+  }
+  to {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+  }
 }
 
-/* Clases adicionales para la nueva funcionalidad */
+.uploadButton {
+  animation: fadeIn 0.2s ease;
+}
 
 /* Overlay para mostrar información al pasar el cursor */
 .editOverlay {
@@ -147,10 +153,69 @@
 }
 
 .editText {
-  font-size: 0.5rem; /* UPDATE: Converted 8px to rem */
+  font-size: 0.5rem;
   color: white;
-  margin-top: 0.125rem; /* UPDATE: Converted 2px to rem */
+  margin-top: 0.125rem;
   text-align: center;
+}
+
+/* UPDATE: External popup menu for actions */
+.actionsPopup {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  /* border-radius: 0.5rem; */
+  padding: 0.3rem;
+  z-index: 20;
+  /* box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 9rem;
+  animation: popupFade 0.2s ease;
+  transform-origin: top center;
+}
+
+/* Triangle pointer at the top of popup */
+.actionsPopup::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 0.5rem 0.5rem 0.5rem;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+}
+
+/* Action button in popup */
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.actionIcon {
+  color: white;
+}
+
+.actionText {
+  color: white;
+  font-size: 0.8rem;
 }
 
 /* Overlay para selección de archivo */
@@ -183,7 +248,7 @@
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  padding: 0.5rem 0; /* UPDATE: Converted 8px to rem */
+  padding: 0.5rem 0;
 }
 
 .uploadIcon {
@@ -191,21 +256,21 @@
 }
 
 .uploadText {
-  font-size: 0.625rem; /* UPDATE: Converted 10px to rem */
+  font-size: 0.625rem;
   color: white;
-  margin-top: 0.313rem; /* UPDATE: Converted 5px to rem */
+  margin-top: 0.313rem;
   text-align: center;
 }
 
 .cancelButton {
   background: transparent;
-  border: 0.063rem solid rgba(255, 255, 255, 0.3); /* UPDATE: Converted 1px to rem */
+  border: 0.063rem solid rgba(255, 255, 255, 0.3);
   color: white;
-  font-size: 0.5rem; /* UPDATE: Converted 8px to rem */
-  border-radius: 0.188rem; /* UPDATE: Converted 3px to rem */
-  padding: 0.125rem 0.375rem; /* UPDATE: Converted 2px 6px to rem */
+  font-size: 0.5rem;
+  border-radius: 0.188rem;
+  padding: 0.125rem 0.375rem;
   cursor: pointer;
-  margin-top: 0.25rem; /* UPDATE: Converted 4px to rem */
+  margin-top: 0.25rem;
 }
 
 /* Loader y barra de progreso */
@@ -236,10 +301,10 @@
 
 .progressContainer {
   width: 80%;
-  height: 0.25rem; /* UPDATE: Converted 4px to rem */
+  height: 0.25rem;
   background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 0.125rem; /* UPDATE: Converted 2px to rem */
-  margin-top: 0.313rem; /* UPDATE: Converted 5px to rem */
+  border-radius: 0.125rem;
+  margin-top: 0.313rem;
   overflow: hidden;
 }
 
@@ -250,7 +315,7 @@
 }
 
 .progressText {
-  font-size: 0.563rem; /* UPDATE: Converted 9px to rem */
+  font-size: 0.563rem;
   color: white;
-  margin-top: 0.125rem; /* UPDATE: Converted 2px to rem */
+  margin-top: 0.125rem;
 }

@@ -21,7 +21,8 @@ export const LoginRegisterFunctions = () => {
     clearUserSession,
     setPasswordIcons,
     setShopType, // Agregamos setShopType para establecer el tipo de tienda
-    setSelectedShopType // Added for proper navigation
+    setSelectedShopType,
+    setShowShopCreationForm
   } = useContext(AppContext);
 
   const { validateUsername } = useUsernameValidation();
