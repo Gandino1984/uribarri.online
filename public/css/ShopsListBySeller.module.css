@@ -75,8 +75,8 @@
   width: 100%;
   overflow-x: auto;
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* border-radius: 0.5rem; */
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
   -webkit-overflow-scrolling: touch;
 }
 
@@ -84,7 +84,7 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: auto; 
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
 }
 
 .tableHeader {
@@ -178,7 +178,7 @@
   gap: 0.25rem;
   padding: 0.5rem;
   background-color: var(--superlight-gray);
-  border-radius: 0.375rem;
+  /* border-radius: 0.375rem; */
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -251,7 +251,7 @@
 .shopCardInstructions {
   font-size: 0.8rem;
   background-color: #f8f9fa;
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
   padding: 0.75rem;
   margin-top: 1rem;
   text-align: center;
