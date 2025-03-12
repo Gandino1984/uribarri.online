@@ -1,6 +1,6 @@
 import { AppContextProvider } from "./app_context/AppContextProvider.jsx";
 import styles from '../../public/css/App.module.css';
-import '../../public/css/App.css'; // Keep this for global style
+import '../../public/css/App.css'; // Keep this for global styles
 import LoginRegisterForm from "../src/components/login_register/LoginRegisterForm.jsx";
 import TopBar from "../src/components/top_bar/TopBar.jsx";
 import ConfirmationModal from "../src/components/confirmation_modal/ConfirmationModal.jsx";

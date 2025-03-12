@@ -30,7 +30,7 @@ export const FormActions = () => {
         onClick={toggleForm}    
         title="Crea una cuenta"
       >
-        {isLoggingIn ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+        {isLoggingIn ? 'Registrarme' : 'Inicio'}
       </button>
     </div>
   );

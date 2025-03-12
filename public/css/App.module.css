@@ -1,44 +1,33 @@
-/* App.module.css - Mobile-first approach */
-
 .mainContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* min-height: 100vh; */
+  height: 100%; /* UPDATE: Ensure container takes full height */
   width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+  min-width: 100%;
   background-color: var(--superlight-gray);
-  position: relative;
-  /* padding-top: var(--topbar-height); */
+  margin: 0;
+  padding: 0;
 }
 
-/* UPDATE: Mejoras para dispositivos móviles */
 @media (max-width: 640px) {
   .mainContainer {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en móviles */
-    padding-top: var(--topbar-height);
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 
-/* UPDATE: Mejoras para tablets */
 @media (min-width: 641px) and (max-width: 1024px) {
   .mainContainer {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en tablets */
-    padding-top: var(--topbar-height);
-  }
+    padding-left: 0;
+    padding-right: 0;
+  } 
 }
 
-/* UPDATE: Mejoras para dispositivos de escritorio */
+/* UPDATE: Removing unnecessary padding for desktop */
 @media (min-width: 1025px) {
   .mainContainer {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    /* UPDATE: Mantenemos el padding-top para asegurar visibilidad en desktop */
-    padding-top: var(--topbar-height);
+    padding-left: 0;
+    padding-right: 0;
   }
 }
