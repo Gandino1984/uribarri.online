@@ -53,13 +53,13 @@
 .addButton:hover {
   background-color: var(--dark-orange);
   color: white;
-  transform: scale(1.05);
+  /* transform: scale(1.05); */
 }
 
 .messageNoShops {
   text-align: center;
   padding: 3rem 0;
-  color: #666;
+  color: var(--light-gray);
 }
 
 /* UPDATE: Contenedor para manejar el layout de tabla y tarjeta en columna vertical */
@@ -210,10 +210,10 @@
 
 .shopLimitInfo {
   margin-top: 10px;
-  padding: 8px 12px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  padding-left: 2rem;
+  /* background-color: #f8f9fa; */
+  /* border-radius: 6px; */
+  font-size: 0.8rem;
 }
 
 .limitHeader {

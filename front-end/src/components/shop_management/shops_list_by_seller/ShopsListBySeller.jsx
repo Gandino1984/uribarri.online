@@ -11,8 +11,6 @@ const ShopsListBySeller = () => {
     shops, 
     selectedShop, 
     currentUser,
-    setShowShopCreationForm,
-    setSelectedShop,
     showProductManagement
   } = useContext(AppContext);
 
@@ -24,27 +22,9 @@ const ShopsListBySeller = () => {
     handleUpdateShop,
     shopCount,
     shopLimit,
-    // UPDATE: Utilizamos las nuevas funciones
     isShopSelected,
     shouldShowShopCard
   } = ShopsListBySellerFunctions();
-
-  // Animation configuration
-  const springProps = useSpring({
-    from: { 
-      opacity: 0,
-      transform: 'translateY(50px)'
-    },
-    to: { 
-      opacity: 1,
-      transform: 'translateY(0px)'
-    },
-    config: {
-      mass: 1,
-      tension: 280,
-      friction: 20
-    }
-  });
 
   // UPDATE: Controlar cuándo se hacen las llamadas a la API
   useEffect(() => {
@@ -63,6 +43,7 @@ const ShopsListBySeller = () => {
     }
   }, [selectedShop]);
 
+
   // Función para mostrar información sobre el límite de tiendas
   const renderShopLimitInfo = () => {
     // Determinar el color del indicador basado en cuán cerca está el usuario del límite
@@ -74,11 +55,12 @@ const ShopsListBySeller = () => {
     } else if (percentUsed >= 70) {
       statusColor = 'orange';
     }
+
     
     return (
       <div className={styles.shopLimitInfo}>
         <div className={styles.limitHeader}>
-          <AlertCircle size={16} color={statusColor} />
+          <AlertCircle size={16} color={statusColor}/>
           <span>Límite de comercios: {shopCount} de {shopLimit}</span>
         </div>
         {!currentUser?.category_user && shopCount >= shopLimit * 0.7 && (
@@ -91,7 +73,7 @@ const ShopsListBySeller = () => {
   };
 
   return (
-    <animated.div style={springProps} className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.headerContainer}>
           <div className={styles.header}>
@@ -105,7 +87,7 @@ const ShopsListBySeller = () => {
                 title="Crear nuevo comercio"
                 disabled={shopCount >= shopLimit}
               >
-                <span className={styles.buttonText}>Nuevo</span>
+                Nuevo
                 <Box size={16} />
               </button>
           </div>
@@ -183,7 +165,7 @@ const ShopsListBySeller = () => {
           </div>
         )}
       </div>
-    </animated.div>
+    </div>
   );
 };
 

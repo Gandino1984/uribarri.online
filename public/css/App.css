@@ -1,9 +1,9 @@
 :root {
   --saturated-orange: #ee870a;
   --dark-orange: #d06f00;
-  --superlight-orange: #f3e6d6;
+  --superlight-orange: #fff4e7;
   --superlight-gray: #f1f1f1;
-  --light-gray: #e2e2e2;
+  --light-gray: #666;
   --medium-gray: #d1d5db;
   --dark-gray: #4b5563;
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
