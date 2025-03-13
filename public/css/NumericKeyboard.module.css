@@ -23,6 +23,7 @@
     height: 3rem;
     font-size: 8rem;
     gap: .5rem;
+    border: 1px dashed   var(--superlight-gray);
     /* margin-bottom: .5rem; */
     color: black;
     overflow: hidden;

@@ -17,7 +17,7 @@
 .formContent {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: .5rem;
   align-items: stretch;
   justify-content: center;
   position: relative;

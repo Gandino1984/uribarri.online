@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useSpring, animated } from '@react-spring/web';
 import { ArrowLeft } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -20,19 +19,7 @@ const ShopMap = ({ shop, isSmallScreen, onBack, style }) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
-  
-  // Spring animation for the map component
-  const mapAnimation = useSpring({
-    from: { opacity: 0, transform: isSmallScreen ? 'translateY(50px)' : 'translateX(50px)' },
-    to: { opacity: 1, transform: 'translateY(0px) translateX(0px)' },
-    config: { tension: 280, friction: 30 }
-  });
 
-  // Combined spring animations
-  const combinedStyle = {
-    ...mapAnimation,
-    ...style
-  };
 
   // Initialize map when component mounts
   useEffect(() => {
@@ -107,7 +94,7 @@ const ShopMap = ({ shop, isSmallScreen, onBack, style }) => {
   });
 
   return (
-    <animated.div style={combinedStyle} className={styles.mapContainer}>
+    <div className={styles.mapContainer}>
       {/* UPDATE: Back button for small screens */}
       {isSmallScreen && (
         <button 
@@ -119,7 +106,7 @@ const ShopMap = ({ shop, isSmallScreen, onBack, style }) => {
         </button>
       )}
       <div ref={mapRef} style={{ width: '100%', height: '100%', minHeight: '300px' }} />
-    </animated.div>
+    </div>
   );
 };
 

@@ -37,22 +37,6 @@ const ShopCreationForm = () => {
   // UPDATE: Added state for continuous schedule
   const [hasContinuousSchedule, setHasContinuousSchedule] = useState(false);
 
-  // Animation configuration
-  const formAnimation = useSpring({
-    from: { 
-      transform: 'translateY(35%)',
-      opacity: 0
-    },
-    to: { 
-      transform: 'translateY(0%)',
-      opacity: 1
-    },
-    config: {
-      mass: 1,
-      tension: 280,
-      friction: 22
-    }
-  });
 
   // Modified useEffect to properly handle user ID
   useEffect(() => {
@@ -332,7 +316,7 @@ const ShopCreationForm = () => {
   const subtypes = newShop.type_shop ? shopTypesAndSubtypes[newShop.type_shop] : [];
 
   return (
-    <animated.div style={formAnimation} className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>   
           <h1 className={styles.headerTitle}>
@@ -340,45 +324,21 @@ const ShopCreationForm = () => {
           </h1>
         </div>
         
-        {/* UPDATE: Restructured form with 3 sections for desktop layout */}
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* SECTION 1: Image Upload */}
-          <div className={styles.imageSection}>
-            {/* UPDATE: Improved image upload UI based on ShopCoverImage */}
+          <div className={styles.imageSection}>  
             <div 
               className={styles.imageUploadContainer}
               onClick={handleImageContainerClick}
             >
-              <div className={styles.imagePreviewBox} style={{
-                width: '100%',
-                height: '200px',
-                border: '1px dashed #ccc',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                position: 'relative',
-                backgroundColor: '#f5f5f5',
-                cursor: 'pointer'
-              }}>
+              <div className={styles.imagePreviewBox}>
                 {imagePreview ? (
                   <img 
                     src={imagePreview} 
                     alt="Vista previa de imagen" 
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }}
                   />
                 ) : (
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    color: '#666'
-                  }}>
+                  <div className={styles.imagePlaceholder} >
                     <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
                     <span>Imagen de comercio</span>
                   </div>
@@ -386,23 +346,8 @@ const ShopCreationForm = () => {
                 
                 {/* Upload progress indicator */}
                 {uploading && (
-                  <div className={styles.loaderOverlay} style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(0,0,0,0.6)',
-                    borderRadius: '8px'
-                  }}>
-                    <Loader size={32} color="white" className={styles.spinningLoader} style={{
-                      animation: 'spin 1.5s linear infinite',
-                      marginBottom: '15px'
-                    }} />
+                  <div className={styles.loaderOverlay}>
+                    <Loader size={32} color="white" className={styles.spinningLoader}/>
                     
                     <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
                       <div style={{ 
@@ -423,16 +368,6 @@ const ShopCreationForm = () => {
                   <div 
                     className={styles.uploadButtonOverlay}
                     onClick={(e) => e.stopPropagation()}
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      padding: '10px',
-                      background: 'rgba(0,0,0,0.7)'
-                    }}
                   >
                     <input
                       type="file"
@@ -447,18 +382,6 @@ const ShopCreationForm = () => {
                     <label 
                       htmlFor="shop_image" 
                       className={styles.imageButton}
-                      style={{ 
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        padding: '8px 15px',
-                        backgroundColor: '#4A90E2',
-                        color: 'white',
-                        borderRadius: '4px',
-                        border: 'none',
-                        fontSize: '14px',
-                        cursor: 'pointer'
-                      }}
                     >
                       <Camera size={16} />
                       {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
@@ -469,19 +392,6 @@ const ShopCreationForm = () => {
                         type="button"
                         onClick={handleClearImage}
                         disabled={uploading}
-                        style={{ 
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          backgroundColor: '#E25549',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '8px 15px',
-                          marginLeft: '10px',
-                          cursor: 'pointer',
-                          fontSize: '14px'
-                        }}
                       >
                         <Trash2 size={16} />
                         Quitar
@@ -492,19 +402,7 @@ const ShopCreationForm = () => {
                 
                 {/* Edit overlay hint */}
                 {!showImageUploadButton && !uploading && (
-                  <div className={styles.editOverlay} style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(0,0,0,0.5)',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '5px'
-                  }}>
+                  <div className={styles.editOverlay} >
                     <Camera size={18} />
                     <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
                   </div>
@@ -700,7 +598,7 @@ const ShopCreationForm = () => {
           </div>
         </form>
       </div>
-    </animated.div>
+    </div>
   );
 };
 

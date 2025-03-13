@@ -259,6 +259,19 @@
   border: 1px dashed #ddd;
 }
 
+/* UPDATE: Clases para los colores de estado del indicador de límites */
+.statusGreen {
+  color: green;
+}
+
+.statusOrange {
+  color: orange;
+}
+
+.statusRed {
+  color: red;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
