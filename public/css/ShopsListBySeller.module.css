@@ -3,18 +3,15 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
   width: 100%;
-  /* height: calc(100vh - var(--topbar-height)); */
   gap: 1rem;
-  /* margin-top: 2.5rem;   */
   z-index: 100;
 }
 
 .content {
   width: 100%;
   height: 100%;
-  max-width: 72rem;
-  /* overflow-y: hidden; */
 }
 
 .headerContainer {
@@ -149,12 +146,8 @@
 /* UPDATE: Estilos para la fila seleccionada */
 .selectedRow {
   background-color: var(--superlight-orange);
-  border-left: 3px solid var(--saturated-orange);
+  border-left: 2px solid var(--saturated-orange);
 }
-
-/* .selectedRow:hover {
-  background-color: rgba(59, 130, 246, 0.12);
-} */
 
 .tableCell {
   padding: 0.8rem 1rem;
@@ -241,10 +234,10 @@
 
 /* UPDATE: Estilos para el contenedor de la tarjeta de tienda */
 .shopCardContainer {
-  /* width: 100%; */
+  width: 100%;
   margin-top: 1rem;
   animation: fadeIn 0.3s ease;
-  max-width: 500px;
+  max-width: 72vw ;
   margin-left: auto;
   margin-right: auto;
 }
