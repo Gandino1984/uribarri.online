@@ -237,20 +237,20 @@
   width: 100%;
   margin-top: 1rem;
   animation: fadeIn 0.3s ease;
-  max-width: 72vw ;
+  /* max-width: 80vw ; */
   margin-left: auto;
   margin-right: auto;
 }
 
 .shopCardInstructions {
   font-size: 0.8rem;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   /* border-radius: 0.5rem; */
   padding: 0.75rem;
   margin-top: 1rem;
   text-align: center;
   color: #666;
-  border: 1px dashed #ddd;
+  /* border: 1px dashed #ddd; */
 }
 
 /* UPDATE: Clases para los colores de estado del indicador de límites */
