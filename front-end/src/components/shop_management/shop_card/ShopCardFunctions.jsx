@@ -1,6 +1,6 @@
 import { useContext, useCallback, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
-import { validateImageFile } from '../../../../../front-end/src/utils/image/imageUploadService.js';
+import { validateImageFile } from '../../../../../front-end/src/utils/image/imageValidation.js';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 
 const ShopCardFunctions = () => {
@@ -107,9 +107,36 @@ const ShopCardFunctions = () => {
     return imageUrl;
   }, []);
 
+  // UPDATE: Added time and shop type formatting utilities
+  const formatTime = useCallback((time) => {
+    if (!time) return '00:00';
+    return new Date(`2000-01-01T${time}`).toLocaleTimeString('es-ES', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  }, []);
+
+  const formatShopType = useCallback((shop) => {
+    if (!shop?.type_shop) return 'No especificado';
+    
+    if (shop?.subtype_shop) {
+      return `${shop.type_shop} - ${shop.subtype_shop}`;
+    }
+    
+    return shop.type_shop;
+  }, []);
+
+  const checkHasContinuousSchedule = useCallback((shop) => {
+    return !shop?.morning_close || !shop?.afternoon_open;
+  }, []);
+
   return {
     getShopImageUrl,
-    handleShopImageUpload
+    handleShopImageUpload,
+    formatTime,
+    formatShopType,
+    checkHasContinuousSchedule
   };
 };
 

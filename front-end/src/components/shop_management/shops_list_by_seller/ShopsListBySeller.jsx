@@ -86,10 +86,11 @@ const ShopsListBySeller = () => {
               {/* Vista previa de la tarjeta de tienda - usando ShopCard directamente */}
               {selectedShop && shouldShowShopCard() && !showProductManagement && (
                 <div className={styles.shopCardContainer}>
-                    <ShopCard shop={selectedShop} />
+                    {/* to-do: turn into a info card */}
                     <div className={styles.shopCardInstructions}>
                         <p>Haz click nuevamente en la tienda para administrar sus productos</p>
                     </div>
+                    <ShopCard shop={selectedShop} />
                 </div>
               )}
           </div>            
