@@ -1,11 +1,8 @@
-/* ShopCoverImage.module.css - Mobile-first approach */
 
 .container {
   position: relative;
   width: 100%;
   overflow: hidden;
-  /* border-radius: 8px 8px 0 0; */
-  /* UPDATE: Changed aspect ratio to exactly 900x200 (4.5:1) for all devices */
   aspect-ratio: 4.5/1;
 }
 

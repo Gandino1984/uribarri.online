@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import styles from '../../../../../../public/css/ShopMap.module.css';
+import styles from '../../../../../../public/css/ShopCard.module.css'; // UPDATE: Import ShopCard styles instead
 
 // Fix for Leaflet marker icons in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -94,18 +94,20 @@ const ShopMap = ({ shop, isSmallScreen, onBack, style }) => {
   });
 
   return (
-    <div className={styles.mapContainer}>
-      {/* UPDATE: Back button for small screens */}
+    // UPDATE: Using ShopCard styles for the map container
+    <div className={styles.mapContainer} style={style}>
+      {/* UPDATE: Using ShopCard styles for back button */}
       {isSmallScreen && (
         <button 
           className={styles.backButton} 
           onClick={onBack}
           title="Volver a la información de la tienda"
+          style={{ width: '3rem', height: '3rem' }}
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={15} />
         </button>
       )}
-      <div ref={mapRef} style={{ width: '100%', height: '100%', minHeight: '300px' }} />
+      <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
     </div>
   );
 };

@@ -53,8 +53,12 @@ const ShopCard = ({ shop }) => {
   const shopTypeFormatted = formatShopType(shop);
 
   return (
+    // UPDATE: Use flex container with responsive classes to maintain consistent sizing
     <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
-      <div className={`${styles.container} ${minimized ? styles.minimized : ''} ${styles.responsiveContainer}`}>
+      <div 
+        className={`${styles.container} ${minimized ? styles.minimized : ''} ${styles.responsiveContainer}`}
+        style={!isSmallScreen && !minimized && showMap ? { flex: '1 1 40%' } : {}}
+      >
         {minimized ? (
           <MinimizedCard toggleMinimized={toggleMinimized} />
         ) : (
@@ -82,6 +86,7 @@ const ShopCard = ({ shop }) => {
           shop={shop} 
           isSmallScreen={isSmallScreen} 
           onBack={() => setShowMap(false)}
+          style={!isSmallScreen ? { flex: '1 1 60%' } : {}}
         />
       )}
     </div>
