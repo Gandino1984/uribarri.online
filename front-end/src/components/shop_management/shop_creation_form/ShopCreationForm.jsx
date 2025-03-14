@@ -27,18 +27,15 @@ const ShopCreationForm = () => {
     handleImageUpload
   } = ShopCreationFormFunctions();
 
-  // UPDATE: Enhanced image handling states
+  
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showImageUploadButton, setShowImageUploadButton] = useState(false);
   const fileInputRef = useRef(null);
-  
-  // UPDATE: Added state for continuous schedule
+    
   const [hasContinuousSchedule, setHasContinuousSchedule] = useState(false);
 
-
-  // Modified useEffect to properly handle user ID
   useEffect(() => {
     if (currentUser?.id_user) {
       setNewShop(prev => {
@@ -57,7 +54,6 @@ const ShopCreationForm = () => {
 
   useEffect(() => {
     if (selectedShop && currentUser?.id_user) {
-      // UPDATE: Detect if shop has continuous schedule
       const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
       setHasContinuousSchedule(shopHasContinuousSchedule);
       
@@ -66,7 +62,7 @@ const ShopCreationForm = () => {
         type_shop: selectedShop.type_shop,
         subtype_shop: selectedShop.subtype_shop,
         location_shop: selectedShop.location_shop,
-        id_user: currentUser.id_user, // Ensure we always set the current user ID
+        id_user: currentUser.id_user, 
         calification_shop: selectedShop.calification_shop,
         image_shop: selectedShop.image_shop,
         morning_open: selectedShop.morning_open || '',
@@ -98,12 +94,10 @@ const ShopCreationForm = () => {
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // UPDATE: Image container click handler - toggles upload button visibility
   const handleImageContainerClick = () => {
     setShowImageUploadButton(prev => !prev);
   };
 
-  // UPDATE: Handle file selection and preview
   const handleImageSelect = (e) => {
     e.stopPropagation(); // Prevent container click event
     const file = e.target.files[0];
@@ -143,7 +137,6 @@ const ShopCreationForm = () => {
     setShowImageUploadButton(false);
   };
 
-  // UPDATE: Function to clear the selected image
   const handleClearImage = (e) => {
     e.stopPropagation(); // Prevent container click event
     setSelectedImage(null);
@@ -153,7 +146,6 @@ const ShopCreationForm = () => {
     }
   };
   
-  // UPDATE: Function to handle schedule type change
   const handleScheduleTypeChange = (e) => {
     const isContinuous = e.target.checked;
     setHasContinuousSchedule(isContinuous);
@@ -286,7 +278,6 @@ const ShopCreationForm = () => {
     }
   };
 
-  // UPDATE: Function to handle back button
   const handleBack = () => {
     // Clear form state
     setNewShop({
@@ -311,292 +302,297 @@ const ShopCreationForm = () => {
     setShowShopCreationForm(false);
   };
 
-  // Get the list of shop types
   const shopTypes = Object.keys(shopTypesAndSubtypes);
   const subtypes = newShop.type_shop ? shopTypesAndSubtypes[newShop.type_shop] : [];
 
   return (
     <div className={styles.container}>
-      <div className={styles.content}>
-        <div className={styles.header}>   
-          <h1 className={styles.headerTitle}>
-            {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-          </h1>
-        </div>
-        
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {/* SECTION 1: Image Upload */}
-          <div className={styles.imageSection}>  
-            <div 
-              className={styles.imageUploadContainer}
-              onClick={handleImageContainerClick}
-            >
-              <div className={styles.imagePreviewBox}>
-                {imagePreview ? (
-                  <img 
-                    src={imagePreview} 
-                    alt="Vista previa de imagen" 
-                  />
-                ) : (
-                  <div className={styles.imagePlaceholder} >
-                    <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
-                    <span>Imagen de comercio</span>
-                  </div>
-                )}
-                
-                {/* Upload progress indicator */}
-                {uploading && (
-                  <div className={styles.loaderOverlay}>
-                    <Loader size={32} color="white" className={styles.spinningLoader}/>
-                    
-                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
-                      <div style={{ 
-                        width: `${uploadProgress}%`,
-                        height: '100%',
-                        backgroundColor: '#4CAF50',
-                        borderRadius: '4px'
-                      }}></div>
-                    </div>
-                    <span style={{ color: 'white', marginTop: '8px' }}>
-                      {uploadProgress}%
-                    </span>
-                  </div>
-                )}
-                
-                {/* Image upload button */}
-                {showImageUploadButton && !uploading && (
-                  <div 
-                    className={styles.uploadButtonOverlay}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <input
-                      type="file"
-                      id="shop_image"
-                      ref={fileInputRef}
-                      accept="image/jpeg,image/png,image/jpg,image/webp"
-                      style={{ display: 'none' }}
-                      onChange={handleImageSelect}
-                      disabled={uploading}
-                    />
-                    
-                    <label 
-                      htmlFor="shop_image" 
-                      className={styles.imageButton}
-                    >
-                      <Camera size={16} />
-                      {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
-                    </label>
-                    
-                    {imagePreview && (
-                      <button
-                        type="button"
-                        onClick={handleClearImage}
-                        disabled={uploading}
-                      >
-                        <Trash2 size={16} />
-                        Quitar
-                      </button>
-                    )}
-                  </div>
-                )}
-                
-                {/* Edit overlay hint */}
-                {!showImageUploadButton && !uploading && (
-                  <div className={styles.editOverlay} >
-                    <Camera size={18} />
-                    <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* SECTION 2: Basic Shop Information */}
-          <div className={styles.formFields}>
-            <div className={styles.formField}>
-              <input
-                type="text"
-                placeholder='Nombre del comercio:'
-                value={newShop.name_shop}
-                onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
-                className={styles.input}
-                required
-              />
-            </div>
-            
-            <div className={styles.formField}>
-              <select
-                value={newShop.type_shop}
-                onChange={(e) => {
-                  setNewShop({
-                    ...newShop, 
-                    type_shop: e.target.value,
-                    subtype_shop: ''
-                  })
-                }}
-                className={styles.input} 
-                required
-              >
-                <option value="" disabled>Categoría</option>
-                {shopTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
+        <div className={styles.content}>    
+            <form onSubmit={handleSubmit} className={styles.form}>
 
-            {newShop.type_shop && (
-              <div className={styles.formField}>
-                <select
-                  value={newShop.subtype_shop}
-                  onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
-                  className={styles.input} 
-                  required
+            <div className={styles.header}>   
+                <h1 className={styles.headerTitle}>
+                    {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
+                </h1>
+
+                <div className={styles.buttonContainer}>
+                <button 
+                  type="submit" 
+                  className={styles.submitButton}
+                  disabled={uploading}
+                  style={{ 
+                    opacity: uploading ? 0.6 : 1,
+                    cursor: uploading ? 'not-allowed' : 'pointer'
+                  }}
                 >
-                  <option value="" disabled>Subcategoría</option>
-                  {subtypes.map(subtype => (
-                    <option key={subtype} value={subtype}>{subtype}</option>
-                  ))}
-                </select>
+                  {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
+                  {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
+                </button>
               </div>
-            )}
-            
-            <div className={styles.formField}>
-              <input
-                type="text"
-                placeholder='Dirección del comercio:'
-                value={newShop.location_shop}
-                onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
-                className={styles.input}
-                required
-              />
             </div>
-          </div>
 
-          {/* SECTION 3: Additional Information (Schedule) */}
-          <div className={styles.scheduleContainer}>
-            {/* Toggle for continuous or split schedule */}
-            <div className={styles.scheduleTypeToggle} style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '15px',
-              gap: '8px'
-            }}>
-              <input 
-                type="checkbox"
-                id="continuous-schedule"
-                checked={hasContinuousSchedule}
-                onChange={handleScheduleTypeChange}
-                style={{ marginRight: '8px' }}
-              />
-              <label htmlFor="continuous-schedule" style={{ 
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#444'
-              }}>
-                <Clock size={16} />
-                Horario continuo (sin periodo de descanso)
-              </label>
-            </div>
-          
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {hasContinuousSchedule ? (
-                // Continuous schedule: only show opening and closing
-                <div className={styles.scheduleSimple} style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  gap: '10px'
-                }}>
-                  <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4>
-                  <div className={styles.scheduleFields}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <label style={{ fontSize: '0.85rem', color: '#555' }}>Abre:</label>
+            
+
+              {/* SECTION 1: Image Upload */}
+              <div className={styles.imageSection}>  
+                <div className={styles.formField}>
                       <input
-                        type="time"
-                        value={newShop.morning_open || ''}
-                        onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                        className={styles.timeInput}
+                        type="text"
+                        placeholder='Nombre del comercio:'
+                        value={newShop.name_shop}
+                        onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
+                        className={styles.input}
                         required
                       />
-                    </div>
+                  </div>
+
+                <div 
+                  className={styles.imageUploadContainer}
+                  onClick={handleImageContainerClick}
+                >
+                  <div className={styles.imagePreviewBox}>
+                    {imagePreview ? (
+                      <img 
+                        src={imagePreview} 
+                        alt="Vista previa de imagen" 
+                      />
+                    ) : (
+                      <div className={styles.imagePlaceholder} >
+                        <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
+                      </div>
+                    )}
                     
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <label style={{ fontSize: '0.85rem', color: '#555' }}>Cierra:</label>
-                      <input
-                        type="time"
-                        value={newShop.afternoon_close || ''}
-                        onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
-                  </div>
+                    {/* Upload progress indicator */}
+                    {uploading && (
+                      <div className={styles.loaderOverlay}>
+                        <Loader size={32} color="white" className={styles.spinningLoader}/>
+                        
+                        <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
+                          <div style={{ 
+                            width: `${uploadProgress}%`,
+                            height: '100%',
+                            backgroundColor: '#4CAF50',
+                            borderRadius: '4px'
+                          }}></div>
+                        </div>
+                        <span style={{ color: 'white', marginTop: '8px' }}>
+                          {uploadProgress}%
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Image upload button */}
+                    {showImageUploadButton && !uploading && (
+                      <div 
+                        className={styles.uploadButtonOverlay}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="file"
+                          id="shop_image"
+                          ref={fileInputRef}
+                          accept="image/jpeg,image/png,image/jpg,image/webp"
+                          style={{ display: 'none' }}
+                          onChange={handleImageSelect}
+                          disabled={uploading}
+                        />
+                        
+                        <label 
+                          htmlFor="shop_image" 
+                          className={styles.imageButton}
+                        >
+                          <Camera size={16} />
+                          {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                        </label>
+                        
+                        {imagePreview && (
+                          <button
+                            type="button"
+                            onClick={handleClearImage}
+                            disabled={uploading}
+                          >
+                            <Trash2 size={16} />
+                            Quitar
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Edit overlay hint */}
+                    {!showImageUploadButton && !uploading && (
+                      <div className={styles.editOverlay} >
+                        <Camera size={18} />
+                        <span>{imagePreview ? 'Cambiar portada' : 'Subir portada'}</span>
+                      </div>
+                    )}
+                  </div>  
                 </div>
-              ) : (
-                // Schedule with rest period: show all 4 fields
-                <>
-                  <div>
-                    <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
-                    <div className={styles.scheduleFields}>
-                      <input
-                        type="time"
-                        value={newShop.morning_open || ''}
-                        onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                      <span>a</span>
-                      <input
-                        type="time"
-                        value={newShop.morning_close || ''}
-                        onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
-                  </div>
+              </div>
+              
+              {/* SECTION 2: Basic Shop Information */}
+              <div className={styles.formFields}>
+                
+                
+                <div className={styles.formField}>
+                  <select
+                    value={newShop.type_shop}
+                    onChange={(e) => {
+                      setNewShop({
+                        ...newShop, 
+                        type_shop: e.target.value,
+                        subtype_shop: ''
+                      })
+                    }}
+                    className={styles.input} 
+                    required
+                  >
+                    <option value="" disabled>Categoría</option>
+                    {shopTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
 
-                  <div>
-                    <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
-                    <div className={styles.scheduleFields}>
-                      <input
-                        type="time"
-                        value={newShop.afternoon_open || ''}
-                        onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                      <span>a</span>
-                      <input
-                        type="time"
-                        value={newShop.afternoon_close || ''}
-                        onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
+                {newShop.type_shop && (
+                  <div className={styles.formField}>
+                    <select
+                      value={newShop.subtype_shop}
+                      onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
+                      className={styles.input} 
+                      required
+                    >
+                      <option value="" disabled>Subcategoría</option>
+                      {subtypes.map(subtype => (
+                        <option key={subtype} value={subtype}>{subtype}</option>
+                      ))}
+                    </select>
                   </div>
-                </>
-              )}
-            </div>
-          </div>
-            
-          <div className={styles.buttonContainer}>
-            <button 
-              type="submit" 
-              className={styles.submitButton}
-              disabled={uploading}
-              style={{ 
-                opacity: uploading ? 0.6 : 1,
-                cursor: uploading ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
-              {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
-            </button>
-          </div>
-        </form>
+                )}
+                
+                <div className={styles.formField}>
+                  <input
+                    type="text"
+                    placeholder='Dirección del comercio:'
+                    value={newShop.location_shop}
+                    onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* SECTION 3: Additional Information (Schedule) */}
+              <div className={styles.scheduleContainer}>
+                {/* Toggle for continuous or split schedule */}
+                <div className={styles.scheduleTypeToggle} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '15px',
+                  gap: '8px'
+                }}>
+                  <input 
+                    type="checkbox"
+                    id="continuous-schedule"
+                    checked={hasContinuousSchedule}
+                    onChange={handleScheduleTypeChange}
+                    style={{ marginRight: '8px' }}
+                  />
+                  <label htmlFor="continuous-schedule" style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontSize: '0.9rem',
+                    color: '#444'
+                  }}>
+                    <Clock size={16} />
+                    Horario continuo (sin periodo de descanso)
+                  </label>
+                </div>
+              
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {hasContinuousSchedule ? (
+                    // Continuous schedule: only show opening and closing
+                    <div className={styles.scheduleSimple} style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      gap: '10px'
+                    }}>
+                      <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4>
+                      <div className={styles.scheduleFields}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <label style={{ fontSize: '0.85rem', color: '#555' }}>Abre:</label>
+                          <input
+                            type="time"
+                            value={newShop.morning_open || ''}
+                            onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
+                            className={styles.timeInput}
+                            required
+                          />
+                        </div>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <label style={{ fontSize: '0.85rem', color: '#555' }}>Cierra:</label>
+                          <input
+                            type="time"
+                            value={newShop.afternoon_close || ''}
+                            onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
+                            className={styles.timeInput}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Schedule with rest period: show all 4 fields
+                    <>
+                      <div>
+                        <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
+                        <div className={styles.scheduleFields}>
+                          <input
+                            type="time"
+                            value={newShop.morning_open || ''}
+                            onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
+                            className={styles.timeInput}
+                            required
+                          />
+                          <span>a</span>
+                          <input
+                            type="time"
+                            value={newShop.morning_close || ''}
+                            onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
+                            className={styles.timeInput}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
+                        <div className={styles.scheduleFields}>
+                          <input
+                            type="time"
+                            value={newShop.afternoon_open || ''}
+                            onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
+                            className={styles.timeInput}
+                            required
+                          />
+                          <span>a</span>
+                          <input
+                            type="time"
+                            value={newShop.afternoon_close || ''}
+                            onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
+                            className={styles.timeInput}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+                
+              
+            </form>
       </div>
     </div>
   );

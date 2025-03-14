@@ -10,7 +10,7 @@
   justify-content: center;
   flex-direction: column;
   background-color: white;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   padding: 1.5rem;
   max-width: 90%;
   margin-left: auto;
@@ -37,15 +37,15 @@
   justify-content: center;
   background: none;
   border: none;
-  color: #555;
+  color: var(--saturated-orange);
   cursor: pointer;
   padding: 5px;
-  border-radius: 4px;
+  /* border-radius: 4px; */
 }
 
 .backButton:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--saturated-orange);
+  color: white;
 }
 
 .form {
@@ -57,15 +57,16 @@
   width: 100%;
 }
 
-/* UPDATE: Added imageSection styles */
 .imageSection {
   width: 100%;
+  border-right: 1px solid #dfdfdf;
+  padding-right: 1.5rem;
   /* margin-bottom: 1rem; */
 }
 
 .imageUploadContainer {
   width: 100%;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
@@ -79,7 +80,7 @@
   width: 100%;
   position: relative;
   transition: all 0.3s ease;
-  height: 200px;
+  max-height: 150px;
   border: 1px dashed #ccc;
   display: flex;
   align-items: center;
@@ -142,7 +143,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,0.6);
-  border-radius: 8px
+  /* border-radius: 8px */
 }
 
 .imageButton{
@@ -150,9 +151,8 @@
   align-items: center;
   gap: 5px;
   padding: 8px 15px;
-  background-color: #4A90E2;
+  background-color: var(--saturated-orange);
   color: white;
-  border-radius: 4px;
   border: none;
   font-size: 14px;
   cursor: pointer
@@ -189,7 +189,7 @@
 .input {
   width: 100%;
   /* padding: 0.75rem; */
-  border-radius: 4px;
+  /* border-radius: 4px; */
 }
 
 .scheduleContainer {
@@ -217,7 +217,7 @@
 .timeInput {
   padding: 0.5rem;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  /* border-radius: 4px; */
 }
 
 .buttonContainer {
@@ -233,20 +233,17 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0rem 2rem;
-  background-color: #007bff;
+  background-color: var(--saturated-orange);
   color: white;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .submitButton:hover {
-  background-color: #0056b3;
+  background-color: var(--dark-orange);
 }
 
-/* UPDATE: Improved media query for landscape orientation and larger screens 
-   to implement the three-section layout */
 @media (min-width: 768px) and (orientation: landscape) {
   .content {
     max-width: 95%;
@@ -291,7 +288,6 @@
   }
 }
 
-/* UPDATE: Mobile/portrait specific adjustments */
 @media (max-width: 767px) or (orientation: portrait) {
   .form {
     display: flex;
@@ -319,7 +315,6 @@
   }
 }
 
-/* Additional media query for extra-large screens */
 @media (min-width: 1200px) {
   .content {
     max-width: 1140px;
