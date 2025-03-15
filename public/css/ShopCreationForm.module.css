@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   gap: 1rem;
-  /* border-radius: 6px; */
+  border-radius: 6px;
 }
 
 .content {
@@ -10,6 +10,7 @@
   justify-content: center;
   flex-direction: column;
   background-color: white;
+  border-radius: 6px;
   padding: 1.5rem;
   max-width: 90%;
   margin-left: auto;
@@ -19,14 +20,15 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   width: 100%;
   padding-bottom: 1.5rem;
-  flex-wrap: wrap;
 }
 
 .headerTitle {
+  /* font-size: 1.5rem; */
   color: #333;
+  /* margin-bottom: 1rem; */
 }
 
 .backButton {
@@ -35,125 +37,35 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--saturated-orange);
+  color: #555;
   cursor: pointer;
   padding: 5px;
+  border-radius: 4px;
 }
 
 .backButton:hover {
-  background-color: var(--saturated-orange);
-  color: white;
+  background-color: #f0f0f0;
+  color: #333;
 }
 
-/* UPDATE: Modified form styles for step-by-step layout */
 .form {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-/* UPDATE: Added styles for step container */
-.stepContainer {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 300px;
-  padding: 1rem 0;
-}
-
-/* UPDATE: Added styles for step navigation */
-.stepNavigation {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  /* border-top: 1px solid #eee; */
-  width: 100%;
-}
-
-/* UPDATE: Added styles for navigation buttons */
-.navigationButton, .primaryButton {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: 100%;
 }
 
-.navigationButton {
-  background-color: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
-}
-
-.navigationButton:hover {
-  background-color: #eee;
-}
-
-.primaryButton {
-  background-color: var(--saturated-orange);
-  color: white;
-  border: none;
-}
-
-.primaryButton:hover {
-  background-color: var(--dark-orange);
-}
-
-/* UPDATE: Added styles for progress indicator */
-.progressIndicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0 auto;
-}
-
-.progressStep {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #ddd;
-  transition: all 0.3s ease;
-}
-
-.progressStep.active {
-  background-color: var(--saturated-orange);
-  transform: scale(1.2);
-}
-
-.progressStep.completed {
-  background-color: var(--saturated-orange);
-}
-
-/* Main section containers */
+/* UPDATE: Added imageSection styles */
 .imageSection {
   width: 100%;
-  padding-right: 1.5rem;
-}
-
-.formFields {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.scheduleContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  /* margin-bottom: 1rem; */
 }
 
 .imageUploadContainer {
   width: 100%;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
@@ -167,7 +79,7 @@
   width: 100%;
   position: relative;
   transition: all 0.3s ease;
-  max-height: 150px;
+  height: 200px;
   border: 1px dashed #ccc;
   display: flex;
   align-items: center;
@@ -230,6 +142,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,0.6);
+  border-radius: 8px
 }
 
 .imageButton{
@@ -237,8 +150,9 @@
   align-items: center;
   gap: 5px;
   padding: 8px 15px;
-  background-color: var(--saturated-orange);
+  background-color: #4A90E2;
   color: white;
+  border-radius: 4px;
   border: none;
   font-size: 14px;
   cursor: pointer
@@ -263,13 +177,34 @@
   margin-bottom: .5rem;
 }
 
+.formFields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* padding-top: 1rem; */
+}
+
 .input {
   width: 100%;
+  /* padding: 0.75rem; */
+  border-radius: 4px;
+}
+
+.scheduleContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .scheduleTitle {
   margin-bottom: 0.5rem;
   color: #666;
+  /* font-size: 0.9rem;  */
 }
 
 .scheduleFields {
@@ -282,193 +217,81 @@
 .timeInput {
   padding: 0.5rem;
   border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .buttonContainer {
   width: 100%;
   display: flex;
   justify-content: right;
+  /* margin-top: 1rem; */
+  /* margin-bottom: 1.5rem;   */
 }
 
 .submitButton {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--saturated-orange);
+  padding: 0rem 2rem;
+  background-color: #007bff;
   color: white;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
-  border-radius: 4px;
 }
 
 .submitButton:hover {
-  background-color: var(--dark-orange);
+  background-color: #0056b3;
 }
 
-/* New styles for elements that had inline styles */
-.scheduleTypeToggle {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  gap: 8px;
-}
-
-.scheduleToggleLabel {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.9rem;
-  color: #444;
-}
-
-.scheduleSimple {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.timeFieldGroup {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.timeFieldLabel {
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.schedulesContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.progressBar {
-  width: 80%;
-  height: 8px;
-  background-color: #333;
-  border-radius: 4px;
-}
-
-.progressFill {
-  height: 100%;
-  background-color: #4CAF50;
-  border-radius: 4px;
-}
-
-.progressText {
-  color: white;
-  margin-top: 8px;
-}
-
-.imageButtonsContainer {
-  display: flex;
-  gap: 10px;
-}
-
-.removeImageButton {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 15px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-/* UPDATE: Added styles for step transitions */
-.stepContainer {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* UPDATE: Added styles for step titles and descriptions */
-.stepTitle {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.stepTitle h2 {
-  margin-bottom: 0.5rem;
-  color: var(--saturated-orange);
-  font-size: 1.5rem;
-}
-
-.stepDescription {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* UPDATE: Added styles for input with icons */
-.inputWithIcon {
-  position: relative;
-  width: 100%;
-}
-
-.inputIcon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-}
-
-.inputWithIcon .input {
-  padding-left: 35px;
-}
-
-/* UPDATE: Added styles for schedule icons */
-.scheduleIcon {
-  margin-right: 5px;
-  vertical-align: text-bottom;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* UPDATE: Improved media query for landscape orientation and larger screens 
+   to implement the three-section layout */
 @media (min-width: 768px) and (orientation: landscape) {
   .content {
     max-width: 95%;
     padding: 2rem;
   }
 
-  /* UPDATE: Modified form layout for steps */
-  .stepContainer {
-    min-height: 350px;
-    padding: 1.5rem 0;
+  .form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
   }
 
-  /* UPDATE: Allow individual sections to use their original layout when displayed */
-  .imageSection,
-  .formFields,
-  .scheduleContainer {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+  /* First section: Image upload */
+  .imageSection {
+    grid-column: 1 / 2;
   }
 
   .imagePreviewBox {
     height: 250px !important;
   }
 
-  .stepNavigation {
-    max-width: 600px;
-    margin: 2rem auto 0;
+  /* Second section: Basic shop info */
+  .formFields {
+    grid-column: 2 / 3;
+    border-right: 1px solid #ddd;
+    padding-right: 1.5rem;
+    height: 100%;
+  }
+
+  /* Third section: Schedule */
+  .scheduleContainer {
+    grid-column: 3 / 4;
+    padding-left: 0.5rem;
+  }
+
+  .buttonContainer {
+    grid-column: 1 / 4;
+    /* margin-top: 2rem; */
+    padding-top: 1rem;
+    /* border-top: 1px solid #eee;    */
   }
 }
 
+/* UPDATE: Mobile/portrait specific adjustments */
 @media (max-width: 767px) or (orientation: portrait) {
   .form {
     display: flex;
@@ -494,25 +317,16 @@
     max-width: 95%;
     padding: 1rem;
   }
-
-  .header {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .progressIndicator {
-    margin-top: 0.5rem;
-  }
 }
 
+/* Additional media query for extra-large screens */
 @media (min-width: 1200px) {
   .content {
     max-width: 1140px;
   }
   
-  .stepContainer {
-    max-width: 800px;
-    margin: 0 auto;
+  .form {
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 2rem;
   }
 }
