@@ -169,8 +169,14 @@ const ShopImageSection = forwardRef(({ handleImageUpload }, ref) => {
     hasImage: () => !!selectedImage
   }));
 
+  // UPDATE: Added step title and description
   return (
     <section className={styles.imageSection}> 
+      <div className={styles.stepTitle}>
+        <h2>Información Básica</h2>
+        <p className={styles.stepDescription}>Introduce el nombre de tu comercio y una imagen para la portada</p>
+      </div>
+
       <div className={styles.formField}>
         <input
           type="text"
@@ -195,6 +201,7 @@ const ShopImageSection = forwardRef(({ handleImageUpload }, ref) => {
           ) : (
             <div className={styles.imagePlaceholder}>
               <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
+              <p>Haz clic para agregar una imagen</p>
             </div>
           )}
           

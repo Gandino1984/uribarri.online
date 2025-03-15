@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormFunctions } from './ShopCreationFormFunctions.jsx';
-import { Box } from 'lucide-react';
+import { Box, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// UPDATE: Import the new component sections
+// UPDATE: Import the component sections
 import ShopImageSection from './ShopImageSection.jsx';
 import ShopBasicInfoSection from './ShopBasicInfoSection.jsx';
 import ShopScheduleSection from './ShopScheduleSection.jsx';
@@ -29,7 +29,9 @@ const ShopCreationForm = () => {
     handleImageUpload
   } = ShopCreationFormFunctions();
 
-  const [selectedImageState, setSelectedImageState] = useState(null);
+  // UPDATE: Add state for multi-step form
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 3;
   
   const imageUploadRef = useRef(null);
   
@@ -48,6 +50,55 @@ const ShopCreationForm = () => {
       });
     }
   }, [currentUser?.id_user, setNewShop]);
+
+  // UPDATE: Validation for each step before proceeding
+  const validateStep = (step) => {
+    switch(step) {
+      case 1:
+        // Validate shop name
+        if (!newShop.name_shop || newShop.name_shop.trim() === '') {
+          setError(prevError => ({
+            ...prevError,
+            shopError: 'El nombre del comercio es obligatorio.'
+          }));
+          setShowErrorCard(true);
+          return false;
+        }
+        return true;
+      
+      case 2:
+        // Validate category, subcategory and location
+        if (!newShop.type_shop || !newShop.subtype_shop || !newShop.location_shop) {
+          setError(prevError => ({
+            ...prevError,
+            shopError: 'Todos los campos son obligatorios.'
+          }));
+          setShowErrorCard(true);
+          return false;
+        }
+        return true;
+      
+      case 3:
+        // Schedule validation is done in the handleSubmit function
+        return true;
+        
+      default:
+        return true;
+    }
+  };
+
+  // UPDATE: Navigation functions
+  const nextStep = () => {
+    if (validateStep(currentStep) && currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,9 +125,6 @@ const ShopCreationForm = () => {
         ...newShop,
         id_user: currentUser.id_user
       };
-      
-      // UPDATE: Retrieve the continuous schedule value from the schedule section
-      // This will be handled by ShopScheduleSection component via context
 
       console.log('Submitting form with data:', formData);
       
@@ -117,7 +165,6 @@ const ShopCreationForm = () => {
           createdOrUpdatedShop = result;
           
           // Force update the shops list in AppContext immediately
-          // This is critical for ensuring the new shop appears in the list
           console.log('Updating shop list with newly created shop');
         }
       }
@@ -126,7 +173,6 @@ const ShopCreationForm = () => {
       if (success && shopId && imageUploadRef.current) {
         console.log(`Shop ${selectedShop ? 'updated' : 'created'} successfully, ID: ${shopId}`);
         
-        // Call the image upload function exposed by the ShopImageSection component 
         try {
           // Check if ShopImageSection has exposed the uploadImage method through ref
           if (imageUploadRef.current && typeof imageUploadRef.current.uploadImage === 'function') {
@@ -152,42 +198,98 @@ const ShopCreationForm = () => {
     }
   };
 
+  // UPDATE: Function to render the current step
+  const renderCurrentStep = () => {
+    switch(currentStep) {
+      case 1:
+        return (
+          <ShopImageSection 
+            handleImageUpload={handleImageUpload}
+            ref={imageUploadRef}
+          />
+        );
+      case 2:
+        return <ShopBasicInfoSection />;
+      case 3:
+        return <ShopScheduleSection />;
+      default:
+        return null;
+    }
+  };
+
+  // UPDATE: Progress indicator component
+  const ProgressIndicator = () => {
+    return (
+      <div className={styles.progressIndicator}>
+        {Array.from({ length: totalSteps }).map((_, index) => (
+          <div 
+            key={index} 
+            className={`${styles.progressStep} ${currentStep > index ? styles.completed : ''} ${currentStep === index + 1 ? styles.active : ''}`}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className={styles.container}>
 
-        <div className={styles.content}>    
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.header}>   
-                    <h1 className={styles.headerTitle}>
-                        {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-                    </h1>
+      <div className={styles.content}>    
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.header}>   
 
-                    <div className={styles.buttonContainer}>
-                        <button 
-                          type="submit" 
-                          className={styles.submitButton}
-                          disabled={uploading}
-                          style={{ 
-                            opacity: uploading ? 0.6 : 1,
-                            cursor: uploading ? 'not-allowed' : 'pointer'
-                          }}
-                        >
-                            {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
-                            {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
-                        </button>
-                    </div>
-                </div>
-                <ShopImageSection 
-                  handleImageUpload={handleImageUpload}
-                  ref={imageUploadRef}
-                />
-                
-                <ShopBasicInfoSection />
-                
-                <ShopScheduleSection />
-            </form>
-        </div>
-    
+            <h1 className={styles.headerTitle}>
+              {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
+            </h1>
+            
+            <ProgressIndicator />
+          </div>
+          
+          {/* UPDATE: Render only the current step component */}
+          <div className={styles.stepContainer}>
+            {renderCurrentStep()}
+          </div>
+          
+          {/* Step navigation buttons */}
+          <div className={styles.stepNavigation}>
+            {currentStep > 1 && (
+              <button 
+                type="button" 
+                onClick={prevStep}
+                className={styles.navigationButton}
+              >
+                <ChevronLeft size={20} />
+                Anterior
+              </button>
+            )}
+            
+            {currentStep < totalSteps ? (
+              <button 
+                type="button" 
+                onClick={nextStep}
+                className={styles.primaryButton}
+              >
+                Siguiente
+                <ChevronRight size={20} />
+              </button>
+            ) : (
+              <button 
+                type="submit" 
+                className={styles.submitButton}
+                disabled={uploading}
+                style={{ 
+                  opacity: uploading ? 0.6 : 1,
+                  cursor: uploading ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
+                {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
     </div>
   );
 };

@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   gap: 1rem;
-  border-radius: 6px;
+  /* border-radius: 6px; */
 }
 
 .content {
@@ -19,9 +19,10 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   width: 100%;
   padding-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .headerTitle {
@@ -44,13 +45,88 @@
   color: white;
 }
 
+/* UPDATE: Modified form styles for step-by-step layout */
 .form {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
   flex-direction: column;
-  gap: 0.7rem;
   width: 100%;
+}
+
+/* UPDATE: Added styles for step container */
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 300px;
+  padding: 1rem 0;
+}
+
+/* UPDATE: Added styles for step navigation */
+.stepNavigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  /* border-top: 1px solid #eee; */
+  width: 100%;
+}
+
+/* UPDATE: Added styles for navigation buttons */
+.navigationButton, .primaryButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navigationButton {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.navigationButton:hover {
+  background-color: #eee;
+}
+
+.primaryButton {
+  background-color: var(--saturated-orange);
+  color: white;
+  border: none;
+}
+
+.primaryButton:hover {
+  background-color: var(--dark-orange);
+}
+
+/* UPDATE: Added styles for progress indicator */
+.progressIndicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+}
+
+.progressStep {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  transition: all 0.3s ease;
+}
+
+.progressStep.active {
+  background-color: var(--saturated-orange);
+  transform: scale(1.2);
+}
+
+.progressStep.completed {
+  background-color: var(--saturated-orange);
 }
 
 /* Main section containers */
@@ -218,12 +294,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0rem 2rem;
+  padding: 0.5rem 1rem;
   background-color: var(--saturated-orange);
   color: white;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
+  border-radius: 4px;
 }
 
 .submitButton:hover {
@@ -304,9 +381,62 @@
   cursor: pointer;
 }
 
+/* UPDATE: Added styles for step transitions */
+.stepContainer {
+  animation: fadeIn 0.3s ease-in-out;
+}
 
+/* UPDATE: Added styles for step titles and descriptions */
+.stepTitle {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
 
+.stepTitle h2 {
+  margin-bottom: 0.5rem;
+  color: var(--saturated-orange);
+  font-size: 1.5rem;
+}
 
+.stepDescription {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* UPDATE: Added styles for input with icons */
+.inputWithIcon {
+  position: relative;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.inputWithIcon .input {
+  padding-left: 35px;
+}
+
+/* UPDATE: Added styles for schedule icons */
+.scheduleIcon {
+  margin-right: 5px;
+  vertical-align: text-bottom;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (min-width: 768px) and (orientation: landscape) {
   .content {
@@ -314,38 +444,28 @@
     padding: 2rem;
   }
 
-  .form {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-    align-items: start;
+  /* UPDATE: Modified form layout for steps */
+  .stepContainer {
+    min-height: 350px;
+    padding: 1.5rem 0;
   }
 
-  /* First section: Image upload */
-  .imageSection {
-    grid-column: 1 / 2;
+  /* UPDATE: Allow individual sections to use their original layout when displayed */
+  .imageSection,
+  .formFields,
+  .scheduleContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
   .imagePreviewBox {
     height: 250px !important;
   }
 
-  /* Second section: Basic shop info */
-  .formFields {
-    grid-column: 2 / 3;
-    padding-right: 1.5rem;
-    height: 100%;
-  }
-
-  /* Third section: Schedule */
-  .scheduleContainer {
-    grid-column: 3 / 4;
-    padding-left: 0.5rem;
-  }
-
-  .buttonContainer {
-    grid-column: 1 / 4;
-    padding-top: 1rem;
+  .stepNavigation {
+    max-width: 600px;
+    margin: 2rem auto 0;
   }
 }
 
@@ -374,6 +494,16 @@
     max-width: 95%;
     padding: 1rem;
   }
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .progressIndicator {
+    margin-top: 0.5rem;
+  }
 }
 
 @media (min-width: 1200px) {
@@ -381,8 +511,8 @@
     max-width: 1140px;
   }
   
-  .form {
-    grid-template-columns: 1fr 1fr 1fr;
-    column-gap: 2rem;
+  .stepContainer {
+    max-width: 800px;
+    margin: 0 auto;
   }
 }

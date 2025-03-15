@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
-import { Clock } from 'lucide-react';
+import { Clock, CalendarClock } from 'lucide-react';
 
 const ShopScheduleSection = () => {
   const { 
@@ -42,8 +42,14 @@ const ShopScheduleSection = () => {
     }
   };
 
+  // UPDATE: Added step title and description
   return (
     <section className={styles.scheduleContainer}>
+      <div className={styles.stepTitle}>
+        <h2>Horario</h2>
+        <p className={styles.stepDescription}>Configura el horario de apertura y cierre de tu comercio</p>
+      </div>
+      
       {/* Toggle for continuous or split schedule */}
       <div className={styles.scheduleTypeToggle}>
         <input 
@@ -62,7 +68,10 @@ const ShopScheduleSection = () => {
         {hasContinuousSchedule ? (
           // Continuous schedule: only show opening and closing
           <div className={styles.scheduleSimple}>
-            <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4>
+            <h4 className={styles.scheduleTitle}>
+              <CalendarClock size={16} className={styles.scheduleIcon} />
+              Horario de apertura y cierre
+            </h4>
             <div className={styles.scheduleFields}>
               <div className={styles.timeFieldGroup}>
                 <label className={styles.timeFieldLabel}>Abre:</label>
@@ -91,7 +100,10 @@ const ShopScheduleSection = () => {
           // Schedule with rest period: show all 4 fields
           <>
             <div>
-              <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
+              <h4 className={styles.scheduleTitle}>
+                <CalendarClock size={16} className={styles.scheduleIcon} />
+                Horario de la mañana
+              </h4>
               <div className={styles.scheduleFields}>
                 <input
                   type="time"
@@ -112,7 +124,10 @@ const ShopScheduleSection = () => {
             </div>
 
             <div>
-              <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
+              <h4 className={styles.scheduleTitle}>
+                <CalendarClock size={16} className={styles.scheduleIcon} />
+                Horario de la tarde
+              </h4>
               <div className={styles.scheduleFields}>
                 <input
                   type="time"
@@ -138,4 +153,4 @@ const ShopScheduleSection = () => {
   );
 };
 
-export default ShopScheduleSection;
+export default ShopScheduleSection; 
