@@ -10,7 +10,6 @@
   justify-content: center;
   flex-direction: column;
   background-color: white;
-  /* border-radius: 6px; */
   padding: 1.5rem;
   max-width: 90%;
   margin-left: auto;
@@ -26,9 +25,7 @@
 }
 
 .headerTitle {
-  /* font-size: 1.5rem; */
   color: #333;
-  /* margin-bottom: 1rem; */
 }
 
 .backButton {
@@ -40,7 +37,6 @@
   color: var(--saturated-orange);
   cursor: pointer;
   padding: 5px;
-  /* border-radius: 4px; */
 }
 
 .backButton:hover {
@@ -57,16 +53,31 @@
   width: 100%;
 }
 
+/* Main section containers */
 .imageSection {
   width: 100%;
-  border-right: 1px solid #dfdfdf;
   padding-right: 1.5rem;
-  /* margin-bottom: 1rem; */
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.scheduleContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .imageUploadContainer {
   width: 100%;
-  /* border-radius: 8px; */
   overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
@@ -143,7 +154,6 @@
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,0.6);
-  /* border-radius: 8px */
 }
 
 .imageButton{
@@ -177,34 +187,13 @@
   margin-bottom: .5rem;
 }
 
-.formFields {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  /* padding-top: 1rem; */
-}
-
 .input {
   width: 100%;
-  /* padding: 0.75rem; */
-  /* border-radius: 4px; */
-}
-
-.scheduleContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
 }
 
 .scheduleTitle {
   margin-bottom: 0.5rem;
   color: #666;
-  /* font-size: 0.9rem;  */
 }
 
 .scheduleFields {
@@ -217,15 +206,12 @@
 .timeInput {
   padding: 0.5rem;
   border: 1px solid #ddd;
-  /* border-radius: 4px; */
 }
 
 .buttonContainer {
   width: 100%;
   display: flex;
   justify-content: right;
-  /* margin-top: 1rem; */
-  /* margin-bottom: 1.5rem;   */
 }
 
 .submitButton {
@@ -243,6 +229,84 @@
 .submitButton:hover {
   background-color: var(--dark-orange);
 }
+
+/* New styles for elements that had inline styles */
+.scheduleTypeToggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 8px;
+}
+
+.scheduleToggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.scheduleSimple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeFieldGroup {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.timeFieldLabel {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.schedulesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.progressBar {
+  width: 80%;
+  height: 8px;
+  background-color: #333;
+  border-radius: 4px;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 4px;
+}
+
+.progressText {
+  color: white;
+  margin-top: 8px;
+}
+
+.imageButtonsContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.removeImageButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+
+
+
 
 @media (min-width: 768px) and (orientation: landscape) {
   .content {
@@ -269,7 +333,6 @@
   /* Second section: Basic shop info */
   .formFields {
     grid-column: 2 / 3;
-    border-right: 1px solid #ddd;
     padding-right: 1.5rem;
     height: 100%;
   }
@@ -282,9 +345,7 @@
 
   .buttonContainer {
     grid-column: 1 / 4;
-    /* margin-top: 2rem; */
     padding-top: 1rem;
-    /* border-top: 1px solid #eee;    */
   }
 }
 
