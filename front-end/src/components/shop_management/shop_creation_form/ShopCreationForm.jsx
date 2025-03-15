@@ -77,17 +77,13 @@ const ShopCreationForm = () => {
           return false;
         }
         return true;
-      
-      case 3:
-        // Schedule validation is done in the handleSubmit function
-        return true;
         
       default:
         return true;
     }
   };
 
-  // UPDATE: Navigation functions
+  // Navigation functions
   const nextStep = () => {
     if (validateStep(currentStep) && currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
