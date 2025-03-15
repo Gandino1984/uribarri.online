@@ -1,332 +1,354 @@
+/* Main container styles */
 .container {
   width: 100%;
-  gap: 1rem;
-  border-radius: 6px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: white;
-  border-radius: 6px;
-  padding: 1.5rem;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
+/* Header styles */
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding-bottom: 1.5rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
 .headerTitle {
-  /* font-size: 1.5rem; */
+  font-size: 1.4rem;
+  font-weight: 600;
   color: #333;
-  /* margin-bottom: 1rem; */
+  margin: 0;
 }
 
+/* Back button */
 .backButton {
   display: flex;
   align-items: center;
-  justify-content: center;
   background: none;
   border: none;
   color: #555;
+  font-size: 0.9rem;
   cursor: pointer;
   padding: 5px;
-  border-radius: 4px;
 }
 
 .backButton:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  color: var(--dark-orange);
 }
 
-.form {
+/* UPDATE: Step tracker styles - with numbers and orange theme */
+.stepTracker {
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-  gap: 0.7rem;
+  margin: 15px 0 25px;
+  position: relative;
+}
+
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 15px;
+  z-index: 2;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+}
+
+.stepDot.active {
+  background-color: var(--saturated-orange);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Remove the progress bar as requested */
+/* .stepProgress has been removed */
+
+/* Form styles */
+.form {
   width: 100%;
 }
 
-/* UPDATE: Added imageSection styles */
-.imageSection {
+/* Section styles */
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--dark-orange);
+}
+
+.sectionDescription {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Form fields */
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
   width: 100%;
-  /* margin-bottom: 1rem; */
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--saturated-orange);
+  box-shadow: 0 0 0 2px rgba(238, 135, 10, 0.2);
+}
+
+/* Image upload styles */
+.imageSection {
+  margin-bottom: 25px;
 }
 
 .imageUploadContainer {
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
+  cursor: pointer;
+  border: 2px dashed #ddd;
+  border-radius: 6px;
+  padding: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.imageUploadContainer:hover {
+  border-color: var(--saturated-orange);
+}
+
+.imagePreviewBox {
   position: relative;
-  transition: all 0.3s ease;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.imagePreviewBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.loaderOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinningLoader {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.uploadButtonOverlay {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.uploadButtonOverlay button,
+.imageButton {
+  padding: 6px 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uploadButtonOverlay button:hover,
+.imageButton:hover {
+  background-color: var(--superlight-orange);
+  border-color: var(--saturated-orange);
+}
+
+.editOverlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 .imageUploadContainer:hover .editOverlay {
   opacity: 1;
 }
 
-.imagePreviewBox {
-  width: 100%;
-  position: relative;
-  transition: all 0.3s ease;
-  height: 200px;
-  border: 1px dashed #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background-color: #f5f5f5;
-  cursor: pointer;
+/* Schedule styles */
+.scheduleContainer {
+  margin-bottom: 25px;
 }
 
-.imagePreviewBox img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.imagePlaceholder{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #666;
-}
-
-.editOverlay {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px;
-  background: rgba(0,0,0,0.5);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px
-}
-
-.uploadButtonOverlay {
-  transition: all 0.3s ease;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  background: rgba(0,0,0,0.7);
-}
-
-.loaderOverlay {
-  z-index: 10;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.6);
-  border-radius: 8px
-}
-
-.imageButton{
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 15px;
-  background-color: #4A90E2;
-  color: white;
-  border-radius: 4px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer
-}
-
-/* Animation for spinning loader */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.spinningLoader {
-  animation: spin 1.5s linear infinite;
+.scheduleTypeToggle {
   margin-bottom: 15px;
 }
 
-.formField {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: .5rem;
-}
-
-.formFields {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  /* padding-top: 1rem; */
-}
-
-.input {
-  width: 100%;
-  /* padding: 0.75rem; */
-  border-radius: 4px;
-}
-
-.scheduleContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
 .scheduleTitle {
-  margin-bottom: 0.5rem;
-  color: #666;
-  /* font-size: 0.9rem;  */
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #444;
 }
 
 .scheduleFields {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 10px;
 }
 
 .timeInput {
-  padding: 0.5rem;
+  padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-size: 0.9rem;
 }
 
+/* Button styles */
 .buttonContainer {
-  width: 100%;
   display: flex;
-  justify-content: right;
-  /* margin-top: 1rem; */
-  /* margin-bottom: 1.5rem;   */
+  justify-content: flex-end;
+  margin-top: 30px;
 }
 
 .submitButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0rem 2rem;
-  background-color: #007bff;
+  padding: 10px 20px;
+  background-color: var(--saturated-orange);
   color: white;
   border: none;
   border-radius: 4px;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .submitButton:hover {
-  background-color: #0056b3;
+  background-color: var(--dark-orange);
 }
 
-/* UPDATE: Improved media query for landscape orientation and larger screens 
-   to implement the three-section layout */
-@media (min-width: 768px) and (orientation: landscape) {
-  .content {
-    max-width: 95%;
-    padding: 2rem;
-  }
-
-  .form {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  /* First section: Image upload */
-  .imageSection {
-    grid-column: 1 / 2;
-  }
-
-  .imagePreviewBox {
-    height: 250px !important;
-  }
-
-  /* Second section: Basic shop info */
-  .formFields {
-    grid-column: 2 / 3;
-    border-right: 1px solid #ddd;
-    padding-right: 1.5rem;
-    height: 100%;
-  }
-
-  /* Third section: Schedule */
-  .scheduleContainer {
-    grid-column: 3 / 4;
-    padding-left: 0.5rem;
-  }
-
-  .buttonContainer {
-    grid-column: 1 / 4;
-    /* margin-top: 2rem; */
-    padding-top: 1rem;
-    /* border-top: 1px solid #eee;    */
-  }
+.submitButton:disabled {
+  background-color: #9E9E9E;
+  cursor: not-allowed;
 }
 
-/* UPDATE: Mobile/portrait specific adjustments */
-@media (max-width: 767px) or (orientation: portrait) {
-  .form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .imagePreviewBox {
-    height: 180px !important;
-  }
-  
-  .formFields, .scheduleContainer {
-    width: 100%;
-    padding: 0;
-    border: none;
-  }
+/* Navigation button styles */
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
 
+.navButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--dark-orange);
+}
+
+.navButton:hover {
+  background-color: var(--superlight-orange);
+  border-color: var(--saturated-orange);
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 15px;
+    max-width: 100%;
+  }
+  
   .scheduleFields {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
   }
   
-  .content {
-    max-width: 95%;
-    padding: 1rem;
+  .scheduleFields span {
+    display: none;
   }
-}
 
-/* Additional media query for extra-large screens */
-@media (min-width: 1200px) {
-  .content {
-    max-width: 1140px;
-  }
-  
-  .form {
-    grid-template-columns: 1fr 1fr 1fr;
-    column-gap: 2rem;
+  .stepDot {
+    width: 24px;
+    height: 24px;
+    margin: 0 10px;
+    font-size: 0.8rem;
   }
 }

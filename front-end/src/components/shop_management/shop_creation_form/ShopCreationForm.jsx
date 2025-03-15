@@ -2,8 +2,13 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormFunctions } from './ShopCreationFormFunctions.jsx';
-import { Box, ArrowLeft, Camera, ImagePlus, Trash2, Clock, Loader } from 'lucide-react';
+import { Box, ArrowLeft, Camera, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
+
+// UPDATE: Import new step components
+import ShopImageUpload from './ShopImageUpload.jsx';
+import ShopBasicInfo from './ShopBasicInfo.jsx';
+import ShopSchedule from './ShopSchedule.jsx';
 
 const ShopCreationForm = () => {
   const { 
@@ -31,12 +36,14 @@ const ShopCreationForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [showImageUploadButton, setShowImageUploadButton] = useState(false);
   const fileInputRef = useRef(null);
   
   // UPDATE: Added state for continuous schedule
   const [hasContinuousSchedule, setHasContinuousSchedule] = useState(false);
 
+  // UPDATE: Added state for step tracking
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 3;
 
   // Modified useEffect to properly handle user ID
   useEffect(() => {
@@ -98,73 +105,54 @@ const ShopCreationForm = () => {
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // UPDATE: Image container click handler - toggles upload button visibility
-  const handleImageContainerClick = () => {
-    setShowImageUploadButton(prev => !prev);
-  };
-
-  // UPDATE: Handle file selection and preview
-  const handleImageSelect = (e) => {
-    e.stopPropagation(); // Prevent container click event
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      setError(prevError => ({
-        ...prevError,
-        imageError: "Formato de imagen no válido. Use JPEG, PNG o WebP."
-      }));
-      setShowErrorCard(true);
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError(prevError => ({
-        ...prevError,
-        imageError: "La imagen es demasiado grande. Máximo 5MB."
-      }));
-      setShowErrorCard(true);
-      return;
-    }
-
-    setSelectedImage(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
-    
-    // Hide the upload button after selection
-    setShowImageUploadButton(false);
-  };
-
-  // UPDATE: Function to clear the selected image
-  const handleClearImage = (e) => {
-    e.stopPropagation(); // Prevent container click event
-    setSelectedImage(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  // UPDATE: Navigation functions
+  const goToNextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
     }
   };
-  
-  // UPDATE: Function to handle schedule type change
-  const handleScheduleTypeChange = (e) => {
-    const isContinuous = e.target.checked;
-    setHasContinuousSchedule(isContinuous);
-    
-    if (isContinuous) {
-      // If changed to continuous schedule, clear morning closing and afternoon opening fields
-      setNewShop(prev => ({
-        ...prev,
-        morning_close: '',
-        afternoon_open: ''
-      }));
+
+  const goToPreviousStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // Validate current step before proceeding
+  const validateCurrentStep = () => {
+    switch(currentStep) {
+      case 1: // Image upload - optional, so always valid
+        return true;
+      case 2: // Basic info
+        if (!newShop.name_shop || !newShop.type_shop || !newShop.subtype_shop || !newShop.location_shop) {
+          setError(prevError => ({
+            ...prevError,
+            shopError: "Completa todos los campos obligatorios antes de continuar."
+          }));
+          setShowErrorCard(true);
+          return false;
+        }
+        return true;
+      case 3: // Schedule
+        const scheduleValidation = validateSchedule(newShop);
+        if (!scheduleValidation.isValid) {
+          setError(prevError => ({
+            ...prevError,
+            shopError: scheduleValidation.error
+          }));
+          setShowErrorCard(true);
+          return false;
+        }
+        return true;
+      default:
+        return true;
+    }
+  };
+
+  // Handle next button with validation
+  const handleNextClick = () => {
+    if (validateCurrentStep()) {
+      goToNextStep();
     }
   };
 
@@ -311,9 +299,45 @@ const ShopCreationForm = () => {
     setShowShopCreationForm(false);
   };
 
-  // Get the list of shop types
-  const shopTypes = Object.keys(shopTypesAndSubtypes);
-  const subtypes = newShop.type_shop ? shopTypesAndSubtypes[newShop.type_shop] : [];
+  // UPDATE: Render the appropriate step component based on currentStep
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <ShopImageUpload 
+            imagePreview={imagePreview}
+            setImagePreview={setImagePreview}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            uploading={uploading}
+            uploadProgress={uploadProgress}
+            setUploadProgress={setUploadProgress}
+            fileInputRef={fileInputRef}
+            setError={setError}
+            setShowErrorCard={setShowErrorCard}
+          />
+        );
+      case 2:
+        return (
+          <ShopBasicInfo 
+            newShop={newShop}
+            setNewShop={setNewShop}
+            shopTypesAndSubtypes={shopTypesAndSubtypes}
+          />
+        );
+      case 3:
+        return (
+          <ShopSchedule 
+            newShop={newShop}
+            setNewShop={setNewShop}
+            hasContinuousSchedule={hasContinuousSchedule}
+            setHasContinuousSchedule={setHasContinuousSchedule}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -322,279 +346,70 @@ const ShopCreationForm = () => {
           <h1 className={styles.headerTitle}>
             {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
           </h1>
+          
+          {/* UPDATE: Added a back button to return to shop list */}
+          <button 
+            className={styles.backButton}
+            onClick={handleBack}
+            type="button"
+          >
+            <ArrowLeft size={18} />
+            Volver a la lista
+          </button>
+        </div>
+        
+        {/* Step Tracker */}
+        <div className={styles.stepTracker}>
+          {Array.from({ length: totalSteps }).map((_, index) => (
+            <div 
+              key={index}
+              className={`${styles.stepDot} ${currentStep === index + 1 ? styles.active : ''}`}
+            >
+              {index + 1}
+            </div>
+          ))}
         </div>
         
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* SECTION 1: Image Upload */}
-          <div className={styles.imageSection}>  
-            <div 
-              className={styles.imageUploadContainer}
-              onClick={handleImageContainerClick}
-            >
-              <div className={styles.imagePreviewBox}>
-                {imagePreview ? (
-                  <img 
-                    src={imagePreview} 
-                    alt="Vista previa de imagen" 
-                  />
-                ) : (
-                  <div className={styles.imagePlaceholder} >
-                    <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
-                    <span>Imagen de comercio</span>
-                  </div>
-                )}
-                
-                {/* Upload progress indicator */}
-                {uploading && (
-                  <div className={styles.loaderOverlay}>
-                    <Loader size={32} color="white" className={styles.spinningLoader}/>
-                    
-                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
-                      <div style={{ 
-                        width: `${uploadProgress}%`,
-                        height: '100%',
-                        backgroundColor: '#4CAF50',
-                        borderRadius: '4px'
-                      }}></div>
-                    </div>
-                    <span style={{ color: 'white', marginTop: '8px' }}>
-                      {uploadProgress}%
-                    </span>
-                  </div>
-                )}
-                
-                {/* Image upload button */}
-                {showImageUploadButton && !uploading && (
-                  <div 
-                    className={styles.uploadButtonOverlay}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <input
-                      type="file"
-                      id="shop_image"
-                      ref={fileInputRef}
-                      accept="image/jpeg,image/png,image/jpg,image/webp"
-                      style={{ display: 'none' }}
-                      onChange={handleImageSelect}
-                      disabled={uploading}
-                    />
-                    
-                    <label 
-                      htmlFor="shop_image" 
-                      className={styles.imageButton}
-                    >
-                      <Camera size={16} />
-                      {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
-                    </label>
-                    
-                    {imagePreview && (
-                      <button
-                        type="button"
-                        onClick={handleClearImage}
-                        disabled={uploading}
-                      >
-                        <Trash2 size={16} />
-                        Quitar
-                      </button>
-                    )}
-                  </div>
-                )}
-                
-                {/* Edit overlay hint */}
-                {!showImageUploadButton && !uploading && (
-                  <div className={styles.editOverlay} >
-                    <Camera size={18} />
-                    <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* SECTION 2: Basic Shop Information */}
-          <div className={styles.formFields}>
-            <div className={styles.formField}>
-              <input
-                type="text"
-                placeholder='Nombre del comercio:'
-                value={newShop.name_shop}
-                onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
-                className={styles.input}
-                required
-              />
-            </div>
+          {/* UPDATE: Render step content */}
+          {renderStepContent()}
             
-            <div className={styles.formField}>
-              <select
-                value={newShop.type_shop}
-                onChange={(e) => {
-                  setNewShop({
-                    ...newShop, 
-                    type_shop: e.target.value,
-                    subtype_shop: ''
-                  })
-                }}
-                className={styles.input} 
-                required
+          {/* UPDATE: Navigation buttons */}
+          <div className={styles.navigationButtons}>
+            {currentStep > 1 && (
+              <button 
+                type="button" 
+                className={styles.navButton}
+                onClick={goToPreviousStep}
               >
-                <option value="" disabled>Categoría</option>
-                {shopTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-
-            {newShop.type_shop && (
-              <div className={styles.formField}>
-                <select
-                  value={newShop.subtype_shop}
-                  onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
-                  className={styles.input} 
-                  required
-                >
-                  <option value="" disabled>Subcategoría</option>
-                  {subtypes.map(subtype => (
-                    <option key={subtype} value={subtype}>{subtype}</option>
-                  ))}
-                </select>
-              </div>
+                <ChevronLeft size={16} />
+                Anterior
+              </button>
             )}
             
-            <div className={styles.formField}>
-              <input
-                type="text"
-                placeholder='Dirección del comercio:'
-                value={newShop.location_shop}
-                onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
-                className={styles.input}
-                required
-              />
-            </div>
-          </div>
-
-          {/* SECTION 3: Additional Information (Schedule) */}
-          <div className={styles.scheduleContainer}>
-            {/* Toggle for continuous or split schedule */}
-            <div className={styles.scheduleTypeToggle} style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '15px',
-              gap: '8px'
-            }}>
-              <input 
-                type="checkbox"
-                id="continuous-schedule"
-                checked={hasContinuousSchedule}
-                onChange={handleScheduleTypeChange}
-                style={{ marginRight: '8px' }}
-              />
-              <label htmlFor="continuous-schedule" style={{ 
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '0.9rem',
-                color: '#444'
-              }}>
-                <Clock size={16} />
-                Horario continuo (sin periodo de descanso)
-              </label>
-            </div>
-          
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {hasContinuousSchedule ? (
-                // Continuous schedule: only show opening and closing
-                <div className={styles.scheduleSimple} style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  gap: '10px'
-                }}>
-                  <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4>
-                  <div className={styles.scheduleFields}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <label style={{ fontSize: '0.85rem', color: '#555' }}>Abre:</label>
-                      <input
-                        type="time"
-                        value={newShop.morning_open || ''}
-                        onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <label style={{ fontSize: '0.85rem', color: '#555' }}>Cierra:</label>
-                      <input
-                        type="time"
-                        value={newShop.afternoon_close || ''}
-                        onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // Schedule with rest period: show all 4 fields
-                <>
-                  <div>
-                    <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
-                    <div className={styles.scheduleFields}>
-                      <input
-                        type="time"
-                        value={newShop.morning_open || ''}
-                        onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                      <span>a</span>
-                      <input
-                        type="time"
-                        value={newShop.morning_close || ''}
-                        onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
-                    <div className={styles.scheduleFields}>
-                      <input
-                        type="time"
-                        value={newShop.afternoon_open || ''}
-                        onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                      <span>a</span>
-                      <input
-                        type="time"
-                        value={newShop.afternoon_close || ''}
-                        onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                        className={styles.timeInput}
-                        required
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-            
-          <div className={styles.buttonContainer}>
-            <button 
-              type="submit" 
-              className={styles.submitButton}
-              disabled={uploading}
-              style={{ 
-                opacity: uploading ? 0.6 : 1,
-                cursor: uploading ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
-              {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
-            </button>
+            {currentStep < totalSteps ? (
+              <button 
+                type="button" 
+                className={styles.navButton}
+                onClick={handleNextClick}
+              >
+                Siguiente
+                <ChevronRight size={16} />
+              </button>
+            ) : (
+              <button 
+                type="submit" 
+                className={styles.submitButton}
+                disabled={uploading}
+                style={{ 
+                  opacity: uploading ? 0.6 : 1,
+                  cursor: uploading ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
+                {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
+              </button>
+            )}
           </div>
         </form>
       </div>
