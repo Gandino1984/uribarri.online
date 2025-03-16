@@ -49,6 +49,110 @@ const ShopProductsListFunctions = () => {
     return diffDays >= 0 && diffDays <= 7;
   };
 
+  // UPDATE: Format date strings
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '-';
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '-';
+    }
+  };
+
+  // UPDATE: Format boolean values for second hand
+  const formatSecondHand = (value) => {
+    return value ? 'Sí' : 'No';
+  };
+
+  // UPDATE: Handle product row click to show product card
+  const handleProductRowClick = (product, setSelectedProductDetails, setShowProductCard) => {
+    setSelectedProductDetails(product);
+    setShowProductCard(true);
+  };
+
+  // UPDATE: Toggle filters visibility
+  const toggleFilters = (setShowFilters) => {
+    setShowFilters(prevState => !prevState);
+  };
+
+  // UPDATE: Toggle actions menu for a product
+  const toggleActionsMenu = (productId, activeActionsMenu, setActiveActionsMenu, e) => {
+    e.stopPropagation();
+    if (activeActionsMenu === productId) {
+      setActiveActionsMenu(null);
+    } else {
+      setActiveActionsMenu(productId);
+    }
+  };
+
+  // UPDATE: Handle search input change
+  const handleSearchChange = (e, setSearchTerm) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // UPDATE: Reset all filters and search term
+  const handleResetAllFilters = (handleResetFilters, setSearchTerm) => {
+    handleResetFilters();
+    setSearchTerm('');
+  };
+
+  // UPDATE: Select product for image upload
+  const handleSelectForImageUpload = (id_product, setSelectedProductForImageUpload, setSelectedProducts, setActiveActionsMenu, e) => {
+    e.stopPropagation();
+    setSelectedProductForImageUpload(id_product);
+    
+    setSelectedProducts(prev => {
+      const newSelected = new Set(prev);
+      if (!newSelected.has(id_product)) {
+        newSelected.add(id_product);
+      }
+      return newSelected;
+    });
+    
+    // Close the action menu after selection
+    setActiveActionsMenu(null);
+  };
+
+  // UPDATE: Handle bulk update of products
+  const handleBulkUpdate = (selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard) => {
+    // Check if a product is selected
+    if (selectedProducts.size === 1) {
+      // Get the selected product ID (first item in the Set)
+      const selectedProductId = Array.from(selectedProducts)[0];
+      
+      // Find the product in the products array
+      const productToUpdate = products.find(product => product.id_product === selectedProductId);
+      
+      // If product found, call the update handler
+      if (productToUpdate) {
+        handleUpdateProduct(selectedProductId);
+      } else {
+        console.error('Selected product not found in products array');
+        setError(prevError => ({
+          ...prevError,
+          productError: "No se encontró el producto seleccionado"
+        }));
+      }
+    } else if (selectedProducts.size > 1) {
+      // Multiple products selected
+      setError(prevError => ({
+        ...prevError,
+        productError: "Solo puedes actualizar un producto a la vez. Por favor selecciona solo un producto."
+      }));
+      setShowErrorCard(true);
+    } else {
+      // No products selected
+      setError(prevError => ({
+        ...prevError,
+        productError: "No hay productos seleccionados para actualizar"
+      }));
+      setShowErrorCard(true);
+    }
+  };
+
   const filterProducts = (products, filters) => {
     if (!products || !filters) return products;
     return products.filter((product) => {
@@ -88,7 +192,6 @@ const ShopProductsListFunctions = () => {
     });
   };
 
-  // UPDATE: Improved fetchProductsByShop function with validation for empty products
   const fetchProductsByShop = async () => {
     try {
       if (!selectedShop?.id_shop) {
@@ -238,114 +341,112 @@ const ShopProductsListFunctions = () => {
     });
   };
 
-
-// UPDATE: Improved deleteProduct function that handles race conditions
-const deleteProduct = async (id_product) => {
-  try {
-    console.log(`Starting deletion of product with ID: ${id_product}`);
-    
-    // Input validation
-    if (!id_product) {
-      console.error('Invalid product ID for deletion');
-      return { success: false, message: "ID de producto inválido" };
-    }
-    
-    // Find the product in the current state
-    const product = products.find(p => p.id_product === id_product);
-    if (!product) {
-      console.error(`Product with ID ${id_product} not found in current products list`);
-      return { success: false, message: "Producto no encontrado" };
-    }
-    
-    // If the product has an image, handle image deletion
-    if (product.image_product) {
-      try {
-        // Parse image path information
-        const imagePath = product.image_product;
-        const folderPath = imagePath.split('/').slice(0, -1).join('/');
-        
-        console.log(`Deleting image for product ${id_product}:`, { imagePath, folderPath });
-        
-        // First delete the image via the dedicated endpoint
-        const imageDeleteResponse = await axiosInstance.delete(`/product/delete-image/${id_product}`, {
-          data: { imagePath, folderPath }
-        });
-        
-        console.log('Image deletion response:', imageDeleteResponse.data);
-      } catch (imageError) {
-        // Log error but continue with product deletion
-        console.error('Error deleting product image (continuing with deletion):', imageError);
-      }
-    }
-
-    // Now delete the actual product from the database with error handling for race conditions
+  const deleteProduct = async (id_product) => {
     try {
-      console.log(`Sending API request to delete product with ID: ${id_product}`);
-      const response = await axiosInstance.delete(`/product/remove-by-id/${id_product}`);
+      console.log(`Starting deletion of product with ID: ${id_product}`);
       
-      // Verify deletion success
-      if (response.data && response.data.success) {
-        console.log('Product deletion API success response:', response.data);
-        
-        // Verify the ID returned matches what we sent
-        if (response.data.data && response.data.data.toString() === id_product.toString()) {
-          console.log('Deletion verified by matching IDs');
+      // Input validation
+      if (!id_product) {
+        console.error('Invalid product ID for deletion');
+        return { success: false, message: "ID de producto inválido" };
+      }
+      
+      // Find the product in the current state
+      const product = products.find(p => p.id_product === id_product);
+      if (!product) {
+        console.error(`Product with ID ${id_product} not found in current products list`);
+        return { success: false, message: "Producto no encontrado" };
+      }
+      
+      // If the product has an image, handle image deletion
+      if (product.image_product) {
+        try {
+          // Parse image path information
+          const imagePath = product.image_product;
+          const folderPath = imagePath.split('/').slice(0, -1).join('/');
           
-          // Apply proper success message for deletion
-          setSuccess(prev => ({
-            ...prev,
-            deleteSuccess: "Producto eliminado exitosamente",
-            // Clear other product-related messages to avoid confusion
-            productSuccess: '',
-            createSuccess: '',
-            updateSuccess: ''
-          }));
-          setShowSuccessCard(true);
+          console.log(`Deleting image for product ${id_product}:`, { imagePath, folderPath });
           
-          return { 
-            success: true, 
-            message: response.data.success || "Producto eliminado exitosamente" 
-          };
-        } else {
-          console.warn('Product deletion API returned success but with unexpected data:', response.data);
-          return { success: true, message: "Producto eliminado" };
+          // First delete the image via the dedicated endpoint
+          const imageDeleteResponse = await axiosInstance.delete(`/product/delete-image/${id_product}`, {
+            data: { imagePath, folderPath }
+          });
+          
+          console.log('Image deletion response:', imageDeleteResponse.data);
+        } catch (imageError) {
+          // Log error but continue with product deletion
+          console.error('Error deleting product image (continuing with deletion):', imageError);
         }
-      } else {
-        // This could be a race condition - check if product was already deleted
-        if (response.data && response.data.error === "Producto no encontrado") {
-          console.warn('Product not found in database. It may have been already deleted.');
-          // We'll count this as a successful deletion since the product is gone
+      }
+
+      // Now delete the actual product from the database with error handling for race conditions
+      try {
+        console.log(`Sending API request to delete product with ID: ${id_product}`);
+        const response = await axiosInstance.delete(`/product/remove-by-id/${id_product}`);
+        
+        // Verify deletion success
+        if (response.data && response.data.success) {
+          console.log('Product deletion API success response:', response.data);
+          
+          // Verify the ID returned matches what we sent
+          if (response.data.data && response.data.data.toString() === id_product.toString()) {
+            console.log('Deletion verified by matching IDs');
+            
+            // Apply proper success message for deletion
+            setSuccess(prev => ({
+              ...prev,
+              deleteSuccess: "Producto eliminado exitosamente",
+              // Clear other product-related messages to avoid confusion
+              productSuccess: '',
+              createSuccess: '',
+              updateSuccess: ''
+            }));
+            setShowSuccessCard(true);
+            
+            return { 
+              success: true, 
+              message: response.data.success || "Producto eliminado exitosamente" 
+            };
+          } else {
+            console.warn('Product deletion API returned success but with unexpected data:', response.data);
+            return { success: true, message: "Producto eliminado" };
+          }
+        } else {
+          // This could be a race condition - check if product was already deleted
+          if (response.data && response.data.error === "Producto no encontrado") {
+            console.warn('Product not found in database. It may have been already deleted.');
+            // We'll count this as a successful deletion since the product is gone
+            return { success: true, message: "Producto eliminado (ya no existía)" };
+          }
+          
+          console.error('API reported error during product deletion:', response.data);
+          setError(prevError => ({
+            ...prevError,
+            productError: response.data.error || "Error al eliminar el producto"
+          }));
+          setShowErrorCard(true);
+          return { success: false, message: response.data.error || "Error al eliminar el producto" };
+        }
+      } catch (apiError) {
+        // Check if the error is a 404, which could mean the product was already deleted
+        if (apiError.response && apiError.response.status === 404) {
+          console.warn('Got 404 response - product may have been already deleted');
+          // Even though we got an error, the product is gone, so technically this is a success
           return { success: true, message: "Producto eliminado (ya no existía)" };
         }
         
-        console.error('API reported error during product deletion:', response.data);
-        setError(prevError => ({
-          ...prevError,
-          productError: response.data.error || "Error al eliminar el producto"
-        }));
-        setShowErrorCard(true);
-        return { success: false, message: response.data.error || "Error al eliminar el producto" };
+        throw apiError; // Re-throw for other errors
       }
-    } catch (apiError) {
-      // Check if the error is a 404, which could mean the product was already deleted
-      if (apiError.response && apiError.response.status === 404) {
-        console.warn('Got 404 response - product may have been already deleted');
-        // Even though we got an error, the product is gone, so technically this is a success
-        return { success: true, message: "Producto eliminado (ya no existía)" };
-      }
-      
-      throw apiError; // Re-throw for other errors
+    } catch (err) {
+      console.error('Exception in deleteProduct function:', err);
+      setError(prevError => ({
+        ...prevError,
+        productError: "Error al eliminar el producto: " + (err.message || "Error desconocido")
+      }));
+      setShowErrorCard(true);
+      return { success: false, message: "Error al eliminar el producto" };
     }
-  } catch (err) {
-    console.error('Exception in deleteProduct function:', err);
-    setError(prevError => ({
-      ...prevError,
-      productError: "Error al eliminar el producto: " + (err.message || "Error desconocido")
-    }));
-    setShowErrorCard(true);
-    return { success: false, message: "Error al eliminar el producto" };
-  }
-};
+  };
 
   const handleDeleteProduct = async (id_product) => {
     console.log('Attempting to delete product:', id_product);
@@ -457,7 +558,17 @@ const deleteProduct = async (id_product) => {
     handleAddProduct,
     handleUpdateProduct,
     getImageUrl,
-    handleProductImageDoubleClick
+    handleProductImageDoubleClick,
+    // UPDATE: Add the new functions to the return object
+    formatDate,
+    formatSecondHand,
+    handleProductRowClick,
+    toggleFilters,
+    toggleActionsMenu,
+    handleSearchChange,
+    handleResetAllFilters,
+    handleSelectForImageUpload,
+    handleBulkUpdate
   };
 };
 
