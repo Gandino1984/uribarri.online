@@ -25,7 +25,7 @@
     gap: .5rem;
     border: 1px dashed   var(--superlight-gray);
     /* margin-bottom: .5rem; */
-    color: black;
+    color: var(--saturated-blue);
     overflow: hidden;
 }
 
