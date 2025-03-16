@@ -59,7 +59,7 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
             flexDirection: 'column',
             gap: '10px'
           }}>
-            <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4>
+            {/* <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4> */}
             <div className={styles.scheduleFields}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <label style={{ fontSize: '0.85rem', color: '#555' }}>Abre:</label>

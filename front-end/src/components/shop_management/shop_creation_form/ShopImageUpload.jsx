@@ -73,7 +73,7 @@ const ShopImageUpload = ({
     <section className={styles.imageSection}>  
       <h2 className={styles.sectionTitle}>Imagen del comercio</h2>
       <p className={styles.sectionDescription}>
-        Sube una imagen representativa para tu comercio
+        Sube una portada para tu tarjeta de comercio
       </p>
       
       <div 
@@ -89,7 +89,7 @@ const ShopImageUpload = ({
           ) : (
             <div className={styles.imagePlaceholder} >
               <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
-              <span>Imagen de comercio</span>
+              {/* <span>Imagen de comercio</span> */}
             </div>
           )}
           
@@ -152,7 +152,7 @@ const ShopImageUpload = ({
           {/* Edit overlay hint */}
           {!showImageUploadButton && !uploading && (
             <div className={styles.editOverlay} >
-              <Camera size={18} />
+              {/* <Camera size={18} /> */}
               <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
             </div>
           )}

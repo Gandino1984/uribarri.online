@@ -275,31 +275,31 @@ const ShopCreationForm = () => {
   };
 
   // UPDATE: Function to handle back button
-  const handleBack = () => {
-    // Clear form state
-    setNewShop({
-      name_shop: '',
-      type_shop: '',
-      subtype_shop: '',
-      location_shop: '',
-      id_user: currentUser?.id_user || '',
-      calification_shop: 0, 
-      image_shop: '',
-      morning_open: '00:00',
-      morning_close: '00:00',
-      afternoon_open: '00:00',
-      afternoon_close: '00:00',
-      has_delivery: false,
-    });
+  // const handleBack = () => {
+  //   // Clear form state
+  //   setNewShop({
+  //     name_shop: '',
+  //     type_shop: '',
+  //     subtype_shop: '',
+  //     location_shop: '',
+  //     id_user: currentUser?.id_user || '',
+  //     calification_shop: 0, 
+  //     image_shop: '',
+  //     morning_open: '00:00',
+  //     morning_close: '00:00',
+  //     afternoon_open: '00:00',
+  //     afternoon_close: '00:00',
+  //     has_delivery: false,
+  //   });
     
-    // Clear selected shop
-    setSelectedShop(null);
+  //   // Clear selected shop
+  //   setSelectedShop(null);
     
-    // Hide form to return to list
-    setShowShopCreationForm(false);
-  };
+  //   // Hide form to return to list
+  //   setShowShopCreationForm(false);
+  // };
 
-  // UPDATE: Render the appropriate step component based on currentStep
+  //Render the appropriate step component based on currentStep
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -343,32 +343,33 @@ const ShopCreationForm = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>   
-          <h1 className={styles.headerTitle}>
-            {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-          </h1>
-          
-          {/* UPDATE: Added a back button to return to shop list */}
-          <button 
-            className={styles.backButton}
-            onClick={handleBack}
-            type="button"
-          >
-            <ArrowLeft size={18} />
-            Volver a la lista
-          </button>
+            <h1 className={styles.headerTitle}>
+              {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
+            </h1>
+            
+            {/* <button 
+              className={styles.backButton}
+              onClick={handleBack}
+              type="button"
+            >
+              <ArrowLeft size={18} />
+              Volver a la lista
+            </button> */}
+
+            {/* Step Tracker */}
+            <div className={styles.stepTracker}>
+              {Array.from({ length: totalSteps }).map((_, index) => (
+                <div 
+                  key={index}
+                  className={`${styles.stepDot} ${currentStep === index + 1 ? styles.active : ''}`}
+                >
+                  {index + 1}
+                </div>
+              ))}
+            </div>
         </div>
         
-        {/* Step Tracker */}
-        <div className={styles.stepTracker}>
-          {Array.from({ length: totalSteps }).map((_, index) => (
-            <div 
-              key={index}
-              className={`${styles.stepDot} ${currentStep === index + 1 ? styles.active : ''}`}
-            >
-              {index + 1}
-            </div>
-          ))}
-        </div>
+        
         
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* UPDATE: Render step content */}
