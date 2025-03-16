@@ -24,7 +24,7 @@ const ShopLimitIndicator = ({ shopCount, shopLimit, isUserSponsor }) => {
     <div className={styles.shopLimitInfo}>
       <div className={styles.limitHeader}>
         <AlertCircle className={statusColorClass} size={16} />
-        <span>Límite de creación de comercios: {shopCount} de {shopLimit}</span>
+        <span>Límite de creación de comercios: {shopCount} / {shopLimit}</span>
       </div>
 
       {!isUserSponsor && shopCount >= shopLimit * 0.7 && (
