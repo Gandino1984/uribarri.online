@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import AppContext from '../../../app_context/AppContext.js';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormFunctions } from './ShopCreationFormFunctions.jsx';
-import { Box, ArrowLeft, Camera, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useSpring, animated } from '@react-spring/web';
+import { Box } from 'lucide-react';
+// import { useSpring, animated } from '@react-spring/web';
 
-// UPDATE: Import new step components
 import ShopImageUpload from './ShopImageUpload.jsx';
 import ShopBasicInfo from './ShopBasicInfo.jsx';
 import ShopSchedule from './ShopSchedule.jsx';
+
+import StepTracker from '../navigation_components/StepTracker.jsx';
+import NavigationButtons from '../navigation_components/NavigationButtons.jsx';
 
 const ShopCreationForm = () => {
   const { 
@@ -32,16 +34,14 @@ const ShopCreationForm = () => {
     handleImageUpload
   } = ShopCreationFormFunctions();
 
-  // UPDATE: Enhanced image handling states
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   
-  // UPDATE: Added state for continuous schedule
   const [hasContinuousSchedule, setHasContinuousSchedule] = useState(false);
 
-  // UPDATE: Added state for step tracking
+  // state for step tracking
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
 
@@ -64,7 +64,7 @@ const ShopCreationForm = () => {
 
   useEffect(() => {
     if (selectedShop && currentUser?.id_user) {
-      // UPDATE: Detect if shop has continuous schedule
+      // Detect if shop has continuous schedule
       const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
       setHasContinuousSchedule(shopHasContinuousSchedule);
       
@@ -322,60 +322,23 @@ const ShopCreationForm = () => {
               {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
             </h1>
 
-            {/* Step Tracker */}
-            <div className={styles.stepTracker}>
-              {Array.from({ length: totalSteps }).map((_, index) => (
-                <div 
-                  key={index}
-                  className={`${styles.stepDot} ${currentStep === index + 1 ? styles.active : ''}`}
-                >
-                  {index + 1}
-                </div>
-              ))}
-            </div>
+            <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
         </div>   
         
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Render step content */}
           {renderStepContent()}
             
-          {/* Navigation buttons */}
-          <div className={styles.navigationButtons}>
-            {currentStep > 1 && (
-              <button 
-                type="button" 
-                className={styles.navButton}
-                onClick={goToPreviousStep}
-              >
-                <ChevronLeft size={16} />
-                Anterior
-              </button>
-            )}
-            
-            {currentStep < totalSteps ? (
-              <button 
-                type="button" 
-                className={styles.navButton}
-                onClick={handleNextClick}
-              >
-                Siguiente
-                <ChevronRight size={16} />
-              </button>
-            ) : (
-              <button 
-                type="submit" 
-                className={styles.submitButton}
-                disabled={uploading}
-                style={{ 
-                  opacity: uploading ? 0.6 : 1,
-                  cursor: uploading ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {uploading ? 'Procesando...' : (selectedShop ? 'Actualizar' : 'Crear')}
-                {!uploading && <Box size={17} style={{ marginLeft: '5px' }} />}
-              </button>
-            )}
-          </div>
+          <NavigationButtons 
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            onNext={handleNextClick}
+            onPrevious={goToPreviousStep}
+            isSubmitting={uploading}
+            submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
+            processingLabel="Procesando..."
+            SubmitIcon={Box}
+          />
         </form>
       </div>
     </div>

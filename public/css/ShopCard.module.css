@@ -167,9 +167,10 @@
 /* UPDATE: Estilos para el estado minimizado */
 .minimized {
   max-width: 200px;
+  /* height: auto; */
   cursor: pointer;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
 }
 
 .minimizedCard {
@@ -220,7 +221,7 @@
   flex-direction: row;
   width: 100%;
   position: relative;
-  height: 300px; /* Fixed height for desktop view to maintain consistency */
+  /* height: 300px; */
 }
 
 /* UPDATE: Added map container styles that were previously in ShopMap.module.css */
