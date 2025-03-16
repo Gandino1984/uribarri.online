@@ -1,5 +1,6 @@
 /* Main container styles */
 .container {
+  overflow-x: hidden;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
@@ -18,13 +19,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  /* padding-bottom: 10px; */
+  margin-bottom: 12px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #eee;
 }
 
 .headerTitle {
   color: #333;
+  line-height: 1.85rem;
   margin: 0;
 }
 
@@ -72,7 +74,7 @@
 .stepDot.active {
   background-color: var(--saturated-orange);
   color: white;
-  transform: scale(1.1);
+  transform: scale(1.4);
 }
 
 /* Remove the progress bar as requested */
@@ -100,8 +102,8 @@
 .formFields {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
 .formField {
@@ -305,8 +307,8 @@
 .navigationButtons {
   display: flex;
   justify-content: space-between;
-  margin-top: 25px;
-  padding-top: 10px;
+  margin-top: 1rem;
+  padding-top: 8px;
   /* border-top: 1px solid #eee; */
 }
 

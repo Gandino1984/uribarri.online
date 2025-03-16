@@ -227,7 +227,7 @@ export const ShopCreationFormFunctions = () => {
         
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          imageSuccess: "Imagen subida correctamente"
+          imageSuccess: "Imagen actualizada"
         }));
         setShowSuccessCard(true);
         

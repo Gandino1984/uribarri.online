@@ -346,15 +346,6 @@ const ShopCreationForm = () => {
             <h1 className={styles.headerTitle}>
               {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
             </h1>
-            
-            {/* <button 
-              className={styles.backButton}
-              onClick={handleBack}
-              type="button"
-            >
-              <ArrowLeft size={18} />
-              Volver a la lista
-            </button> */}
 
             {/* Step Tracker */}
             <div className={styles.stepTracker}>
@@ -367,9 +358,7 @@ const ShopCreationForm = () => {
                 </div>
               ))}
             </div>
-        </div>
-        
-        
+        </div>   
         
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* UPDATE: Render step content */}
