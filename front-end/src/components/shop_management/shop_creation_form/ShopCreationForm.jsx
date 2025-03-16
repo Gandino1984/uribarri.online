@@ -274,31 +274,6 @@ const ShopCreationForm = () => {
     }
   };
 
-  // UPDATE: Function to handle back button
-  // const handleBack = () => {
-  //   // Clear form state
-  //   setNewShop({
-  //     name_shop: '',
-  //     type_shop: '',
-  //     subtype_shop: '',
-  //     location_shop: '',
-  //     id_user: currentUser?.id_user || '',
-  //     calification_shop: 0, 
-  //     image_shop: '',
-  //     morning_open: '00:00',
-  //     morning_close: '00:00',
-  //     afternoon_open: '00:00',
-  //     afternoon_close: '00:00',
-  //     has_delivery: false,
-  //   });
-    
-  //   // Clear selected shop
-  //   setSelectedShop(null);
-    
-  //   // Hide form to return to list
-  //   setShowShopCreationForm(false);
-  // };
-
   //Render the appropriate step component based on currentStep
   const renderStepContent = () => {
     switch (currentStep) {
@@ -361,10 +336,10 @@ const ShopCreationForm = () => {
         </div>   
         
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* UPDATE: Render step content */}
+          {/* Render step content */}
           {renderStepContent()}
             
-          {/* UPDATE: Navigation buttons */}
+          {/* Navigation buttons */}
           <div className={styles.navigationButtons}>
             {currentStep > 1 && (
               <button 
