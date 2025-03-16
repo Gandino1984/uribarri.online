@@ -17,7 +17,7 @@ const ActionButtons = ({
     <div className={styles.buttonGroup}>
       <button
         onClick={handleAddProduct}
-        className={styles.actionButton}
+        className={`${styles.actionButton} ${styles.addButton}`}
         title="Añadir producto"
       >
         <PackagePlus size={17} />
@@ -51,7 +51,7 @@ const ActionButtons = ({
         title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
       >
         <Filter size={17} />
-        <span className={styles.buttonText}>Más filtros</span>
+        <span className={styles.buttonText}>Filtros</span>
         {activeFiltersCount > 0 && (
           <span className={styles.filterBadge}>{activeFiltersCount}</span>
         )}
