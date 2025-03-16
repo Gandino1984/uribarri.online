@@ -2,13 +2,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: stretch;
-  height: 100vh; 
+  justify-content: flex-start; /* UPDATE: Changed from stretch to flex-start */
+  min-height: 100vh; /* UPDATE: Changed from height to min-height */
   width: 100%;
   /* min-width: 350px; */
   background-color: var(--superlight-gray);
   margin: 0;
   padding: 0;
+  overflow-y: auto; /* UPDATE: Explicitly allow vertical scrolling */
 }
 
 @media (max-width: 640px) {

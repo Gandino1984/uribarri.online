@@ -1,13 +1,16 @@
 .container {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* UPDATE: Changed from center to allow content to flow naturally */
     justify-content: center;
     flex-direction: column;
     width: 100%;
+    min-height: auto; /* UPDATE: Changed from 100vh to auto to prevent viewport height restriction */
     gap: 1rem;
-    padding: 1rem;
-    max-width: 72rem; /* Set consistent max-width for the entire container */
+    /* padding: calc(1rem + var(--topbar-height)); */
+    /* max-width: 72rem; */
     margin: 0 auto; /* Center container horizontally */
+    padding-bottom: 2rem; /* UPDATE: Added bottom padding for better spacing */
+    overflow-y: visible; /* UPDATE: Ensure vertical overflow is visible */
 }
 
 .shopInfo {
@@ -189,20 +192,22 @@
 .tableContainer {
     width: 100%;
     max-width: 100%; /* Match container width */
-    overflow-x: auto;
+    overflow: auto;
+    margin-bottom: 2rem; /* UPDATE: Added bottom margin for better spacing */
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
-    /* border-radius: 0.5rem; */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    table-layout: auto; /* Cambiado de 'fixed' a 'auto' para permitir que las columnas se ajusten al contenido */
+    table-layout: auto; 
 }
 
 .tableHeader {
     background-color: #e1e6eb;
+    position: sticky; /* UPDATE: Make headers sticky */
+    top: 0; /* UPDATE: Stick to the top */
+    z-index: 10; /* UPDATE: Ensure headers stay above content when scrolling */
 }
 
 .tableHeaderCell {

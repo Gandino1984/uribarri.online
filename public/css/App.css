@@ -4,10 +4,12 @@
   --superlight-orange: #fff4e7;
   --superlight-gray: #e9e9e9;
   --light-gray: #666;
+  --lighter-gray: #999; /* New lighter gray for placeholder text */
   --medium-gray: #d1d5db;
   --dark-gray: #4b5563;
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
   --topbar-height: 5rem;
+  --saturated-blue: #088DD0; /* Added saturated blue color */
   
   /* Responsive spacing units */
   --spacing-xs: 0.25rem;
@@ -47,9 +49,9 @@
   width: 100%;
 }
 
-
+/* Text input with blue for entered text */
 input[type="text"] {
-  color: var(--dark-orange);
+  color: var(--saturated-blue); /* Blue color for entered text */
   border: 2px solid var(--medium-gray);
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   cursor: pointer;
@@ -61,19 +63,24 @@ input[type="text"] {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Styling for input placeholders */
+input[type="text"]::placeholder {
+  color: var(--light-gray);
+  opacity: 1; /* Firefox needs this */
+}
+
 input[type="text"]:focus {
-  color: var(--saturated-orange);
+  color: var(--saturated-blue); /* Keep blue color when focused */
   border: 2px solid var(--saturated-orange);
   outline: none;
   box-shadow: var(--focus-shadow);
 }
 
 input[type="text"]:hover { 
-  color: var(--saturated-orange);
   border: 2px solid var(--saturated-orange);
 }
 
-/* UPDATE: Mejoras en los inputs numéricos */
+/* Number inputs with blue for entered text */
 input[type="number"] {
   width: auto;
   min-width: 3rem;
@@ -82,18 +89,24 @@ input[type="number"] {
   padding: var(--spacing-sm);
   font-size: 0.9rem;
   min-height: 2.5rem;
-  font-weight: 500;/* UPDATE: Mejoras en responsive para el contenedor principal */
+  font-weight: 500;
+  color: var(--saturated-blue); /* Blue color for entered text */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   -moz-appearance: textfield;
 }
 
+/* Styling for number input placeholders */
+input[type="number"]::placeholder {
+  color: var(--light-gray);
+  opacity: 1; /* Firefox needs this */
+}
+
 input[type="number"]:hover {
-  color: var(--saturated-orange);
   border: 2px solid var(--saturated-orange);
 }
 
 input[type="number"]:focus {
-  color: var(--saturated-orange);
+  color: var(--saturated-blue); /* Keep blue color when focused */
   border: 2px solid var(--saturated-orange);
   outline: none;
   box-shadow: var(--focus-shadow);
@@ -109,6 +122,7 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Textarea with blue for entered text */
 textarea {
   min-height: 2.5rem;
   /* border-radius: 5px; */
@@ -117,22 +131,29 @@ textarea {
   padding: var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
+  color: var(--saturated-blue); /* Blue color for entered text */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   resize: vertical;
 }
 
+/* Styling for textarea placeholders */
+textarea::placeholder {
+  color: var(--light-gray);
+  opacity: 1; /* Firefox needs this */
+}
+
 textarea:focus {
-  color: var(--saturated-orange);
+  color: var(--saturated-blue); /* Keep blue color when focused */
   border: 2px solid var(--saturated-orange);
   outline: none;
   box-shadow: var(--focus-shadow);
 }
 
 textarea:hover {
-  color: var(--saturated-orange);
   border: 2px solid var(--saturated-orange);
 }
 
+/* Button styling with new active state */
 button {
   display: flex;
   align-items: center;
@@ -160,17 +181,26 @@ button:hover {
   /* transform: scale(1.05); */
 }
 
+/* Added active state for buttons - blue when pressed */
+button:active {
+  background-color: var(--saturated-blue);
+  color: white;
+  transform: translateY(1px); /* Subtle pressed effect */
+  transition: all 0.05s ease; /* Faster transition for tactile feedback */
+}
+
+/* Fixed select element styling with lighter gray for placeholder */
 select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
   width: 100%;
   max-height: 2rem;
   min-height: 2.5rem;
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--dark-orange);
+  color: var(--lighter-gray) !important; /* Lighter gray for placeholder */
   background-color: white;
   border: 2px solid var(--medium-gray);
   /* border-radius: 5px; */
@@ -180,39 +210,83 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
   background-size: 1em;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover state - color changes to orange */
+select:hover {
+  color: var(--dark-orange) !important;
+  border-color: var(--saturated-orange);
+}
+
+/* Clear any default selected styling */
+select:focus:not(.has-value) {
+  color: var(--lighter-gray) !important;
+  border-color: var(--saturated-orange);
+  box-shadow: var(--focus-shadow);
+  outline: none;
+}
+
+/* Selected state with blue color */
+select.has-value {
+  color: var(--saturated-blue) !important;
+}
+
+/* Ensure hovering a selected value keeps it blue */
+select.has-value:hover {
+  color: var(--saturated-blue) !important;
+  border-color: var(--saturated-orange);
+}
+
+/* Option styling */
+select option {
+  font-size: 0.9rem;
+}
+
+/* First option (placeholder) stays light gray */
+select option:first-child {
+  color: var(--lighter-gray);
+}
+
+/* Real options are blue */
+select option:not(:first-child) {
+  color: var(--saturated-blue);
 }
 
 select:invalid {
   color: lightgray;
 }
 
-select:hover {
-  border-color: var(--saturated-orange);
-}
-
-select:focus {
-  border-color: var(--saturated-orange);
-  box-shadow: var(--focus-shadow);
-  outline: none;
-}
-
 select:disabled {
-  color: lightgray;
+  color: lightgray !important;
   opacity: 0.7;
   cursor: not-allowed;
 }
 
 select.inputError {
   border-color: red;
-  color: red;
+  color: red !important;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 
 select.inputSuccess {
   border-color: green;
-  color: green;
+  color: green !important;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Blue styling for checkboxes */
+input[type="checkbox"] {
+  accent-color: var(--saturated-blue); /* Make checkboxes blue when checked */
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+/* Apply similar styling to radio buttons */
+input[type="radio"] {
+  accent-color: var(--saturated-blue);
+  cursor: pointer;
 }
 
 .row {

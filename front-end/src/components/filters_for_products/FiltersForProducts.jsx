@@ -12,7 +12,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
     productTypesAndSubtypes,
   } = useContext(AppContext);
 
-  // UPDATE: Added state to track active filter count for UI
+  // State to track active filter count for UI
   const [activeFilterCount, setActiveFilterCount] = useState(0);
 
   const {
@@ -26,12 +26,12 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
     getActiveFiltersCount
   } = useFiltersForProducts();
 
-  // UPDATE: Effect to update active filter count when dependencies change
+  // Effect to update active filter count when dependencies change
   useEffect(() => {
     setActiveFilterCount(getActiveFiltersCount());
   }, [filters, getActiveFiltersCount]);
 
-  // UPDATE: Custom reset function that uses the passed onResetFilters prop
+  // Custom reset function that uses the passed onResetFilters prop
   const handleCompleteReset = () => {
     // If we have the custom reset function from the parent, use it
     if (typeof onResetFilters === 'function') {
@@ -103,12 +103,12 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </select>
           </div>
 
-          {/* Type Filter */}
+          {/* Type Filter - UPDATE: Added hasValue class */}
           <div className={styles.filterWrapper}>
             <select
               value={filters.tipo || ""}
               onChange={(e) => handleFilterChange('tipo', e.target.value)}
-              className={styles.filterSelect}
+              className={`${styles.filterSelect} ${filters.tipo ? styles.hasValue : ''}`}
             >
               <option value="">Tipo de producto</option>
               {Object.keys(productTypesAndSubtypes).map((type) => (
@@ -119,13 +119,13 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </select>
           </div>
 
-          {/* Subtype Filter */}
+          {/* Subtype Filter - UPDATE: Added hasValue class */}
           {filters.tipo && (
             <div className={styles.filterWrapper}>
               <select
                 value={filters.subtipo || ""}
                 onChange={(e) => handleFilterChange('subtipo', e.target.value)}
-                className={styles.filterSelect}
+                className={`${styles.filterSelect} ${filters.subtipo ? styles.hasValue : ''}`}
               >
                 <option value="">Subtipo</option>
                 {getAvailableSubtypes().map((subtype) => (
@@ -137,12 +137,12 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </div>
           )}
 
-          {/* Rating Filter */}
+          {/* Rating Filter - UPDATE: Added hasValue class */}
           <div className={styles.filterWrapper}>
             <select
               value={filters.calificacion || ""}
               onChange={(e) => handleFilterChange('calificacion', e.target.value)}
-              className={styles.filterSelect}
+              className={`${styles.filterSelect} ${filters.calificacion ? styles.hasValue : ''}`}
             >
               <option value="">Calificación</option>
               {filterOptions.calificacion.options.map((option) => (
@@ -184,7 +184,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </label>
           </div>
 
-          {/* UPDATE: Improved Near Expiration Checkbox with tooltip */}
+          {/* Improved Near Expiration Checkbox with tooltip */}
           <div className={styles.checkboxWrapper}>
             <label 
               className={styles.checkboxLabel} 
@@ -202,9 +202,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
           </div>
         </div>
 
-        {/* UPDATE: Removed the date range container completely */}
-
-        {/* UPDATE: Added active filter count to reset button */}
+        {/* Added active filter count to reset button */}
         <div className={styles.resetButtonWrapper}>
           <button
             onClick={handleCompleteReset}

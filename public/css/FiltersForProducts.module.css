@@ -1,8 +1,8 @@
-/* FiltersForProducts.module.css - Updated for consistent width */
+/* FiltersForProducts.module.css - Updated for orange color scheme */
 
 .filtersContainer {
   width: 100%;
-  max-width: 100%; /* UPDATE: Match parent container width */
+  max-width: 100%; /* Match parent container width */
   margin-bottom: 1rem;
   padding: 0;
   background-color: white;
@@ -12,8 +12,8 @@
   will-change: height, transform, opacity;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  /* Enhanced with subtle gradient for 3D effect */
-  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  /* Changed gradient to use superlight-orange */
+  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
 }
 
 .filterControls {
@@ -55,13 +55,14 @@
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* FIXED: Select styling with correct state colors */
 .filterSelect {
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid #e2e2e2;
   /* border-radius: 0.375rem; */
   font-size: 0.875rem;
-  color: #2563eb;
+  color: var(--lighter-gray); /* Default color as light gray for placeholder */
   background-color: white;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -69,25 +70,39 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* Hover state turns orange - add more specificity */
 .filterSelect:hover {
-  border-color: #2563eb;
+  border-color: var(--saturated-orange);
+  color: var(--dark-orange); /* Text turns orange on hover */
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .filterSelect:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: var(--saturated-orange);
+  box-shadow: 0 0 0 2px rgba(238, 135, 10, 0.1);
 }
 
+/* Make selected values blue - higher specificity */
+.selectFiltersRow .filterSelect.hasValue {
+  color: var(--saturated-blue) !important; /* Force blue color for selected values */
+}
+
+/* Keep the blue when hovering a selected value */
+.selectFiltersRow .filterSelect.hasValue:hover {
+  border-color: var(--saturated-orange);
+  color: var(--saturated-blue) !important; /* Keep blue when hovering selected value */
+}
+
+/* Set the option styles */
 .filterSelect option {
-  color: #2563eb;
+  color: var(--saturated-blue); /* Option items are blue in dropdown */
   background-color: white;
 }
 
 .filterSelect option:first-child {
-  color: #9ca3af;
+  color: var(--lighter-gray); /* Placeholder option is gray */
 }
 
 .checkboxWrapper {
@@ -102,7 +117,7 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  color: #374151;
+  color: var(--dark-gray);
   font-size: 0.8rem;
   width: 100%;
   transition: transform 0.2s ease;
@@ -110,13 +125,15 @@
 
 .checkboxLabel:hover {
   transform: translateX(2px);
+  color: var(--saturated-orange);
 }
 
+/* Changed to blue for checkboxes */
 .checkbox {
   width: 1rem;
   height: 1rem;
   cursor: pointer;
-  accent-color: #2563eb;
+  accent-color: var(--saturated-blue); /* Blue checkboxes */
 }
 
 .resetButtonWrapper {
@@ -132,23 +149,51 @@
   border: 1px solid #e2e2e2;
   /* border-radius: 0.375rem; */
   background-color: white;
-  color: #374151;
+  color: var(--dark-gray);
   cursor: pointer;
   font-size: 0.875rem;
   transition: all 0.2s ease-in-out;
   text-align: center;
   width: 100%;
   max-width: 200px;
+  position: relative; /* Added for positioning the filter count */
   /* Add subtle shadow for depth */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .resetButton:hover {
-  background-color: #2563eb;
-  border-color: #2563eb;
+  background-color: var(--saturated-orange);
+  border-color: var(--saturated-orange);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Active (pressed) state for reset button */
+.resetButton:active {
+  background-color: var(--saturated-blue);
+  border-color: var(--saturated-blue);
+  color: white;
+  transform: translateY(0);
+}
+
+.filterCount {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  background-color: var(--saturated-orange);
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .dateRangeContainer {
@@ -171,7 +216,7 @@
   gap: 0.5rem;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--dark-gray);
 }
 
 .dateInputs {
@@ -192,12 +237,12 @@
 }
 
 .dateInput:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: var(--saturated-orange);
+  box-shadow: 0 0 0 2px rgba(238, 135, 10, 0.1);
 }
 
 .dateInput:hover {
-  border-color: #d1d5db;
+  border-color: var(--medium-gray);
 }
 
 /* Responsive improvements */
