@@ -24,7 +24,10 @@ const ShopCreationForm = () => {
     setShowShopCreationForm,
     setSelectedShop,
     uploading,
-    setUploading
+    setUploading,
+    // UPDATE: Add success notification
+    setSuccess,
+    setShowSuccessCard
   } = useContext(AppContext);
 
   const {
@@ -44,6 +47,9 @@ const ShopCreationForm = () => {
   // state for step tracking
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
+  
+  // UPDATE: Add debug flag
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
   // Modified useEffect to properly handle user ID
   useEffect(() => {
@@ -102,18 +108,29 @@ const ShopCreationForm = () => {
           console.error('Error formatting image URL:', err);
         }
       }
+      
+      // UPDATE: Log the schedule data to ensure it's loaded correctly
+      console.log('Shop schedule data loaded:', {
+        morning_open: selectedShop.morning_open,
+        morning_close: selectedShop.morning_close,
+        afternoon_open: selectedShop.afternoon_open,
+        afternoon_close: selectedShop.afternoon_close,
+        hasContinuousSchedule: shopHasContinuousSchedule
+      });
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
   // UPDATE: Navigation functions
   const goToNextStep = () => {
     if (currentStep < totalSteps) {
+      console.log(`Moving from step ${currentStep} to step ${currentStep + 1}`);
       setCurrentStep(currentStep + 1);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 1) {
+      console.log(`Moving from step ${currentStep} to step ${currentStep - 1}`);
       setCurrentStep(currentStep - 1);
     }
   };
@@ -151,16 +168,49 @@ const ShopCreationForm = () => {
 
   // Handle next button with validation
   const handleNextClick = () => {
+    console.log("Next button clicked at step:", currentStep);
     if (validateCurrentStep()) {
       goToNextStep();
     }
   };
 
-  const handleSubmit = async (e) => {
+  // UPDATE: Block direct form submission at intermediate steps
+  const handleFormSubmit = async (e) => {
+    // Always prevent default form submission
     e.preventDefault();
 
-    console.log('Submitting form with currentUser:', currentUser);
-    console.log('Form data:', newShop);
+    console.log("Form submit triggered at step:", currentStep);
+    
+    // Only allow submission at the final step
+    if (currentStep !== totalSteps) {
+      console.log("Preventing submission - not at final step");
+      setError(prevError => ({
+        ...prevError,
+        shopError: "Por favor complete todos los pasos del formulario primero."
+      }));
+      setShowErrorCard(true);
+      
+      // Instead of submitting, go to the next step
+      if (validateCurrentStep()) {
+        goToNextStep();
+      }
+      return;
+    }
+    
+    // Now we're at the final step, proceed with submission
+    await processFormSubmission(e);
+  };
+  
+  // UPDATE: Extracted the actual form submission logic to a separate function
+  const processFormSubmission = async (e) => {
+    // Set flag to prevent duplicate submissions
+    if (isFormSubmitting) {
+      console.log("Submission already in progress, ignoring");
+      return;
+    }
+    
+    setIsFormSubmitting(true);
+    console.log('Processing form submission with data:', newShop);
 
     if (!currentUser?.id_user) {
       console.error('No user ID available:', currentUser);
@@ -169,6 +219,7 @@ const ShopCreationForm = () => {
         shopError: 'Error: Usuario no identificado. Por favor, inicie sesión de nuevo.'
       }));
       setShowErrorCard(true);
+      setIsFormSubmitting(false);
       return;
     }
 
@@ -182,7 +233,7 @@ const ShopCreationForm = () => {
         id_user: currentUser.id_user
       };
       
-      // UPDATE: If schedule is continuous, set morning_close and afternoon_open as null
+      // If schedule is continuous, set morning_close and afternoon_open as null
       if (hasContinuousSchedule) {
         formData.morning_close = null;
         formData.afternoon_open = null;
@@ -190,15 +241,15 @@ const ShopCreationForm = () => {
 
       console.log('Submitting form with data:', formData);
       
-      // Validate schedule
+      // One final schedule validation
       const scheduleValidation = validateSchedule(formData);
-      
       if (!scheduleValidation.isValid) {
         setError(prevError => ({ 
           ...prevError, 
           shopError: scheduleValidation.error 
         }));
         setShowErrorCard(true);
+        setIsFormSubmitting(false);
         return;
       }
 
@@ -215,6 +266,13 @@ const ShopCreationForm = () => {
         if (success) {
           console.log('Shop updated successfully:', result);
           createdOrUpdatedShop = result;
+          
+          // Show success notification
+          setSuccess(prevSuccess => ({
+            ...prevSuccess,
+            shopSuccess: "¡Comercio actualizado exitosamente!"
+          }));
+          setShowSuccessCard(true);
         }
       } else {
         // Creating new shop
@@ -226,9 +284,12 @@ const ShopCreationForm = () => {
           shopId = result.id_shop;
           createdOrUpdatedShop = result;
           
-          // Force update the shops list in AppContext immediately
-          // This is critical for ensuring the new shop appears in the list
-          console.log('Updating shop list with newly created shop');
+          // Show success notification
+          setSuccess(prevSuccess => ({
+            ...prevSuccess,
+            shopSuccess: "¡Comercio creado exitosamente!"
+          }));
+          setShowSuccessCard(true);
         }
       }
 
@@ -261,6 +322,15 @@ const ShopCreationForm = () => {
           setUploading(false);
         }
       }
+      
+      // If successful, close the form
+      if (success) {
+        setTimeout(() => {
+          setShowShopCreationForm(false);
+          setSelectedShop(null);
+        }, 1000); // Short delay to allow success message to be seen
+      }
+      
     } catch (error) {
       console.error('Error processing form:', error);
       setError(prevError => ({
@@ -271,6 +341,7 @@ const ShopCreationForm = () => {
     } finally {
       // Re-enable submit button
       if (submitButton) submitButton.disabled = false;
+      setIsFormSubmitting(false);
     }
   };
 
@@ -325,7 +396,8 @@ const ShopCreationForm = () => {
             <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
         </div>   
         
-        <form onSubmit={handleSubmit} className={styles.form}>
+        {/* UPDATE: Use handleFormSubmit instead of handleSubmit */}
+        <form onSubmit={handleFormSubmit} className={styles.form}>
           {/* Render step content */}
           {renderStepContent()}
             
@@ -334,10 +406,12 @@ const ShopCreationForm = () => {
             totalSteps={totalSteps}
             onNext={handleNextClick}
             onPrevious={goToPreviousStep}
-            isSubmitting={uploading}
+            isSubmitting={uploading || isFormSubmitting}
             submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
             processingLabel="Procesando..."
             SubmitIcon={Box}
+            // Only show submit button on the last step
+            showSubmitButton={currentStep === totalSteps}
           />
         </form>
       </div>
