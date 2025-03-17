@@ -340,8 +340,6 @@ const ShopProductsList = () => {
         )}
 
         {selectedShop && <ShopCard shop={selectedShop} />}
-
-        <div >
             <div className={styles.listHeaderTop}>
               <div className={styles.listTitleWrapper}>
                 <h1 className={styles.listTitle}>Lista de Productos</h1>
@@ -366,7 +364,7 @@ const ShopProductsList = () => {
                 />
               </div>
             </div>
-        </div>
+        
 
         {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
         {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
