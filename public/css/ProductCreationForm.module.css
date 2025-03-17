@@ -12,43 +12,84 @@
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 600px; /* UPDATE: Changed max-width to match ShopCreationForm */
 }   
 
-.formTitle{
-  text-align: center;
-  margin-bottom: 1rem;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
   width: 100%;
 }
 
-/* UPDATE: Added form layout structure for responsive design */
+.formTitle{
+  color: #333;
+  line-height: 1.85rem;
+  margin: 0;
+}
+
+/* UPDATE: Added styles for section titles and descriptions */
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark-orange);
+  margin-bottom: 5px;
+}
+
+.sectionDescription {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+/* Step tracker styles copied from ShopCreationForm */
+.stepTracker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 25px;
+  position: relative;
+}
+
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 15px;
+  z-index: 2;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+}
+
+.stepDot.active {
+  background-color: var(--saturated-orange);
+  color: white;
+  transform: scale(1.4);
+}
+
 .form {
   width: 100%;
-}
-
-/* UPDATE: New layout container for the 3-column desktop view */
-.formLayout {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  gap: 1rem;
+  align-items: center;
 }
 
-/* UPDATE: Section containers for the 3-column layout */
+/* Sections for the main content areas */
 .imageSection,
 .basicInfoSection,
 .detailsSection {
   width: 100%;
-}
-
-/* UPDATE: Form actions container at the bottom */
-.formActions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  width: 100%;
+  margin-bottom: 20px;
 }
 
 .formField{
@@ -56,19 +97,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-bottom: 1rem;
-  /* flex-wrap: wrap; */
-}
-
-select,
-textarea {
-  flex: 1 1 200px;
-  min-width: 0;
-}
-
-.formField textarea {
-  flex: 1 1 100%;
 }
 
 .dateInput {
@@ -97,6 +128,7 @@ textarea {
   border-radius: 8px;
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
+  width: 100%;
 }
 
 .limitHeader {
@@ -113,7 +145,47 @@ textarea {
   margin-top: 5px;
 }
 
-/* Estilos para el botón deshabilitado */
+/* Buttons and navigation styles */
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: #f5f5f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--dark-orange);
+}
+
+.navButton:hover {
+  color: white;
+  background-color: var(--saturated-orange);
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: var(--saturated-orange);
+  color: white;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: var(--dark-orange);
+}
+
 .submitButton:disabled {
   background-color: #e9ecef;
   color: #6c757d;
@@ -121,41 +193,54 @@ textarea {
   opacity: 0.65;
 }
 
-.shopTypeGuidance{
-  margin-bottom: 1rem;
+.backButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  cursor: pointer;
 }
 
-/* UPDATE: Enhanced image upload container to match ShopCreationForm */
+.backButton:hover {
+  background-color: #e5e5e5;
+}
+
+.shopTypeGuidance{
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Image upload container styles */
 .imageUploadContainer {
   cursor: pointer;
   background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px dashed #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  border: 2px dashed #ddd;
   width: 100%;
   transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.imageUploadContainer:hover {
+  border-color: var(--saturated-orange);
 }
 
 .imageUploadContainer:hover .editOverlay {
   opacity: 1;
 }
 
-.imageUploadLabel {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-  color: #333;
-}
-
-/* UPDATE: Enhanced image preview box */
+/* Image preview box styles */
 .imagePreviewBox {
   width: 100%;
   height: 200px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
   overflow: hidden;
   position: relative;
-  background-color: #fff;
+  background-color: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -163,8 +248,8 @@ textarea {
 }
 
 .imagePreview {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -183,21 +268,51 @@ textarea {
   opacity: 0.5;
 }
 
-/* UPDATE: Enhanced overlays and transitions */
+/* Upload button overlay styles */
 .editOverlay {
-  opacity: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  opacity: 0.5;
   transition: opacity 0.3s ease;
 }
 
 .uploadButtonOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(0,0,0,0.7);
   transition: all 0.3s ease;
 }
 
 .loaderOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  border-radius: 4px;
   z-index: 10;
 }
 
-/* UPDATE: Enhanced image buttons */
+/* Buttons for image upload */
 .imageButton {
   display: flex;
   align-items: center;
@@ -240,29 +355,7 @@ textarea {
   cursor: not-allowed;
 }
 
-/* UPDATE: Enhanced progress indicator */
-.progressBar {
-  width: 100%;
-  height: 6px;
-  background-color: #444;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background-color: #4caf50;
-  transition: width 0.3s ease;
-}
-
-.progressText {
-  color: white;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2px;
-}
-
-/* UPDATE: Added animation for spinner */
+/* Animation for spinner */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -270,40 +363,6 @@ textarea {
 
 .spinner {
   animation: spin 1.5s linear infinite;
-}
-
-/* UPDATE: Enhanced styling for buttons */
-.submitButton,
-.backButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.submitButton {
-  background-color: #4A90E2;
-  color: white;
-  border: none;
-}
-
-.submitButton:hover:not(:disabled) {
-  background-color: #3A7BC8;
-}
-
-.backButton {
-  background-color: #f1f1f1;
-  color: #333;
-  border: 1px solid #ddd;
-}
-
-.backButton:hover {
-  background-color: #e5e5e5;
 }
 
 .errorMessage {
@@ -318,109 +377,22 @@ textarea {
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  justify-content: center;
 }
 
-/* Media queries for responsive design */
-@media screen and (min-width: 768px) {
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+  .formField{
+   flex-direction: row;
+  }
   .container {
-      padding: 1rem;
+    padding: 15px;
+    max-width: 100%;
   }
   
-  /* UPDATE: Start transitioning to a more horizontal layout for tablets */
-  .formLayout {
-      flex-direction: column;
+  .stepDot {
+    width: 24px;
+    height: 24px;
+    margin: 0 10px;
+    font-size: 0.8rem;
   }
-  
-  .imageSection {
-      max-width: 100%;
-  }
-  
-  /* Make buttons side by side on tablet */
-  .formActions {
-      justify-content: center;
-  }
-  
-  .submitButton,
-  .backButton {
-      flex: 0 0 auto;
-  }
-}
-
-/* UPDATE: Desktop layout (3-column) */
-@media screen and (min-width: 1024px) {
-  .container {
-      padding: 1.5rem;
-  }
-  
-  /* 3-column layout for desktop */
-  .formLayout {
-      flex-direction: row;
-      flex-wrap: nowrap;
-      gap: 2rem;
-  }
-  
-  .imageSection {
-      width: 30%;
-      flex: 0 0 30%;
-  }
-  
-  .basicInfoSection {
-      width: 30%;
-      flex: 0 0 30%;
-  }
-  
-  .detailsSection {
-      width: 30%;
-      flex: 0 0 30%;
-  }
-  
-  /* Enhanced form fields for desktop */
-  .formField {
-      margin-bottom: 1.25rem;
-  }
-  
-  /* Image container adjustments for desktop */
-  .imageUploadContainer {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-  }
-  
-  .imagePreviewBox {
-      height: 250px; /* Slightly taller on desktop */
-  }
-}
-
-/* Additional breakpoint for very small screens */
-@media screen and (max-width: 480px) {
-  .container {
-      padding: 0.8rem;
-  }
-
-  .formField {
-      flex-direction: row;
-      gap: 0.3rem;
-  }
-  
-  /* Maintain centered labels on very small screens */
-  .formField label {
-      text-align: center;
-      width: 100%;
-  }
-  
-  /* Adjust button layout for very small screens */
-  .formActions {
-      flex-direction: column;
-  }
-  
-  .backButton {
-      order: -1; /* Place back button above submit button on mobile */
-      margin-bottom: 0.5rem;
-  }
-  
-  /* UPDATE: Adjust image container height for mobile */
-  .imagePreviewBox {
-      height: 180px;
-  }
-}
+} 

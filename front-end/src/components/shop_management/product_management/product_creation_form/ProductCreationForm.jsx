@@ -2,11 +2,18 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import ProductCreationFormFunctions from './ProductCreationFormFunctions.jsx';
 import AppContext from '../../../../app_context/AppContext';
 import styles from '../../../../../../public/css/ProductCreationForm.module.css';
-import { CirclePlus, ScrollText, PackagePlus, Save, AlertCircle, Camera, ImagePlus, Trash2, ArrowLeft, Loader } from 'lucide-react';
-import { useSpring, animated } from '@react-spring/web';
-import CustomNumberInput from '../../../custom_number_input/CustomNumberInput';
-import { countries } from '../../../../../src/utils/app/countries.js';
+import { AlertCircle, PackagePlus, Save, ArrowLeft } from 'lucide-react';
+// import { useSpring, animated } from '@react-spring/web';
 import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
+
+// UPDATE: Import new component files
+import ProductImageUpload from './components/ProductImageUpload.jsx';
+import ProductBasicInfo from './components/ProductBasicInfo.jsx';
+import ProductDetails from './components/ProductDetails.jsx';
+
+// UPDATE: Import step tracker and navigation components
+import StepTracker from '../../navigation_components/StepTracker.jsx';
+import NavigationButtons from '../../navigation_components/NavigationButtons.jsx';
 
 const ProductCreationForm = () => {
   const {
@@ -19,9 +26,6 @@ const ProductCreationForm = () => {
     productLimit,
     fetchProductsByShop,
     handleImageUpload,
-    // UPDATE: Import refactored image-related functions
-    handleImageSelect: processImageSelection,
-    clearImage,
     handleViewProductList: navigateToProductList
   } = ProductCreationFormFunctions();
 
@@ -41,33 +45,20 @@ const ProductCreationForm = () => {
     uploading,
     setError,
     setUploading,
-    refreshProductList
+    refreshProductList,
+    setShowErrorCard
   } = useContext(AppContext);
 
-  // New state for image upload
+  // State for image upload
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  // State for showing/hiding upload controls
-  const [showImageUploadButton, setShowImageUploadButton] = useState(false);
   const fileInputRef = useRef(null);
   
-  // Animation configuration
-  const formAnimation = useSpring({
-    from: { 
-      opacity: 0,
-      transform: 'translateY(40px)'
-    },
-    to: { 
-      opacity: 1,
-      transform: 'translateY(0px)'
-    },
-    config: {
-      mass: 1,
-      tension: 280,
-      friction: 20
-    }
-  });
+  // UPDATE: Add state for step tracking
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 3;
+  
 
   // Get available product types based on shop type
   const availableProductTypes = selectedShop?.type_shop 
@@ -78,27 +69,6 @@ const ProductCreationForm = () => {
   const filteredProductTypes = availableProductTypes.length > 0
     ? availableProductTypes
     : Object.keys(productTypesAndSubtypes);
-
-  // Get subtypes based on selected product type
-  const subtypes = productData.type_product ? productTypesAndSubtypes[productData.type_product] : [];
-
-  // UPDATE: Function to handle image container click - toggles upload button visibility
-  const handleImageContainerClick = () => {
-    setShowImageUploadButton(prev => !prev);
-  };
-
-  // UPDATE: Modified file selection handler using the refactored function
-  const handleImageSelect = (e) => {
-    e.stopPropagation(); // Prevent container click event
-    const file = e.target.files[0];
-    processImageSelection(file, setSelectedImage, setImagePreview, setShowImageUploadButton, setError);
-  };
-
-  // UPDATE: Modified clear image handler using the refactored function
-  const handleClearImage = (e) => {
-    if (e) e.stopPropagation(); // Prevent container click event
-    clearImage(fileInputRef, setSelectedImage, setImagePreview);
-  };
 
   // Set image preview for product being updated
   useEffect(() => {
@@ -150,13 +120,68 @@ const ProductCreationForm = () => {
     }
   }, [selectedShop, selectedProductToUpdate, setNewProductData]);
 
-  // Using the refactored navigation handler
+  // Using the navigation handler
   const handleViewProductList = () => {
     navigateToProductList(setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement);
   };
 
+  // UPDATE: Add navigation functions
+  const goToNextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const goToPreviousStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // UPDATE: Add validation for current step
+  const validateCurrentStep = () => {
+    switch(currentStep) {
+      case 1: // Image upload - image is optional, but name and price are required
+        if (!productData.name_product || productData.price_product === '') {
+          setError(prevError => ({
+            ...prevError,
+            productError: "Nombre y precio del producto son requeridos."
+          }));
+          setShowErrorCard(true);
+          return false;
+        }
+        return true;
+      case 2: // Basic info
+        if (!productData.type_product || !productData.subtype_product) {
+          setError(prevError => ({
+            ...prevError,
+            productError: "Tipo y subtipo de producto son requeridos."
+          }));
+          setShowErrorCard(true);
+          return false;
+        }
+        return true;
+      case 3: // Additional details - most fields are optional
+        return true;
+      default:
+        return true;
+    }
+  };
+
+  // Handle next button with validation
+  const handleNextClick = () => {
+    if (validateCurrentStep()) {
+      goToNextStep();
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    
+    // First validate the current step
+    if (!validateCurrentStep()) {
+      return;
+    }
     
     try {
       let success;
@@ -180,7 +205,11 @@ const ProductCreationForm = () => {
       
       // Clear image selection after successful submission
       if (success) {
-        handleClearImage();
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        setSelectedImage(null);
+        setImagePreview(null);
         
         // Force refresh of the product list in the ShopProductsList component
         refreshProductList();
@@ -219,12 +248,56 @@ const ProductCreationForm = () => {
     );
   };
 
+  // UPDATE: Render the appropriate step component based on currentStep
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <ProductImageUpload 
+            imagePreview={imagePreview}
+            setImagePreview={setImagePreview}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            productData={productData}
+            onProductDataChange={handleChange}
+            onNumericInputChange={handleNumericInputChange}
+            uploading={uploading}
+            uploadProgress={uploadProgress}
+            fileInputRef={fileInputRef}
+            setError={setError}
+            setShowErrorCard={setShowErrorCard}
+          />
+        );
+      case 2:
+        return (
+          <ProductBasicInfo 
+            productData={productData}
+            onProductDataChange={handleChange}
+            productTypesAndSubtypes={productTypesAndSubtypes}
+            filteredProductTypes={filteredProductTypes}
+            setNewProductData={setNewProductData}
+            filterOptions={filterOptions}
+          />
+        );
+      case 3:
+        return (
+          <ProductDetails 
+            productData={productData}
+            onProductDataChange={handleChange}
+            onNumericInputChange={handleNumericInputChange}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <animated.div style={formAnimation} className={styles.container}>
+    <div className={styles.container}>
       <div className={styles.header}>
-          <h1 className={styles.formTitle}>
-              {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
-          </h1>
+        <h1 className={styles.formTitle}>
+          {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
+        </h1>
       </div>
       
       {/* Product limit information */}
@@ -236,389 +309,45 @@ const ProductCreationForm = () => {
           <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
         </div>
       )}
+
+      {/* UPDATE: Add StepTracker component */}
+      <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
       
-      {/* Form layout restructured with 3 main sections for responsive design */}
+      {/* Form layout with steps */}
       <form onSubmit={handleFormSubmit} className={styles.form}>
-        <div className={styles.formLayout}>
-          {/* SECTION 1: Image Upload (left column on desktop) */}
-          <div className={styles.imageSection}>
-            {/* UPDATE: Improved image upload UI to match ShopCreationForm */}
-            <div 
-              className={styles.imageUploadContainer}
-              onClick={handleImageContainerClick}
-            >
-              <div className={styles.imagePreviewBox}>
-                {imagePreview ? (
-                  <img 
-                    src={imagePreview} 
-                    alt="Vista previa de imagen" 
-                    className={styles.imagePreview}
-                  />
-                ) : (
-                  <div className={styles.noImagePlaceholder}>
-                    <ImagePlus size={40} className={styles.placeholderIcon} />
-                    <span>Imagen de producto</span>
-                  </div>
-                )}
-                
-                {/* Upload progress indicator */}
-                {uploading && (
-                  <div className={styles.loaderOverlay} style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(0,0,0,0.6)',
-                    borderRadius: '4px',
-                    zIndex: 10
-                  }}>
-                    <Loader size={32} color="white" className={styles.spinner} style={{
-                      marginBottom: '15px'
-                    }} />
-                    
-                    <div style={{ width: '80%', height: '8px', backgroundColor: '#333', borderRadius: '4px' }}>
-                      <div style={{ 
-                        width: `${uploadProgress}%`,
-                        height: '100%',
-                        backgroundColor: '#4CAF50',
-                        borderRadius: '4px'
-                      }}></div>
-                    </div>
-                    <span style={{ color: 'white', marginTop: '8px' }}>
-                      {uploadProgress}%
-                    </span>
-                  </div>
-                )}
-                
-                {/* Image upload button overlay */}
-                {showImageUploadButton && !uploading && (
-                  <div 
-                    className={styles.uploadButtonOverlay}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      padding: '10px',
-                      background: 'rgba(0,0,0,0.7)'
-                    }}
-                  >
-                    <input
-                      type="file"
-                      id="product_image"
-                      ref={fileInputRef}
-                      accept="image/jpeg,image/png,image/jpg,image/webp"
-                      style={{ display: 'none' }}
-                      onChange={handleImageSelect}
-                      disabled={uploading}
-                    />
-                    
-                    <label 
-                      htmlFor="product_image" 
-                      className={styles.imageButton}
-                      style={{ 
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        padding: '8px 15px',
-                        backgroundColor: '#4A90E2',
-                        color: 'white',
-                        borderRadius: '4px',
-                        border: 'none',
-                        fontSize: '14px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <Camera size={16} />
-                      {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
-                    </label>
-                    
-                    {imagePreview && (
-                      <button
-                        type="button"
-                        onClick={handleClearImage}
-                        disabled={uploading}
-                        style={{ 
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          backgroundColor: '#E25549',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '8px 15px',
-                          marginLeft: '10px',
-                          cursor: 'pointer',
-                          fontSize: '14px'
-                        }}
-                      >
-                        <Trash2 size={16} />
-                        Quitar
-                      </button>
-                    )}
-                  </div>
-                )}
-                
-                {/* Edit overlay hint */}
-                {!showImageUploadButton && !uploading && (
-                  <div className={styles.editOverlay} style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    padding: '10px',
-                    background: 'rgba(0,0,0,0.5)',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '5px'
-                  }}>
-                    <Camera size={18} />
-                    <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION 2: Basic Product Information (middle column on desktop) */}
-          <div className={styles.basicInfoSection}>
-            <div className={styles.formField}>
-              <input
-                type="text"
-                id="name_product"
-                name="name_product"
-                placeholder='Nombre del Producto:'
-                value={productData.name_product}
-                onChange={handleChange}
-                required
-              />
-            </div>
+        {/* Render the current step content */}
+        {renderStepContent()}
             
-            <div className={styles.formField}>
-              <label htmlFor="price_product">Precio</label>
-              <CustomNumberInput
-                label="Precio"
-                name="price_product"
-                value={productData.price_product}
-                onChange={handleNumericInputChange}
-                step={0.1}
-                min={0}
-                required
-              />
-            </div>
-
-            {/* Product Type Dropdown - Filtered by shop type */}
-            <div className={styles.formField}>
-              <select
-                id="type_product"
-                name="type_product"
-                value={productData.type_product}
-                onChange={(e) => {
-                  // Reset subtype when type changes
-                  setNewProductData({
-                    ...productData,
-                    type_product: e.target.value,
-                    subtype_product: '' // Clear subtype
-                  });
-                }}
-                required
-              >
-                <option value="" disabled>Tipo:</option>
-                {filteredProductTypes.map(type => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Subtype Dropdown - Only show if a type is selected */}
-            {productData.type_product && (
-              <div className={styles.formField}>
-                <select
-                  id="subtype_product"
-                  name="subtype_product"
-                  value={productData.subtype_product}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>Subtipo:</option>
-                  {subtypes.map(subtype => (
-                    <option key={subtype} value={subtype}>
-                      {subtype}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-
-            <div className={styles.formField}>
-              <select
-                id="season_product"
-                name="season_product"
-                value={productData.season_product}
-                onChange={handleChange}
-              >
-                <option value="" disabled>Temporada:</option>
-                {filterOptions.temporada.options.map(season => (
-                  <option key={season} value={season}>
-                    {season}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.formField}>
-              <label htmlFor="expiration_product">Fecha de Caducidad (opcional)</label>
-              <input
-                type="date"
-                id="expiration_product"
-                name="expiration_product"
-                value={productData.expiration_product || ''}
-                onChange={handleChange}
-                min={new Date().toISOString().split('T')[0]} // Set minimum date to today
-                className={styles.dateInput}
-              />
-            </div>
-          </div>
-
-          {/* SECTION 3: Additional Product Details (right column on desktop) */}
-          <div className={styles.detailsSection}>
-            {/* Country and locality fields */}
-            <div className={styles.formField}>
-              <select
-                id="country_product"
-                name="country_product"
-                value={productData.country_product || ''}
-                onChange={handleChange}
-              >
-                <option value="">País de origen</option>
-                {countries.map(country => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.formField}>
-              <input
-                type="text"
-                id="locality_product"
-                name="locality_product"
-                placeholder='Localidad de origen:'
-                value={productData.locality_product || ''}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formField}>
-              <textarea
-                id="info_product"
-                name="info_product"
-                value={productData.info_product}
-                onChange={handleChange}
-                rows="4"
-                width="100%"
-                placeholder='Información adicional del producto. Usa palabras claves como: tallas, colección, materiales, procedencia, etc.'
-              />
-            </div>
-
-            <div className={styles.formField}>
-              <div className={styles.checkboxContainer}>
-                <input
-                  type="checkbox"
-                  id="second_hand"
-                  name="second_hand"
-                  checked={productData.second_hand === 1}
-                  onChange={(e) => {
-                    handleChange({
-                      target: {
-                        name: 'second_hand',
-                        value: e.target.checked ? 1 : 0
-                      }
-                    });
-                  }}
-                />
-                <label htmlFor="second_hand">Segunda mano</label>
-              </div>
-            </div>
-
-            <div className={styles.formField}>
-              <label htmlFor="discount_product">% Descuento  (opcional)</label>
-              <CustomNumberInput
-                label="Descuento (%)"
-                name="discount_product"
-                value={productData.discount_product}
-                onChange={handleNumericInputChange}
-                step={1}
-                min={0}
-                max={100}
-              />
-            </div>
-
-            <div className={styles.formField}>
-              <label htmlFor="surplus_product">Excedente (opcional)</label>
-              <CustomNumberInput
-                label="Surplus"
-                name="surplus_product"
-                value={productData.surplus_product}
-                onChange={handleNumericInputChange}
-                min={0}
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Form Actions - Full width at bottom */}
-        <div className={styles.formActions}>
-          <button 
-            type="submit" 
-            className={styles.submitButton}
-            disabled={!selectedProductToUpdate && productCount >= productLimit}
-          >
-            {selectedProductToUpdate ? (
-              <>
-                Actualizar Producto
-                <Save size={16}/>
-              </>
-            ) : (
-              <>
-                Crear Producto
-                <PackagePlus size={16}/>
-              </>
-            )}
-          </button>
-          <button 
-            type="button" 
-            className={styles.backButton}
-            onClick={handleViewProductList}
-            title="Volver a la lista de productos"
-            aria-label="Volver"
-          >
-            <ArrowLeft size={20} />
-            Volver
-          </button>
-          {!selectedProductToUpdate && productCount >= productLimit && (
-            <p className={styles.errorMessage}>
-              Has alcanzado el límite de productos permitidos
-            </p>
-          )}
-        </div>
+        {/* UPDATE: Add NavigationButtons component */}
+        <NavigationButtons 
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onNext={handleNextClick}
+          onPrevious={goToPreviousStep}
+          isSubmitting={uploading}
+          submitLabel={selectedProductToUpdate ? 'Actualizar' : 'Crear'}
+          processingLabel="Procesando..."
+          SubmitIcon={selectedProductToUpdate ? Save : PackagePlus}
+        />
+        
+        {/* <button 
+          type="button" 
+          className={styles.backButton}
+          onClick={handleViewProductList}
+          title="Volver a la lista de productos"
+          aria-label="Volver"
+        >
+          <ArrowLeft size={20} />
+          Volver
+        </button> */}
+        
+        {!selectedProductToUpdate && productCount >= productLimit && (
+          <p className={styles.errorMessage}>
+            Has alcanzado el límite de productos permitidos
+          </p>
+        )}
       </form>
-    </animated.div>
+    </div>
   );
 };
 
