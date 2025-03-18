@@ -3,20 +3,21 @@
   --dark-orange: #d06f00;
   --superlight-orange: #fff4e7;
   --superlight-gray: #e9e9e9;
-  --light-gray: #666;
+  --light-gray: #cacaca;
   --lighter-gray: #999; /* New lighter gray for placeholder text */
   --medium-gray: #d1d5db;
   --dark-gray: #4b5563;
   --focus-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
   --topbar-height: 5rem;
-  --saturated-blue: #088DD0; /* Added saturated blue color */
+  --saturated-blue: #088DD0;
+  --light-blue: #40b8f5;
   
   /* Responsive spacing units */
   --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  --spacing-sm: 0.3rem;
+  --spacing-md: .7rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
 }
 
 * {
@@ -163,7 +164,6 @@ button {
   background-color: white; 
   color: var(--dark-orange);
   padding: var(--spacing-sm) var(--spacing-md);
-  /* border-radius: 6px; */
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -172,16 +172,15 @@ button {
   height: 2rem; /* Fixed height of exactly 2rem */
   transition: all 0.15s ease;
   touch-action: manipulation;
+  /* transition: all 0.2s ease; */
 }
 
 button:hover {
   color: white;
-  transition: all 0.2s ease;
-  background-color: var(--saturated-orange);
-  /* transform: scale(1.05); */
+  background-color: var(--dark-orange);
+  border-left: 3px solid var(--light-blue);
 }
 
-/* Added active state for buttons - blue when pressed */
 button:active {
   background-color: var(--saturated-blue);
   color: white;

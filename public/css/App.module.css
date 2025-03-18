@@ -5,6 +5,7 @@
   justify-content: flex-start; /* UPDATE: Changed from stretch to flex-start */
   min-height: 100vh; /* UPDATE: Changed from height to min-height */
   width: 100%;
+  max-width: 100vw;
   /* min-width: 350px; */
   background-color: var(--superlight-gray);
   margin: 0;

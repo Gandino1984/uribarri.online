@@ -5,7 +5,7 @@
   justify-content: center;
   flex-direction: column;
   background-color: white;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   font-size: .8rem;
   padding: .5rem 1rem;
   margin-top: .5rem;
@@ -72,7 +72,7 @@
 }
 
 .stepDot.active {
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
   color: white;
   transform: scale(1.4);
 }
@@ -106,7 +106,7 @@
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   font-size: 16px;
   margin-top: 4px;
 }
@@ -123,19 +123,21 @@
 }
 
 .productLimitInfo {
-  margin-bottom: 20px;
-  padding: 12px;
+  /* margin-bottom: 20px; */
+  padding-top: .5rem;
+  padding-left: 1rem;
   border-radius: 8px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
   width: 100%;
 }
 
 .limitHeader {
   display: flex;
+  font-size: .85rem;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
+  justify-content: center;
+
+  gap: .5rem;
+  font-weight: 500;
   margin-bottom: 8px;
 }
 
@@ -218,7 +220,7 @@
 .imageUploadContainer {
   cursor: pointer;
   background-color: #f9f9f9;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   padding: 5px;
   border: 2px dashed #ddd;
   width: 100%;
@@ -308,7 +310,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0,0,0,0.6);
-  border-radius: 4px;
+  /* border-radius: 4px; */
   z-index: 10;
 }
 
@@ -320,7 +322,7 @@
   padding: 8px 12px;
   background-color: #4A90E2;
   border: none;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   cursor: pointer;
   font-size: 14px;
   color: white;
@@ -338,7 +340,7 @@
   padding: 8px 12px;
   background-color: #E25549;
   border: none;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   cursor: pointer;
   font-size: 14px;
   color: white;

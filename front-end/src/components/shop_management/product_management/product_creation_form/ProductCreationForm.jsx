@@ -237,7 +237,7 @@ const ProductCreationForm = () => {
       <div className={styles.productLimitInfo}>
           <div className={styles.limitHeader}>
               <AlertCircle size={16} color={statusColor} />
-              <span>Límite de productos: {productCount} de {productLimit}</span>
+              <span>Límite de productos: {productCount} / {productLimit}</span>
           </div>
           {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
             <p className={styles.upgradeMessage}>
@@ -293,6 +293,8 @@ const ProductCreationForm = () => {
   };
 
   return (
+    <>
+    {renderProductLimitInfo()}
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.formTitle}>
@@ -300,8 +302,8 @@ const ProductCreationForm = () => {
         </h1>
       </div>
       
-      {/* Product limit information */}
-      {renderProductLimitInfo()}
+      
+      
       
       {/* Shop type guidance */}
       {selectedShop && !selectedProductToUpdate && (
@@ -348,6 +350,7 @@ const ProductCreationForm = () => {
         )}
       </form>
     </div>
+    </>
   );
 };
 

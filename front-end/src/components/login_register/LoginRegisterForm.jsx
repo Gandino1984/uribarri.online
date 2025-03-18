@@ -51,7 +51,7 @@ const LoginRegisterForm = () => {
   return (
       <div className={styles.container}>
           <div className={styles.formContainer}>
-              <FormActions />
+          <FormActions />
               <FormContent />
           </div>
       </div>

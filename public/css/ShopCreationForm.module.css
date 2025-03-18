@@ -72,7 +72,7 @@
 }
 
 .stepDot.active {
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
   color: white;
   transform: scale(1.4);
 }
