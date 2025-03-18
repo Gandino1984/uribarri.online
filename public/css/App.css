@@ -164,15 +164,14 @@ button {
   background-color: white; 
   color: var(--dark-orange);
   padding: var(--spacing-sm) var(--spacing-md);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   gap: var(--spacing-sm);
   letter-spacing: 0.01rem;
-  height: 2rem; /* Fixed height of exactly 2rem */
-  transition: all 0.15s ease;
+  height: 2rem;
+  /* transition: all 0.15s ease; */
   touch-action: manipulation;
-  /* transition: all 0.2s ease; */
 }
 
 button:hover {
@@ -184,8 +183,6 @@ button:hover {
 button:active {
   background-color: var(--saturated-blue);
   color: white;
-  transform: translateY(1px); /* Subtle pressed effect */
-  transition: all 0.05s ease; /* Faster transition for tactile feedback */
 }
 
 /* Fixed select element styling with lighter gray for placeholder */

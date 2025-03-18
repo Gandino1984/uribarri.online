@@ -197,7 +197,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
                 className={styles.checkbox}
               />
               <Calendar size={14} />
-              Caducidad (7 días)
+              Caducidad
             </label>
           </div>
         </div>

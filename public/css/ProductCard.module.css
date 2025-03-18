@@ -9,7 +9,7 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    animation: fadeIn 0.3s ease;
+    /* animation: fadeIn 0.3s ease; */
   }
   
   .productCard {
@@ -21,7 +21,7 @@
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    animation: slideUp 0.4s ease;
+    /* animation: slideUp 0.4s ease; */
   }
   
   .closeButton {
@@ -51,14 +51,15 @@
     flex-direction: column;
     padding: 20px;
   }
-  
-  @media (min-width: 768px) {
-    .cardContent {
-      flex-direction: row;
-      gap: 30px;
-    }
+
+  .productImage {
+    padding: .5rem;
+    /* max-width: 100%; */
+    /* height: auto; */
+    max-height: 180px;
+    /* object-fit: contain; */
   }
-  
+
   .imageContainer {
     flex: 1;
     display: flex;
@@ -70,21 +71,7 @@
     overflow: hidden;
     margin-bottom: 20px;
   }
-  
-  @media (min-width: 768px) {
-    .imageContainer {
-      margin-bottom: 0;
-    }
-  }
-  
-  .productImage {
-    padding: .5rem;
-    max-width: 100%;
-    height: auto;
-    /* max-height: 400px; */
-    /* object-fit: contain; */
-  }
-  
+
   .noImage {
     display: flex;
     flex-direction: column;
@@ -200,6 +187,19 @@
     line-height: 1.5;
     color: #444;
     margin: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .cardContent {
+      flex-direction: row;
+      gap: 30px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .imageContainer {
+      margin-bottom: 0;
+    }
   }
   
   /* Animations */

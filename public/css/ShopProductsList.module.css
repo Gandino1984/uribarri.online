@@ -103,6 +103,16 @@
     position: relative;
 }
 
+.addButton{
+    background-color: var(--saturated-orange);
+    color: white;
+}
+
+.addButton:hover{
+    background-color: var(--dark-orange);
+}
+
+
 
 
 .actionButton:disabled {
@@ -217,13 +227,11 @@
 .tableHeaderCell {
     padding: 0.8rem 1rem;
     text-align: center;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #666;
     white-space: nowrap; /* Evita que los títulos se rompan */
 }
-
-/* Tamaños específicos para diferentes tipos de columnas */
 
 .tableCell {
     /* padding: 0.8rem 1rem; */
@@ -275,6 +283,7 @@
 }
 
 .noProducts {
+    font-size: 0.85rem;
     color: #666;
     width: 100%; /* Match container width */
     text-align: center; /* Center text */
@@ -504,7 +513,8 @@
 
     .buttonGroup {
         width: 100%;
-        justify-content: flex-start;
+        align-items: center;
+        justify-content: center;
         flex-wrap: wrap;
     }
 

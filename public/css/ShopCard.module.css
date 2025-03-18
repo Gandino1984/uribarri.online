@@ -84,13 +84,14 @@
 .scheduleInfo {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: .5rem;
 }
 
 .scheduleTime {
   display: block;
   font-size: 0.875rem;
   color: #4b5563;
+  /* gap: 0.5rem; */
 }
 
 /* UPDATE: Estilos para el botón y control de minimizar */
@@ -105,7 +106,12 @@
   justify-content: flex-end;
 }
 
+.scheduleIcon{  
+  margin-right: .5rem;
+}
+
 .minimizeButton {
+  opacity: .8;
   background-color: rgba(255, 255, 255, 0.638);
   border: none;
   /* border-radius: 6px; */
@@ -118,6 +124,7 @@
 }
 
 .minimizeButton:hover {
+  opacity: 1;
   color: white;
   background-color: var(--saturated-orange);
   transform: scale(1.05);
@@ -131,6 +138,7 @@
 }
 
 .updateButton {
+  opacity: .8;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -147,6 +155,7 @@
 }
 
 .updateButton:hover {
+  opacity: 1;
   background-color: var(--saturated-blue, #3b82f6);
   color: white;
   transform: translateY(-1px);

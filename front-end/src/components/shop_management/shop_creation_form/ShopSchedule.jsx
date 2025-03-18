@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { Clock } from 'lucide-react';
+import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch'; // UPDATE: Import custom toggle switch component
 
 const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContinuousSchedule }) => {
   // Function to handle schedule type change
@@ -25,44 +26,23 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
         Configura los horarios de apertura y cierre de tu comercio
       </p>
       
-      {/* Toggle for continuous or split schedule */}
-      <div className={styles.scheduleTypeToggle} style={{
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '15px',
-        gap: '8px'
-      }}>
-        <input 
-          type="checkbox"
-          id="continuous-schedule"
+      {/* UPDATE: Replace standard checkbox with custom toggle switch */}
+      <div className={styles.scheduleTypeToggleContainer}>
+        <CustomToggleSwitch 
           checked={hasContinuousSchedule}
           onChange={handleScheduleTypeChange}
-          style={{ marginRight: '8px' }}
+          leftLabel="Con descanso"
+          rightLabel="Horario continuo"
         />
-        <label htmlFor="continuous-schedule" style={{ 
-          display: 'flex',
-          alignItems: 'center',
-          gap: '5px',
-          fontSize: '0.9rem',
-          color: '#444'
-        }}>
-          <Clock size={16} />
-          Horario continuo (sin periodo de descanso)
-        </label>
       </div>
     
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div className={styles.scheduleContainer}>
         {hasContinuousSchedule ? (
           // Continuous schedule: only show opening and closing
-          <div className={styles.scheduleSimple} style={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            gap: '10px'
-          }}>
-            {/* <h4 className={styles.scheduleTitle}>Horario de apertura y cierre</h4> */}
+          <div className={styles.scheduleSimple}>
             <div className={styles.scheduleFields}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <label style={{ fontSize: '0.85rem', color: '#555' }}>Abre:</label>
+              <div className={styles.timeFieldContainer}>
+                <label className={styles.timeFieldLabel}>Abre:</label>
                 <input
                   type="time"
                   value={newShop.morning_open || ''}
@@ -72,8 +52,8 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                 />
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <label style={{ fontSize: '0.85rem', color: '#555' }}>Cierra:</label>
+              <div className={styles.timeFieldContainer}>
+                <label className={styles.timeFieldLabel}>Cierra:</label>
                 <input
                   type="time"
                   value={newShop.afternoon_close || ''}
