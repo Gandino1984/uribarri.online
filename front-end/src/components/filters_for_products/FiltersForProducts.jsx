@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
-import { useSpring, animated, config } from '@react-spring/web';
+// import { useSpring, animated, config } from '@react-spring/web';
 import { Search, Calendar, Package, Percent, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsFunctions';
+import CustomToggleSwitch from '../../components/shop_management/navigation_components/CustomToggleSwitch.jsx';
 
 const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
   const { 
@@ -42,49 +43,10 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
     }
   };
 
-  // Enhanced folding animation
-  const containerAnimation = useSpring({
-    from: { 
-      opacity: 0,
-      height: 0,
-      transform: 'perspective(500px) rotateX(-10deg)',
-      transformOrigin: 'top'
-    },
-    to: { 
-      opacity: isVisible ? 1 : 0,
-      height: isVisible ? 'auto' : 0,
-      transform: isVisible 
-        ? 'perspective(500px) rotateX(0deg)' 
-        : 'perspective(500px) rotateX(-10deg)',
-      transformOrigin: 'top'
-    },
-    config: {
-      tension: 280,
-      friction: 30,
-      clamp: true
-    }
-  });
-
-  // Content opacity and transform - separate to allow different timing
-  const contentAnimation = useSpring({
-    from: { 
-      opacity: 0,
-      transform: 'translateY(-20px)'
-    },
-    to: { 
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0px)' : 'translateY(-20px)'
-    },
-    config: {
-      tension: 280,
-      friction: 30
-    },
-    delay: isVisible ? 100 : 0 // Small delay on appearance for better sequential animation
-  });
 
   return (
-    <animated.div style={containerAnimation} className={styles.filtersContainer}>
-      <animated.div style={contentAnimation} className={styles.filterControls}>
+    <div  className={styles.filtersContainer}>
+      <div  className={styles.filterControls}>
         {/* Select Filters Row */}
         <div className={styles.selectFiltersRow}>
           {/* Season Filter */}
@@ -154,51 +116,72 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
           </div>
         </div>
 
-        {/* Checkbox Filters Row */}
+        {/* Checkbox Filters Row - UPDATE: Replaced checkboxes with CustomToggleSwitch with fixed event handling */}
         <div className={styles.checkboxFiltersRow}>
-          {/* Discount Checkbox */}
-          <div className={styles.checkboxWrapper}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
+          {/* Discount Toggle */}
+          <div className={styles.toggleFilterWrapper}>
+            <div className={styles.toggleSwitchContainer}>
+              <span className={styles.toggleIconLabel}>
+                <Percent size={14} />
+                <span>Descuento</span>
+              </span>
+              <CustomToggleSwitch 
                 checked={filters.oferta === 'Sí'}
-                onChange={handleOnSaleChange}
-                className={styles.checkbox}
+                onChange={(isChecked) => {
+                  handleOnSaleChange({
+                    target: {
+                      checked: isChecked
+                    }
+                  });
+                }}
+                leftLabel="No"
+                rightLabel="Sí"
               />
-              <Percent size={14} />
-              Descuento
-            </label>
+            </div>
           </div>
 
-          {/* Surplus Checkbox */}
-          <div className={styles.checkboxWrapper}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
+          {/* Surplus Toggle */}
+          <div className={styles.toggleFilterWrapper}>
+            <div className={styles.toggleSwitchContainer}>
+              <span className={styles.toggleIconLabel}>
+                <Package size={14} />
+                <span>Excedente</span>
+              </span>
+              <CustomToggleSwitch 
                 checked={filters.excedente === 'Sí'}
-                onChange={handleExcessChange}
-                className={styles.checkbox}
+                onChange={(isChecked) => {
+                  handleExcessChange({
+                    target: {
+                      checked: isChecked
+                    }
+                  });
+                }}
+                leftLabel="No"
+                rightLabel="Sí"
               />
-              <Package size={14} />
-              Excedente
-            </label>
+            </div>
           </div>
 
-          {/* Improved Near Expiration Checkbox with tooltip */}
-          <div className={styles.checkboxWrapper}>
-            <label 
-              className={styles.checkboxLabel} 
-              title="Productos que caducan en los próximos 7 días"
-            >
-              <input
-                type="checkbox"
+          {/* Near Expiration Toggle */}
+          <div className={styles.toggleFilterWrapper}>
+            <div className={styles.toggleSwitchContainer} title="Productos que caducan en los próximos 7 días">
+              <span className={styles.toggleIconLabel}>
+                <Calendar size={14} />
+                <span>Caducidad</span>
+              </span>
+              <CustomToggleSwitch 
                 checked={filters.proxima_caducidad === 'Sí'}
-                onChange={handleNearExpirationChange}
-                className={styles.checkbox}
+                onChange={(isChecked) => {
+                  handleNearExpirationChange({
+                    target: {
+                      checked: isChecked
+                    }
+                  });
+                }}
+                leftLabel="No"
+                rightLabel="Sí"
               />
-              <Calendar size={14} />
-              Caducidad
-            </label>
+            </div>
           </div>
         </div>
 
@@ -215,8 +198,8 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             )}
           </button>
         </div>
-      </animated.div>
-    </animated.div>
+      </div>
+    </div>
   );
 };
 

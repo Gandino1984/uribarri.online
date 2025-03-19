@@ -179,7 +179,7 @@ button {
 button:hover {
   color: white;
   background-color: var(--dark-orange);
-  border-left: 3px solid var(--light-blue);
+  border-top: 3px solid var(--light-blue);
 }
 
 button:active {

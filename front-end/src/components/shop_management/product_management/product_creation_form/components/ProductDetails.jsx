@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from '../../../../../../../public/css/ProductCreationForm.module.css';
 import { countries } from '../../../../../utils/app/countries.js';
+// UPDATE: Import CustomToggleSwitch component
+import CustomToggleSwitch from '../../../navigation_components/CustomToggleSwitch.jsx';
 
 const ProductDetails = ({ 
   productData, 
@@ -8,11 +10,12 @@ const ProductDetails = ({
   onNumericInputChange 
 }) => {
   // Handle checkbox change specially
-  const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = (isChecked) => {
+    // Ensure we pass the correct boolean value and convert it to 1/0 for the backend
     onProductDataChange({
       target: {
         name: 'second_hand',
-        value: e.target.checked ? 1 : 0
+        value: isChecked ? 1 : 0
       }
     });
   };
@@ -79,16 +82,16 @@ const ProductDetails = ({
         />
       </div>
 
+      {/* UPDATE: Replace checkbox with CustomToggleSwitch with proper state handling */}
       <div className={styles.formField}>
-        <div className={styles.checkboxContainer}>
-          <input
-            type="checkbox"
-            id="second_hand"
-            name="second_hand"
+        <div className={styles.toggleSwitchContainer}>
+          <span className={styles.toggleLabel}>Segunda mano</span>
+          <CustomToggleSwitch 
             checked={productData.second_hand === 1}
             onChange={handleCheckboxChange}
+            leftLabel="No"
+            rightLabel="Sí"
           />
-          <label htmlFor="second_hand">Segunda mano</label>
         </div>
       </div>
 

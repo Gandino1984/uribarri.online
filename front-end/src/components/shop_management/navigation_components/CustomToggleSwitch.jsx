@@ -2,6 +2,14 @@ import React from 'react';
 import styles from '../../../../../public/css/CustomToggleSwitch.module.css';
 
 const CustomToggleSwitch = ({ checked, onChange, leftLabel, rightLabel }) => {
+  // Fixed handler that properly extracts checked state before calling parent handler
+  const handleChange = (e) => {
+    // Extract the checked value from the event and pass it to the parent
+    if (onChange) {
+      onChange(e.target.checked);
+    }
+  };
+
   return (
     <div className={styles.toggleContainer}>
       <span className={`${styles.toggleLabel} ${!checked ? styles.active : ''}`}>
@@ -12,7 +20,7 @@ const CustomToggleSwitch = ({ checked, onChange, leftLabel, rightLabel }) => {
         <input 
           type="checkbox"
           checked={checked}
-          onChange={onChange}
+          onChange={handleChange}
           className={styles.toggleInput}
         />
         <span className={styles.toggleSlider}>

@@ -374,6 +374,21 @@
   width: 100%;
 }
 
+/* UPDATE: Added toggle switch container and toggle label styles */
+.toggleSwitchContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.toggleLabel {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
 .checkboxContainer{
   display: flex;
   gap: 0.5rem;
@@ -396,4 +411,11 @@
     margin: 0 10px;
     font-size: 0.8rem;
   }
-} 
+  
+  /* UPDATE: Adjust toggle switch container for mobile */
+  .toggleSwitchContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}   

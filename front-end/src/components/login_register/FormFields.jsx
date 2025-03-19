@@ -39,6 +39,7 @@ export const FormFields = () => {
                 <select 
                   value={type_user} 
                   onChange={handleUserTypeChange}
+                  className={type_user ? 'has-value' : ''}
                   required
                 >
                   <option value="" disabled>Tipo de usuario</option>

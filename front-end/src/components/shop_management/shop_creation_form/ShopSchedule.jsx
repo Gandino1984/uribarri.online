@@ -4,12 +4,13 @@ import { Clock } from 'lucide-react';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch';
 
 const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContinuousSchedule }) => {
-  // Function to handle schedule type change
-  const handleScheduleTypeChange = (e) => {
-    const isContinuous = e.target.checked;
-    setHasContinuousSchedule(isContinuous);
+  // Function to handle schedule type change with proper boolean handling
+  const handleScheduleTypeChange = (isChecked) => {
+    console.log("Toggle switch changed to:", isChecked);
+    // Update the continuous schedule state with the boolean value
+    setHasContinuousSchedule(isChecked);
     
-    if (isContinuous) {
+    if (isChecked) {
       // If changed to continuous schedule, clear morning closing and afternoon opening fields
       setNewShop(prev => ({
         ...prev,

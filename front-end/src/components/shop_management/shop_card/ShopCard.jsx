@@ -52,12 +52,12 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
+  // UPDATE: Enhanced responsive layout with fullscreen mobile map
   return (
-    // UPDATE: Use flex container with responsive classes to maintain consistent sizing
     <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 
-        className={`${styles.container} ${minimized ? styles.minimized : ''} ${styles.responsiveContainer}`}
-        style={!isSmallScreen && !minimized && showMap ? { flex: '1 1 40%' } : {}}
+        className={`${styles.container} ${minimized ? styles.minimized : ''}`}
+        style={!isSmallScreen && !minimized && showMap ? { flex: '1 0 40%', maxWidth: '40%' } : {}}
       >
         {minimized ? (
           <MinimizedCard toggleMinimized={toggleMinimized} />
@@ -81,16 +81,21 @@ const ShopCard = ({ shop }) => {
         )}
       </div>
       
+      {/* UPDATE: Improved map container with fullscreen mobile support */}
       {showMap && !minimized && (
-        <ShopMap 
-          shop={shop} 
-          isSmallScreen={isSmallScreen} 
-          onBack={() => setShowMap(false)}
-          style={!isSmallScreen ? { flex: '1 1 60%' } : {}}
-        />
+        <div 
+          className={styles.mapWrapper} 
+          style={!isSmallScreen ? { flex: '1 0 60%', maxWidth: '60%' } : {}}
+        >
+          <ShopMap 
+            shop={shop} 
+            isSmallScreen={isSmallScreen} 
+            onBack={() => setShowMap(false)}
+          />
+        </div>
       )}
     </div>
   );
 };
 
-export default memo(ShopCard);
+export default memo(ShopCard);    
