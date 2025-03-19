@@ -300,10 +300,8 @@ const ProductCreationForm = () => {
         <h1 className={styles.formTitle}>
           {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
         </h1>
+        <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
       </div>
-      
-      
-      
       
       {/* Shop type guidance */}
       {selectedShop && !selectedProductToUpdate && (
@@ -312,15 +310,11 @@ const ProductCreationForm = () => {
         </div>
       )}
 
-      {/* UPDATE: Add StepTracker component */}
-      <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
       
-      {/* Form layout with steps */}
+      
       <form onSubmit={handleFormSubmit} className={styles.form}>
-        {/* Render the current step content */}
         {renderStepContent()}
             
-        {/* UPDATE: Add NavigationButtons component */}
         <NavigationButtons 
           currentStep={currentStep}
           totalSteps={totalSteps}
@@ -331,17 +325,6 @@ const ProductCreationForm = () => {
           processingLabel="Procesando..."
           SubmitIcon={selectedProductToUpdate ? Save : PackagePlus}
         />
-        
-        {/* <button 
-          type="button" 
-          className={styles.backButton}
-          onClick={handleViewProductList}
-          title="Volver a la lista de productos"
-          aria-label="Volver"
-        >
-          <ArrowLeft size={20} />
-          Volver
-        </button> */}
         
         {!selectedProductToUpdate && productCount >= productLimit && (
           <p className={styles.errorMessage}>

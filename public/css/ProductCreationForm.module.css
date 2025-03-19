@@ -135,10 +135,9 @@
   font-size: .85rem;
   align-items: center;
   justify-content: center;
-
   gap: .5rem;
   font-weight: 500;
-  margin-bottom: 8px;
+  margin-bottom: .5rem;
 }
 
 .upgradeMessage {
