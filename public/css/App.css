@@ -63,7 +63,7 @@ input[type="text"] {
   font-weight: 500;
   margin-bottom: var(--spacing-sm);
   width: 100%;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  /* transition: border-color 0.2s ease, box-shadow 0.2s ease; */
 }
 
 /* Styling for input placeholders */
@@ -94,7 +94,7 @@ input[type="number"] {
   min-height: 2.5rem;
   font-weight: 500;
   color: var(--saturated-blue); /* Blue color for entered text */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  /* transition: border-color 0.2s ease, box-shadow 0.2s ease; */
   -moz-appearance: textfield;
 }
 
@@ -135,7 +135,7 @@ textarea {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--saturated-blue); /* Blue color for entered text */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  /* transition: border-color 0.2s ease, box-shadow 0.2s ease; */
   resize: vertical;
 }
 
@@ -208,7 +208,7 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
   background-size: 1em;
-  transition: all 0.2s ease-in-out;
+  /* transition: all 0.2s ease-in-out; */
 }
 
 /* Hover state - color changes to orange */

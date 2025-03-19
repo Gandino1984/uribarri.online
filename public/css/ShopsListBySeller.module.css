@@ -70,7 +70,7 @@
 .shopManagementContainer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
   max-width: 100%;
   overflow: hidden; /* Prevent overflow */
@@ -85,7 +85,7 @@
   -webkit-overflow-scrolling: touch;
   /* Force the container to respect parent width */
   box-sizing: border-box;
-  border-radius: 4px; /* Optional: adds a slight rounded edge */
+  /* border-radius: 4px; */
 }
 
 /* UPDATE: Modified table to ensure it works well with scrolling container */
@@ -249,8 +249,8 @@
 /* UPDATE: Improved shop card container to prevent breaking layout */
 .shopCardContainer {
   width: 100%;
-  margin-top: 1rem;
-  animation: fadeIn 0.3s ease;
+  /* margin-top: 1rem; */
+  /* animation: fadeIn 0.3s ease; */
   margin-left: auto;
   margin-right: auto;
   max-width: 100%;

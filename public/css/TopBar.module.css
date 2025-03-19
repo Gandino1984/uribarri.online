@@ -36,12 +36,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    /* transition: all 0.2s ease; */
 }
 
 .logoutButton {
     gap: 0.5rem;
-    transition: all 0.2s ease;
+    /* transition: all 0.2s ease; */
 }
 
 @media (max-width: 768px) {
