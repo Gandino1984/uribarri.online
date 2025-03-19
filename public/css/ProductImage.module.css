@@ -16,11 +16,8 @@
 .productImageContainer {
   position: relative;
   width: 70%;
-  /* min-width: 70px; */
   max-width: 150px;
   margin: 0 auto;
-  /* border-radius: 8px; */
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   overflow: hidden;
 }
 
@@ -40,15 +37,12 @@
   display: block;
   object-fit: cover;
   object-position: center;
-  /* border-radius: 8px; */
-  transition: all 0.2s ease;
 }
 
 .productImage:hover {
-  border: 2px solid var(--saturated-orange);
+  border-top: 2px solid var(--light-blue);
 }
 
-/* Style for upload button */
 .uploadButton {
   position: absolute;
   bottom: 8px;
@@ -71,7 +65,7 @@
 
 .uploadButton:hover {
   cursor: pointer;
-  background-color: rgb(7, 7, 168);
+  background-color: var(--dark-orange);
 }
 
 /* Optional: Add a loading spinner or placeholder */

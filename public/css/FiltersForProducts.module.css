@@ -122,13 +122,13 @@
   gap: 1rem;
   padding: 0.5rem 0.75rem;
   background-color: white;
-  border: 1px solid #e2e2e2;
+  border: 2px solid #e2e2e2;
   /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); */
   min-height: 40px; /* UPDATE: Added fixed height to ensure alignment */
 }
 
 .toggleSwitchContainer:hover {
-  border-color: var(--saturated-orange);
+  border: 2px solid var(--saturated-orange);
 }
 
 /* UPDATE: Improved toggleContainer vertical alignment */
@@ -137,23 +137,20 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  /* line-height: 1;  */
 }
 
-/* UPDATE: Improved icon and label alignment */
 .toggleIconLabel {
+  user-select: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: var(--dark-gray);
   font-size: 0.8rem;
-  /* line-height: 1; */
 }
 
-/* UPDATE: Ensure icons are vertically centered */
 .toggleIconLabel svg {
-  display: block; /* UPDATE: Prevents inline element spacing issues */
-  flex-shrink: 0; /* UPDATE: Prevents icon from shrinking */
+  display: block; 
+  flex-shrink: 0; 
 }
 
 .checkboxWrapper {
@@ -196,28 +193,26 @@
 }
 
 .resetButton {
-  padding: 0.6rem 1rem;
-  border: 1px solid #e2e2e2;
-  /* border-radius: 0.375rem; */
+  padding: 0.3rem .5rem;
   background-color: white;
-  color: var(--dark-gray);
+  color: var(--dark-orange);
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.2s ease-in-out;
+  font-size: 0.85rem;
+  /* transition: all 0.2s ease-in-out; */
   text-align: center;
   width: 100%;
   max-width: 200px;
   position: relative; /* Added for positioning the filter count */
   /* Add subtle shadow for depth */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); */
 }
 
 .resetButton:hover {
   background-color: var(--saturated-orange);
-  border-color: var(--saturated-orange);
+  border-top: 2px solid var(--light-blue);
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
 /* Active (pressed) state for reset button */
