@@ -3,7 +3,8 @@ import axiosInstance from '../../../utils/app/axiosConfig.js';
 import AppContext from '../../../app_context/AppContext.js';
 import { ShopManagementFunctions } from '../ShopManagementFunctions.jsx';
 
-export const ShopsListBySellerFunctions = () => {
+// UPDATE: Changed from named export to default export
+const ShopsListBySellerFunctions = () => {
   const {
     setSelectedShop,
     setShops,
@@ -17,7 +18,6 @@ export const ShopsListBySellerFunctions = () => {
     setIsAccepted,
     currentUser,
     selectedShop,
-    // UPDATE: Añadimos setSuccess y setShowSuccessCard para mostrar mensajes de éxito
     setSuccess,
     setShowSuccessCard
   } = useContext(AppContext);
@@ -26,7 +26,7 @@ export const ShopsListBySellerFunctions = () => {
   const [shopCount, setShopCount] = useState(0);
   const [shopLimit, setShopLimit] = useState(1); // Valor por defecto para usuarios no sponsor
   
-  // UPDATE: Añadimos estado para gestionar el comportamiento de doble clic
+  // Estado para gestionar el comportamiento de doble clic
   const [shopClickState, setShopClickState] = useState({
     lastClickedShopId: null,
     showCard: false,
@@ -34,10 +34,10 @@ export const ShopsListBySellerFunctions = () => {
     lastClickTime: 0
   });
   
-  // UPDATE: Utilizar la función fetchUserShops de ShopManagementFunctions para evitar duplicación
+  // Utilizar la función fetchUserShops de ShopManagementFunctions para evitar duplicación
   const { fetchUserShops: fetchShopsFromManagement } = ShopManagementFunctions ? ShopManagementFunctions() : { fetchUserShops: null };
   
-  // UPDATE: Crear una versión memorizada de fetchUserShops que use la implementación compartida
+  // Crear una versión memorizada de fetchUserShops que use la implementación compartida
   const fetchUserShops = useCallback(() => {
     if (fetchShopsFromManagement) {
       return fetchShopsFromManagement();
@@ -64,7 +64,7 @@ export const ShopsListBySellerFunctions = () => {
     }
   }, [shops]);
 
-  // UPDATE: Modificamos el handler para implementar la lógica de selección de tienda
+  // Modificamos el handler para implementar la lógica de selección de tienda
   const handleSelectShop = useCallback((shop) => {
     const currentTime = new Date().getTime();
     const sameShop = shopClickState.lastClickedShopId === shop.id_shop;
@@ -131,12 +131,12 @@ export const ShopsListBySellerFunctions = () => {
     setShowShopCreationForm
   ]);
 
-  // UPDATE: Método para comprobar si una tienda está seleccionada
+  // Método para comprobar si una tienda está seleccionada
   const isShopSelected = useCallback((shopId) => {
     return shopClickState.lastClickedShopId === shopId;
   }, [shopClickState.lastClickedShopId]);
 
-  // UPDATE: Método para saber si mostrar la tarjeta de tienda
+  // Método para saber si mostrar la tarjeta de tienda
   const shouldShowShopCard = useCallback(() => {
     return !!shopClickState.showCard && !!shopClickState.lastClickedShopId;
   }, [shopClickState]);
@@ -151,7 +151,7 @@ export const ShopsListBySellerFunctions = () => {
       return;
     }
     
-    // UPDATE: Resetear el estado de selección de tienda
+    // Resetear el estado de selección de tienda
     setShopClickState({
       lastClickedShopId: null,
       showCard: false,
@@ -159,7 +159,7 @@ export const ShopsListBySellerFunctions = () => {
       lastClickTime: 0
     });
     
-    // UPDATE: Limpiar la tienda seleccionada antes de mostrar el formulario
+    // Limpiar la tienda seleccionada antes de mostrar el formulario
     setSelectedShop(null);
     setShowShopCreationForm(true);
     setShowProductManagement(false);
@@ -173,11 +173,11 @@ export const ShopsListBySellerFunctions = () => {
     setSelectedShop
   ]);
 
-  // UPDATE: Mejorada la función handleUpdateShop
+  // Mejorada la función handleUpdateShop
   const handleUpdateShop = useCallback((shop) => {
     console.log('ShopsListBySellerFunctions - handleUpdateShop called with shop:', shop);
     
-    // UPDATE: Resetear el estado de selección de tienda
+    // Resetear el estado de selección de tienda
     setShopClickState({
       lastClickedShopId: null,
       showCard: false,
@@ -206,7 +206,7 @@ export const ShopsListBySellerFunctions = () => {
 
   // Watch for modal confirmation
   useEffect(() => {
-    // UPDATE: Solo ejecutar si isAccepted y shopToDelete son válidos
+    // Solo ejecutar si isAccepted y shopToDelete son válidos
     if (!isAccepted || !shopToDelete) return;
     
     const deleteShop = async () => {
@@ -220,7 +220,7 @@ export const ShopsListBySellerFunctions = () => {
     
         setShops(existingShops => existingShops.filter(shop => shop.id_shop !== shopToDelete));
         
-        // UPDATE: Si la tienda eliminada era la tienda seleccionada, limpiar los estados
+        // Si la tienda eliminada era la tienda seleccionada, limpiar los estados
         if (selectedShop && selectedShop.id_shop === shopToDelete) {
           setSelectedShop(null);
           setShopClickState({
@@ -231,13 +231,13 @@ export const ShopsListBySellerFunctions = () => {
           });
         }
         
-        // UPDATE: Mostrar mensaje de éxito
+        // Mostrar mensaje de éxito
         setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado correctamente" }));
         setShowSuccessCard(true);
       } catch (err) {
         console.error('Error deleting shop:', err);
       } finally {
-        // UPDATE: Limpiar estados después de la operación
+        // Limpiar estados después de la operación
         setShopToDelete(null);
         setIsAccepted(false);
       }
@@ -254,8 +254,10 @@ export const ShopsListBySellerFunctions = () => {
     handleUpdateShop,
     shopCount,
     shopLimit,
-    // UPDATE: Exportamos las nuevas funciones
     isShopSelected,
     shouldShowShopCard
   };
 };
+
+// UPDATE: Export as default instead of named export
+export default ShopsListBySellerFunctions;

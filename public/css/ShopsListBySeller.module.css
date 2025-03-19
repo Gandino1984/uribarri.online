@@ -1,15 +1,4 @@
-/* UPDATE: Modified tableContainer to prevent horizontal overflow */
-.tableContainer {
-  width: 100%;
-  overflow-x: auto;
-  max-width: 100%;
-  background-color: var(--superlight-gray);
-  -webkit-overflow-scrolling: touch;
-  /* Force the container to respect parent width */
-  box-sizing: border-box;
-}
-
-/* UPDATE: Added horizontal padding to ensure content doesn't touch edges */
+/* UPDATE: Modified container structure for better layout management */
 .container {
   display: flex;
   align-items: center;
@@ -27,6 +16,7 @@
   width: 100%;
   height: 100%;
   max-width: 100%;
+  overflow-x: hidden; /* Contain any overflow */
 }
 
 .headerContainer {
@@ -76,11 +66,26 @@
   color: gray;
 }
 
+/* UPDATE: Improved shop management container structure */
 .shopManagementContainer {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* UPDATE: Improved table container */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 100%;
+  background-color: var(--superlight-gray);
+  -webkit-overflow-scrolling: touch;
+  /* Force the container to respect parent width */
+  box-sizing: border-box;
+  border-radius: 4px; /* Optional: adds a slight rounded edge */
 }
 
 /* UPDATE: Modified table to ensure it works well with scrolling container */
@@ -241,14 +246,16 @@
   background-color: var(--dark-orange);
 }
 
-/* UPDATE: Estilos para el contenedor de la tarjeta de tienda */
+/* UPDATE: Improved shop card container to prevent breaking layout */
 .shopCardContainer {
   width: 100%;
   margin-top: 1rem;
   animation: fadeIn 0.3s ease;
-  /* max-width: 80vw ; */
   margin-left: auto;
   margin-right: auto;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .shopCardInstructions {
