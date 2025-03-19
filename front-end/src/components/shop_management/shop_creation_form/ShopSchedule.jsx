@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../../../../../public/css/ShopCreationForm.module.css';
 import { Clock } from 'lucide-react';
-import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch'; // UPDATE: Import custom toggle switch component
+import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch';
 
 const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContinuousSchedule }) => {
   // Function to handle schedule type change
@@ -26,7 +26,6 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
         Configura los horarios de apertura y cierre de tu comercio
       </p>
       
-      {/* UPDATE: Replace standard checkbox with custom toggle switch */}
       <div className={styles.scheduleTypeToggleContainer}>
         <CustomToggleSwitch 
           checked={hasContinuousSchedule}
@@ -43,22 +42,24 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
             <div className={styles.scheduleFields}>
               <div className={styles.timeFieldContainer}>
                 <label className={styles.timeFieldLabel}>Abre:</label>
+                {/* UPDATE: Added has-value class for styling consistency */}
                 <input
                   type="time"
                   value={newShop.morning_open || ''}
                   onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                  className={styles.timeInput}
+                  className={`${styles.timeInput} ${newShop.morning_open ? 'has-value' : ''}`}
                   required
                 />
               </div>
               
               <div className={styles.timeFieldContainer}>
                 <label className={styles.timeFieldLabel}>Cierra:</label>
+                {/* UPDATE: Added has-value class for styling consistency */}
                 <input
                   type="time"
                   value={newShop.afternoon_close || ''}
                   onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                  className={styles.timeInput}
+                  className={`${styles.timeInput} ${newShop.afternoon_close ? 'has-value' : ''}`}
                   required
                 />
               </div>
@@ -70,19 +71,21 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
             <div>
               <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
               <div className={styles.scheduleFields}>
+                {/* UPDATE: Added has-value class for styling consistency */}
                 <input
                   type="time"
                   value={newShop.morning_open || ''}
                   onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                  className={styles.timeInput}
+                  className={`${styles.timeInput} ${newShop.morning_open ? 'has-value' : ''}`}
                   required
                 />
                 <span>a</span>
+                {/* UPDATE: Added has-value class for styling consistency */}
                 <input
                   type="time"
                   value={newShop.morning_close || ''}
                   onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                  className={styles.timeInput}
+                  className={`${styles.timeInput} ${newShop.morning_close ? 'has-value' : ''}`}
                   required
                 />
               </div>
@@ -91,19 +94,21 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
             <div>
               <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
               <div className={styles.scheduleFields}>
+                {/* UPDATE: Added has-value class for styling consistency */}
                 <input
                   type="time"
                   value={newShop.afternoon_open || ''}
                   onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                  className={styles.timeInput}
+                  className={`${styles.timeInput} ${newShop.afternoon_open ? 'has-value' : ''}`}
                   required
                 />
                 <span>a</span>
+                {/* UPDATE: Added has-value class for styling consistency */}
                 <input
                   type="time"
                   value={newShop.afternoon_close || ''}
                   onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                  className={styles.timeInput}
+                  className={`${styles.timeInput} ${newShop.afternoon_close ? 'has-value' : ''}`}
                   required
                 />
               </div>

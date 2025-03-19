@@ -3,10 +3,11 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-
   width: 100%;
   gap: 1rem;
   z-index: 100;
+  padding-bottom: 1rem;
+  overflow-x: hidden;
 }
 
 .content {
@@ -69,7 +70,7 @@
 }
 
 .tableContainer {
-  width: 100%;
+  width: 100vw;
   overflow-x: auto;
   max-width: 100vw;
   background-color: var(--superlight-gray);
@@ -80,7 +81,6 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: auto; 
-  /* margin-top: 1rem; */
 }
 
 .tableHeader {

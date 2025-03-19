@@ -143,6 +143,10 @@
   .formContent {
     flex-direction: row;
   }
+
+  .inputSection{
+    padding-right: 1rem;
+  }
 }
 
 @media screen and (min-width: 768px) {

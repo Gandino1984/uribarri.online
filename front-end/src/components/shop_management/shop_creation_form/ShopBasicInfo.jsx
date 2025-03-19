@@ -25,8 +25,9 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
       </div>
       
       <div className={styles.formField}>
+        {/* UPDATE: Added has-value class when a value is selected */}
         <select
-          value={newShop.type_shop}
+          value={newShop.type_shop || ""}
           onChange={(e) => {
             setNewShop({
               ...newShop, 
@@ -34,7 +35,7 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
               subtype_shop: ''
             })
           }}
-          className={styles.input} 
+          className={`${styles.input} ${newShop.type_shop ? 'has-value' : ''}`}
           required
         >
           <option value="" disabled>Categoría</option>
@@ -46,10 +47,11 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
 
       {newShop.type_shop && (
         <div className={styles.formField}>
+          {/* UPDATE: Added has-value class when a value is selected */}
           <select
-            value={newShop.subtype_shop}
+            value={newShop.subtype_shop || ""}
             onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
-            className={styles.input} 
+            className={`${styles.input} ${newShop.subtype_shop ? 'has-value' : ''}`}
             required
           >
             <option value="" disabled>Subcategoría</option>

@@ -1,9 +1,9 @@
 /* ShopCard.module.css - Mobile-first approach */
 
 .container {
-  width: 100%;
+  width: 100vw;
   height: 100%;
-  max-width: 100%;
+  max-width: 100vw;
   min-height: 300px;
   margin: 0 auto;
   position: relative;
