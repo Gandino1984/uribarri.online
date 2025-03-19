@@ -56,7 +56,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
               onChange={(e) => handleFilterChange('temporada', e.target.value)}
               className={`${styles.filterSelect} ${filters.temporada ? styles.hasValue : ''}`}
             >
-              <option value="">Temporada</option>
+              <option value="">Por temporada</option>
               {filterOptions.temporada.options.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -72,7 +72,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
               onChange={(e) => handleFilterChange('tipo', e.target.value)}
               className={`${styles.filterSelect} ${filters.tipo ? styles.hasValue : ''}`}
             >
-              <option value="">Tipo de producto</option>
+              <option value="">Por tipo de producto</option>
               {Object.keys(productTypesAndSubtypes).map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -89,7 +89,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
                 onChange={(e) => handleFilterChange('subtipo', e.target.value)}
                 className={`${styles.filterSelect} ${filters.subtipo ? styles.hasValue : ''}`}
               >
-                <option value="">Subtipo</option>
+                <option value="">Por subtipo de producto</option>
                 {getAvailableSubtypes().map((subtype) => (
                   <option key={subtype} value={subtype}>
                     {subtype}
@@ -106,7 +106,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
               onChange={(e) => handleFilterChange('calificacion', e.target.value)}
               className={`${styles.filterSelect} ${filters.calificacion ? styles.hasValue : ''}`}
             >
-              <option value="">Calificación</option>
+              <option value="">Por calificación</option>
               {filterOptions.calificacion.options.map((option) => (
                 <option key={option} value={option}>
                   {option} ⭐
@@ -123,7 +123,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             <div className={styles.toggleSwitchContainer}>
               <span className={styles.toggleIconLabel}>
                 <Percent size={14} />
-                <span>Descuento</span>
+                <span>Con descuento</span>
               </span>
               <CustomToggleSwitch 
                 checked={filters.oferta === 'Sí'}
@@ -145,7 +145,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             <div className={styles.toggleSwitchContainer}>
               <span className={styles.toggleIconLabel}>
                 <Package size={14} />
-                <span>Excedente</span>
+                <span>Con excedentes</span>
               </span>
               <CustomToggleSwitch 
                 checked={filters.excedente === 'Sí'}
@@ -167,7 +167,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             <div className={styles.toggleSwitchContainer} title="Productos que caducan en los próximos 7 días">
               <span className={styles.toggleIconLabel}>
                 <Calendar size={14} />
-                <span>Caducidad</span>
+                <span>Caduca (10 días)</span>
               </span>
               <CustomToggleSwitch 
                 checked={filters.proxima_caducidad === 'Sí'}
