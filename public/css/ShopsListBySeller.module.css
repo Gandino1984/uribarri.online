@@ -1,3 +1,15 @@
+/* UPDATE: Modified tableContainer to prevent horizontal overflow */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 100%;
+  background-color: var(--superlight-gray);
+  -webkit-overflow-scrolling: touch;
+  /* Force the container to respect parent width */
+  box-sizing: border-box;
+}
+
+/* UPDATE: Added horizontal padding to ensure content doesn't touch edges */
 .container {
   display: flex;
   align-items: center;
@@ -8,11 +20,13 @@
   z-index: 100;
   padding-bottom: 1rem;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .content {
   width: 100%;
   height: 100%;
+  max-width: 100%;
 }
 
 .headerContainer {
@@ -69,18 +83,12 @@
   width: 100%;
 }
 
-.tableContainer {
-  width: 100vw;
-  overflow-x: auto;
-  max-width: 100vw;
-  background-color: var(--superlight-gray);
-  -webkit-overflow-scrolling: touch;
-}
-
+/* UPDATE: Modified table to ensure it works well with scrolling container */
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto; 
+  table-layout: auto;
+  min-width: 650px; /* Ensures table has minimum width for readability */
 }
 
 .tableHeader {
@@ -144,8 +152,10 @@
 
 /* UPDATE: Estilos para la fila seleccionada */
 .selectedRow {
-  background-color: var(--superlight-orange);
-  border-left: 2px solid var(--saturated-orange);
+  background-color: var(--saturated-orange);
+  font-weight: 500;
+  color: white;
+  border-left: 2px solid var(--saturated-blue);
 }
 
 .tableCell {
@@ -171,10 +181,9 @@
   gap: 0.25rem;
   padding: 0.5rem;
   background-color: var(--superlight-gray);
-  /* border-radius: 0.375rem; */
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  /* transition: all 0.15s ease; */
   min-width: 36px;
   min-height: 36px;
 }
@@ -214,6 +223,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 4px;
+  color: var(--superdark-orange);
 }
 
 .upgradeMessage {
