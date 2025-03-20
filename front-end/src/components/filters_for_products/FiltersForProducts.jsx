@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import AppContext from '../../app_context/AppContext.js';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
-// import { useSpring, animated, config } from '@react-spring/web';
-import { Search, Calendar, Package, Percent, Filter, ChevronDown, ChevronUp } from 'lucide-react';
-import useFiltersForProducts from './FiltersForProductsFunctions';
-import CustomToggleSwitch from '../../components/shop_management/navigation_components/CustomToggleSwitch.jsx';
+import { Calendar, Package, Percent } from 'lucide-react';
+import useFiltersForProducts from './FiltersForProductsUtils';
+import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
 
 const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
   const { 

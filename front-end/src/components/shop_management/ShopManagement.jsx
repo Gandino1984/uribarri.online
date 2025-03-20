@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import AppContext from '../../app_context/AppContext.js';
-import ShopsListBySeller from './shops_list_by_seller/ShopsListBySeller.jsx';
-import ShopCreationForm from './shop_creation_form/ShopCreationForm.jsx';
-import ProductManagement from '../shop_management/product_management/ProductManagement.jsx';
-import { ShopManagementFunctions } from './ShopManagementFunctions.jsx';
+import ShopsListBySeller from './components/shops_list_by_seller/ShopsListBySeller.jsx';
+import ShopCreationForm from './components/shop_creation_form/ShopCreationForm.jsx';
+import ProductManagement from './components/product_management/ProductManagement.jsx';
+import { ShopManagementUtils } from './ShopManagementUtils.jsx';
 
 const ShopManagement = () => {
   const { 
@@ -18,20 +18,20 @@ const ShopManagement = () => {
 
   const hasInitiallyFetchedShops = useRef(false);
   
-  const shopManagementFunctions = ShopManagementFunctions ? ShopManagementFunctions() : {};
+  const shopManagementUtils = ShopManagementUtils ? ShopManagementUtils() : {};
 
   
   useEffect(() => {
     if (
       !hasInitiallyFetchedShops.current && 
-      shopManagementFunctions.fetchUserShops && 
+      shopManagementUtils.fetchUserShops && 
       currentUser?.id_user
     ) {
       console.log('Initial fetch of shops (once only) for user:', currentUser.id_user);
-      shopManagementFunctions.fetchUserShops();
+      shopManagementUtils.fetchUserShops();
       hasInitiallyFetchedShops.current = true;
     }
-  }, [currentUser?.id_user, shopManagementFunctions]);
+  }, [currentUser?.id_user, shopManagementUtils]);
 
   
   if (!currentUser || currentUser.type_user !== 'seller') {

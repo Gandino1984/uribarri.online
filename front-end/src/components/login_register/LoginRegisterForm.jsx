@@ -4,16 +4,16 @@ import AppContext from '../../app_context/AppContext.js';
 import UserManagement from "../user_management/UserManagement.jsx";
 import ShopManagement from "../shop_management/ShopManagement.jsx";
 
-import { LoginRegisterFunctions } from './LoginRegisterFunctions.jsx';
-import { FormFields } from './FormFields.jsx';
-import { KeyboardSection } from './KeyboardSection';
-import { FormActions } from './FormActions';
+import { LoginRegisterUtils } from './LoginRegisterUtils.jsx';
+import { FormFields } from './components/FormFields.jsx';
+import { KeyboardSection } from './components/KeyboardSection';
+import { FormActions } from './components/FormActions';
 
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 const FormContent = () => {
 
-  const { handleFormSubmit } = LoginRegisterFunctions();
+  const { handleFormSubmit } = LoginRegisterUtils();
 
   return (
     <form className={styles.formContent} onSubmit={handleFormSubmit}>

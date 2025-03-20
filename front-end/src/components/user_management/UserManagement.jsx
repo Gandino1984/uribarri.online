@@ -1,16 +1,16 @@
 import React, { useContext, useEffect } from 'react';
 import AppContext from '../../app_context/AppContext.js';
-import ShopTypeButton from './ShopTypeButton.jsx';
-import ShopsByType from './shops_by_type/ShopsByType.jsx'; 
+import ShopTypeButton from './components/ShopTypeButton.jsx';
+import ShopsByType from './components/shops_by_type/ShopsByType.jsx'; 
 import styles from '../../../../public/css/UserManagement.module.css';
-import { UserManagementFunctions } from './UserManagementFunctions.jsx';
+import { UserManagementUtils } from './UserManagementUtils.jsx';
 
 const UserManagement = () => {
   const { 
     selectedShopType, shopTypes, shopType
   } = useContext(AppContext);
 
-  const { handleBusinessTypeSelect, fetchShopTypes } = UserManagementFunctions();
+  const { handleBusinessTypeSelect, fetchShopTypes } = UserManagementUtils();
 
   // Fetch shop types when component mounts
   useEffect(() => {
