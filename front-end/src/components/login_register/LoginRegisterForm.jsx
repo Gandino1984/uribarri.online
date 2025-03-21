@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 
 import AppContext from '../../app_context/AppContext.js';
-import UserManagement from "../user_management/UserManagement.jsx";
+import UserLanding from "../user_landing/UserLanding.jsx";
 import ShopManagement from "../shop_management/ShopManagement.jsx";
 
 import { LoginRegisterUtils } from './LoginRegisterUtils.jsx';
@@ -43,7 +43,7 @@ const LoginRegisterForm = () => {
     if (userType === 'seller') {
       return <ShopManagement />;
     } else {
-      return <UserManagement />;
+      return <UserLanding />;
     }
   }
 
