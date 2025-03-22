@@ -1,11 +1,14 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Store, Calendar, BookOpen } from 'lucide-react';
-import AppContext from '../../app_context/AppContext.js';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useShop } from '../../app_context/ShopContext.jsx';
 import styles from './UserLanding.module.css';
 
 const UserLanding = () => {
-  const { currentUser, setSelectedShopType } = useContext(AppContext);
+  // UPDATE: Using specialized context hooks instead of AppContext
+  const { currentUser } = useAuth();
+  const { setSelectedShopType } = useShop();
 
   // Main container animation
   const containerAnimation = useSpring({

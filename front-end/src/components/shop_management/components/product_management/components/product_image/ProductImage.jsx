@@ -1,18 +1,17 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera, Loader } from 'lucide-react';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import { useUI } from '../../../../../../app_context/UIContext.jsx';
+import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import styles from '../../../../../../../../public/css/ProductImage.module.css';
 import { ProductImageUtils } from './ProductImageUtils.jsx';
 
+// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ProductImage = ({ id_product }) => {
-  const {
-    selectedProductForImageUpload,
-    selectedProducts,
-    products,
-    setError,
-    uploading,
-    setUploading
-  } = useContext(AppContext);
+  // UI context
+  const { setError, uploading, setUploading } = useUI();
+  
+  // Product context
+  const { selectedProductForImageUpload, selectedProducts, products } = useProduct();
 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -25,12 +24,12 @@ const ProductImage = ({ id_product }) => {
   } = ProductImageUtils();
 
   // Find the product based on id_product
-  // UPDATE: Add a null check to prevent errors when product is not found
+  // Add a null check to prevent errors when product is not found
   const product = products?.find(p => p.id_product === id_product) || null;
 
   // Update imageUrl when product changes or after upload
   useEffect(() => {
-    // UPDATE: Only try to get image URL if product exists and has an image
+    // Only try to get image URL if product exists and has an image
     if (product && product.image_product) {
       const url = getProductImageUrl(product.image_product);
       setImageUrl(url);
@@ -45,7 +44,7 @@ const ProductImage = ({ id_product }) => {
     } else {
       setImageUrl(null);
     }
-  }, [product, lastUpdated]);
+  }, [product, lastUpdated, getProductImageUrl]);
 
   const handleImageUpload = async (event) => {
     event.stopPropagation(); // Prevent event bubbling
@@ -89,7 +88,7 @@ const ProductImage = ({ id_product }) => {
       {imageUrl ? (
         <img
           src={imageUrl}
-          // UPDATE: Safe access to product name with fallback
+          // Safe access to product name with fallback
           alt={`Product image for ${product?.name_product || 'product'}`}
           className={styles.productImage}
           key={`product-image-${id_product}-${lastUpdated}`} // Force re-render when updated

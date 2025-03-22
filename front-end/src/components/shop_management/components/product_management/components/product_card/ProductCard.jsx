@@ -1,14 +1,12 @@
-import React, { useContext, useEffect } from 'react';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import React, { useEffect } from 'react';
+import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import { X, Star, ShoppingCart, Tag, Calendar, Package, MapPin, Globe } from 'lucide-react';
 import styles from '../../../../../../../../public/css/ProductCard.module.css';
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
+// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ProductCard = ({ onClose }) => {
-  const { 
-    selectedProductDetails,
-    setSelectedProductDetails
-  } = useContext(AppContext);
+  const { selectedProductDetails, setSelectedProductDetails } = useProduct();
 
   useEffect(() => {
     // Cleanup function

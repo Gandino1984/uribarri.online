@@ -1,21 +1,42 @@
-import { useContext } from 'react';
-import AppContext from '../../app_context/AppContext.js';
-// import { useSpring, animated } from '@react-spring/web';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
+import { useShop } from '../../app_context/ShopContext.jsx';
+import { useProduct } from '../../app_context/ProductContext.jsx';
 
 export const TopBarUtils = () => {
+    // Auth context values
     const {
         setIsLoggingIn, setNameUser, 
         setPassword, setPasswordRepeat,
         setShowPasswordLabel, setKeyboardKey, 
-        setshowShopManagement, setDisplayedPassword, 
+        setDisplayedPassword, 
         setUserType, logout,
-        showShopManagement, setShowShopCreationForm,
-        showShopCreationForm, selectedShop, setSelectedShop,
-        setCurrentUser, setShops, setSelectedShopType, 
-        setError, setSuccess, setShowProductManagement, currentUser,
-        isUpdatingProduct, setIsUpdatingProduct, setSelectedProductToUpdate,
-        showProductManagement
-    } = useContext(AppContext);
+        currentUser, setCurrentUser
+    } = useAuth();
+
+    // UI context values
+    const {
+        setError, setSuccess
+    } = useUI();
+
+    // Shop context values
+    const {
+        setshowShopManagement,
+        showShopManagement,
+        setShowShopCreationForm,
+        showShopCreationForm, 
+        selectedShop, setSelectedShop,
+        setShops, setSelectedShopType
+    } = useShop();
+
+    // Product context values
+    const {
+        setShowProductManagement,
+        showProductManagement,
+        isUpdatingProduct, 
+        setIsUpdatingProduct, 
+        setSelectedProductToUpdate
+    } = useProduct();
 
     const handleBack = () => {
         // If we're in the product creation/update form, go back to the products list
@@ -86,7 +107,10 @@ export const TopBarUtils = () => {
             ipError: '',
             userlocationError: '',
             userTypeError: '',
-            databaseResponseError: ''
+            databaseResponseError: '',
+            shopError: '',
+            productError: '',
+            imageError: ''
         });
 
         setSuccess({

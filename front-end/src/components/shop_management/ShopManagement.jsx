@@ -1,25 +1,29 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import AppContext from '../../app_context/AppContext.js';
+import React, { useEffect, useRef } from 'react';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useShop } from '../../app_context/ShopContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
 import ShopsListBySeller from './components/shops_list_by_seller/ShopsListBySeller.jsx';
 import ShopCreationForm from './components/shop_creation_form/ShopCreationForm.jsx';
 import ProductManagement from './components/product_management/ProductManagement.jsx';
 import { ShopManagementUtils } from './ShopManagementUtils.jsx';
 
 const ShopManagement = () => {
+  // UPDATE: Using separate contexts instead of AppContext
+  const { currentUser } = useAuth();
+  
   const { 
-    currentUser, 
     showShopCreationForm, 
     shops,
-    setshowShopManagement,
-    showProductManagement,
     selectedShop,
-  } = useContext(AppContext);
+    setshowShopManagement
+  } = useShop();
   
-
+  // UPDATE: Get showProductManagement from UI context where it's defined
+  const { showProductManagement } = useUI();
+  
   const hasInitiallyFetchedShops = useRef(false);
   
   const shopManagementUtils = ShopManagementUtils ? ShopManagementUtils() : {};
-
   
   useEffect(() => {
     if (
@@ -33,12 +37,12 @@ const ShopManagement = () => {
     }
   }, [currentUser?.id_user, shopManagementUtils]);
 
-  
   if (!currentUser || currentUser.type_user !== 'seller') {
     console.log('Non-seller user in ShopManagement, redirecting to login');
     setshowShopManagement(false);
     return null;
   }
+  
   let componentToRender;
   
   if (showProductManagement && selectedShop) {

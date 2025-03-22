@@ -1,26 +1,33 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
-import AppContext from '../../../../app_context/AppContext.js';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { ShopManagementUtils } from '../../ShopManagementUtils.jsx';
 
-// UPDATE: Changed from named export to default export
+// UPDATE: Fixed to get setShowProductManagement from UIContext where it's defined
 const ShopsListBySellerUtils = () => {
+  
+  const { currentUser } = useAuth();
+  
   const {
-    setSelectedShop,
-    setShops,
-    shops,
-    setShowShopCreationForm,
-    setShowProductManagement,
     setError,
     setIsModalOpen,
     setModalMessage,
     isAccepted,
     setIsAccepted,
-    currentUser,
-    selectedShop,
     setSuccess,
-    setShowSuccessCard
-  } = useContext(AppContext);
+    setShowSuccessCard,
+    setShowProductManagement // Now correctly getting this from UIContext
+  } = useUI();
+  
+  const {
+    setSelectedShop,
+    setShops,
+    shops,
+    setShowShopCreationForm,
+    selectedShop
+  } = useShop();
 
   // Estado para llevar la cuenta de tiendas y el límite
   const [shopCount, setShopCount] = useState(0);
@@ -259,5 +266,4 @@ const ShopsListBySellerUtils = () => {
   };
 };
 
-// UPDATE: Export as default instead of named export
 export default ShopsListBySellerUtils;

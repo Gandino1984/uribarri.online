@@ -1,12 +1,17 @@
-import { useState, useContext, useEffect, useRef } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import { uploadProfileImage, formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 export const UserInfoCardUtils = () => {
+    // UPDATE: Using useAuth and useUI hooks instead of AppContext
     const {
-        currentUser, setCurrentUser,
+        currentUser, setCurrentUser
+    } = useAuth();
+
+    const {
         setUploading, setError, uploading
-    } = useContext(AppContext);
+    } = useUI();
 
     const [uploadProgress, setUploadProgress] = useState(0);
     const [localImageUrl, setLocalImageUrl] = useState(null);
@@ -32,7 +37,7 @@ export const UserInfoCardUtils = () => {
             return; // Simplemente retornamos sin mostrar error si el usuario canceló
         }
         
-        // UPDATE: Validate file type
+        // Validate file type
         const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
         if (!validTypes.includes(file.type)) {
           setError(prevError => ({
@@ -42,7 +47,7 @@ export const UserInfoCardUtils = () => {
           return;
         }
         
-        // UPDATE: Validate file size (max 10MB before optimization)
+        // Validate file size (max 10MB before optimization)
         if (file.size > 10 * 1024 * 1024) {
           setError(prevError => ({
             ...prevError,

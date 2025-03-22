@@ -1,19 +1,23 @@
-import React, { useContext } from 'react';
-import AppContext from '../../../app_context/AppContext.js';
-import { LoginRegisterUtils } from '../LoginRegisterUtils.jsx';
+import React from 'react';
+import { useAuth } from '../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../app_context/UIContext.jsx';
+import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx';
 import NumericKeyboard from "./numeric_keyboard/NumericKeyboard.jsx";
 import styles from '../../../../../public/css/LoginRegisterForm.module.css';
 
 export const KeyboardSection = () => {
+  // UPDATE: Using useAuth and useUI hooks instead of AppContext
   const {
     isLoggingIn,
     keyboardKey,
     passwordRepeat,
     password,
     showPasswordRepeat,
-    usernameError,
-    passwordError,
-  } = useContext(AppContext);
+  } = useAuth();
+
+  const { error } = useUI();
+  const usernameError = error.userError;
+  const passwordError = error.passwordError;
 
   const {
     handlePasswordComplete,
@@ -23,8 +27,6 @@ export const KeyboardSection = () => {
 
   return (
     <div className={styles.keyboardSection}>
-      {/* UPDATE: Removed the repeatPasswordMessage div as it will be shown in InfoCard component */}
-
       <div className={styles.numericKeyboardWrapper}>
         <NumericKeyboard
           key={keyboardKey}

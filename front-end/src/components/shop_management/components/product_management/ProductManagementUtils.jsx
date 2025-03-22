@@ -1,14 +1,12 @@
-import React from 'react';
-import { useContext } from 'react';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../app_context/ProductContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
-import AppContext from '../../../../app_context/AppContext.js';
 
 const ProductManagementUtils = () => {
-  
-  const { 
-      setProducts, setError,
-      selectedShop 
-  } = useContext(AppContext);
+  const { selectedShop } = useShop();
+  const { setProducts } = useProduct();
+  const { setError } = useUI();
 
   async function fetchProductsByShop() {
     try {
@@ -52,7 +50,7 @@ const ProductManagementUtils = () => {
   return {
     fetchProductsByShop, 
     fetchProductTypes
-   };
+  };
 };
 
 export default ProductManagementUtils;

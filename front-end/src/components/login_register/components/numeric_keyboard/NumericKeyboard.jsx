@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useContext } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import React, { useEffect } from 'react';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useNumericKeyboardUtils } from './useNumericKeyboardUtils.jsx';
 import { Delete, Eraser } from 'lucide-react';
 import styles from '../../../../../../public/css/NumericKeyboard.module.css';
@@ -12,17 +12,25 @@ const NumericKeyboard = ({
   showMaskedPassword = true, 
   onPasswordComplete   
 }) => {
-
+  // UPDATE: Using useAuth and useUI hooks instead of AppContext
   const { 
-    setError, error,
     displayedPassword,
     setDisplayedPassword,
-    passwordIcons, setPasswordIcons,
+    passwordIcons, 
+    setPasswordIcons,
     clearUserSession,
-  } = useContext(AppContext);
+    setPassword,
+    setPasswordRepeat,
+    setUserType,
+    setLocationUser,
+  } = useAuth();
+
+  const { 
+    error,
+    setError 
+  } = useUI();
 
   const icons = [Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich];
-
 
   const clearForm = () => {
     setPassword('');
@@ -33,7 +41,6 @@ const NumericKeyboard = ({
     setDisplayedPassword('');
   };
   
-
   useEffect(() => {
     if (showMaskedPassword) {
       if (passwordIcons.length < value.length) {
@@ -45,7 +52,7 @@ const NumericKeyboard = ({
     } else {
       setPasswordIcons([]);
     }
-  }, [value, showMaskedPassword]);
+  }, [value, showMaskedPassword, passwordIcons, setPasswordIcons]);
 
   useEffect(() => {
     if (showMaskedPassword) {
@@ -53,7 +60,7 @@ const NumericKeyboard = ({
     } else {
       setDisplayedPassword(value);
     }
-  }, [passwordIcons, showMaskedPassword]);
+  }, [passwordIcons, showMaskedPassword, value, setDisplayedPassword]);
 
   const {
     handleKeyClick,
@@ -68,68 +75,68 @@ const NumericKeyboard = ({
   };
 
   return (
-      <div className={styles.container}>
-            <div className={styles.passwordDisplay}>
-                {displayedPassword}
-            </div>
+    <div className={styles.container}>
+      <div className={styles.passwordDisplay}>
+        {displayedPassword}
+      </div>
 
-            <div className={styles.keyboard}>
-                  <div className={styles.row}>
-                      {[1, 2, 3].map(num => (
-                          <button 
-                            key={num} 
-                            className={styles.key} 
-                            onClick={(e) => handleKeyClick(num.toString(), e)}
-                          >
-                              {num}
-                          </button>
-                      ))}
-                  </div>
-                  <div className={styles.row}>
-                      {[4, 5, 6].map(num => (
-                          <button 
-                            key={num} 
-                            className={styles.key} 
-                            onClick={(e) => handleKeyClick(num.toString(), e)}
-                          >
-                              {num}
-                          </button>
-                      ))}
-                  </div>
-                  <div className={styles.row}>
-                      {[7, 8, 9].map(num => (
-                          <button 
-                            key={num} 
-                            className={styles.key} 
-                            onClick={(e) => handleKeyClick(num.toString(), e)}
-                          >
-                              {num}
-                          </button>
-                      ))}
-                  </div>
-                  <div className={styles.row}>
-                      <button 
-                        className={`${styles.key} ${styles.zero}`} 
-                        onClick={(e) => handleKeyClick('0', e)}
-                      >
-                          0
-                      </button>
-                      <button 
-                        className={`${styles.key} ${styles.clear}`} 
-                        onClick={(e) => handleBackspaceClick(e)}
-                        title="Borrar"
-                      >
-                            <Delete size={16} />
-                      </button>
-                      <button 
-                        className={styles.key} 
-                        onClick={clearUserSession}
-                        title="Borrar todo"
-                      >
-                          <Eraser size={16} />
-                      </button>
-                  </div>
-            </div>
+      <div className={styles.keyboard}>
+        <div className={styles.row}>
+          {[1, 2, 3].map(num => (
+            <button 
+              key={num} 
+              className={styles.key} 
+              onClick={(e) => handleKeyClick(num.toString(), e)}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+        <div className={styles.row}>
+          {[4, 5, 6].map(num => (
+            <button 
+              key={num} 
+              className={styles.key} 
+              onClick={(e) => handleKeyClick(num.toString(), e)}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+        <div className={styles.row}>
+          {[7, 8, 9].map(num => (
+            <button 
+              key={num} 
+              className={styles.key} 
+              onClick={(e) => handleKeyClick(num.toString(), e)}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+        <div className={styles.row}>
+          <button 
+            className={`${styles.key} ${styles.zero}`} 
+            onClick={(e) => handleKeyClick('0', e)}
+          >
+            0
+          </button>
+          <button 
+            className={`${styles.key} ${styles.clear}`} 
+            onClick={(e) => handleBackspaceClick(e)}
+            title="Borrar"
+          >
+            <Delete size={16} />
+          </button>
+          <button 
+            className={styles.key} 
+            onClick={clearUserSession}
+            title="Borrar todo"
+          >
+            <Eraser size={16} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

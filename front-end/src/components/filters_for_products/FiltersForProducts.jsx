@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
-import AppContext from '../../app_context/AppContext.js';
+import React, { useEffect, useState } from 'react';
+import { useProduct } from '../../app_context/ProductContext.jsx';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
 import { Calendar, Package, Percent } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsUtils';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
 
 const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
+
   const { 
     filterOptions, 
     filters, 
     productTypesAndSubtypes,
-  } = useContext(AppContext);
+  } = useProduct();
 
   // State to track active filter count for UI
   const [activeFilterCount, setActiveFilterCount] = useState(0);
@@ -42,10 +43,9 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
     }
   };
 
-
   return (
-    <div  className={styles.filtersContainer}>
-      <div  className={styles.filterControls}>
+    <div className={styles.filtersContainer}>
+      <div className={styles.filterControls}>
         {/* Select Filters Row */}
         <div className={styles.selectFiltersRow}>
           {/* Season Filter */}
@@ -64,7 +64,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </select>
           </div>
 
-          {/* Type Filter - UPDATE: Added hasValue class */}
+          {/* Type Filter */}
           <div className={styles.filterWrapper}>
             <select
               value={filters.tipo || ""}
@@ -80,7 +80,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </select>
           </div>
 
-          {/* Subtype Filter - UPDATE: Added hasValue class */}
+          {/* Subtype Filter */}
           {filters.tipo && (
             <div className={styles.filterWrapper}>
               <select
@@ -98,7 +98,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </div>
           )}
 
-          {/* Rating Filter - UPDATE: Added hasValue class */}
+          {/* Rating Filter */}
           <div className={styles.filterWrapper}>
             <select
               value={filters.calificacion || ""}
@@ -115,7 +115,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
           </div>
         </div>
 
-        {/* Checkbox Filters Row - UPDATE: Replaced checkboxes with CustomToggleSwitch with fixed event handling */}
+        {/* Checkbox Filters Row */}
         <div className={styles.checkboxFiltersRow}>
           {/* Discount Toggle */}
           <div className={styles.toggleFilterWrapper}>

@@ -10,7 +10,9 @@ const ShopImageUpload = ({
   uploading, 
   uploadProgress, 
   setUploadProgress,
-  fileInputRef 
+  fileInputRef,
+  setError,
+  setShowErrorCard
 }) => {
   const [showImageUploadButton, setShowImageUploadButton] = useState(false);
 

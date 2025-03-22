@@ -1,8 +1,11 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ProductCreationFormUtils from './ProductCreationFormUtils.jsx';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
-import { AlertCircle, PackagePlus, Save, ArrowLeft } from 'lucide-react';
+import { AlertCircle, PackagePlus, Save } from 'lucide-react';
 
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
@@ -13,11 +16,11 @@ import ProductDetails from './components/ProductDetails.jsx';
 import StepTracker from '../../../../../navigation_components/StepTracker.jsx';
 import NavigationButtons from '../../../../../navigation_components/NavigationButtons.jsx';
 
+// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ProductCreationForm = () => {
   const {
     handleChange,
     handleNumericInputChange,
-    // resetNewProductData,
     handleSubmit,
     handleUpdate,
     productCount,
@@ -27,6 +30,16 @@ const ProductCreationForm = () => {
     handleViewProductList: navigateToProductList
   } = ProductCreationFormUtils();
 
+  // Auth context
+  const { currentUser } = useAuth();
+  
+  // UI context
+  const { setError, uploading, setShowErrorCard } = useUI();
+  
+  // Shop context
+  const { selectedShop, shopToProductTypesMap } = useShop();
+  
+  // Product context
   const { 
     newProductData: productData,
     filterOptions,
@@ -37,26 +50,17 @@ const ProductCreationForm = () => {
     setSelectedProductToUpdate,
     productTypesAndSubtypes,
     setNewProductData,
-    currentUser,
-    selectedShop,
-    shopToProductTypesMap,
-    uploading,
-    setError,
-    // setUploading,
-    refreshProductList,
-    setShowErrorCard
-  } = useContext(AppContext);
+    refreshProductList
+  } = useProduct();
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   
-
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
   
-
   // Get available product types based on shop type
   const availableProductTypes = selectedShop?.type_shop 
     ? shopToProductTypesMap[selectedShop.type_shop] || []
@@ -97,14 +101,14 @@ const ProductCreationForm = () => {
       // We're in "create new product" mode (isUpdatingProduct is true but no selectedProductToUpdate)
       console.log('ProductCreationForm - In create new product mode');
     }
-  }, [isUpdatingProduct, selectedProductToUpdate]);
+  }, [isUpdatingProduct, selectedProductToUpdate, productData, handleChange]);
 
   // Load products when selected shop changes
   useEffect(() => {
     if (selectedShop?.id_shop) {
       fetchProductsByShop();
     }
-  }, [selectedShop]);
+  }, [selectedShop, fetchProductsByShop]);
 
   // Reset product type when shop changes
   useEffect(() => {
@@ -122,7 +126,7 @@ const ProductCreationForm = () => {
     navigateToProductList(setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement);
   };
 
-  // UPDATE: Add navigation Utils
+  // Add navigation Utils
   const goToNextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
@@ -135,7 +139,7 @@ const ProductCreationForm = () => {
     }
   };
 
-  // UPDATE: Add validation for current step
+  // Add validation for current step
   const validateCurrentStep = () => {
     switch(currentStep) {
       case 1: // Image upload - image is optional, but name and price are required
@@ -245,7 +249,7 @@ const ProductCreationForm = () => {
     );
   };
 
-  // UPDATE: Render the appropriate step component based on currentStep
+  // Render the appropriate step component based on currentStep
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:

@@ -1,16 +1,17 @@
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import { X, MessageCircleWarning } from 'lucide-react';
-import AppContext from '../../app_context/AppContext.js';
+import { useUI } from '../../app_context/UIContext.jsx';
 import styles from '../../../../public/css/ConfirmationModal.module.css';
 
 const ConfirmationModal = () => {
+  // UPDATE: Using useUI hooxk instead of AppContext
   const { 
     isModalOpen, 
     setIsModalOpen,
     setIsAccepted,
     setIsDeclined,
     modalMessage,
-  } = useContext(AppContext);
+  } = useUI();
 
   const handleAccept = () => {
     setIsAccepted(true);

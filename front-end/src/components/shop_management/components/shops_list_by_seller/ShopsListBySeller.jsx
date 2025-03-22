@@ -1,5 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import React, { useEffect } from 'react';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../app_context/ProductContext.jsx';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
 import { Box } from 'lucide-react';
@@ -9,12 +11,10 @@ import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopsTable from './components/ShopsTable';
 
 const ShopsListBySeller = () => {
-  const { 
-    shops, 
-    selectedShop, 
-    currentUser,
-    showProductManagement
-  } = useContext(AppContext);
+  // UPDATE: Using split context hooks instead of AppContext
+  const { currentUser } = useAuth();
+  const { shops, selectedShop } = useShop();
+  const { showProductManagement } = useProduct();
 
   const { 
     fetchUserShops,

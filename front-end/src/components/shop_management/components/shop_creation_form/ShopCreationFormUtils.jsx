@@ -1,7 +1,9 @@
-import { useContext, useCallback } from 'react';
+import { useCallback } from 'react';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
-import AppContext from '../../../../app_context/AppContext.js';
-// UPDATE: Importamos las utilidades para gestión de imágenes correctamente
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
+// Importing image utilities correctly
 import { 
   uploadShopCover, 
   formatImageUrl 
@@ -10,25 +12,28 @@ import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import { optimizeImage } from '../../../../utils/image/imageOptimizer.js';
 
 export const ShopCreationFormUtils = () => {
+  // UPDATE: Using split context hooks instead of AppContext
+  const { currentUser } = useAuth();
+  
   const {
-    currentUser,
-    setShops,
     setError,
-    setShowShopCreationForm,
-    setSelectedShop,
     setShowErrorCard,
-    selectedShop,
     setInfo,
     setShowInfoCard,
-    shops,
-    // UPDATE: Agregamos setSuccess y setShowSuccessCard para mostrar mensajes de éxito
     setSuccess,
     setShowSuccessCard,
-    // UPDATE: Agregamos los estados para gestión de subida de imágenes
     setUploading
-  } = useContext(AppContext);
+  } = useUI();
+  
+  const {
+    setShops,
+    setShowShopCreationForm,
+    setSelectedShop,
+    selectedShop,
+    shops
+  } = useShop();
 
-  // UPDATE: Función para refrescar la lista de tiendas desde el servidor
+  // Function to refresh the list of shops from the server
   const refreshShopsList = useCallback(async () => {
     try {
       if (!currentUser?.id_user) {
@@ -62,7 +67,7 @@ export const ShopCreationFormUtils = () => {
     }
   }, [currentUser?.id_user, setShops]);
 
-  // UPDATE: Función de validación actualizada para soportar horarios continuos
+  // Función de validación actualizada para soportar horarios continuos
   const validateSchedule = (formData) => {
     const {
       morning_open,
@@ -134,7 +139,7 @@ export const ShopCreationFormUtils = () => {
     };
   };
 
-  // UPDATE: Añadimos función para manejar la carga de imágenes
+  // Función para manejar la carga de imágenes
   const handleImageUpload = async (file, shopId, onProgress) => {
     if (!file || !shopId) {
       setError(prevError => ({
@@ -145,10 +150,10 @@ export const ShopCreationFormUtils = () => {
     }
 
     try {
-      // UPDATE: Primero validamos la imagen
+      // Primero validamos la imagen
       await validateImageFile(file);
       
-      // UPDATE: Siempre optimizamos y convertimos a WebP
+      // Siempre optimizamos y convertimos a WebP
       let optimizedFile = file;
       try {
         // Optimizar imagen usando la función de imageOptimizer.js
@@ -231,7 +236,7 @@ export const ShopCreationFormUtils = () => {
         }));
         setShowSuccessCard(true);
         
-        // UPDATE: Refrescar la lista de tiendas después de subir la imagen
+        // Refrescar la lista de tiendas después de subir la imagen
         await refreshShopsList();
         
         return true;
@@ -310,7 +315,7 @@ export const ShopCreationFormUtils = () => {
         throw new Error(response.data.error);
       }
   
-      // UPDATE: Obtener la tienda creada
+      // Obtener la tienda creada
       const newShop = response.data.data;
       console.log('Nueva tienda creada con éxito:', newShop);
       
@@ -320,7 +325,7 @@ export const ShopCreationFormUtils = () => {
         throw new Error('Respuesta inválida del servidor');
       }
       
-      // UPDATE: Actualizar la lista de tiendas inmediatamente para que aparezca en la lista
+      // Actualizar la lista de tiendas inmediatamente para que aparezca en la lista
       // DEBUG: Mostrar la lista de tiendas antes de la actualización
       console.log('Estado actual de las tiendas antes de agregar:', shops);
       
@@ -330,7 +335,7 @@ export const ShopCreationFormUtils = () => {
       // Actualizar el estado global con la nueva lista que incluye la tienda creada
       setShops(updatedShops);
       
-      // UPDATE: Agregar mensaje de éxito
+      // Agregar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
         shopSuccess: "¡Comercio creado exitosamente!"
@@ -348,7 +353,7 @@ export const ShopCreationFormUtils = () => {
         // Continuamos incluso si el refresco falla, ya que agregamos manualmente
       }
   
-      // UPDATE: Devolvemos el objeto tienda para poder utilizar el ID
+      // Devolvemos el objeto tienda para poder utilizar el ID
       return newShop;
     } catch (err) {
       console.error('Error creating shop:', err);
@@ -411,7 +416,7 @@ export const ShopCreationFormUtils = () => {
         throw new Error(response.data.error);
       }
   
-      // UPDATE: Actualizar la tienda en el estado con los datos completos de la respuesta
+      // Actualizar la tienda en el estado con los datos completos de la respuesta
       const updatedShop = response.data.data || { ...updateData, id_shop };
       
       setShops(prevShops => {
@@ -442,7 +447,7 @@ export const ShopCreationFormUtils = () => {
         return updatedShops;
       });
       
-      // UPDATE: Mostrar mensaje de éxito
+      // Mostrar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
         shopSuccess: "¡Comercio actualizado exitosamente!"
@@ -453,10 +458,10 @@ export const ShopCreationFormUtils = () => {
       setShowShopCreationForm(false);
       setSelectedShop(null);
       
-      // UPDATE: Refrescar la lista de tiendas desde el servidor
+      // Refrescar la lista de tiendas desde el servidor
       await refreshShopsList();
       
-      // UPDATE: Devolver un objeto con el ID de la tienda para la subida de imagen
+      // Devolver un objeto con el ID de la tienda para la subida de imagen
       return { id_shop };
     } catch (err) {
       if (!err.message?.includes("Ya existe una comercio con ese nombre")) {

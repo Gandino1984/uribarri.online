@@ -1,22 +1,18 @@
-import React, { useContext, useState } from 'react';
-
-import AppContext from '../../app_context/AppContext.js';
+import React from 'react';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
 import UserLanding from "../user_landing/UserLanding.jsx";
 import ShopManagement from "../shop_management/ShopManagement.jsx";
-
-import { LoginRegisterUtils } from './LoginRegisterUtils.jsx';
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
-
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 const FormContent = () => {
-
-  const { handleFormSubmit } = LoginRegisterUtils();
-
+  // Use the LoginRegisterUtils (which now uses the split contexts)
+  // This forms content stays the same
   return (
-    <form className={styles.formContent} onSubmit={handleFormSubmit}>
+    <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
       <FormFields />
       <KeyboardSection />
     </form>
@@ -24,18 +20,9 @@ const FormContent = () => {
 };
 
 const LoginRegisterForm = () => {
-
-  const {
-    currentUser,
-    showShopManagement,
-    type_user,
-  } = useContext(AppContext);
-
-  const [toggleState, setToggleState] = useState(1);
-
-  const toggleTab = (index) => {
-    setToggleState(index);
-  };
+  // UPDATE: Using separate contexts instead of AppContext
+  const { currentUser, type_user } = useAuth();
+  const { showShopManagement } = useUI();
 
   // if logged
   if (showShopManagement || currentUser) { 
@@ -49,12 +36,12 @@ const LoginRegisterForm = () => {
 
   // if not logged or not registered
   return (
-      <div className={styles.container}>
-          <div className={styles.formContainer}>
-          <FormActions />
-              <FormContent />
-          </div>
+    <div className={styles.container}>
+      <div className={styles.formContainer}>
+        <FormActions />
+        <FormContent />
       </div>
+    </div>
   );
 };
 

@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
 import { Box } from 'lucide-react';
-// import { useSpring, animated } from '@react-spring/web';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
 
 import ShopImageUpload from './components/ShopImageUpload.jsx';
 import ShopBasicInfo from './components/ShopBasicInfo.jsx';
@@ -13,22 +14,25 @@ import StepTracker from '../../../navigation_components/StepTracker.jsx';
 import NavigationButtons from '../../../navigation_components/NavigationButtons.jsx';
 
 const ShopCreationForm = () => {
+  const { currentUser } = useAuth();
+  
   const { 
+    setError,
+    setShowErrorCard,
+    uploading,
+    setUploading,
+    setSuccess,
+    setShowSuccessCard
+  } = useUI();
+  
+  const {
     newShop, 
     setNewShop,
     shopTypesAndSubtypes,
     selectedShop,
-    setError,
-    setShowErrorCard,
-    currentUser,
     setShowShopCreationForm,
-    setSelectedShop,
-    uploading,
-    setUploading,
-    // UPDATE: Add success notification
-    setSuccess,
-    setShowSuccessCard
-  } = useContext(AppContext);
+    setSelectedShop
+  } = useShop();
 
   const {
     handleCreateShop,
@@ -48,7 +52,7 @@ const ShopCreationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
   
-  // UPDATE: Add debug flag
+  // Add debug flag
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
   // Modified useEffect to properly handle user ID
@@ -109,7 +113,7 @@ const ShopCreationForm = () => {
         }
       }
       
-      // UPDATE: Log the schedule data to ensure it's loaded correctly
+      // Log the schedule data to ensure it's loaded correctly
       console.log('Shop schedule data loaded:', {
         morning_open: selectedShop.morning_open,
         morning_close: selectedShop.morning_close,
@@ -120,7 +124,7 @@ const ShopCreationForm = () => {
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // UPDATE: Navigation Utils
+  // Navigation Utils
   const goToNextStep = () => {
     if (currentStep < totalSteps) {
       console.log(`Moving from step ${currentStep} to step ${currentStep + 1}`);
@@ -174,7 +178,7 @@ const ShopCreationForm = () => {
     }
   };
 
-  // UPDATE: Block direct form submission at intermediate steps
+  // Block direct form submission at intermediate steps
   const handleFormSubmit = async (e) => {
     // Always prevent default form submission
     e.preventDefault();
@@ -201,7 +205,7 @@ const ShopCreationForm = () => {
     await processFormSubmission(e);
   };
   
-  // UPDATE: Extracted the actual form submission logic to a separate function
+  // Extracted the actual form submission logic to a separate function
   const processFormSubmission = async (e) => {
     // Set flag to prevent duplicate submissions
     if (isFormSubmitting) {
@@ -396,7 +400,7 @@ const ShopCreationForm = () => {
             <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
         </div>   
         
-        {/* UPDATE: Use handleFormSubmit instead of handleSubmit */}
+        {/* Use handleFormSubmit instead of handleSubmit */}
         <form onSubmit={handleFormSubmit} className={styles.form}>
           {/* Render step content */}
           {renderStepContent()}

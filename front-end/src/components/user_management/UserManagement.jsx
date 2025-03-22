@@ -1,14 +1,13 @@
-import React, { useContext, useEffect } from 'react';
-import AppContext from '../../app_context/AppContext.js';
+import React, { useEffect } from 'react';
+import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopTypeButton from './components/ShopTypeButton.jsx';
 import ShopsByType from './components/shops_by_type/ShopsByType.jsx'; 
 import styles from '../../../../public/css/UserManagement.module.css';
 import { UserManagementUtils } from './UserManagementUtils.jsx';
 
 const UserManagement = () => {
-  const { 
-    selectedShopType, shopTypes, shopType
-  } = useContext(AppContext);
+  // UPDATE: Using specialized context hooks instead of AppContext
+  const { selectedShopType, shopTypes, shopType } = useShop();
 
   const { handleBusinessTypeSelect, fetchShopTypes } = UserManagementUtils();
 

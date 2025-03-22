@@ -1,16 +1,17 @@
-import { useContext } from 'react';
-import AppContext from '../../app_context/AppContext.js';
+import { useUI } from '../../app_context/UIContext.jsx';
+import { useShop } from '../../app_context/ShopContext.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
 export const UserManagementUtils = () => {
+  // UPDATE: Using specialized context hooks instead of AppContext
+  const { setLoading, setError } = useUI();
+  
   const {
     setSelectedShopType,
     setShopType,
     setShopTypes,
-    setLoading,
-    setError,
     setShops
-  } = useContext(AppContext);
+  } = useShop();
 
   // Fetch shop types from the server
   const fetchShopTypes = async () => {

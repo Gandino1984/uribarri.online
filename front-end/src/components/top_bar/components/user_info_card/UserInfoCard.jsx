@@ -1,17 +1,22 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Camera, Loader, Eye } from 'lucide-react';
-import AppContext from '../../../../app_context/AppContext.js';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import ImageModal from '../../../image_modal/ImageModal.jsx';
 import styles from '../../../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 
 const UserInfoCard = () => {
+  // UPDATE: Using useAuth and useUI hooks instead of AppContext
   const { 
-    currentUser,
+    currentUser 
+  } = useAuth();
+  
+  const {
     uploading,
     setError,
     setInfo
-  } = useContext(AppContext);
+  } = useUI();
 
   const {
     handleImageUpload,
@@ -26,13 +31,13 @@ const UserInfoCard = () => {
   const [imageKey, setImageKey] = useState(Date.now()); 
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768);
   
-  // UPDATE: Add state for showing the action buttons
+  // State for showing the action buttons
   const [showButtons, setShowButtons] = useState(false);
   
   // Reference to the profile container for positioning popup
   const profileContainerRef = useRef(null);
   
-  // UPDATE: Toggle button visibility
+  // Toggle button visibility
   const toggleButtons = () => {
     if (!uploading) {
       setShowButtons(!showButtons);
@@ -60,7 +65,6 @@ const UserInfoCard = () => {
     }
   };
 
-  // to-do: update this
   useEffect(() => {
     const handleClickOutside = (e) => {
       const profileContainer = profileContainerRef.current;
@@ -115,7 +119,6 @@ const UserInfoCard = () => {
     setModalImageUrl(null);
   };
 
-  // to-do: update this
   const welcomeMessage = isSmallScreen
     ? currentUser
       ? `${currentUser.name_user}`
@@ -131,7 +134,7 @@ const UserInfoCard = () => {
         ) : (
           <>
             <div className={styles.profileSection}>
-                {/* UPDATE: External popup menu for actions */}
+                {/* External popup menu for actions */}
                 {showButtons && (
                   <div id="profile-actions-popup" className={styles.actionsPopup}>
                       {/* Upload button */}
@@ -190,7 +193,7 @@ const UserInfoCard = () => {
                     disabled={uploading}
                   />
                   
-                  {/* UPDATE: Show the edit overlay with camera icon when hovering */}
+                  {/* Show the edit overlay with camera icon when hovering */}
                   {!uploading && (
                     <div className={styles.editOverlay}>
                         <Camera size={16} className={styles.editIcon} />

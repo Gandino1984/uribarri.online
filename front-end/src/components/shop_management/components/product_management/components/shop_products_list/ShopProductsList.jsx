@@ -1,14 +1,16 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
-import AppContext from '../../../../../../../src/app_context/AppContext.js';
+import React, { useEffect, useState, useRef } from 'react';
+import { useAuth } from '../../../../../../../src/app_context/AuthContext.jsx';
+import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
+import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
+import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
 
 import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
 import ImageModal from '../../../../../image_modal/ImageModal.jsx';
 import ProductCard from '../product_card/ProductCard.jsx';
-import ShopCard from '../../../shop_card/ShopCard.jsx'; 
+import ShopCard from '../../../shop_card/ShopCard.jsx';
 import ConfirmationModal from '../../../../../confirmation_modal/ConfirmationModal.jsx';
-// import ProductManagementUtils from '../ProductManagementUtils.jsx';
 import useFiltersForProducts from '../../../../../filters_for_products/FiltersForProductsUtils.jsx';
 
 import SearchBar from './components/SearchBar.jsx';
@@ -18,32 +20,41 @@ import NoProductsMessage from './components/NoProductsMessage.jsx';
 import NoShopSelected from './components/NoShopSelected.jsx';
 import ProductsTable from './components/ProductsTable.jsx';
 
+
 const ShopProductsList = () => {
+  // Auth context
+  const { currentUser } = useAuth();
+
+  // UI context
   const {
-    currentUser,
+    clearError, setError,
+    isModalOpen, setIsModalOpen,
+    isAccepted, setIsAccepted,
+    isDeclined, setIsDeclined,
+    isImageModalOpen, setIsImageModalOpen,
+    setModalMessage,
+    setShowSuccessCard,
+    setShowErrorCard,
+    success, setSuccess,
+    selectedImageForModal, setSelectedImageForModal
+  } = useUI();
+
+  // Shop context
+  const { selectedShop } = useShop();
+
+  // Product context
+  const {
     products,
-    selectedShop,
     filters,
     filteredProducts, setFilteredProducts,
     selectedProducts, setSelectedProducts,
-    isAccepted, setIsAccepted,
-    isDeclined, setIsDeclined,
-    clearError, setError,
-    isImageModalOpen, setIsImageModalOpen,
     productToDelete, setProductToDelete,
-    selectedImageForModal, setSelectedImageForModal,
     selectedProductDetails, setSelectedProductDetails,
     setSelectedProductForImageUpload,
-    isModalOpen, setIsModalOpen,
-    setModalMessage,
     productListKey,
     setShowProductManagement,
-    setshowShopManagement,
-    refreshProductList,
-    success, setSuccess,
-    setShowSuccessCard,
-    setShowErrorCard
-  } = useContext(AppContext);
+    refreshProductList
+  } = useProduct();
 
   const [contentVisible, setContentVisible] = useState(false);
   const [showProductCard, setShowProductCard] = useState(false);
@@ -62,13 +73,12 @@ const ShopProductsList = () => {
   // Use the function to get active filters count
   const activeFiltersCount = getActiveFiltersCount();
   
-  
   // Add a ref to track deletion in progress
   const deletionInProgress = useRef(false);
   // Add a ref to track what product we're deleting
   const currentDeletingProduct = useRef(null);
 
-  // UPDATE: Get all Utils from ShopProductsListUtils
+  // Get all Utils from ShopProductsListUtils
   const {
     filterProducts,
     fetchProductsByShop,
@@ -92,12 +102,12 @@ const ShopProductsList = () => {
     handleBulkUpdate: handleBulkUpdateFn
   } = ShopProductsListUtils();
 
-  // UPDATE: Wrapper Utils to pass the required state
+  // Wrapper Utils to pass the required state
   const handleBack = () => {
     setShowProductManagement(false);
   };
 
-  // UPDATE: Wrapper Utils that use the ones from ShopProductsListUtils
+  // Wrapper Utils that use the ones from ShopProductsListUtils
   const handleSearchChange = (e) => {
     handleSearchChangeFn(e, setSearchTerm);
   };
@@ -174,7 +184,7 @@ const ShopProductsList = () => {
     
     setFilteredProducts(filtered);
     setDisplayedProducts(filtered);
-  }, [products, filters, searchTerm]);
+  }, [products, filters, searchTerm, filterProducts, setFilteredProducts]);
 
   // Deletion handler
   useEffect(() => {
@@ -267,7 +277,7 @@ const ShopProductsList = () => {
 
       handleConfirmedDelete();
     }
-  }, [isAccepted]);
+  }, [isAccepted, productToDelete, selectedProducts, deleteProduct, bulkDeleteProducts, fetchProductsByShop, refreshProductList, setSuccess, setError, setProductToDelete, setIsAccepted, clearError, setShowSuccessCard]);
 
   // Handle deletion cancellation
   useEffect(() => {
@@ -280,7 +290,7 @@ const ShopProductsList = () => {
       deletionInProgress.current = false;
       currentDeletingProduct.current = null;
     }
-  }, [isDeclined]);
+  }, [isDeclined, setProductToDelete, setIsDeclined, clearError]);
 
   // Handle clicks outside active menu
   useEffect(() => {
@@ -299,7 +309,7 @@ const ShopProductsList = () => {
 
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
-    // UPDATE: Use the NoShopSelected component
+    // Use the NoShopSelected component
     return <NoShopSelected setShowProductManagement={setShowProductManagement} />;
   }
 
@@ -342,13 +352,13 @@ const ShopProductsList = () => {
                 <h1 className={styles.listTitle}>Lista de Productos</h1>
               </div>
               <div className={styles.buttonGroup}>
-                {/* UPDATE: Use the SearchBar component */}
+                {/* Use the SearchBar component */}
                 <SearchBar 
                   searchTerm={searchTerm}
                   handleSearchChange={handleSearchChange}
                 />
                 
-                {/* UPDATE: Use the ActionButtons component */}
+                {/* Use the ActionButtons component */}
                 <ActionButtons 
                   handleAddProduct={handleAddProduct}
                   handleBulkUpdate={handleBulkUpdate}
@@ -357,7 +367,6 @@ const ShopProductsList = () => {
                   showFilters={showFilters}
                   selectedProducts={selectedProducts}
                   activeFiltersCount={activeFiltersCount}
-                  // filterButtonAnimation={filterButtonAnimation}
                 />
               </div>
             </div>
@@ -367,17 +376,17 @@ const ShopProductsList = () => {
         {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
         
         {displayedProducts.length === 0 ? (
-          /* UPDATE: Use the NoProductsMessage component */
+          /* Use the NoProductsMessage component */
           <NoProductsMessage products={products} />
         ) : (       
           <div className={styles.tableContainer}>
-            {/* UPDATE: Use the ProductsCount component */}
+            {/* Use the ProductsCount component */}
             <ProductsCount 
               displayedProducts={displayedProducts}
               selectedProducts={selectedProducts}
             />
             
-            {/* UPDATE: Use the ProductsTable component */}
+            {/* Use the ProductsTable component */}
             <ProductsTable 
               displayedProducts={displayedProducts}
               selectedProducts={selectedProducts}

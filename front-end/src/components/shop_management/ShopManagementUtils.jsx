@@ -1,16 +1,16 @@
-import { useContext, useRef, useCallback } from 'react';
-import AppContext from '../../app_context/AppContext.js';
+import { useRef, useCallback } from 'react';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
+import { useShop } from '../../app_context/ShopContext.jsx';
+import { useProduct } from '../../app_context/ProductContext.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
 export const ShopManagementUtils = () => {
-  const {
-    currentUser,
-    setShops,
-    setInfo,
-    setSelectedShop,
-    setshowShopManagement, 
-    setShowProductManagement
-  } = useContext(AppContext);
+  // UPDATE: Using split context hooks instead of AppContext
+  const { currentUser } = useAuth();
+  const { setInfo } = useUI();
+  const { setShops, setSelectedShop, setshowShopManagement } = useShop();
+  const { setShowProductManagement } = useProduct();
   
   // UPDATE: Usar un ref para rastrear si ya se ha hecho la petición
   const fetchInProgress = useRef(false);

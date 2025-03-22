@@ -1,14 +1,13 @@
 import React from 'react';
 import { DoorOpen, ChevronLeft } from 'lucide-react';
-import { LoginRegisterUtils } from '../LoginRegisterUtils.jsx';
-import { useContext } from 'react';
-import AppContext from '../../../app_context/AppContext.js';
+import { useAuth } from '../../../app_context/AuthContext.jsx';
+import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx'; 
 import styles from '../../../../../public/css/LoginRegisterForm.module.css';
 
 export const FormActions = () => {
-
-  const { isLoggingIn } = useContext(AppContext);
-
+  // UPDATE: Using useAuth hook instead of AppContext
+  const { isLoggingIn } = useAuth();
+  
   const { handleFormSubmit, isButtonDisabled, toggleForm } = LoginRegisterUtils();
 
   return (

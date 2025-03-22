@@ -1,7 +1,9 @@
-import React, { useContext, useCallback, memo, useState } from 'react';
+import React, { useCallback, memo, useState } from 'react';
 import styles from '../../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from './components/shop_cover_image/ShopCoverImage.jsx';
-import AppContext from '../../../../app_context/AppContext.js';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../app_context/ProductContext.jsx';
 import ShopMap from './components/shop_map/ShopMap.jsx';
 import ShopHeader from './components/ShopHeader.jsx';
 import MinimizedCard from './components/MinimizedCard.jsx';
@@ -14,14 +16,11 @@ const ShopCard = ({ shop }) => {
   const [showMap, setShowMap] = useState(false);
   const isSmallScreen = useScreenSize(768);
   
-  const { 
-    currentUser,
-    setSelectedShop,
-    setShowShopCreationForm,
-    setShowProductManagement
-  } = useContext(AppContext);
+  // UPDATE: Using split context hooks instead of AppContext
+  const { currentUser } = useAuth();
+  const { setSelectedShop, setShowShopCreationForm } = useShop();
+  const { setShowProductManagement } = useProduct();
   
-
   const { formatTime, formatShopType, checkHasContinuousSchedule } = ShopCardUtils();
 
   // Event handlers
@@ -51,7 +50,7 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
-  // UPDATE: Enhanced responsive layout with fullscreen mobile map
+  // Enhanced responsive layout with fullscreen mobile map
   return (
     <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 
@@ -80,7 +79,7 @@ const ShopCard = ({ shop }) => {
         )}
       </div>
       
-      {/* UPDATE: Improved map container with fullscreen mobile support */}
+      {/* Improved map container with fullscreen mobile support */}
       {showMap && !minimized && (
         <div 
           className={styles.mapWrapper} 
@@ -97,4 +96,4 @@ const ShopCard = ({ shop }) => {
   );
 };
 
-export default memo(ShopCard);    
+export default memo(ShopCard);

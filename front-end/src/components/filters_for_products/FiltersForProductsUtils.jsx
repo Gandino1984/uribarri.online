@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext, useCallback } from 'react';
-import AppContext from '../../app_context/AppContext.js';
+import { useState, useEffect, useCallback } from 'react';
+import { useProduct } from '../../app_context/ProductContext.jsx';
 
 const FiltersForProductsUtils = () => {
   const { 
@@ -8,13 +8,10 @@ const FiltersForProductsUtils = () => {
     products,
     setFilteredProducts,
     productTypesAndSubtypes,
-  } = useContext(AppContext);
+  } = useProduct();
 
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  // UPDATE: Removed expirationDateRange state since we're removing the interval filter
-  
-  // UPDATE: Using useState instead of a ref for the timeout
   const [filterUpdateTimeout, setFilterUpdateTimeout] = useState(null);
 
   // Set visibility after mount
@@ -25,7 +22,7 @@ const FiltersForProductsUtils = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // UPDATE: Fixed function to count active filters
+  // Fixed function to count active filters
   const getActiveFiltersCount = useCallback(() => {
     let count = 0;
     
@@ -40,7 +37,7 @@ const FiltersForProductsUtils = () => {
     return count;
   }, [filters]);
 
-  // UPDATE: Aplicar los filtros con un pequeño debounce para mejor rendimiento
+  // Aplicar los filtros con un pequeño debounce para mejor rendimiento
   useEffect(() => {
     if (filterUpdateTimeout) {
       clearTimeout(filterUpdateTimeout);
@@ -96,7 +93,7 @@ const FiltersForProductsUtils = () => {
     }));
   }, [setFilters]);
 
-  // UPDATE: Improved near expiration change handler
+  // Improved near expiration change handler
   const handleNearExpirationChange = useCallback((e) => {
     setFilters(prevFilters => ({
       ...prevFilters,
@@ -124,7 +121,7 @@ const FiltersForProductsUtils = () => {
     return productTypesAndSubtypes[filters.tipo];
   }, [filters.tipo, productTypesAndSubtypes]);
 
-  // UPDATE: Improved isNearExpiration function to handle date boundaries better
+  // Improved isNearExpiration function to handle date boundaries better
   const isNearExpiration = useCallback((expirationDate) => {
     if (!expirationDate) return false;
     
@@ -152,7 +149,7 @@ const FiltersForProductsUtils = () => {
     return diffDays >= 0 && diffDays <= 7;
   }, []);
 
-  // UPDATE: Simplified applyFilters function by removing date range logic
+  // Simplified applyFilters function by removing date range logic
   const applyFilters = useCallback(() => {
     if (!products || products.length === 0) {
       setFilteredProducts([]);
@@ -210,7 +207,7 @@ const FiltersForProductsUtils = () => {
       );
     }
 
-    // UPDATE: Improved filter for products near expiration
+    // Improved filter for products near expiration
     if (filters.proxima_caducidad === 'Sí') {
       filtered = filtered.filter(product => 
         product.expiration_product && isNearExpiration(product.expiration_product)

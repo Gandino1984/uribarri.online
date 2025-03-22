@@ -1,11 +1,12 @@
-import React, { useContext, memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Camera, Loader } from 'lucide-react';
-import AppContext from '../../../../../../app_context/AppContext.js';
-import { ShopCoverImageUtils } from './ShopCoverImageUtils';
+import { useShop } from '../../../../../../app_context/ShopContext.jsx';
+import { ShopCoverImageUtils } from './ShopCoverImageUtils.jsx';
 import styles from '../../../../../../../../public/css/ShopCoverImage.module.css';
 
 const ShopCoverImage = ({ id_shop }) => {
-  const { selectedShop, shops } = useContext(AppContext);
+  // Using useShop hook instead of AppContext
+  const { selectedShop, shops } = useShop();
   const [imageKey, setImageKey] = useState(Date.now()); // Force re-render when needed
   
   const {
@@ -23,13 +24,13 @@ const ShopCoverImage = ({ id_shop }) => {
   const shop = shops.find(s => s.id_shop === id_shop);
   const isSelected = selectedShop?.id_shop === id_shop;
   
-  // UPDATE: Solo actualizar la clave de imagen cuando realmente sea necesario
+  // Solo actualizar la clave de imagen cuando realmente sea necesario
   useEffect(() => {
     const newKey = Date.now();
     setImageKey(newKey);
   }, [shop?.image_shop, localImageUrl, lastUpdated]);
   
-  // UPDATE: Reducir registro de logs innecesarios
+  // Reducir registro de logs innecesarios
   useEffect(() => {
     if (isSelected && shop?.image_shop) {
       console.log(`Selected shop ${id_shop} image path:`, getShopCoverUrl(shop.image_shop));
@@ -59,7 +60,7 @@ const ShopCoverImage = ({ id_shop }) => {
   const imageSource = getImageSource();
 
   return (
-    // UPDATE: Added aspect-ratio container to maintain consistent 800x300 (2.67:1) ratio
+    // Added aspect-ratio container to maintain consistent 800x300 (2.67:1) ratio
     <div className={styles.container}>
       <div 
         className={`${styles.imageWrapper} ${isSelected ? styles.selectedShop : ''}`}
@@ -131,7 +132,7 @@ const ShopCoverImage = ({ id_shop }) => {
   );
 };
 
-// UPDATE: Mejorar la función de comparación de memoización para evitar rerenderizados innecesarios
+// Mejorar la función de comparación de memoización para evitar rerenderizados innecesarios
 export default memo(ShopCoverImage, (prevProps, nextProps) => {
   // Solo re-renderizar cuando cambia el ID de la tienda
   return prevProps.id_shop === nextProps.id_shop;

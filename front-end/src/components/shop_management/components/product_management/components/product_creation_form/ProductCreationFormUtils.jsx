@@ -1,34 +1,50 @@
-import { useContext, useEffect, useState } from 'react';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import { useEffect, useState, useCallback } from 'react';
+import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import axiosInstance from '../../../../../../utils/app/axiosConfig.js';
 // Import the required utilities for image upload
 import { uploadProductImage } from '../../../../../../utils/image/imageUploadService.js';
 import { validateImageFile } from '../../../../../../utils/image/imageValidation.js';
 import { optimizeImage } from '../../../../../../utils/image/imageOptimizer.js';
 
+// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ProductCreationFormUtils = () => {
+  // Auth context
+  const { currentUser } = useAuth();
+  
+  // UI context
   const { 
+    setError, 
+    setShowErrorCard, 
+    setIsModalOpen, 
+    setModalMessage, 
+    isAccepted, 
+    setIsAccepted, 
+    isDeclined, 
+    setIsDeclined, 
+    setUploading,
+    setSuccess,
+    setShowSuccessCard
+  } = useUI();
+  
+  // Shop context
+  const { selectedShop } = useShop();
+  
+  // Product context
+  const { 
+    newProductData, 
     setNewProductData,
-    selectedShop, setError, 
-    setShowErrorCard, newProductData, 
-    products, setProducts,
+    products, 
+    setProducts,
     setShowProductManagement,
     selectedProductToUpdate,
     setIsUpdatingProduct,
     setSelectedProductToUpdate,
-    setIsModalOpen,
-    setModalMessage,
-    isAccepted,
-    setIsAccepted,
-    isDeclined,
-    setIsDeclined,
-    currentUser,
     shopToProductTypesMap,
-    setUploading,
-    setSuccess,
-    setShowSuccessCard,
     refreshProductList
-  } = useContext(AppContext);
+  } = useProduct();
 
   // Estado para llevar la cuenta de productos y el límite
   const [productCount, setProductCount] = useState(0);
@@ -37,7 +53,7 @@ const ProductCreationFormUtils = () => {
   const [currentOperation, setCurrentOperation] = useState(null); // can be 'create', 'update', or null
 
   // Función para obtener productos por tienda
-  const fetchProductsByShop = async () => {
+  const fetchProductsByShop = useCallback(async () => {
     try {
       if (!selectedShop?.id_shop) {
         console.error('No hay comercio seleccionado');
@@ -78,7 +94,7 @@ const ProductCreationFormUtils = () => {
       setProducts([]);
       return [];
     } 
-  };
+  }, [selectedShop, setError, setProducts]);
 
   // Determinar el límite de productos basado en la categoría del usuario
   useEffect(() => {
@@ -106,7 +122,7 @@ const ProductCreationFormUtils = () => {
       // Utilizar la función existente para obtener los productos de la tienda
       fetchProductsByShop();
     }
-  }, [selectedShop, setNewProductData]);
+  }, [selectedShop, setNewProductData, fetchProductsByShop]);
 
 
   // Completely revised effect to handle modal responses with operation type tracking
@@ -149,9 +165,9 @@ const ProductCreationFormUtils = () => {
     };
 
     handleModalResponse();
-  }, [isAccepted, isDeclined]);
+  }, [isAccepted, isDeclined, currentOperation, selectedProductToUpdate, newProductData, setError, setShowErrorCard, setIsAccepted, setIsDeclined]);
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     if (name === 'info_product') {
       const wordCount = value.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -170,9 +186,9 @@ const ProductCreationFormUtils = () => {
         [name]: value
       }));
     }
-  };
+  }, [setNewProductData, setError]);
 
-  const handleNumericInputChange = (e) => {
+  const handleNumericInputChange = useCallback((e) => {
     const { name, value } = e.target;
     
     if (name === 'price_product') {
@@ -212,10 +228,10 @@ const ProductCreationFormUtils = () => {
         }));
       }
     }
-  };
+  }, [setNewProductData]);
 
   // Function to check if product type is valid for the shop type
-  const isValidProductTypeForShop = (productType, shopType) => {
+  const isValidProductTypeForShop = useCallback((productType, shopType) => {
     // If we're updating a product, allow the existing type
     if (selectedProductToUpdate && productType === selectedProductToUpdate.type_product) {
       return true;
@@ -226,57 +242,57 @@ const ProductCreationFormUtils = () => {
     
     // Check if the product type is in the allowed types
     return allowedTypes.includes(productType);
-  };
+  }, [selectedProductToUpdate, shopToProductTypesMap]);
 
-  const validateProductData = (newProductData) => {
+  const validateProductData = useCallback((productData) => {
     try {
-      if (!newProductData.id_shop) {
+      if (!productData.id_shop) {
         setError(prevError => ({ ...prevError, productError: "Debe seleccionar una comercio"}));
         throw new Error("Debe seleccionar una comercio");
       }
-      if (!newProductData.name_product) {
+      if (!productData.name_product) {
         setError(prevError => ({ ...prevError, productError: "El nombre de producto es requerido"}));
         throw new Error("El nombre de producto es requerido");
       }
-      if (!newProductData.type_product) {
+      if (!productData.type_product) {
         setError(prevError => ({ ...prevError, productError: "El tipo de producto es requerido"}));
         throw new Error("El tipo de producto es requerido");
       }
       
       // Validate that product type is compatible with shop type
-      if (selectedShop && !isValidProductTypeForShop(newProductData.type_product, selectedShop.type_shop)) {
+      if (selectedShop && !isValidProductTypeForShop(productData.type_product, selectedShop.type_shop)) {
         setError(prevError => ({ 
           ...prevError, 
-          productError: `El tipo de producto "${newProductData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`
+          productError: `El tipo de producto "${productData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`
         }));
-        throw new Error(`El tipo de producto "${newProductData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`);
+        throw new Error(`El tipo de producto "${productData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`);
       }
       
-      if (newProductData.discount_product < 0 || newProductData.discount_product > 100) {
+      if (productData.discount_product < 0 || productData.discount_product > 100) {
         setError(prevError => ({ ...prevError, productError: "Valor de descuento fuera del rango permitido"}));
         throw new Error("Valor de descuento fuera del rango permitido");
       }
-      if (newProductData.sold_product < 0) {
+      if (productData.sold_product < 0) {
         setError(prevError => ({ ...prevError, productError: "El sold no puede ser negativo"}));
         throw new Error("El sold no puede ser negativo");
       }
       // Validate price format
-      if (newProductData.price_product.toString().split('.')[1]?.length > 2) {
+      if (productData.price_product.toString().split('.')[1]?.length > 2) {
         setError(prevError => ({ ...prevError, productError: "El precio debe tener máximo 2 decimales"}));
         throw new Error("El precio debe tener máximo 2 decimales");
       }
 
-      if (!newProductData.subtype_product) {
+      if (!productData.subtype_product) {
         setError(prevError => ({ ...prevError, productError: "El subtipo de producto es requerido"}));
         throw new Error("El subtipo de producto es requerido");
       }
 
-      if (newProductData.surplus_product < 0) {
+      if (productData.surplus_product < 0) {
         setError(prevError => ({ ...prevError, productError: "El excedente no puede ser negativo"}));
         throw new Error("El excedente no puede ser negativo");
       }
-      if (newProductData.expiration_product) {
-        const expirationDate = new Date(newProductData.expiration_product);
+      if (productData.expiration_product) {
+        const expirationDate = new Date(productData.expiration_product);
         if (isNaN(expirationDate.getTime())) {
           setError(prevError => ({ ...prevError, productError: "Fecha de caducidad inválida"}));
           throw new Error("Fecha de caducidad inválida");
@@ -298,9 +314,9 @@ const ProductCreationFormUtils = () => {
       setError(prevError => ({ ...prevError, productError: err.message || "Error al validar los datos del producto" }));
       return false;
     }
-  };
+  }, [selectedShop, selectedProductToUpdate, productCount, productLimit, currentUser, isValidProductTypeForShop, setError]);
 
-  const resetNewProductData = () => {
+  const resetNewProductData = useCallback(() => {
     setNewProductData({
       name_product: '',
       price_product: '',
@@ -327,7 +343,7 @@ const ProductCreationFormUtils = () => {
     // IMPORTANT: We no longer reset isUpdatingProduct here
     // This prevents the conflict with handleAddProduct
     setSelectedProductToUpdate(null);
-  };
+  }, [selectedShop, setNewProductData, setError, setSelectedProductToUpdate]);
 
   // Function to check if a product with the same name exists
   const verifyProductName = async (name_product, id_shop) => {
@@ -347,7 +363,7 @@ const ProductCreationFormUtils = () => {
   };
 
   // Function to handle image upload
-  const handleImageUpload = async (file, productId, onProgress) => {
+  const handleImageUpload = useCallback(async (file, productId, onProgress) => {
     if (!file || !productId) {
       setError(prevError => ({
         ...prevError,
@@ -377,7 +393,7 @@ const ProductCreationFormUtils = () => {
           quality: 0.85,
           format: 'image/webp',
           maxSizeKB: 1024 // 1MB limit
-          });
+        });
         console.log('Image optimized:', {
           originalSize: Math.round(file.size / 1024) + 'KB',
           optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
@@ -435,10 +451,10 @@ const ProductCreationFormUtils = () => {
     } finally {
       setUploading(false);
     }
-  };
+  }, [selectedShop, products, setUploading, setError, setProducts, refreshProductList, setSuccess, setShowSuccessCard, setShowErrorCard]);
 
   // Updated createProduct with better success message handling
-  const createProduct = async () => {
+  const createProduct = useCallback(async () => {
     try {
       // Verificar que no se haya alcanzado el límite
       if (productCount >= productLimit) {
@@ -507,10 +523,10 @@ const ProductCreationFormUtils = () => {
       console.error('Error config:', err.config);
       return false;
     }
-  };
+  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement]);
 
   // Updated handleSubmit with operation tracking
-  const handleSubmit = async (e, imageFile = null) => {
+  const handleSubmit = useCallback(async (e, imageFile = null) => {
     e.preventDefault();
     try {
       if (!validateProductData(newProductData)) return false;
@@ -559,10 +575,10 @@ const ProductCreationFormUtils = () => {
       console.error('ProductCreationFormUtils - handleSubmit() - Error al crear el producto =', err);
       return false;
     }
-  };
+  }, [newProductData, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, createProduct, handleImageUpload, setError, setShowErrorCard]);
 
   // Updated handleUpdate with operation tracking
-  const handleUpdate = async (e, imageFile = null) => {
+  const handleUpdate = useCallback(async (e, imageFile = null) => {
     e.preventDefault();
     try {
       if (!validateProductData(newProductData)) return false;
@@ -616,10 +632,10 @@ const ProductCreationFormUtils = () => {
       console.error('ProductCreationFormUtils - handleUpdate() - Error al actualizar el producto =', err);
       return false;
     }
-  };
+  }, [newProductData, selectedProductToUpdate, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, handleImageUpload, setError, setShowErrorCard]);
   
   // Updated updateProductInDB with improved success message handling
-  const updateProductInDB = async (updateData) => {
+  const updateProductInDB = useCallback(async (updateData) => {
     try {
       const response = await axiosInstance.patch('/product/update', updateData);
     
@@ -666,19 +682,19 @@ const ProductCreationFormUtils = () => {
     } catch (err) {
       throw err;
     }
-  };
+  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard]);
 
   // Function to get available product types for the selected shop
-  const getAvailableProductTypesForShop = () => {
+  const getAvailableProductTypesForShop = useCallback(() => {
     if (!selectedShop || !selectedShop.type_shop) {
-      return Object.keys(productTypesAndSubtypes);
+      return Object.keys({ });
     }
     
     return shopToProductTypesMap[selectedShop.type_shop] || [];
-  };
+  }, [selectedShop, shopToProductTypesMap]);
   
-  // UPDATE: Added Utils for handling image selection in the UI
-  const handleImageSelect = (file, setSelectedImage, setImagePreview, setShowImageUploadButton, setError) => {
+  // Added Utils for handling image selection in the UI
+  const handleImageSelect = useCallback((file, setSelectedImage, setImagePreview, setShowImageUploadButton, setError) => {
     if (!file) return;
 
     // Validate file type
@@ -718,19 +734,19 @@ const ProductCreationFormUtils = () => {
     
     // Hide the upload button after selection
     setShowImageUploadButton(false);
-  };
+  }, [setShowErrorCard]);
 
-  // UPDATE: Added function to clear image
-  const clearImage = (fileInputRef, setSelectedImage, setImagePreview) => {
+  // Added function to clear image
+  const clearImage = useCallback((fileInputRef, setSelectedImage, setImagePreview) => {
     setSelectedImage(null);
     setImagePreview(null);
     if (fileInputRef && fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  };
+  }, []);
   
-  // UPDATE: Added function to handle view product list navigation
-  const handleViewProductList = (setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement) => {
+  // Added function to handle view product list navigation
+  const handleViewProductList = useCallback((setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement) => {
     console.log('Returning to product list from ProductCreationForm');
     
     // First reset product-related states
@@ -741,7 +757,7 @@ const ProductCreationFormUtils = () => {
     setShowProductManagement(true);
     
     console.log('Navigation back to product list complete');
-  };
+  }, []);
 
   return {
     handleChange,
@@ -754,7 +770,7 @@ const ProductCreationFormUtils = () => {
     fetchProductsByShop,
     getAvailableProductTypesForShop,
     handleImageUpload,
-    // UPDATE: Export new image-related Utils
+    // Export new image-related Utils
     handleImageSelect,
     clearImage,
     handleViewProductList

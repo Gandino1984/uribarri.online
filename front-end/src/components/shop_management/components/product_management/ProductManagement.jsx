@@ -1,21 +1,22 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import AppContext from '../../../../../src/app_context/AppContext.js';
+import React, { useEffect, useRef } from 'react';
+import { useAuth } from '../../../../../src/app_context/AuthContext.jsx';
+import { useShop } from '../../../../../src/app_context/ShopContext.jsx';
+import { useProduct } from '../../../../../src/app_context/ProductContext.jsx';
 import ProductCreationForm from './components/product_creation_form/ProductCreationForm.jsx';
 import ShopProductsList from './components/shop_products_list/ShopProductsList.jsx';
 import ProductManagementUtils from './ProductManagementUtils.jsx';
 
 const ProductManagement = () => {
+  const { currentUser } = useAuth();
+  const { selectedShop, setSelectedShop } = useShop();
   const { 
-    currentUser,
-    selectedShop,
     isUpdatingProduct,
     selectedProductToUpdate,
     showProductManagement,
     setShowProductManagement,
     setIsUpdatingProduct,
-    setSelectedShop,
     setSelectedProductToUpdate
-  } = useContext(AppContext);
+  } = useProduct();
 
   const { fetchProductsByShop } = ProductManagementUtils();
   const initialFetchDone = useRef(false);

@@ -1,17 +1,22 @@
-import React, { useContext, useEffect } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import React, { useEffect } from 'react';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import styles from '../../../../../../public/css/InfoCard.module.css';
 import { MessageCircleWarning, KeyRound } from 'lucide-react';
 
 const InfoCard = () => {
+  // UPDATE: Using useAuth and useUI hooks instead of AppContext
+  const {
+    isLoggingIn,
+    showRepeatPasswordMessage,
+    showPasswordRepeat
+  } = useAuth();
+
   const {
     showInfoCard,
     setShowInfoCard,
     info,
-    isLoggingIn,
-    showRepeatPasswordMessage,
-    showPasswordRepeat
-  } = useContext(AppContext);
+  } = useUI();
 
   // Determine if we should show the password repeat message
   const shouldShowPasswordMessage = !isLoggingIn && showRepeatPasswordMessage && showPasswordRepeat;
@@ -47,26 +52,23 @@ const InfoCard = () => {
   return (
     <div className={styles.container}>
       {shouldShowPasswordMessage ? (
-
         <div className={styles.passwordMessageContainer}>
-            <KeyRound color="var(--saturated-orange)" size={20} />
-            <div className={styles.repeatPasswordMessage}>
-                Confirma la contraseña
-            </div>
+          <KeyRound color="var(--saturated-orange)" size={20} />
+          <div className={styles.repeatPasswordMessage}>
+            Confirma la contraseña
+          </div>
         </div>
-
       ) : (
-        
         activeInfoMessages.length > 0 && (
           <>
-              <MessageCircleWarning color="#F59925" size={20} />
-              <div className={styles.infoList}>
-                  {activeInfoMessages.map(([key, value]) => (
-                      <div className={styles.infoItem} key={key}>
-                          {value}
-                      </div>
-                  ))}
-              </div>
+            <MessageCircleWarning color="#F59925" size={20} />
+            <div className={styles.infoList}>
+              {activeInfoMessages.map(([key, value]) => (
+                <div className={styles.infoItem} key={key}>
+                  {value}
+                </div>
+              ))}
+            </div>
           </>
         )
       )}

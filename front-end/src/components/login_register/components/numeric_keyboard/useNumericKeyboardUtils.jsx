@@ -1,11 +1,16 @@
-import { useContext } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
 
 export const useNumericKeyboardUtils = (value, onChange, onPasswordComplete, onClear) => {
+    // UPDATE: Using useAuth hook instead of AppContext
     const {
         MAX_PASSWORD_LENGTH, 
-        setDisplayedPassword,    
-    } = useContext(AppContext);
+        setDisplayedPassword,
+        setPassword,
+        setPasswordRepeat,
+        setShowPasswordRepeat,
+        setShowPasswordLabel,
+        setKeyboardKey,
+    } = useAuth();
 
     const handleKeyClick = (num, e) => {
         e.preventDefault();
@@ -40,7 +45,6 @@ export const useNumericKeyboardUtils = (value, onChange, onPasswordComplete, onC
           onClear();
         }
     };
-
 
     const handleClear = (isLogin) => () => {
         if (!isLogin) {

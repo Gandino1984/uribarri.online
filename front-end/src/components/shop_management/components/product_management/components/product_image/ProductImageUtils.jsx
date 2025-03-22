@@ -1,16 +1,18 @@
-import { useContext } from 'react';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import { useUI } from '../../../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import { uploadProductImage, formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
+// UPDATE: Refactored to use specialized context hooks instead of AppContext
 export const ProductImageUtils = () => {
-  const {
-    setError,
-    setUploading,
-    selectedShop,
-    selectedProductForImageUpload,
-    products,
-    setProducts,
-  } = useContext(AppContext);
+  // UI context
+  const { setError, setUploading } = useUI();
+  
+  // Shop context
+  const { selectedShop } = useShop();
+  
+  // Product context
+  const { selectedProductForImageUpload, products, setProducts } = useProduct();
 
   const handleProductImageUpload = async (file, onProgressCallback = null) => {
     if (!file) {
@@ -83,7 +85,7 @@ export const ProductImageUtils = () => {
     }
   };
 
-  // UPDATE: Improved getProductImageUrl function with better error handling
+  // Improved getProductImageUrl function with better error handling
   const getProductImageUrl = (imagePath) => {
     // Handle null/undefined paths gracefully
     if (!imagePath) {

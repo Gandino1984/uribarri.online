@@ -1,27 +1,22 @@
-import { useState, useContext, useCallback, useEffect, useRef } from 'react';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useUI } from '../../../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { 
   uploadShopCover, 
   formatImageUrl 
 } from '../../../../../../utils/image/imageUploadService.js';
 
 export const ShopCoverImageUtils = () => {
-  const {
-    setError,
-    setUploading,
-    selectedShop,
-    setShops,
-    shops,
-    uploading,
-    setSelectedShop
-  } = useContext(AppContext);
+  // UPDATE: Using split context hooks instead of AppContext
+  const { setError, setUploading, uploading } = useUI();
+  const { selectedShop, setShops, shops, setSelectedShop } = useShop();
 
   const [showUploadButton, setShowUploadButton] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [localImageUrl, setLocalImageUrl] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(Date.now());
   
-  // UPDATE: Añadir un ref para rastrear la operación en curso
+  // Añadir un ref para rastrear la operación en curso
   const uploadInProgress = useRef(false);
 
   // Toggle the upload button visibility when clicking the container
@@ -40,7 +35,7 @@ export const ShopCoverImageUtils = () => {
   const handleImageUpload = useCallback(async (event, id_shop) => {
     event.stopPropagation();
     
-    // UPDATE: Evitar múltiples cargas simultáneas
+    // Evitar múltiples cargas simultáneas
     if (uploadInProgress.current) {
       console.log('Upload already in progress, ignoring new request');
       return;
@@ -58,7 +53,7 @@ export const ShopCoverImageUtils = () => {
 
     console.log('Starting cover image upload for shop:', selectedShop);
     
-    // UPDATE: First validate file type before proceeding
+    // First validate file type before proceeding
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       setError(prevError => ({
@@ -68,7 +63,7 @@ export const ShopCoverImageUtils = () => {
       return;
     }
     
-    // UPDATE: Validate file size (max 10MB before optimization)
+    // Validate file size (max 10MB before optimization)
     if (file.size > 10 * 1024 * 1024) {
       setError(prevError => ({
         ...prevError,

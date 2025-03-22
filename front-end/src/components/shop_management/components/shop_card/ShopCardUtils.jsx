@@ -1,18 +1,16 @@
-import { useContext, useCallback, useRef } from 'react';
-import AppContext from '../../../../app_context/AppContext.js';
+import { useRef, useCallback } from 'react';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
 const ShopCardUtils = () => {
-  const {
-    setError,
-    setUploading,
-    selectedShop,
-    setShops,
-    shops,
-  } = useContext(AppContext);
+  // UPDATE: Using split context hooks instead of AppContext
+  const { setError, setUploading } = useUI();
+  const { selectedShop, setShops, shops } = useShop();
   
-  // UPDATE: Añadir un ref para evitar múltiples subidas simultáneas
+  // Añadir un ref para evitar múltiples subidas simultáneas
   const uploadInProgress = useRef(false);
 
   const handleShopImageUpload = useCallback(async (file) => {
@@ -24,13 +22,13 @@ const ShopCardUtils = () => {
       throw new Error("No shop selected");
     }
     
-    // UPDATE: Evitar múltiples cargas simultáneas
+    // Evitar múltiples cargas simultáneas
     if (uploadInProgress.current) {
       console.log('Upload already in progress, ignoring new request');
       return;
     }
     
-    // UPDATE: Validate file type
+    // Validate file type
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       setError(prevError => ({
@@ -40,7 +38,7 @@ const ShopCardUtils = () => {
       throw new Error("Formato de imagen no válido");
     }
     
-    // UPDATE: Validate file size (max 10MB before optimization)
+    // Validate file size (max 10MB before optimization)
     if (file.size > 10 * 1024 * 1024) {
       setError(prevError => ({
         ...prevError,
@@ -107,7 +105,7 @@ const ShopCardUtils = () => {
     return imageUrl;
   }, []);
 
-  // UPDATE: Added time and shop type formatting utilities
+  // Added time and shop type formatting utilities
   const formatTime = useCallback((time) => {
     if (!time) return '00:00';
     return new Date(`2000-01-01T${time}`).toLocaleTimeString('es-ES', {

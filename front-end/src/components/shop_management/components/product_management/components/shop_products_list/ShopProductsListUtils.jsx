@@ -1,41 +1,55 @@
-import { useContext } from 'react';
+import { useCallback } from 'react';
 import axiosInstance from '../../../../../../utils/app/axiosConfig.js';
-import AppContext from '../../../../../../app_context/AppContext.js';
+import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../../../app_context/UIContext.jsx';
+import { useShop } from '../../../../../../app_context/ShopContext.jsx';
+import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import ProductCreationFormUtils from '../product_creation_form/ProductCreationFormUtils.jsx';
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
+// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ShopProductsListUtils = () => {
+  // Auth context
+  const { currentUser } = useAuth();
+  
+  // UI context
   const { 
-    setProducts, 
     setError,
-    selectedShop, 
-    setFilteredProducts,
-    filters,
-    setShowErrorCard,
-    selectedProducts,
-    setSelectedProducts,
-    setModalMessage,
     setIsModalOpen,
-    setSelectedProductForImageUpload,
-    products,
-    setShowProductManagement,
-    setProductToDelete,
-    setSelectedProductToUpdate,
+    setModalMessage,
+    isAccepted,
     setIsAccepted,
-    setIsDeclined,
+    setSuccess,
+    setShowSuccessCard,
+    setShowErrorCard,
     setIsImageModalOpen,
-    productToDelete,
-    selectedImageForModal, setSelectedImageForModal,
+    setSelectedImageForModal
+  } = useUI();
+  
+  // Shop context
+  const { 
+    selectedShop
+  } = useShop();
+  
+  // Product context
+  const { 
+    products, 
+    setProducts,
+    filters,
+    setFilteredProducts,
+    selectedProducts, 
+    setSelectedProducts,
+    productToDelete, 
+    setProductToDelete,
+    selectedProductToUpdate, 
+    setSelectedProductToUpdate,
+    setSelectedProductForImageUpload,
     setIsUpdatingProduct,
     refreshProductList,
-    // Add the missing context values
-    setIsAddingShop,
-    newProductData, setNewProductData,
-    setSuccess, // For showing success messages
-    setShowSuccessCard
-  } = useContext(AppContext);
+    setNewProductData
+  } = useProduct();
 
-  const { resetNewProductData } = ProductCreationFormUtils();
+  const { resetNewProductData } = ProductCreationFormUtils ? ProductCreationFormUtils() : { resetNewProductData: () => {} };
 
   // Check if a product is near expiration (within 7 days)
   const isNearExpiration = (expirationDate) => {
@@ -49,7 +63,7 @@ const ShopProductsListUtils = () => {
     return diffDays >= 0 && diffDays <= 7;
   };
 
-  // UPDATE: Format date strings
+  // Format date strings
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     try {
@@ -62,23 +76,23 @@ const ShopProductsListUtils = () => {
     }
   };
 
-  // UPDATE: Format boolean values for second hand
+  // Format boolean values for second hand
   const formatSecondHand = (value) => {
     return value ? 'Sí' : 'No';
   };
 
-  // UPDATE: Handle product row click to show product card
+  // Handle product row click to show product card
   const handleProductRowClick = (product, setSelectedProductDetails, setShowProductCard) => {
     setSelectedProductDetails(product);
     setShowProductCard(true);
   };
 
-  // UPDATE: Toggle filters visibility
+  // Toggle filters visibility
   const toggleFilters = (setShowFilters) => {
     setShowFilters(prevState => !prevState);
   };
 
-  // UPDATE: Toggle actions menu for a product
+  // Toggle actions menu for a product
   const toggleActionsMenu = (productId, activeActionsMenu, setActiveActionsMenu, e) => {
     e.stopPropagation();
     if (activeActionsMenu === productId) {
@@ -88,18 +102,18 @@ const ShopProductsListUtils = () => {
     }
   };
 
-  // UPDATE: Handle search input change
+  // Handle search input change
   const handleSearchChange = (e, setSearchTerm) => {
     setSearchTerm(e.target.value);
   };
 
-  // UPDATE: Reset all filters and search term
+  // Reset all filters and search term
   const handleResetAllFilters = (handleResetFilters, setSearchTerm) => {
     handleResetFilters();
     setSearchTerm('');
   };
 
-  // UPDATE: Select product for image upload
+  // Select product for image upload
   const handleSelectForImageUpload = (id_product, setSelectedProductForImageUpload, setSelectedProducts, setActiveActionsMenu, e) => {
     e.stopPropagation();
     setSelectedProductForImageUpload(id_product);
@@ -116,7 +130,7 @@ const ShopProductsListUtils = () => {
     setActiveActionsMenu(null);
   };
 
-  // UPDATE: Handle bulk update of products
+  // Handle bulk update of products
   const handleBulkUpdate = (selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard) => {
     // Check if a product is selected
     if (selectedProducts.size === 1) {
@@ -153,7 +167,7 @@ const ShopProductsListUtils = () => {
     }
   };
 
-  const filterProducts = (products, filters) => {
+  const filterProducts = useCallback((products, filters) => {
     if (!products || !filters) return products;
     return products.filter((product) => {
       // Season match - case insensitive and handles "Todo el Año"
@@ -190,9 +204,9 @@ const ShopProductsListUtils = () => {
              onSaleMatch && calificationMatch && 
              surplusMatch && expirationMatch;
     });
-  };
+  }, []);
 
-  const fetchProductsByShop = async () => {
+  const fetchProductsByShop = useCallback(async () => {
     try {
       if (!selectedShop?.id_shop) {
         console.error('-> ShopProductsListUtils.jsx - fetchProductsByShop - No hay comercio seleccionado');
@@ -235,113 +249,10 @@ const ShopProductsListUtils = () => {
       setProducts([]);
       return [];
     } 
-  };
+  }, [selectedShop, setProducts, setSelectedProducts, setError]);
 
-  // New function for bulk deletion
-  const bulkDeleteProducts = async () => {
-    if (selectedProducts.size === 0) {
-      setError(prevError => ({
-        ...prevError,
-        productError: "No hay productos seleccionados para eliminar"
-      }));
-      setShowErrorCard(true);
-      return { success: false, message: "No products selected" };
-    }
-
-    try {
-      let successCount = 0;
-      let failCount = 0;
-
-      // Delete products one by one
-      for (const id_product of selectedProducts) {
-        const result = await deleteProduct(id_product);
-        if (result.success) {
-          successCount++;
-        } else {
-          failCount++;
-        }
-      }
-
-      // Clear selected products after deletion
-      setSelectedProducts(new Set());
-
-      // Refresh the products list
-      await fetchProductsByShop();
-      
-      // Force refresh of the product list in ShopProductsList component
-      refreshProductList();
-
-      // Show result message
-      const message = `${successCount} productos eliminados exitosamente${failCount > 0 ? `, ${failCount} fallos` : ''}`;
-      
-      if (failCount > 0) {
-        setError(prevError => ({
-          ...prevError,
-          productError: message
-        }));
-        setShowErrorCard(true);
-      } else {
-        // Set success message for the deletion
-        setSuccess(prev => ({
-          ...prev,
-          deleteSuccess: message,
-          // Clear any other product messages to avoid confusion
-          productSuccess: '',
-          createSuccess: '',
-          updateSuccess: ''
-        }));
-        setShowSuccessCard(true);
-      }
-
-      return { 
-        success: successCount > 0, 
-        message, 
-        successCount, 
-        failCount 
-      };
-    } catch (err) {
-      console.error('Error in bulk deletion:', err);
-      setError(prevError => ({
-        ...prevError,
-        productError: "Error al eliminar los productos seleccionados"
-      }));
-      setShowErrorCard(true);
-      return { success: false, message: "Error in bulk deletion" };
-    }
-  };
-
-  // Function to confirm bulk deletion
-  const confirmBulkDelete = () => {
-    if (selectedProducts.size === 0) {
-      setError(prevError => ({
-        ...prevError,
-        productError: "No hay productos seleccionados para eliminar"
-      }));
-      setShowErrorCard(true);
-      return;
-    }
-
-    setModalMessage(`¿Estás seguro que deseas eliminar ${selectedProducts.size} producto${selectedProducts.size > 1 ? 's' : ''}?`);
-    setIsModalOpen(true);
-  };
-
-  const handleSelectProduct = (id_product) => {
-    setSelectedProducts(prev => {
-      const newSelected = new Set(prev);
-      if (newSelected.has(id_product)) {
-        // Deselect the product
-        newSelected.delete(id_product);
-        setSelectedProductForImageUpload(null); // Clear the selected product for image upload
-      } else {
-        // Select the product
-        newSelected.add(id_product);
-        setSelectedProductForImageUpload(id_product); // Set the selected product for image upload
-      }
-      return newSelected;
-    });
-  };
-
-  const deleteProduct = async (id_product) => {
+  // Define deleteProduct before it's used in bulkDeleteProducts
+  const deleteProduct = useCallback(async (id_product) => {
     try {
       console.log(`Starting deletion of product with ID: ${id_product}`);
       
@@ -446,9 +357,113 @@ const ShopProductsListUtils = () => {
       setShowErrorCard(true);
       return { success: false, message: "Error al eliminar el producto" };
     }
-  };
+  }, [products, setError, setShowErrorCard, setSuccess, setShowSuccessCard]);
 
-  const handleDeleteProduct = async (id_product) => {
+  // Now bulkDeleteProducts can use deleteProduct since it's already defined
+  const bulkDeleteProducts = useCallback(async () => {
+    if (selectedProducts.size === 0) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "No hay productos seleccionados para eliminar"
+      }));
+      setShowErrorCard(true);
+      return { success: false, message: "No products selected" };
+    }
+
+    try {
+      let successCount = 0;
+      let failCount = 0;
+
+      // Delete products one by one
+      for (const id_product of selectedProducts) {
+        const result = await deleteProduct(id_product);
+        if (result.success) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+      }
+
+      // Clear selected products after deletion
+      setSelectedProducts(new Set());
+
+      // Refresh the products list
+      await fetchProductsByShop();
+      
+      // Force refresh of the product list in ShopProductsList component
+      refreshProductList();
+
+      // Show result message
+      const message = `${successCount} productos eliminados exitosamente${failCount > 0 ? `, ${failCount} fallos` : ''}`;
+      
+      if (failCount > 0) {
+        setError(prevError => ({
+          ...prevError,
+          productError: message
+        }));
+        setShowErrorCard(true);
+      } else {
+        // Set success message for the deletion
+        setSuccess(prev => ({
+          ...prev,
+          deleteSuccess: message,
+          // Clear any other product messages to avoid confusion
+          productSuccess: '',
+          createSuccess: '',
+          updateSuccess: ''
+        }));
+        setShowSuccessCard(true);
+      }
+
+      return { 
+        success: successCount > 0, 
+        message, 
+        successCount, 
+        failCount 
+      };
+    } catch (err) {
+      console.error('Error in bulk deletion:', err);
+      setError(prevError => ({
+        ...prevError,
+        productError: "Error al eliminar los productos seleccionados"
+      }));
+      setShowErrorCard(true);
+      return { success: false, message: "Error in bulk deletion" };
+    }
+  }, [selectedProducts, setSelectedProducts, setError, setShowErrorCard, setSuccess, setShowSuccessCard, refreshProductList, fetchProductsByShop, deleteProduct]);
+
+  // Function to confirm bulk deletion
+  const confirmBulkDelete = useCallback(() => {
+    if (selectedProducts.size === 0) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "No hay productos seleccionados para eliminar"
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    setModalMessage(`¿Estás seguro que deseas eliminar ${selectedProducts.size} producto${selectedProducts.size > 1 ? 's' : ''}?`);
+    setIsModalOpen(true);
+  }, [selectedProducts, setError, setShowErrorCard, setModalMessage, setIsModalOpen]);
+
+  const handleSelectProduct = useCallback((id_product) => {
+    setSelectedProducts(prev => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(id_product)) {
+        // Deselect the product
+        newSelected.delete(id_product);
+        setSelectedProductForImageUpload(null); // Clear the selected product for image upload
+      } else {
+        // Select the product
+        newSelected.add(id_product);
+        setSelectedProductForImageUpload(id_product); // Set the selected product for image upload
+      }
+      return newSelected;
+    });
+  }, [setSelectedProducts, setSelectedProductForImageUpload]);
+
+  const handleDeleteProduct = useCallback(async (id_product) => {
     console.log('Attempting to delete product:', id_product);
     
     // First clear any existing success or error messages
@@ -464,10 +479,9 @@ const ShopProductsListUtils = () => {
     setModalMessage('¿Estás seguro que deseas eliminar este producto?');
     setIsModalOpen(true);
     setIsAccepted(false);
-    setIsDeclined(false);
-  };
+  }, [setSuccess, setProductToDelete, setModalMessage, setIsModalOpen, setIsAccepted]);
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = useCallback(() => {
     // Clear success messages before starting the deletion process
     setSuccess(prev => ({
       ...prev,
@@ -478,9 +492,9 @@ const ShopProductsListUtils = () => {
     }));
     
     confirmBulkDelete();
-  };
+  }, [setSuccess, confirmBulkDelete]);
 
-  const handleAddProduct = () => {
+  const handleAddProduct = useCallback(() => {
     console.log('handleAddProduct clicked - Preparing to show product creation form');
     
     // 1. First prepare an empty product with defaults and shop ID
@@ -515,36 +529,33 @@ const ShopProductsListUtils = () => {
       imageError: ''
     }));
     
-    // 5. Make sure we're not adding a shop
-    setIsAddingShop(false);
-    
-    // 6. Set the mode flag to trigger ProductCreationForm display
+    // 5. Set the mode flag to trigger ProductCreationForm display
     setIsUpdatingProduct(true);
     
     console.log('Product creation mode activated');
-  };
+  }, [selectedShop, setNewProductData, setSelectedProductToUpdate, setError, setIsUpdatingProduct]);
 
-  const handleUpdateProduct = (id_product) => {
+  const handleUpdateProduct = useCallback((id_product) => {
     const productToUpdate = products.find(p => p.id_product === id_product);
     if (productToUpdate) {
       setSelectedProductToUpdate(productToUpdate);
       setIsUpdatingProduct(true);
     }
-  };
+  }, [products, setSelectedProductToUpdate, setIsUpdatingProduct]);
 
   // Use the formatImageUrl function from imageUploadService.js for consistency
   const getImageUrl = (imagePath) => {
     return formatImageUrl(imagePath);
   };
 
-  const handleProductImageDoubleClick = (product) => {
+  const handleProductImageDoubleClick = useCallback((product) => {
     if (product?.image_product) {
       const imageUrl = getImageUrl(product.image_product);
       // Set both the selected image and open the modal
       setSelectedImageForModal(imageUrl);
       setIsImageModalOpen(true);
     }
-  };
+  }, [setSelectedImageForModal, setIsImageModalOpen]);
 
   return {
     filterProducts,
@@ -559,7 +570,6 @@ const ShopProductsListUtils = () => {
     handleUpdateProduct,
     getImageUrl,
     handleProductImageDoubleClick,
-    // UPDATE: Add the new Utils to the return object
     formatDate,
     formatSecondHand,
     handleProductRowClick,
