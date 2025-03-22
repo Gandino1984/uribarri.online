@@ -15,11 +15,13 @@ function App() {
       <AuthProvider>
         <ShopProvider>
           <ProductProvider>
+
             <div className={styles.mainContainer}>
               <ConfirmationModal />
               <TopBar />
               <LoginRegisterForm />
             </div>
+            
           </ProductProvider>
         </ShopProvider>
       </AuthProvider>
