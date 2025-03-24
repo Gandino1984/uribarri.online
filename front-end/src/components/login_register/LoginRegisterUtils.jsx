@@ -25,7 +25,8 @@ export const LoginRegisterUtils = () => {
     setError,
     setSuccess,
     setShowInfoCard,
-    setshowShopManagement, 
+    // UPDATE: Using the standardized setter name
+    setShowShopManagement, 
   } = useUI();
 
   // Shop-related state and functions from ShopContext
@@ -176,11 +177,11 @@ export const LoginRegisterUtils = () => {
       if (userType === 'seller') {
         console.log('User is seller, loading shops list view');
         // For sellers, always show the shops list first
-        setshowShopManagement(true);
+        setShowShopManagement(true);
         
         try {
-          // Fetch shops specifically for the logged-in seller
-          const shopsResponse = await axiosInstance.post('/shop/user', {
+          // UPDATE: Using the correct endpoint for fetching shops by user ID
+          const shopsResponse = await axiosInstance.post('/shop/by-user-id', {
             id_user: userData.id_user
           });
           
@@ -201,7 +202,7 @@ export const LoginRegisterUtils = () => {
       } else {
         console.log('User is not a seller, showing UserManagement');
         // For other user types (user, provider), show UserManagement
-        setshowShopManagement(true);
+        setShowShopManagement(true);
         setShowShopCreationForm(false); // Ensure creation form is not shown
       }
     } catch (err) {
@@ -303,19 +304,19 @@ export const LoginRegisterUtils = () => {
       if (userType === 'seller') {
         console.log('User registered as seller, showing ShopsListBySeller view');
         // For new sellers, show ShopsListBySeller instead of ShopCreationForm
-        setshowShopManagement(true);
+        setShowShopManagement(true);
         setIsAddingShop(false); // Don't show add shop form initially
         setShowShopCreationForm(false); // Explicitly hide the shop creation form
       } else if (userType === 'user') {
         console.log('User registered as regular user, setting up user view');
         // For regular users, show UserManagement for shop type selection
-        setshowShopManagement(true);
+        setShowShopManagement(true);
         setSelectedShopType(null);
         setShowShopCreationForm(false); // Ensure form is not shown
       } else {
         console.log('User registered as other type, setting up general view');
         // For other types, show general screen
-        setshowShopManagement(true);
+        setShowShopManagement(true);
         setShowShopCreationForm(false); // Ensure form is not shown
       }
     } catch (err) {

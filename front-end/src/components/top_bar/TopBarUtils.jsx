@@ -16,12 +16,14 @@ export const TopBarUtils = () => {
 
     // UI context values
     const {
-        setError, setSuccess
+        setError, setSuccess,
+        setShowShopManagement,
+        setShowProductManagement,
+        setShowLandingPage
     } = useUI();
 
     // Shop context values
     const {
-        setshowShopManagement,
         showShopManagement,
         setShowShopCreationForm,
         showShopCreationForm, 
@@ -31,7 +33,6 @@ export const TopBarUtils = () => {
 
     // Product context values
     const {
-        setShowProductManagement,
         showProductManagement,
         isUpdatingProduct, 
         setIsUpdatingProduct, 
@@ -57,20 +58,20 @@ export const TopBarUtils = () => {
         // If we're creating a shop, go back to shop management
         if (showShopCreationForm) {
             setShowShopCreationForm(false);
-            setshowShopManagement(true);
+            setShowShopManagement(true);
             return;
         }
         
         // If we have a selected shop, go back to shop selection
         if (selectedShop) {
             setSelectedShop(null);
-            setshowShopManagement(true);
+            setShowShopManagement(true);
             return;
         }
         
         // If we're in shop management, go back to login
         if (showShopManagement) {
-            setshowShopManagement(false);
+            setShowShopManagement(false);
             setIsLoggingIn(true);
             return;
         }
@@ -89,13 +90,16 @@ export const TopBarUtils = () => {
         
         setSelectedShop(null);
         setShowShopCreationForm(false);
-        setshowShopManagement(false);
+        setShowShopManagement(false);
         setShowProductManagement(false);
         setShops([]);
         setSelectedShopType(null);
         
         setIsLoggingIn(true);
         setKeyboardKey((prev) => prev + 1);
+        
+        // Set showLandingPage to true when logging out
+        setShowLandingPage(true);
         
         localStorage.removeItem('currentUser');
 

@@ -6,7 +6,8 @@ const ShopContext = createContext();
 
 export const ShopProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  const { setshowShopManagement } = useUI();
+  // UPDATE: Using the standardized setter name
+  const { setShowShopManagement } = useUI();
   
   // Shop state
   const [shops, setShops] = useState([]);
@@ -74,10 +75,10 @@ export const ShopProvider = ({ children }) => {
   const updateShopManagementVisibility = () => {
     if (currentUser?.type_user === 'seller') {
       console.log('User is seller, showing shop management UI');
-      setshowShopManagement(true);
+      setShowShopManagement(true);
     } else {
       console.log('User is not seller, showing regular UI');
-      setshowShopManagement(false);
+      setShowShopManagement(false);
     }
   };
 

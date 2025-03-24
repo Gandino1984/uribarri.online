@@ -16,8 +16,9 @@ export const UIProvider = ({ children }) => {
   const [uploading, setUploading] = useState(false);
 
   // Navigation/view states
-  const [showShopManagement, setshowShopManagement] = useState(false);
+  const [showShopManagement, setShowShopManagement] = useState(false);
   const [showProductManagement, setShowProductManagement] = useState(false);
+  const [showLandingPage, setShowLandingPage] = useState(true);
   
   // Notification states
   const [showErrorCard, setShowErrorCard] = useState(false);
@@ -111,8 +112,9 @@ export const UIProvider = ({ children }) => {
     uploading, setUploading,
     
     // Navigation/view states
-    showShopManagement, setshowShopManagement,
+    showShopManagement, setShowShopManagement,
     showProductManagement, setShowProductManagement,
+    showLandingPage, setShowLandingPage,
     
     // Notification states
     showErrorCard, setShowErrorCard,

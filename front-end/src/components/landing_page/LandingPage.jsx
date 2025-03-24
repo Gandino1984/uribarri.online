@@ -1,15 +1,10 @@
-import React, { useEffect } from 'react';
+// src/components/landing_page/LandingPage.jsx
+import React from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Store, Calendar, BookOpen } from 'lucide-react';
-import { useAuth } from '../../app_context/AuthContext.jsx';
-import { useShop } from '../../app_context/ShopContext.jsx';
-import styles from './UserLanding.module.css';
+import styles from './LandingPage.module.css'; // Reusing existing styles
 
-const UserLanding = () => {
-  // UPDATE: Using specialized context hooks instead of AppContext
-  const { currentUser } = useAuth();
-  const { setSelectedShopType } = useShop();
-
+const LandingPage = ({ onProceedToLogin }) => {
   // Main container animation
   const containerAnimation = useSpring({
     from: { opacity: 0 },
@@ -39,21 +34,19 @@ const UserLanding = () => {
     config: { tension: 280, friction: 60 },
   });
 
-  // Handle section selection
-  const handleSelectSection = (sectionType) => {
-    setSelectedShopType(sectionType);
-    // Additional navigation logic could go here
-    console.log(`Selected section: ${sectionType}`);
-  };
-
   return (
     <animated.div style={containerAnimation} className={styles.container}>
+      <div className={styles.welcomeHeader}>
+        <h1>¡Bienvenid@ a tu barrio online!</h1>
+        <p>Descubre y conecta con negocios locales, eventos culturales y la actualidad de tu comunidad.</p>
+      </div>
+      
       <div className={styles.sectionsContainer}>
         {/* Commercial Showcase Section */}
         <animated.div 
           style={section1Animation} 
           className={`${styles.section} ${styles.commercialSection}`}
-          onClick={() => handleSelectSection('commercial')}
+          onClick={onProceedToLogin}
         >
           <div className={styles.sectionContent}>
             <div className={styles.iconWrapper}>
@@ -62,7 +55,7 @@ const UserLanding = () => {
             <h2>Escaparate Comercial</h2>
             <p>Descubre productos locales, ofertas y promociones especiales de comercios cercanos.</p>
             <button className={styles.sectionButton}>
-              Explorar Comercios
+              Comenzar
               <span className={styles.buttonArrow}>→</span>
             </button>
           </div>
@@ -72,7 +65,7 @@ const UserLanding = () => {
         <animated.div 
           style={section2Animation} 
           className={`${styles.section} ${styles.culturalSection}`}
-          onClick={() => handleSelectSection('cultural')}
+          onClick={onProceedToLogin}
         >
           <div className={styles.sectionContent}>
             <div className={styles.iconWrapper}>
@@ -81,7 +74,7 @@ const UserLanding = () => {
             <h2>Agenda Cultural</h2>
             <p>Eventos, actividades y experiencias culturales para todos los gustos en tu localidad.</p>
             <button className={styles.sectionButton}>
-              Ver Eventos
+              Comenzar
               <span className={styles.buttonArrow}>→</span>
             </button>
           </div>
@@ -91,7 +84,7 @@ const UserLanding = () => {
         <animated.div 
           style={section3Animation} 
           className={`${styles.section} ${styles.magazineSection}`}
-          onClick={() => handleSelectSection('magazine')}
+          onClick={onProceedToLogin}
         >
           <div className={styles.sectionContent}>
             <div className={styles.iconWrapper}>
@@ -100,7 +93,7 @@ const UserLanding = () => {
             <h2>Revista Berimbolo</h2>
             <p>Artículos, entrevistas y noticias sobre la vida local, cultura y gastronomía.</p>
             <button className={styles.sectionButton}>
-              Leer Revista
+              Comenzar
               <span className={styles.buttonArrow}>→</span>
             </button>
           </div>
@@ -110,4 +103,4 @@ const UserLanding = () => {
   );
 };
 
-export default UserLanding;
+export default LandingPage;
