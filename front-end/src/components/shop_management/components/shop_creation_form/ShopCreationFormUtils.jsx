@@ -281,9 +281,11 @@ export const ShopCreationFormUtils = () => {
       const userShops = Array.isArray(shops) ? shops.filter(shop => shop.id_user === currentUser.id_user) : [];
       const shopCount = userShops.length;
       
-      // Fix: Properly check if user is sponsor based on category_user boolean value
+      // UPDATE: Get shop limits from environment variables instead of hardcoded values
       const isSponsor = currentUser?.category_user === true;
-      const maxShops = isSponsor ? 2 : 1;
+      const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
+      const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
+      const maxShops = isSponsor ? maxSponsorShops : maxRegularShops;
   
       console.log('Shop validation:', {
         shopCount,
@@ -296,7 +298,7 @@ export const ShopCreationFormUtils = () => {
         setError(prevError => ({
           ...prevError,
           shopError: isSponsor 
-            ? 'Has alcanzado el límite máximo de comercios permitidos (3).'
+            ? `Has alcanzado el límite máximo de comercios permitidos (${maxSponsorShops}).`
             : 'Para crear más comercios tienes que ser patrocinador del proyecto.'
         }));
         setShowErrorCard(true);

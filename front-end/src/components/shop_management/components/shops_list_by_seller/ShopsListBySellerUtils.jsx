@@ -5,7 +5,6 @@ import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { ShopManagementUtils } from '../../ShopManagementUtils.jsx';
 
-// UPDATE: Fixed to get setShowProductManagement from UIContext where it's defined
 const ShopsListBySellerUtils = () => {
   
   const { currentUser } = useAuth();
@@ -18,7 +17,7 @@ const ShopsListBySellerUtils = () => {
     setIsAccepted,
     setSuccess,
     setShowSuccessCard,
-    setShowProductManagement // Now correctly getting this from UIContext
+    setShowProductManagement
   } = useUI();
   
   const {
@@ -29,9 +28,8 @@ const ShopsListBySellerUtils = () => {
     selectedShop
   } = useShop();
 
-  // Estado para llevar la cuenta de tiendas y el límite
+  // UPDATE: Only keep shopCount state, remove shopLimit
   const [shopCount, setShopCount] = useState(0);
-  const [shopLimit, setShopLimit] = useState(1); // Valor por defecto para usuarios no sponsor
   
   // Estado para gestionar el comportamiento de doble clic
   const [shopClickState, setShopClickState] = useState({
@@ -55,14 +53,7 @@ const ShopsListBySellerUtils = () => {
     return null;
   }, [fetchShopsFromManagement]);
 
-  // Determinar el límite de tiendas basado en la categoría del usuario
-  useEffect(() => {
-    if (currentUser?.category_user) {
-      setShopLimit(2); // Límite para usuarios sponsor
-    } else {
-      setShopLimit(1); // Límite para usuarios no sponsor
-    }
-  }, [currentUser]);
+  // UPDATE: Removed the effect for shopLimit determination
 
   // Establecer el conteo de tiendas cada vez que cambian las tiendas
   useEffect(() => {
@@ -148,12 +139,16 @@ const ShopsListBySellerUtils = () => {
     return !!shopClickState.showCard && !!shopClickState.lastClickedShopId;
   }, [shopClickState]);
 
-  const handleAddShop = useCallback(() => {
+  // UPDATE: Modified to accept shopLimit as a parameter instead of using internal state
+  const handleAddShop = useCallback((shopLimit) => {
+    // Get the shopLimit from the parent component through parameters if available
+    const effectiveShopLimit = shopLimit || (currentUser?.category_user ? 3 : 1);
+    
     // Verificar si el usuario ha alcanzado el límite
-    if (shopCount >= shopLimit) {
+    if (shopCount >= effectiveShopLimit) {
       setError(prevError => ({ 
         ...prevError, 
-        shopError: `Has alcanzado el límite de ${shopLimit} comercios. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+        shopError: `Has alcanzado el límite de ${effectiveShopLimit} comercios. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
       }));
       return;
     }
@@ -172,7 +167,6 @@ const ShopsListBySellerUtils = () => {
     setShowProductManagement(false);
   }, [
     shopCount, 
-    shopLimit, 
     currentUser, 
     setError, 
     setShowShopCreationForm, 
@@ -260,7 +254,6 @@ const ShopsListBySellerUtils = () => {
     handleAddShop,
     handleUpdateShop,
     shopCount,
-    shopLimit,
     isShopSelected,
     shouldShowShopCard
   };

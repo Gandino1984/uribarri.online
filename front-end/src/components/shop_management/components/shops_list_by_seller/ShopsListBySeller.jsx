@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../app_context/ProductContext.jsx';
@@ -16,6 +16,15 @@ const ShopsListBySeller = () => {
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
 
+  // UPDATE: Get shop limits directly from environment variables
+  const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
+  const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
+  
+  // Calculate appropriate limit based on user's category
+  const shopLimit = useMemo(() => {
+    return currentUser?.category_user ? maxSponsorShops : maxRegularShops;
+  }, [currentUser?.category_user, maxSponsorShops, maxRegularShops]);
+
   const { 
     fetchUserShops,
     handleSelectShop,
@@ -23,7 +32,6 @@ const ShopsListBySeller = () => {
     handleAddShop,
     handleUpdateShop,
     shopCount,
-    shopLimit,
     isShopSelected,
     shouldShowShopCard
   } = ShopsListBySellerUtils();
@@ -54,7 +62,7 @@ const ShopsListBySeller = () => {
             </h1>
             
             <button 
-              onClick={handleAddShop}
+              onClick={() => handleAddShop(shopLimit)}
               className={`${styles.addButton} ${shopCount >= shopLimit ? styles.disabledButton : ''}`}
               title="Crear nuevo comercio"
               disabled={shopCount >= shopLimit}

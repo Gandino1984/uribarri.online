@@ -90,7 +90,7 @@ const LandingPage = ({ onProceedToLogin }) => {
             <div className={styles.iconWrapper}>
               <BookOpen size={40} />
             </div>
-            <h2>Revista Berimbolo</h2>
+            <h2>Revista Ache</h2>
             <p>Artículos, entrevistas y noticias sobre la vida local, cultura y gastronomía.</p>
             <button className={styles.sectionButton}>
               Comenzar
