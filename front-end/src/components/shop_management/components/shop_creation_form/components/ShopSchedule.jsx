@@ -2,6 +2,8 @@ import React from 'react';
 import { Clock } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
 import CustomToggleSwitch from '../../../../navigation_components/CustomToggleSwitch';
+import ShopDaysSelection from './ShopDaysSelection';
+import ShopDeliveryToggle from './ShopDeliveryToggle';
 
 const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContinuousSchedule }) => {
   // Function to handle schedule type change with proper boolean handling
@@ -20,7 +22,7 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
     }
   };
 
-  // UPDATE: Helper to format time for display
+  // Helper to format time for display
   const formatTimeDisplay = (time) => {
     if (!time) return '';
     return time;
@@ -28,9 +30,9 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
 
   return (
     <section className={styles.scheduleContainer}>
-      <h2 className={styles.sectionTitle}>Horario de atención</h2>
+      <h2 className={styles.sectionTitle}>Horario y disponibilidad</h2>
       <p className={styles.sectionDescription}>
-        Configura los horarios de apertura y cierre de tu comercio (formato 24h)
+        Configura los horarios, días de apertura y servicios de tu comercio
       </p>
       
       <div className={styles.scheduleTypeToggleContainer}>
@@ -175,6 +177,12 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
           </>
         )}
       </div>
+      
+      {/* UPDATE: Added days of week selection */}
+      <ShopDaysSelection newShop={newShop} setNewShop={setNewShop} />
+      
+      {/* UPDATE: Added delivery service toggle */}
+      <ShopDeliveryToggle newShop={newShop} setNewShop={setNewShop} />
     </section>
   );
 };

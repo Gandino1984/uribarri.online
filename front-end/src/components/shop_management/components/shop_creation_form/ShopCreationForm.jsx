@@ -89,7 +89,17 @@ const ShopCreationForm = () => {
         morning_open: selectedShop.morning_open || '',
         morning_close: selectedShop.morning_close || '',
         afternoon_open: selectedShop.afternoon_open || '',
-        afternoon_close: selectedShop.afternoon_close || ''
+        afternoon_close: selectedShop.afternoon_close || '',
+        // UPDATE: Initialize delivery service field
+        has_delivery: selectedShop.has_delivery || false,
+        // UPDATE: Initialize days of week fields with defaults if not present
+        open_monday: selectedShop.open_monday !== undefined ? selectedShop.open_monday : true,
+        open_tuesday: selectedShop.open_tuesday !== undefined ? selectedShop.open_tuesday : true,
+        open_wednesday: selectedShop.open_wednesday !== undefined ? selectedShop.open_wednesday : true,
+        open_thursday: selectedShop.open_thursday !== undefined ? selectedShop.open_thursday : true,
+        open_friday: selectedShop.open_friday !== undefined ? selectedShop.open_friday : true,
+        open_saturday: selectedShop.open_saturday !== undefined ? selectedShop.open_saturday : true,
+        open_sunday: selectedShop.open_sunday !== undefined ? selectedShop.open_sunday : false
       });
 
       // Set image preview if exists

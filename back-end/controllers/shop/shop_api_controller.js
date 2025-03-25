@@ -76,6 +76,16 @@ async function create(req, res) {
             morning_close,
             afternoon_open,
             afternoon_close,
+            // UPDATE: Added delivery service field
+            has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         } = req.body;
     
         // Provide default values for optional fields
@@ -109,7 +119,17 @@ async function create(req, res) {
             morning_open,
             morning_close,
             afternoon_open,
-            afternoon_close
+            afternoon_close,
+            // UPDATE: Added delivery service field
+            has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         });
     
         res.json({error, data, success});
@@ -139,14 +159,32 @@ async function update(req, res) {
             morning_open,
             morning_close,
             afternoon_open,
-            afternoon_close
+            afternoon_close,
+            // UPDATE: Added delivery service field
+            has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         } = req.body;
 
         console.log('Schedule fields received:', {
             morning_open,
             morning_close,
             afternoon_open,
-            afternoon_close
+            afternoon_close,
+            // UPDATE: Log new schedule fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         });
 
         const updateData = {
@@ -160,7 +198,17 @@ async function update(req, res) {
             morning_open,
             morning_close,
             afternoon_open,
-            afternoon_close
+            afternoon_close,
+            // UPDATE: Added delivery service field
+            has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         };
 
         console.log('Update data being sent to controller:', updateData);
@@ -194,7 +242,21 @@ async function updateWithFolder(req, res) {
             id_user,
             calification_shop,
             image_shop,
-            old_name_shop
+            old_name_shop,
+            morning_open,
+            morning_close,
+            afternoon_open,
+            afternoon_close,
+            // UPDATE: Added delivery service field
+            has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         } = req.body;
 
         if (!id_shop || !name_shop || !old_name_shop) {
@@ -211,7 +273,21 @@ async function updateWithFolder(req, res) {
             id_user,
             calification_shop,
             image_shop,
-            old_name_shop // Make sure to pass this through
+            old_name_shop, // Make sure to pass this through
+            morning_open,
+            morning_close,
+            afternoon_open,
+            afternoon_close,
+            // UPDATE: Added delivery service field
+            has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday,
+            open_tuesday,
+            open_wednesday,
+            open_thursday,
+            open_friday,
+            open_saturday,
+            open_sunday
         };
 
         const { error, data } = await shopController.updateWithFolder(id_shop, updateData);

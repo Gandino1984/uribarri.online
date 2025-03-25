@@ -21,7 +21,8 @@ const ShopCard = ({ shop }) => {
   const { setSelectedShop, setShowShopCreationForm } = useShop();
   const { setShowProductManagement } = useProduct();
   
-  const { formatTime, formatShopType, checkHasContinuousSchedule } = ShopCardUtils();
+  // UPDATE: Added formatOpenDays function from ShopCardUtils
+  const { formatTime, formatShopType, checkHasContinuousSchedule, formatOpenDays } = ShopCardUtils();
 
   // Event handlers
   const toggleMinimized = useCallback(() => {
@@ -79,6 +80,7 @@ const ShopCard = ({ shop }) => {
               formatTime={formatTime}
               formatShopType={shopTypeFormatted}
               hasContinuousSchedule={hasContinuousSchedule}
+              formatOpenDays={formatOpenDays}
             />
           </>
         )}

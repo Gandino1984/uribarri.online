@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
-import { Store, MapPinned, Clock } from 'lucide-react';
+import { Store, MapPinned, Clock, Calendar, Truck } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
-const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule }) => {
+const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule, formatOpenDays }) => {
   return (
     <div className={styles.infoContainer}>
       <div className={styles.header}>
@@ -38,6 +38,18 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
               </span>
             </>
           )}
+          
+          {/* UPDATE: Show open days */}
+          <span className={styles.scheduleTime}>
+            <Calendar size={16} className={styles.scheduleIcon} />
+            Días: {formatOpenDays(shop)}
+          </span>
+          
+          {/* UPDATE: Show delivery status */}
+          <span className={styles.scheduleTime}>
+            <Truck size={16} className={styles.scheduleIcon} />
+            Delivery: {shop?.has_delivery ? 'Disponible' : 'No disponible'}
+          </span>
         </div>
       </div>
     </div>

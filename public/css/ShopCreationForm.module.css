@@ -364,7 +364,7 @@
 
 /* Add these styles to your existing ShopCreationForm.module.css file */
 
-/* UPDATE: Improved time input styling */
+/* Improved time input styling */
 .timeFieldContainer, .timeFieldGroup {
   display: flex;
   flex-direction: column;
@@ -429,7 +429,7 @@
   font-weight: 500;
 }
 
-/* UPDATE: Improved schedule title styling */
+/* Improved schedule title styling */
 .scheduleTitle {
   display: flex;
   align-items: center;
@@ -446,6 +446,57 @@
 
 .scheduleTypeToggleContainer {
   margin: 1rem 0;
+}
+
+/* Days selection container */
+.daysSelectionContainer {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+/* Days grid layout */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+/* Day toggle item */
+.dayToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Day checkbox style */
+.dayCheckbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+/* Day label style */
+.dayLabel {
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Delivery container */
+.deliveryContainer {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+/* Delivery toggle wrapper */
+.deliveryToggleWrapper {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
 }
 
 /* Responsive styles */
