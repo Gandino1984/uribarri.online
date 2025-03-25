@@ -16,7 +16,7 @@ const ShopCard = ({ shop }) => {
   const [showMap, setShowMap] = useState(false);
   const isSmallScreen = useScreenSize(768);
   
-  // UPDATE: Using split context hooks instead of AppContext
+  // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { setSelectedShop, setShowShopCreationForm } = useShop();
   const { setShowProductManagement } = useProduct();
@@ -26,7 +26,12 @@ const ShopCard = ({ shop }) => {
   // Event handlers
   const toggleMinimized = useCallback(() => {
     setMinimized(prevState => !prevState);
-  }, []);
+    
+    // UPDATE: Hide map when minimizing
+    if (!minimized === false) {
+      setShowMap(false);
+    }
+  }, [minimized]);
 
   const toggleMap = useCallback((e) => {
     e.stopPropagation(); 
@@ -50,7 +55,7 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
-  // Enhanced responsive layout with fullscreen mobile map
+  // UPDATE: Enhanced layout handling for minimized state
   return (
     <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 

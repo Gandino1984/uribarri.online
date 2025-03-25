@@ -361,3 +361,121 @@
 .scheduleInfo{
   gap: .3rem;
 }
+
+/* Add these styles to your existing ShopCreationForm.module.css file */
+
+/* UPDATE: Improved time input styling */
+.timeFieldContainer, .timeFieldGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.timeFieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.timeIcon {
+  color: #6b7280;
+}
+
+.timeInput {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.timeInput:focus {
+  border-color: var(--saturated-orange);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--saturated-orange-rgb), 0.2);
+}
+
+.timeInput.hasValue {
+  border-color: var(--saturated-orange);
+  background-color: rgba(var(--saturated-orange-rgb), 0.05);
+}
+
+.timeDisplay {
+  position: absolute;
+  right: 0.5rem;
+  top: 1.75rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.scheduleFields {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.timeSeparator {
+  display: flex;
+  align-items: center;
+  margin: 0 0.5rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* UPDATE: Improved schedule title styling */
+.scheduleTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.975rem;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.scheduleIcon {
+  color: var(--saturated-orange);
+}
+
+.scheduleTypeToggleContainer {
+  margin: 1rem 0;
+}
+
+/* Responsive styles */
+@media (min-width: 640px) {
+  .scheduleFields {
+    gap: 1rem;
+  }
+  
+  .timeFieldGroup {
+    min-width: 120px;
+  }
+}
+
+@media (min-width: 768px) {
+  .scheduleContainer {
+    padding: 0 1rem;
+  }
+  
+  .scheduleFields {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .scheduleSimple {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .scheduleFields {
+    gap: 2rem;
+  }
+}

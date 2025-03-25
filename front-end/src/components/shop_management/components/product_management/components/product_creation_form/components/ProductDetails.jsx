@@ -37,7 +37,7 @@ const ProductDetails = ({
 
   return (
     <section className={styles.detailsSection}>
-      <h2 className={styles.sectionTitle}>Detalles adicionales</h2>
+      <h2 className={styles.sectionTitle}>Detalles opcionales</h2>
       <p className={styles.sectionDescription}>
         Completa la información para una mejor descripción del producto
       </p>

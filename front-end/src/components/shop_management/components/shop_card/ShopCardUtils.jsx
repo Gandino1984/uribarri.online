@@ -6,7 +6,7 @@ import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
 const ShopCardUtils = () => {
-  // UPDATE: Using split context hooks instead of AppContext
+  // Using split context hooks instead of AppContext
   const { setError, setUploading } = useUI();
   const { selectedShop, setShops, shops } = useShop();
   
@@ -105,13 +105,13 @@ const ShopCardUtils = () => {
     return imageUrl;
   }, []);
 
-  // Added time and shop type formatting utilities
+  // UPDATE: Modified formatTime to use 24-hour format
   const formatTime = useCallback((time) => {
     if (!time) return '00:00';
     return new Date(`2000-01-01T${time}`).toLocaleTimeString('es-ES', {
-      hour: 'numeric',
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: false
     });
   }, []);
 

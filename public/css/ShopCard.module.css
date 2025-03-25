@@ -12,6 +12,12 @@
   background-color: white;
 }
 
+/* UPDATE: Added specific styles for minimized container to override min-height */
+.container.minimized {
+  min-height: unset;
+  height: auto;
+}
+
 /* UPDATE: Added responsive container class to control width based on device size */
 .responsiveContainer {
   width: 100%;
@@ -61,7 +67,7 @@
   margin-top: 2px;
 }
 
-/* UPDATE: Added shop type styling */
+/* Added shop type styling */
 .shopType {
   color: #4b5563;
   display: flex;
@@ -95,7 +101,7 @@
   /* gap: 0.5rem; */
 }
 
-/* UPDATE: Estilos para el botón y control de minimizar */
+/* Estilos para el botón y control de minimizar */
 .headerControls {
   /* width: 100%; */
   position: absolute;
@@ -174,10 +180,11 @@
   font-size: 0.85rem;
 }
 
-/* UPDATE: Estilos para el estado minimizado */
+/* UPDATE: Improved styles for minimized state */
 .minimized {
   max-width: 200px;
-  /* height: auto; */
+  min-height: auto;
+  height: auto;
   cursor: pointer;
   border-radius: 0.5rem;
   /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
@@ -218,7 +225,7 @@
   transform: scale(1.1);
 }
 
-/* UPDATE: Improved responsive container classes for more reliable column and row layout */
+/* UPDATE: Improved responsive container classes to properly handle minimized state */
 .responsiveContainerColumn {
   display: flex;
   flex-direction: column;
@@ -233,10 +240,16 @@
   width: 100%;
   position: relative;
   gap: 10px;
-  min-height: 300px;
+  min-height: min-content;
 }
 
-/* UPDATE: Added map wrapper to control map dimensions better */
+/* UPDATE: Adjusted to allow minimized cards to take natural height */
+.responsiveContainerColumn:has(.minimized),
+.responsiveContainerRow:has(.minimized) {
+  min-height: auto;
+}
+
+/* Added map wrapper to control map dimensions better */
 .mapWrapper {
   height: 100%;
   min-height: 300px;
@@ -244,7 +257,7 @@
   width: 60%;
 }
 
-/* UPDATE: Improved map container styles for better leaflet rendering */
+/* Improved map container styles for better leaflet rendering */
 .mapContainer {
   position: relative;
   width: 100%;
@@ -255,7 +268,7 @@
   transition: all 0.3s ease;
 }
 
-/* UPDATE: Added specific map canvas styling */
+/* Added specific map canvas styling */
 .mapCanvas {
   width: 100%;
   height: 100%;
@@ -267,7 +280,7 @@
   z-index: 1000;
 }
 
-/* UPDATE: Improved back button styles */
+/* Improved back button styles */
 .backButton {
   position: absolute;
   top: 10px;
@@ -334,7 +347,7 @@
     font-size: 0.9375rem;
   }
   
-  /* UPDATE: Improved map layout for wider screens */
+  /* Improved map layout for wider screens */
   .mapContainer {
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -396,8 +409,8 @@
     gap: 1.5rem;
   }
   
-  /* UPDATE: Improved widescreen map layout */
-  .responsiveContainerRow {
+  /* UPDATE: Adjusted widescreen layout */
+  .responsiveContainerRow:not(:has(.minimized)) {
     min-height: 400px;
   }
 }
@@ -408,13 +421,13 @@
     max-width: 800px;
   }
   
-  /* UPDATE: Even larger screen adjustments */
-  .mapWrapper {
+  /* UPDATE: Adjusted large screen map styling */
+  .mapWrapper:not(:has(+ .minimized)) {
     min-height: 450px;
   }
 }
 
-/* UPDATE: Print styles to ensure proper rendering when printing */
+/* Print styles to ensure proper rendering when printing */
 @media print {
   .container {
     box-shadow: none;
@@ -428,4 +441,4 @@
   .mapContainer {
     display: none; /* Hide map when printing */
   }
-}
+} 

@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { Store, MapPinned, Clock } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
-// UPDATE: Created separate component file for shop details
 const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule }) => {
   return (
     <div className={styles.infoContainer}>
@@ -30,9 +29,11 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
           ) : (
             <>
               <span className={styles.scheduleTime}>
+                <Clock size={16} className={styles.scheduleIcon} />
                 Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
               </span>
               <span className={styles.scheduleTime}>
+                <Clock size={16} className={styles.scheduleIcon} />
                 Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
               </span>
             </>

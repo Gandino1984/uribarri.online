@@ -1,4 +1,5 @@
 import React from 'react';
+import { Clock } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
 import CustomToggleSwitch from '../../../../navigation_components/CustomToggleSwitch';
 
@@ -19,11 +20,17 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
     }
   };
 
+  // UPDATE: Helper to format time for display
+  const formatTimeDisplay = (time) => {
+    if (!time) return '';
+    return time;
+  };
+
   return (
     <section className={styles.scheduleContainer}>
       <h2 className={styles.sectionTitle}>Horario de atención</h2>
       <p className={styles.sectionDescription}>
-        Configura los horarios de apertura y cierre de tu comercio
+        Configura los horarios de apertura y cierre de tu comercio (formato 24h)
       </p>
       
       <div className={styles.scheduleTypeToggleContainer}>
@@ -41,27 +48,41 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
           <div className={styles.scheduleSimple}>
             <div className={styles.scheduleFields}>
               <div className={styles.timeFieldContainer}>
-                <label className={styles.timeFieldLabel}>Abre:</label>
-                {/* UPDATE: Added has-value class for styling consistency */}
+                <label className={styles.timeFieldLabel}>
+                  <Clock size={16} className={styles.timeIcon} />
+                  Abre:
+                </label>
                 <input
                   type="time"
                   value={newShop.morning_open || ''}
                   onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.morning_open ? 'has-value' : ''}`}
+                  className={`${styles.timeInput} ${newShop.morning_open ? styles.hasValue : ''}`}
                   required
                 />
+                {newShop.morning_open && (
+                  <span className={styles.timeDisplay}>
+                    {formatTimeDisplay(newShop.morning_open)}
+                  </span>
+                )}
               </div>
               
               <div className={styles.timeFieldContainer}>
-                <label className={styles.timeFieldLabel}>Cierra:</label>
-                {/* UPDATE: Added has-value class for styling consistency */}
+                <label className={styles.timeFieldLabel}>
+                  <Clock size={16} className={styles.timeIcon} />
+                  Cierra:
+                </label>
                 <input
                   type="time"
                   value={newShop.afternoon_close || ''}
                   onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.afternoon_close ? 'has-value' : ''}`}
+                  className={`${styles.timeInput} ${newShop.afternoon_close ? styles.hasValue : ''}`}
                   required
                 />
+                {newShop.afternoon_close && (
+                  <span className={styles.timeDisplay}>
+                    {formatTimeDisplay(newShop.afternoon_close)}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -69,48 +90,86 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
           // Schedule with rest period: show all 4 fields
           <>
             <div>
-              <h4 className={styles.scheduleTitle}>Horario de la mañana</h4>
+              <h4 className={styles.scheduleTitle}>
+                <Clock size={16} className={styles.scheduleIcon} />
+                Horario de la mañana
+              </h4>
               <div className={styles.scheduleFields}>
-                {/* UPDATE: Added has-value class for styling consistency */}
-                <input
-                  type="time"
-                  value={newShop.morning_open || ''}
-                  onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.morning_open ? 'has-value' : ''}`}
-                  required
-                />
-                <span>a</span>
-                {/* UPDATE: Added has-value class for styling consistency */}
-                <input
-                  type="time"
-                  value={newShop.morning_close || ''}
-                  onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.morning_close ? 'has-value' : ''}`}
-                  required
-                />
+                <div className={styles.timeFieldGroup}>
+                  <label className={styles.timeFieldLabel}>Abre:</label>
+                  <input
+                    type="time"
+                    value={newShop.morning_open || ''}
+                    onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
+                    className={`${styles.timeInput} ${newShop.morning_open ? styles.hasValue : ''}`}
+                    required
+                  />
+                  {newShop.morning_open && (
+                    <span className={styles.timeDisplay}>
+                      {formatTimeDisplay(newShop.morning_open)}
+                    </span>
+                  )}
+                </div>
+                
+                <span className={styles.timeSeparator}>a</span>
+                
+                <div className={styles.timeFieldGroup}>
+                  <label className={styles.timeFieldLabel}>Cierra:</label>
+                  <input
+                    type="time"
+                    value={newShop.morning_close || ''}
+                    onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
+                    className={`${styles.timeInput} ${newShop.morning_close ? styles.hasValue : ''}`}
+                    required
+                  />
+                  {newShop.morning_close && (
+                    <span className={styles.timeDisplay}>
+                      {formatTimeDisplay(newShop.morning_close)}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
             <div>
-              <h4 className={styles.scheduleTitle}>Horario de la tarde</h4>
+              <h4 className={styles.scheduleTitle}>
+                <Clock size={16} className={styles.scheduleIcon} />
+                Horario de la tarde
+              </h4>
               <div className={styles.scheduleFields}>
-                {/* UPDATE: Added has-value class for styling consistency */}
-                <input
-                  type="time"
-                  value={newShop.afternoon_open || ''}
-                  onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.afternoon_open ? 'has-value' : ''}`}
-                  required
-                />
-                <span>a</span>
-                {/* UPDATE: Added has-value class for styling consistency */}
-                <input
-                  type="time"
-                  value={newShop.afternoon_close || ''}
-                  onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.afternoon_close ? 'has-value' : ''}`}
-                  required
-                />
+                <div className={styles.timeFieldGroup}>
+                  <label className={styles.timeFieldLabel}>Abre:</label>
+                  <input
+                    type="time"
+                    value={newShop.afternoon_open || ''}
+                    onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
+                    className={`${styles.timeInput} ${newShop.afternoon_open ? styles.hasValue : ''}`}
+                    required
+                  />
+                  {newShop.afternoon_open && (
+                    <span className={styles.timeDisplay}>
+                      {formatTimeDisplay(newShop.afternoon_open)}
+                    </span>
+                  )}
+                </div>
+                
+                <span className={styles.timeSeparator}>a</span>
+                
+                <div className={styles.timeFieldGroup}>
+                  <label className={styles.timeFieldLabel}>Cierra:</label>
+                  <input
+                    type="time"
+                    value={newShop.afternoon_close || ''}
+                    onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
+                    className={`${styles.timeInput} ${newShop.afternoon_close ? styles.hasValue : ''}`}
+                    required
+                  />
+                  {newShop.afternoon_close && (
+                    <span className={styles.timeDisplay}>
+                      {formatTimeDisplay(newShop.afternoon_close)}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </>
