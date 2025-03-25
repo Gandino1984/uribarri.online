@@ -5,40 +5,64 @@
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 
-Prototipo de Sistema de gestión de servicios comunitarios - Funcionalidad de ESCAPARATE COMERCIAL: pedidos y reservas online para comercios locales y artesanos del Distrito 02 de Bilbao(Uribarri).
 
-El proyecto es una aplicación web estructurada con una arquitectura full-stack, utilizando una combinación de tecnologías tanto para el front-end como para el back-end. El front-end está construido con React.js y Vite, gestionando las animaciones con la librería React-Spring. 
 
-El backend está estructurado con Node.js, utilizando Express para enrutamiento y controladores, e interactúa con una base de datos de MySQL a través de modelos. El proyecto utiliza Docker para la contenedorización con la imagen base `node:22.9.0`. El `docker-compose.yml` define dos servicios: una base de datos MySQL y la aplicación back-end. El servicio de base de datos utiliza la imagen `mysql:8.0` , con variables de entorno para credenciales y configuraciones de almacenamiento persistente.
+## Descripción del Proyecto
 
-## 🌟 Características Principales
+mibarrio.online es una plataforma de gestión de comercios online, agenda cultural y revista comunitaria diseñada específicamente para la gestión local del distrito02 de Bilbao. Esta solución permite a los establecimientos y agentes culturales de la zona ofrecer sus servicios y actividades culturales en formato digital de forma eficiente y accesible.
 
-- Gestión de productos y servicios(agenda cultural no implementada)
-- Sistema de reservas en tiempo real
-- Panel de administración para comercios y compradores
-- Sistema de notificaciones
-- Manejo de archivos (imagenes)
-- Integración con mapas(no implementado)
-
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Backend
-- Node.js + Express.js
-- MySQL + Sequelize ORM
-- Sistema de autenticación con bcrypt
-- API RESTful
-- Multer para subir archivos
-- Gestión de sesiones (localStorage)
+- **Node.js**: Entorno de ejecución para JavaScript del lado del servidor (versión 22.9.0)
+- **Express.js**: Framework web rápido y minimalista para Node.js
+- **Sequelize**: ORM (Object-Relational Mapping) para facilitar las operaciones con la base de datos
 
-### Frontend
-- React 18+
-- Vite como bundler
-- Axios para peticiones HTTP
-- React-Spring para animaciones
-- Componentes reutilizables
+### Base de Datos
+- **MySQL 8.0**: Sistema de gestión de bases de datos relacionales
+- **mysql2**: Cliente MySQL para Node.js
 
-### Infraestructura
-- Docker + Docker Compose
-- Variables de entorno
-- CORS configurado
-- Logs para monitorización
+### Seguridad
+- **bcrypt**: Librería para el cifrado de contraseñas
+- **cors**: Middleware para habilitar el Cross-Origin Resource Sharing
+
+### Gestión de Archivos e Imágenes
+- **multer**: Middleware para la gestión de subida de archivos
+- **sharp**: Procesamiento y optimización de imágenes
+- **validate-image-type**: Validación de tipos de imágenes
+
+### Configuración y Variables de Entorno
+- **dotenv**: Gestión de variables de entorno
+
+### Contenerización
+- **Docker**: Plataforma para crear, implementar y ejecutar aplicaciones en contenedores
+- **Docker Compose**: Herramienta para definir y ejecutar aplicaciones Docker multi-contenedor
+
+### Herramientas de Desarrollo
+- **ESLint**: Herramienta de análisis de código estático
+- **Nodemon**: Utilidad que monitoriza cambios en el código y reinicia automáticamente el servidor
+- **Jest**: Framework de pruebas
+
+## Estructura del Proyecto
+
+El proyecto sigue una arquitectura modular, con separación clara entre:
+- Backend (API RESTful)
+- Sistema de gestión de imágenes (uploads para usuarios, tiendas)
+- Configuración de contenedores Docker
+- Base de datos MySQL
+
+## Propósito
+
+El sistema está diseñado para:
+- Facilitar la gestión de pedidos online para comercios locales
+- Permitir a los clientes realizar reservas en establecimientos
+- Digitalizar servicios de los comercios del barrio de Uribarri
+- Mejorar la visibilidad y accesibilidad de los negocios locales
+
+## Autor
+
+Desarrollado por German Andino
+
+---
+
+*Para más información y contribuciones, visite el [repositorio GitHub](https://github.com/Gandino1984/uribarri.online)*

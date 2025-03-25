@@ -1,148 +1,421 @@
 .container{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: white;
-    border-radius: 6px;
-    font-size: .8rem;
-    padding: .5rem 1rem;
-    margin-top: .5rem;
-    margin-left: auto;
-    margin-right: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  /* border-radius: 6px; */
+  font-size: .8rem;
+  padding: .5rem 1rem;
+  margin-top: .5rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 600px; /* UPDATE: Changed max-width to match ShopCreationForm */
 }   
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+}
+
 .formTitle{
-    text-align: center;
-    margin-bottom: 1rem;
-    width: 100%;
+  color: #333;
+  line-height: 1.85rem;
+  margin: 0;
+}
+
+/* UPDATE: Added styles for section titles and descriptions */
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark-orange);
+  margin-bottom: 5px;
+}
+
+.sectionDescription {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+/* Step tracker styles copied from ShopCreationForm */
+.stepTracker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 25px;
+  position: relative;
+}
+
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 15px;
+  z-index: 2;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+}
+
+.stepDot.active {
+  background-color: var(--saturated-blue);
+  color: white;
+  transform: scale(1.4);
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sections for the main content areas */
+.imageSection,
+.basicInfoSection,
+.detailsSection {
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .formField{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: .5rem;
-    /* flex-wrap: wrap; */
-}
-
-select,
-textarea {
-    flex: 1 1 200px;
-    min-width: 0;
-}
-
-.formField textarea {
-    flex: 1 1 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .dateInput {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    margin-top: 4px;
-  }
-  
-  .dateInput::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-  }
-  
-  .formField label {
-    display: block;
-    margin-bottom: 4px;
-    font-weight: 500;
-    color: #666;
-  }
-
-  .productLimitInfo {
-    margin-bottom: 20px;
-    padding: 12px;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-  }
-  
-  .limitHeader {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-  
-  .upgradeMessage {
-    font-size: 0.85rem;
-    color: #dc3545;
-    margin-top: 5px;
-  }
-  
-  /* Estilos para el botón deshabilitado */
-  .submitButton:disabled {
-    background-color: #e9ecef;
-    color: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.65;
-  }
-
-  .shopTypeGuidance{
-    margin-bottom: 1rem;
-  }
-
-/* Media queries for responsive design */
-@media screen and (max-width: 768px) {
-    .formField {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .formField input,
-    .formField select {
-        flex: 1 1 100%;
-        margin: 0.25rem 0;
-    }
-
-    /* Center and adjust label positioning */
-    .formField label {
-        margin-top: 0.5rem;
-        margin-bottom: 0.25rem;
-        text-align: center;
-        width: 100%;
-    }
-
-    /* Make buttons full width on mobile */
-    .formField button {
-        width: 100%;
-    }
-
-    /* Add more spacing between form fields on mobile */
-    .formField {
-        margin-bottom: .7rem;
-    }
-
-    /* Ensure container has proper padding on mobile */
-    .container {
-        padding: 1rem;
-    }
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  /* border-radius: 4px; */
+  font-size: 16px;
+  margin-top: 4px;
 }
 
-/* Additional breakpoint for very small screens */
-@media screen and (max-width: 480px) {
-    .container {
-        padding: 0.8rem;
-    }
-
-    .formField {
-        gap: 0.3rem;
-    }
-    
-    /* Maintain centered labels on very small screens */
-    .formField label {
-        text-align: center;
-        width: 100%;
-    }
+.dateInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
 }
+
+.formField label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: #666;
+}
+
+.productLimitInfo {
+  /* margin-bottom: 20px; */
+  padding-top: .5rem;
+  padding-left: 1rem;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.limitHeader {
+  display: flex;
+  font-size: .85rem;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  font-weight: 500;
+  margin-bottom: .5rem;
+}
+
+.upgradeMessage {
+  font-size: 0.85rem;
+  color: #dc3545;
+  margin-top: 5px;
+}
+
+/* Buttons and navigation styles */
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem; 
+  /* padding-top: 8px;*/
+  width: 100%;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: #f5f5f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--dark-orange);
+}
+
+.navButton:hover {
+  color: white;
+  background-color: var(--saturated-orange);
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: var(--saturated-orange);
+  color: white;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: var(--dark-orange);
+}
+
+.submitButton:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: #e5e5e5;
+}
+
+.shopTypeGuidance{
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Image upload container styles */
+.imageUploadContainer {
+  cursor: pointer;
+  background-color: #f9f9f9;
+  /* border-radius: 4px; */
+  padding: 5px;
+  border: 2px dashed #ddd;
+  width: 100%;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.imageUploadContainer:hover {
+  border-color: var(--saturated-orange);
+}
+
+.imageUploadContainer:hover .editOverlay {
+  opacity: 1;
+}
+
+/* Image preview box styles */
+.imagePreviewBox {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.noImagePlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.placeholderIcon {
+  margin-bottom: 0.75rem;
+  color: #aaa;
+  opacity: 0.5;
+}
+
+/* Upload button overlay styles */
+.editOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.uploadButtonOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(0,0,0,0.7);
+  transition: all 0.3s ease;
+}
+
+.loaderOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  /* border-radius: 4px; */
+  z-index: 10;
+}
+
+/* Buttons for image upload */
+.imageButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #4A90E2;
+  border: none;
+  /* border-radius: 4px; */
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.imageButton:hover {
+  background-color: #3A7BC8;
+}
+
+.clearImageButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #E25549;
+  border: none;
+  /* border-radius: 4px; */
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.clearImageButton:hover {
+  background-color: #C43A30;
+}
+
+.clearImageButton:disabled,
+.imageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Animation for spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 1.5s linear infinite;
+}
+
+.errorMessage {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+/* UPDATE: Added toggle switch container and toggle label styles */
+.toggleSwitchContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.toggleLabel {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.checkboxContainer{
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+  .formField{
+   flex-direction: row;
+  }
+  .container {
+    padding: 15px;
+    max-width: 100%;
+  }
+  
+  .stepDot {
+    width: 24px;
+    height: 24px;
+    margin: 0 10px;
+    font-size: 0.8rem;
+  }
+  
+  /* UPDATE: Adjust toggle switch container for mobile */
+  .toggleSwitchContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}   

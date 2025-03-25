@@ -1,149 +1,431 @@
+/* ShopCard.module.css - Mobile-first approach */
+
 .container {
-  width: 700px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  min-height: 300px;
+  margin: 0 auto;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background-color: white;
+}
+
+/* UPDATE: Added responsive container class to control width based on device size */
+.responsiveContainer {
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
 }
 
-.imageContainer {
-  height: 250px;
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  position: relative;
-  cursor: pointer;
-}
-
-.imageWrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.noImage {
-  width: 100%;
-  height: 100%;
-  background-color: #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.noImage span {
-  color: #9ca3af;
-}
-
-.fileInput {
-  display: none;
-}
-
-.uploadButton {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 0.5rem;
-  border-radius: 9999px;
-  transition: background-color 0.2s;
-  z-index: 10;
-}
-
-.uploadButton:hover {
-  background-color: white;
-}
-
-.cameraIcon {
-  color: #374151;
-}
-
-.loader {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 10;
-}
-
-.loaderIcon {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-      transform: rotate(0deg);
-  }
-  to {
-      transform: rotate(360deg);
-  }
-}
-
 .infoContainer {
+  width: 100%;
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  /* border-radius: 0 0 0.5rem 0.5rem; */
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+  padding: .5rem;
+  transition: all 0.3s ease;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--superdark-orange);
+  word-break: break-word;
 }
 
 .rating {
   color: #4b5563;
+  font-size: 0.875rem;
 }
 
 .location {
   color: #4b5563;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .locationIcon {
-  display: inline;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* UPDATE: Added shop type styling */
+.shopType {
+  color: #4b5563;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.shopTypeIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 /* Schedule styles */
-.schedule {
+.scheduleContainer {
   color: #4b5563;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   margin-top: 0.75rem;
 }
 
-.scheduleIcon {
-  display: inline;
-}
-
-.scheduleInfo{
+.scheduleInfo {
   display: flex;
   flex-direction: column;
-  align-items: left;
-  justify-content: center;
-  /* gap: .5rem; */
+  gap: .5rem;
 }
 
-.scheduleDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.timeSlot {
+.scheduleTime {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  /* gap: 0.5rem; */
+}
+
+/* UPDATE: Estilos para el botón y control de minimizar */
+.headerControls {
+  /* width: 100%; */
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.scheduleIcon{  
+  margin-right: .5rem;
+}
+
+.minimizeButton {
+  opacity: .8;
+  background-color: rgba(255, 255, 255, 0.638);
+  border: none;
+  /* border-radius: 6px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+  /* transition: all 0.2s ease; */
+}
+
+.minimizeButton:hover {
+  opacity: 1;
+  color: white;
+  background-color: var(--saturated-orange);
+  /* transform: scale(1.05); */
+}
+
+/* Styles for the update button */
+.updateButtonContainer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.updateButton {
+  opacity: .8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--saturated-blue, #3b82f6);
+  /* border: 1px solid rgba(59, 130, 246, 0.2); */
+  /* border-radius: 0.375rem; */
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  /* transition: all 0.2s ease; */
+  width: fit-content;
+}
+
+.updateButton:hover {
+  opacity: 1;
+  background-color: var(--saturated-blue, #3b82f6);
+  color: white;
+  /* transform: translateY(-1px); */
+}
+
+.editIcon {
+  transition: transform 0.2s ease;
+}
+
+.updateButton:hover .editIcon {
+  /* transform: scale(1.1); */
+}
+
+.updateButtonText {
+  font-size: 0.85rem;
+}
+
+/* UPDATE: Estilos para el estado minimizado */
+.minimized {
+  max-width: 200px;
+  /* height: auto; */
+  cursor: pointer;
+  border-radius: 0.5rem;
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+}
+
+.minimizedCard {
+  background-color: white;
+  /* border-radius: 0.5rem; */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  /* transition: all 0.2s ease; */
+}
+
+.minimizedCard:hover {
+  /* transform: translateY(-2px); */
+  box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.15);
+}
+
+.minimizedContent {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.minimizedText {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.toggleIcon {
+  color: #4b5563;
+  transition: transform 0.2s ease;
+}
+
+.minimizedContent:hover .toggleIcon {
+  transform: scale(1.1);
+}
+
+/* UPDATE: Improved responsive container classes for more reliable column and row layout */
+.responsiveContainerColumn {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  gap: 10px;
+}
+
+.responsiveContainerRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  position: relative;
+  gap: 10px;
+  min-height: 300px;
+}
+
+/* UPDATE: Added map wrapper to control map dimensions better */
+.mapWrapper {
+  height: 100%;
+  min-height: 300px;
+  position: relative;
+  width: 60%;
+}
+
+/* UPDATE: Improved map container styles for better leaflet rendering */
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+/* UPDATE: Added specific map canvas styling */
+.mapCanvas {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+/* Ensure popup appears above other elements */
+.mapContainer :global(.leaflet-popup) {
+  z-index: 1000;
+}
+
+/* UPDATE: Improved back button styles */
+.backButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* transition: background-color 0.2s ease; */
+}
+
+.backButton:hover {
+  background-color: var(--saturated-orange);
+  color: white;
+}
+
+/* Small tablets (640px and up) */
+@media (min-width: 640px) {
+  .responsiveContainer {
+    max-width: 540px;
+  }
+  
+  .title {
+    font-size: 1.375rem;
+  }
+
+  .minimized {
+    max-width: 220px;
+  }
+  
+  .updateButton {
+    padding: 0.5rem 0.875rem;
+  }
+}
+
+/* Tablets (768px and up) */
+@media (min-width: 768px) {
+  .responsiveContainer {
+    max-width: 640px;
+  }
+  
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .minimized {
+    max-width: 240px;
+  }
+  
+  .updateButton {
+    padding: 0.5rem 1rem;
+  }
+  
+  .updateButtonText {
+    font-size: 0.9375rem;
+  }
+  
+  /* UPDATE: Improved map layout for wider screens */
+  .mapContainer {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* UPDATE: Fullscreen map on mobile devices */
+@media (max-width: 768px) {
+  .mapWrapper {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1050;
+    background-color: white;
+  }
+  
+  .mapContainer {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+  
+  .mapCanvas {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .backButton {
+    top: 20px;
+    right: 20px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1060;
+  }
+}
+
+/* Laptops/Desktops (1024px and up) */
+@media (min-width: 1024px) {
+  .responsiveContainer {
+    max-width: 700px;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .scheduleInfo {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+  
+  /* UPDATE: Improved widescreen map layout */
+  .responsiveContainerRow {
+    min-height: 400px;
+  }
+}
+
+/* Large screens (1280px and up) */
+@media (min-width: 1280px) {
+  .responsiveContainer {
+    max-width: 800px;
+  }
+  
+  /* UPDATE: Even larger screen adjustments */
+  .mapWrapper {
+    min-height: 450px;
+  }
+}
+
+/* UPDATE: Print styles to ensure proper rendering when printing */
+@media print {
+  .container {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  
+  .responsiveContainer {
+    max-width: 100%;
+  }
+  
+  .mapContainer {
+    display: none; /* Hide map when printing */
+  }
 }

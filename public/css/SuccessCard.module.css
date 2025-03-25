@@ -5,9 +5,9 @@
     position: absolute;
     padding: .3rem .5rem;
     gap: .2rem; 
-    background-color: var(--superlight-blue);
-    border-radius: 6px;
-    border: 2px solid blue;
+    background-color: var(--superlight-orange);
+    /* border-radius: 6px; */
+    border: 2px solid var(--saturated-orange);
 }
 
 .successList {
@@ -23,5 +23,5 @@
     justify-content: center;
     line-height: .9rem;
     font-size: .9rem;
-    color: var(--saturated-blue);
+    color: var(--saturated-orange);
 }

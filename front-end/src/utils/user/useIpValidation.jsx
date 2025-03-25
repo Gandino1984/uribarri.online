@@ -1,14 +1,10 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import axiosInstance from '../app/axiosConfig.js';
-import { useContext } from 'react';
-import AppContext from '../../app_context/AppContext.js';
-
+import { useUI } from '../../app_context/UIContext.jsx';
 
 export const useIPValidation = () => {
-  const {
-   setError
-  } = useContext(AppContext);
-
+  // UPDATE: Using useUI hook instead of AppContext
+  const { setError } = useUI();
 
   const validateIPRegistration = async () => {
     try {

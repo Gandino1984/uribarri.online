@@ -12,7 +12,7 @@ export const useUsernameValidation = () => {
         errors.push('El nombre solo puede contener letras, números o guiones bajos');
     }
     if (name_user.trim().length === 0) {
-        errors.push('El nombre de usuaria es requerido');
+        errors.push('El nombre de usuario es requerido');
     }
     return errors;
   };

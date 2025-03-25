@@ -1,53 +1,54 @@
-import React, { useContext } from 'react';
-import { useTransition, animated } from '@react-spring/web';
-
-import AppContext from '../../app_context/AppContext.js';
-import UserManagement from "../user_management/UserManagement.jsx";
+import React from 'react';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
 import ShopManagement from "../shop_management/ShopManagement.jsx";
-
-import { LoginRegisterFunctions } from './LoginRegisterFunctions.jsx';
-import { FormFields } from './FormFields.jsx';
-import { KeyboardSection } from './KeyboardSection';
-import { FormActions } from './FormActions';
-
+import LandingPage from "../landing_page/LandingPage.jsx";
+import { FormFields } from './components/FormFields.jsx';
+import { KeyboardSection } from './components/KeyboardSection';
+import { FormActions } from './components/FormActions';
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
-import { fadeInScale } from '../../utils/animation/transitions.js';
-
-const LoginRegisterForm = () => {
-  const {
-    currentUser,
-    showShopManagement,
-    type_user,
-  } = useContext(AppContext);
-
-  const transitions = useTransition(!showShopManagement && !currentUser, fadeInScale);
-
-  if (showShopManagement || currentUser) {
-    return type_user === 'seller' ? <ShopManagement /> : <UserManagement />;
-  }
-
-  return transitions((style, show) =>
-    show && (
-      <animated.div style={style} className={styles.container}>
-        <div className={styles.formContainer}>
-          <div className={styles.formContentWrapper}>
-            <FormContent />
-          </div>
-          <FormActions />
-        </div>
-      </animated.div>
-    )
-  );
-};
 
 const FormContent = () => {
-  const { handleFormSubmit } = LoginRegisterFunctions();
-
   return (
-    <form className={styles.formContent} onSubmit={handleFormSubmit}>
+    <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
       <FormFields />
       <KeyboardSection />
     </form>
+  );
+};
+
+const LoginRegisterForm = () => {
+  const { currentUser, type_user } = useAuth();
+  const { showShopManagement, showLandingPage, setShowLandingPage } = useUI();
+
+  // Handler to proceed from landing to login/register form
+  const handleProceedToLogin = () => {
+    setShowLandingPage(false);
+  };
+
+  // if logged in
+  if (showShopManagement || currentUser) { 
+    const userType = currentUser?.type_user || type_user;
+    if (userType === 'seller') {
+      return <ShopManagement />;
+    } else {
+      return <LandingPage />;
+    }
+  }
+
+  // If not logged in, show either landing page or login/register form
+  if (showLandingPage) {
+    return <LandingPage onProceedToLogin={handleProceedToLogin} />;
+  }
+
+  // if not logged or not registered but past landing page
+  return (
+    <div className={styles.container}>
+      <div className={styles.formContainer}>
+        <FormActions />
+        <FormContent />
+      </div>
+    </div>
   );
 };
 

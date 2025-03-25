@@ -42,7 +42,9 @@ async function create(productData) {
             id_shop,
             second_hand,
             surplus_product,
-            expiration_product 
+            expiration_product,
+            country_product,
+            locality_product
         } = productData;
 
         const product = await product_model.create({
@@ -58,7 +60,9 @@ async function create(productData) {
             id_shop,
             second_hand,
             surplus_product,
-            expiration_product
+            expiration_product,
+            country_product,
+            locality_product
         });
         
         return { 
@@ -86,7 +90,9 @@ async function update(id, productData) {
             id_shop,
             second_hand,
             surplus_product,
-            expiration_product
+            expiration_product,
+            country_product,
+            locality_product
         } = productData;
 
         const product = await product_model.findByPk(id);
@@ -108,6 +114,8 @@ async function update(id, productData) {
         if (second_hand !== undefined) product.second_hand = second_hand;
         if (surplus_product >= 0) product.surplus_product = surplus_product;
         if (expiration_product) product.expiration_product = expiration_product;
+        if (country_product) product.country_product = country_product;
+        if (locality_product) product.locality_product = locality_product;
         
         await product.save();
 
@@ -219,6 +227,48 @@ async function getOnSale() {
     } catch (err) {
         console.error("-> product_controller.js - getOnSale() - Error = ", err);
         return { error: "Productos en oferta encontrados" };
+    }
+}
+
+// Nueva función para buscar productos por país de origen
+async function getByCountry(country_product) {
+    try {
+        const products = await product_model.findAll({
+            where: { country_product: country_product }
+        });
+
+        if (!products || products.length === 0) {
+            return { data: [], success: "No hay productos del país especificado" };
+        }
+
+        return { 
+            data: products,
+            success: "Productos por país encontrados" 
+        };
+    } catch (err) {
+        console.error("-> product_controller.js - getByCountry() - Error = ", err);
+        return { error: "Productos por país no encontrados" };
+    }
+}
+
+// Nueva función para buscar productos por localidad de origen
+async function getByLocality(locality_product) {
+    try {
+        const products = await product_model.findAll({
+            where: { locality_product: locality_product }
+        });
+
+        if (!products || products.length === 0) {
+            return { data: [], success: "No hay productos de la localidad especificada" };
+        }
+
+        return { 
+            data: products,
+            success: "Productos por localidad encontrados" 
+        };
+    } catch (err) {
+        console.error("-> product_controller.js - getByLocality() - Error = ", err);
+        return { error: "Productos por localidad no encontrados" };
     }
 }
 
@@ -382,7 +432,9 @@ export {
     getOnSale, 
     updateProductImage, 
     deleteImage,
-    verifyProductName
+    verifyProductName,
+    getByCountry,
+    getByLocality
 }
 
 export default { 
@@ -397,5 +449,7 @@ export default {
     getOnSale, 
     updateProductImage, 
     deleteImage,
-    verifyProductName
+    verifyProductName,
+    getByCountry,
+    getByLocality
 }

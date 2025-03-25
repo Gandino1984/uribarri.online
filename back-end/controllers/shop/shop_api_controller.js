@@ -3,7 +3,7 @@ import shopController from "./shop_controller.js";
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-// import shop_model from "../../models/shop_model.js";
+import shop_model from "../../models/shop_model.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -309,61 +309,86 @@ const getByUserId = async (req, res) => {
 
 async function uploadCoverImage(req, res) {
   try {
-      const id_shop = req.headers['x-shop-id'];
+    const id_shop = req.headers['x-shop-id'];
+    
+    if (!id_shop) {
+      return res.status(400).json({
+        error: 'Shop ID is required'
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'No file uploaded'
+      });
+    }
+
+    console.log('Processing uploaded cover image for shop ID:', id_shop);
+    console.log('Uploaded file:', req.file);
+
+    // Get the shop to get its name
+    const shop = await shop_model.findByPk(id_shop);
+    if (!shop) {
+      return res.status(404).json({
+        error: 'Shop not found'
+      });
+    }
+
+    // Construct the relative path for storing in the database
+    // IMPORTANT: We're ensuring this path is relative to the public directory
+    // and doesn't include 'public/' in the path itself
+    // UPDATE: Use a more consistent path format without the filename to avoid
+    // inconsistencies when different file extensions are used
+    const relativePath = path.join(
+      'images', 
+      'uploads', 
+      'shops', 
+      shop.name_shop, 
+      'cover_image', 
+      req.file.filename
+    ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
+
+    console.log(`Saving cover image path to database: ${relativePath}`);
+
+    // Update the shop's image_shop field in the database using the controller
+    const { error, data } = await shopController.update(id_shop, {
+      image_shop: relativePath
+    });
+
+    if (error) {
+      // If there was an error updating the database, delete the uploaded file
+      const filePath = path.join(__dirname, '..', '..', 'public', relativePath);
+      try {
+        await fs.unlink(filePath);
+      } catch (unlinkError) {
+        console.error('Error deleting uploaded file:', unlinkError);
+      }
       
-      if (!id_shop) {
-          return res.status(400).json({
-              error: 'Shop ID is required'
-          });
-      }
-
-      if (!req.file) {
-          return res.status(400).json({
-              error: 'No file uploaded'
-          });
-      }
-
-      // Construct the relative path for storing in the database
-      const relativePath = path.join('images', 'uploads', 'shops', 'covers', req.file.filename)
-          .replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
-
-      // Update the shop's image_shop field in the database using the controller
-      const { error, data } = await shopController.update(id_shop, {
-          image_shop: relativePath
+      return res.status(500).json({
+        error: 'Failed to update shop with new image',
+        details: error
       });
+    }
 
-      if (error) {
-          // If there was an error updating the database, delete the uploaded file
-          const filePath = path.join(__dirname, '..', '..', 'public', relativePath);
-          try {
-              await fs.unlink(filePath);
-          } catch (unlinkError) {
-              console.error('Error deleting uploaded file:', unlinkError);
-          }
-          
-          return res.status(500).json({
-              error: 'Failed to update shop with new image',
-              details: error
-          });
+    console.log('Shop updated successfully with new cover image');
+
+    // Return the updated image path
+    res.json({
+      error: null,
+      data: {
+        image_shop: relativePath
       }
-
-      // Return the updated image path
-      res.json({
-          error: null,
-          data: {
-              image_shop: relativePath
-          }
-      });
+    });
 
   } catch (err) {
-      console.error('Error uploading shop cover image:', err);
-      res.status(500).json({
-          error: 'Error uploading shop cover image',
-          details: err.message
-      });
+    console.error('Error uploading shop cover image:', err);
+    res.status(500).json({
+      error: 'Error uploading shop cover image',
+      details: err.message
+    });
   }
 }
-
+  
 export {
     getAll,
     getById,

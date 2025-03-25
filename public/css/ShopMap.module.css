@@ -1,0 +1,58 @@
+/* ShopMap.module.css */
+.mapContainer {
+    position: relative;
+    width: 40%;
+    height: 100vh;
+    /* max-height: 300px;  */
+    /* border-radius: 10px; */
+    overflow: hidden;
+    /* margin-left: .5rem; */
+    transition: all 0.3s ease;
+  }
+  
+  /* Ensure popup appears above other elements */
+  .mapContainer :global(.leaflet-popup) {
+    z-index: 1000;
+  }
+  
+  /* .mapContainer button{
+    position: absolute;
+    top: 10px;
+    right: 10px; 
+    z-index: 1001;
+    border: none;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
+  }
+  
+  .backButton:hover {
+    background-color: var(--saturated-orange);
+  } */
+  
+  @media (max-width: 768px) {
+    .mapContainer {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 10px;
+      min-height: 300px;
+      height: calc(100vh); /* Take up most of the viewport height */
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      border-radius: 0;
+    }
+    
+    .backButton {
+      right: 10px;
+    }
+  }

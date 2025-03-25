@@ -3,19 +3,8 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
   width: 100%;
-  padding: 1rem 1rem;
-  transform-origin: center center;
-  will-change: transform, opacity;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  padding-right: 3rem;
-  padding-bottom: .5rem;
 }
 
 .formContainer {
@@ -23,9 +12,17 @@
   justify-content: center;  
   align-items: center;
   flex-direction: column;
+}
+
+.formContent {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
   background-color: white;
-  border-radius: 6px;
-  padding: 1rem 1rem 1rem 1rem;
+  padding: 1rem;
 }
 
 .inputSection{
@@ -41,24 +38,15 @@
 .formActions {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
   width: 100%;
-  gap: 1.7rem;
+  margin: 0;
+  padding: 0;
 }
 
-/* .selectOptions{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  flex-direction: column;
-  width: 100%;
+.formActions button :hover{
+  color: white;
 }
-
-.selectOptions input[type="select"] {
-  height:2rem;
- 
-} */
 
 .formField {
   display: flex;
@@ -129,14 +117,14 @@
 
 .active {
   color: rgb(247, 247, 247);
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated-orange);
   color: white;
 }
 
 .active:hover {
-  color: black;
-  background-color: var(--dark-blue);
-  transform: translateY(-1px);
+  color: white;
+  background-color: var(--dark-orange);
+  /* transform: translateY(-1px); */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -144,75 +132,36 @@
   background-color: var(--superlight-gray);
   color: var(--gray);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.3;
 }
 
-@media screen and (min-width: 400px) {
-  .formActions {
-    justify-content: left;
-    gap: 1rem;
-  }
-
-}
-
-/* Medium Screen Breakpoint */
 @media screen and (min-width: 500px) {
-  .container {
-    padding: 0 2rem;
-    justify-content: center;
+  .container{
+    padding-top: 1rem;
   }
 
   .formContent {
-    display: flex;
-    gap: 3rem;
-    align-items: stretch;
-    justify-content: center;
-    position: relative;
-    margin-bottom: 1rem;
+    flex-direction: row;
   }
 
-  .formContent::after {
-    content: '';
-    position: absolute;
-    right: calc(50% - 1.5rem);
-    top: 0;
-    height: 100%;
-    width: 1px;
-    background-color: #e5e7eb;
-  }
-
-  .inputSection,
-  .keyboardSection {
-    flex: 1;
+  .inputSection{
     padding-right: 1rem;
-  }
-
-  .formContainer {
-    padding: 1rem 2rem;
   }
 }
 
-/* Tablet Breakpoint */
 @media screen and (min-width: 768px) {
   .container {
+    /* padding-top: 1rem; */
     justify-content: center;
   }
 
-  .formActions {
-    justify-content: left;
-    /* margin-top: 1rem; */
-    gap: 1rem;
-  }
-
   .formField {
-    /* flex-direction: row; */
     justify-content: center;
     align-items: center;
   }
 
   .formField label {
     padding-bottom: 0;
-    min-width: 120px;
     text-align: right;
     margin-right: 1rem;
   }
@@ -227,14 +176,6 @@
 
 /* Desktop Breakpoint */
 @media screen and (min-width: 1024px) {
-  .container {
-    min-height: 100vh;
-    justify-content: center;
-  }
-
-  .formContainer {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  }
 
   .formTitle {
     font-size: 1.5rem;
@@ -250,42 +191,17 @@
     min-width: 150px;
     font-size: 1rem;
   }
-
-  .formActions {
-    justify-content: left;
-    /* margin-top: 1rem; */
-    gap: 1rem;
-  }
-
-  :global(.numericKeyboardContainer) {
-    transform: scale(1.1);
-    margin: 1rem 0;
-  }
 }
 
 /* Large Desktop Breakpoint */
 @media screen and (min-width: 1440px) {
+  .container {
+    justify-content: center;
+    align-items: center;
+  }
+  
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
-    padding: 2rem;
-  }
-
-  .formActions {
-    justify-content: left;
-    gap: 1rem;
-  }
-
-  .formFields {
-    flex: 1;
-    max-width: 500px;
-  }
-
-  .numericKeyboardWrapper {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 2rem;
   }
 }

@@ -1,23 +1,20 @@
-:root {
-  --superlight-gray: #f4f4f4;
-  --saturated-blue: #2564eb;
-  --superlight-red: rgb(255, 244, 244);
-  --filter-unselected: #9ca3af;
-  --filter-border: #e2e2e2;
-  --filter-text: #374151;
-  --filter-hover-bg: #f3f4f6;
-  --superlight-blue: rgb(220, 222, 255);
-  --superlight-orange: #fff7ec;
-  --saturated-orange: #F59925;
-  
-  
-}
-
-body {
+*{
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   font-family: 'Montserrat';
-  background-color: var(--main-bg-gray);
+  vertical-align: baseline;
 }
 
+/* UPDATE: Make sure HTML and body take up full height */
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}

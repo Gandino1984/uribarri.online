@@ -1,9 +1,37 @@
 .mainContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    width: 100vw;
-    background-color: var(--superlight-gray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* UPDATE: Changed from stretch to flex-start */
+  min-height: 100vh; /* UPDATE: Changed from height to min-height */
+  width: 100%;
+  max-width: 100vw;
+  /* min-width: 350px; */
+  background-color: var(--superlight-gray);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto; /* UPDATE: Explicitly allow vertical scrolling */
+}
+
+@media (max-width: 640px) {
+  .mainContainer {
+    padding-left: 0;
+    padding-right: 0;
   }
-  
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .mainContainer {
+    padding-left: 0;
+    padding-right: 0;
+  } 
+}
+
+/* UPDATE: Removing unnecessary padding for desktop */
+@media (min-width: 1025px) {
+  .mainContainer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

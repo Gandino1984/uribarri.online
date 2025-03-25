@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useUI } from '../../app_context/UIContext.jsx';
 import styles from './ImageModal.module.css';
 
-const ImageModal = ({ isOpen, onClose, imageUrl, altText }) => {
+const ImageModal = () => {
+  // UPDATE: Using useUI hook to access image modal state
+  const { 
+    isImageModalOpen, 
+    setIsImageModalOpen, 
+    selectedImageForModal: imageUrl
+  } = useUI();
+
   const [currentImage, setCurrentImage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   // Update image when modal opens/closes or imageUrl changes
   useEffect(() => {
-    if (isOpen && imageUrl) {
+    if (isImageModalOpen && imageUrl) {
       setIsLoading(true);
       setHasError(false);
       
@@ -32,22 +40,22 @@ const ImageModal = ({ isOpen, onClose, imageUrl, altText }) => {
 
     // Cleanup function to reset states when component unmounts or updates
     return () => {
-      if (!isOpen) {
+      if (!isImageModalOpen) {
         setCurrentImage('');
         setIsLoading(false);
         setHasError(false);
       }
     };
-  }, [isOpen, imageUrl]);
+  }, [isImageModalOpen, imageUrl]);
 
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape') {
-        onClose();
+        setIsImageModalOpen(false);
       }
     };
 
-    if (isOpen) {
+    if (isImageModalOpen) {
       document.addEventListener('keydown', handleEscapeKey);
       document.body.style.overflow = 'hidden';
     }
@@ -56,14 +64,14 @@ const ImageModal = ({ isOpen, onClose, imageUrl, altText }) => {
       document.removeEventListener('keydown', handleEscapeKey);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isImageModalOpen, setIsImageModalOpen]);
 
-  if (!isOpen) return null;
+  if (!isImageModalOpen) return null;
 
   return (
     <div 
       className={styles.modalOverlay}
-      onClick={onClose}
+      onClick={() => setIsImageModalOpen(false)}
     >
       <div 
         className={styles.modalContent}
@@ -71,8 +79,8 @@ const ImageModal = ({ isOpen, onClose, imageUrl, altText }) => {
       >
         <button
           className={styles.closeButton}
-          onClick={onClose}
-          aria-label="Close modal"
+          onClick={() => setIsImageModalOpen(false)}
+          title="Cerrar"
         >
           ✕
         </button>
@@ -89,7 +97,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, altText }) => {
         {!isLoading && !hasError && currentImage && (
           <img
             src={currentImage}
-            alt={altText || 'Modal image'}
+            alt="Modal image"
             className={styles.modalImage}
           />
         )}

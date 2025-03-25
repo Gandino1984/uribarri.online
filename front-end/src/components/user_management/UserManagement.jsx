@@ -1,24 +1,23 @@
-import React, { useContext, useEffect } from 'react';
-import AppContext from '../../app_context/AppContext.js';
-import ShopTypeButton from './ShopTypeButton.jsx';
-import ShopsByType from './shops_by_type/ShopsByType.jsx'; 
+import React, { useEffect } from 'react';
+import { useShop } from '../../app_context/ShopContext.jsx';
+import ShopTypeButton from './components/ShopTypeButton.jsx';
+import ShopsByType from './components/shops_by_type/ShopsByType.jsx'; 
 import styles from '../../../../public/css/UserManagement.module.css';
-import { UserManagementFunctions } from './UserManagementFunctions.jsx';
+import { UserManagementUtils } from './UserManagementUtils.jsx';
 
 const UserManagement = () => {
-  const { 
-    selectedShopType, shopTypes 
-  } = useContext(AppContext);
+  // UPDATE: Using specialized context hooks instead of AppContext
+  const { selectedShopType, shopTypes, shopType } = useShop();
 
-  const { handleBusinessTypeSelect, fetchShopTypes } = UserManagementFunctions();
+  const { handleBusinessTypeSelect, fetchShopTypes } = UserManagementUtils();
 
   // Fetch shop types when component mounts
   useEffect(() => {
     fetchShopTypes();
   }, []);
 
-
-  if (selectedShopType) {
+  // Si ya hay un tipo de tienda seleccionado, mostrar ShopsByType
+  if (selectedShopType || shopType) {
     return <ShopsByType />;
   }
 

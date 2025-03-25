@@ -1,191 +1,363 @@
 .container {
+  overflow-x: hidden;
   width: 100%;
-  gap: 1rem;
-  border-radius: 6px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 1rem;
-  background-color: white;
-  border-radius: 6px;
-  margin-top: 3rem;
-  padding: 1.5rem;
-  /* width: 100%; */
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
+
 
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  width: 100%;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
 }
 
 .headerTitle {
-  font-size: 1.5rem;
   color: #333;
-  margin-bottom: 1rem;
+  line-height: 1.85rem;
+  margin: 0;
+}
+
+
+.backButton {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.backButton:hover {
+  color: var(--dark-orange);
+}
+
+.stepTracker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 25px;
+  position: relative;
+}
+
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 15px;
+  z-index: 2;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+}
+
+.stepDot.active {
+  background-color: var(--saturated-blue);
+  color: white;
+  transform: scale(1.4);
 }
 
 .form {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-  gap: 0.7rem;
   width: 100%;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 7px;
+  color: var(--dark-orange);
+}
+
+.sectionDescription {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
 .formField {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: .5rem;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.formFields{
+.imageSection {
+  margin-bottom: 25px;
+}
+
+.imageUploadContainer {
+  cursor: pointer;
+  border: 2px dashed #ddd;
+  padding: 5px;
+  /* transition: border-color 0.3s ease; */
+}
+
+.imageUploadContainer:hover {
+  border-color: var(--saturated-orange);
+}
+
+.imagePreviewBox {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+.imagePreviewBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding-top: 1rem;
-  /* gap: 1rem; */
+  color: #aaa;
+  font-size: 0.9rem;
 }
 
-/* .input {
+.loaderOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-} */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinningLoader {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.uploadButtonOverlay {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.uploadButtonOverlay button,
+.imageButton {
+  color: var(--dark-orange);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  /* transition: all 0.2s ease; */
+}
+
+.uploadButtonOverlay button:hover,
+.imageButton:hover {
+  background-color: var(--superlight-orange);
+  border-color: var(--saturated-orange);
+}
+
+.editOverlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+  /* transition: opacity 0.2s ease; */
+}
+
+.imageUploadContainer:hover .editOverlay {
+  opacity: 1;
+}
 
 .scheduleContainer {
-  /* width: 100%; */
-  /* margin: 1rem 0; */
+  margin-bottom: 25px;
+}
+
+.scheduleTypeToggle {
+  margin-bottom: 15px;
 }
 
 .scheduleTitle {
-  margin-bottom: 0.5rem;
-  color: #666;
-  font-size: 0.9rem;
-  /* font-weight: 600; */
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #444;
 }
 
 .scheduleFields {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  justify-content: center;
+  gap: 10px;
 }
 
 .timeInput {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  /* width: 120px; */
+  padding: 8px 10px;
+  border: 1px solid var(--light-gray);
+  font-size: 0.9rem;
 }
 
 .buttonContainer {
-  width: 100%;
   display: flex;
-  justify-content: center;
-  /* margin-top: 1rem; */
+  justify-content: flex-end;
+  margin-top: 25px;
 }
 
 .submitButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 2rem;
-  background-color: #007bff;
+  background-color: var(--saturated-orange);
   color: white;
   border: none;
-  border-radius: 4px;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
+  /* transition: background-color 0.2s ease; */
+} 
 
 .submitButton:hover {
-  background-color: #0056b3;
+  background-color: var(--dark-orange);
+} 
+
+.submitButton:disabled {
+  background-color: #9E9E9E;
+  cursor: not-allowed;
 }
 
-/* Media query for landscape orientation and larger screens */
-@media (min-width: 768px) and (orientation: landscape) {
-  .content {
-    max-width: 95%;
-    padding: 2rem;
-  }
-
-  .form {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: flex-start;
-  }
-
-  .formFields {
-    flex: 1;
-    min-width: 300px;
-    max-width: 50%;
-    border-right: 1px solid #ddd;
-  }
-
-  .scheduleContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    flex: 1;
-    /* min-width: 300px; */
-    margin: 0;
-    /* padding-left: 1.5rem; */
-    
-  }
-
-  .buttonContainer {
-    width: 100%;
-    justify-content: center;
-    /* padding-top: 1.5rem; */
-    /* border-top: 1px solid #ddd; */
-  }
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
 }
 
-/* Additional media query for extra-large screens */
-@media (min-width: 1200px) {
-  .content {
-    max-width: 1140px;
-  }
+.navButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: #f5f5f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+  /* transition: all 0.2s ease; */
+  color: var(--dark-orange);
 }
 
-/* Media query for smaller screens in portrait mode */
-@media (max-width: 480px) {
-  .content {
-    margin-top: 2rem;
-    padding: 1rem;
-    max-width: 95%;
-  }
+.navButton:hover {
+  color: white;
+  background-color: var(--saturated-orange);
+}
 
-  .headerTitle {
-    font-size: 1.25rem;
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 15px;
+    max-width: 100%;
   }
-
+  
   .scheduleFields {
-    flex-direction: column;
-    /* align-items: stretch; */
-    gap: 0.5rem;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .scheduleFields span {
+    display: none;
   }
 
-  /* .timeInput {
-    width: 100%;
-  } */
+  .stepDot {
+    width: 24px;
+    height: 24px;
+    margin: 0 10px;
+    font-size: 0.8rem;
+  }
+}
+
+.scheduleTypeToggleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  gap: .5rem;
+}
+
+.toggleContainer{
+  width: 100%;
+}
+
+.scheduleTypeCheckbox {
+  margin-right: 8px;
+}
+
+.scheduleTypeLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.scheduleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.scheduleSimple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timeFieldContainer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.timeFieldLabel {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.scheduleInfo{
+  gap: .3rem;
 }

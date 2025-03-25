@@ -7,7 +7,8 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-import { handleProfileImageUpload } from '../middleware/uploadMiddleware.js';
+import { handleProfileImageUpload } from '../middleware/ProfileUploadMiddleware.js';
+
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const router = Router();
 
 const MAX_REGISTRATIONS = parseInt(process.env.MAX_REGISTRATIONS) || 2;
 
-const RESET_HOURS = parseInt(process.env.RESET_HOURS) || 24;
+const RESET_HOURS = parseInt(process.env.RESET_HOURS) || 72;
 
 router.get('/ip/check', async (req, res) => {
     const userIp = req.socket.remoteAddress;
@@ -131,10 +132,14 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
             });
         }
 
-        // Construct the path relative to the public directory
-        const relativePath = path.join('images', 'uploads', 'users', req.body.name_user, path.basename(req.file.path))
-            .split(path.sep)
-            .join('/');
+        // Construir la ruta relativa al directorio público
+        const relativePath = path.join(
+            'images', 
+            'uploads', 
+            'users', 
+            req.body.name_user, 
+            req.file.filename
+        ).split(path.sep).join('/'); // Asegura que las barras sean forward slashes
         
         const result = await userApiController.updateProfileImage(req.body.name_user, relativePath);
         
@@ -146,7 +151,7 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
             ...result,
             data: {
                 ...result.data,
-                image_user: relativePath // Return the clean relative path
+                image_user: relativePath // Devuelve la ruta relativa limpia
             }
         });
     } catch (error) {

@@ -278,6 +278,7 @@ async function update(id, shopData) {
     }
 }
 
+// UPDATE: Reimplemented updateWithFolder function to properly handle folder renaming and image paths
 async function updateWithFolder(id, shopData) {
     const transaction = await shop_model.sequelize.transaction();
     
@@ -294,8 +295,60 @@ async function updateWithFolder(id, shopData) {
         const oldShopName = shopData.old_name_shop;
         const newShopName = shopData.name_shop;
         
-        // Handle folder updates and image paths...
-        // (previous folder handling code remains the same)
+        // Check if name actually changed
+        if (oldShopName !== newShopName) {
+            console.log(`Shop name changed from "${oldShopName}" to "${newShopName}"`);
+            
+            // Update image paths in database for this shop
+            if (shop.image_shop && shop.image_shop.includes(oldShopName)) {
+                shop.image_shop = shop.image_shop.replace(
+                    `/shops/${oldShopName}/`, 
+                    `/shops/${newShopName}/`
+                );
+                console.log(`Updated shop image path to: ${shop.image_shop}`);
+            }
+            
+            // Update product image paths that reference this shop
+            await updateProductImagePaths(oldShopName, newShopName, transaction);
+            
+            // Handle folder renaming
+            try {
+                // Define paths for both shop images and product images
+                const basePath = path.resolve(__dirname, '..', '..', '..', 'public', 'images', 'uploads');
+                
+                // Shop images folder
+                const oldShopImagesPath = path.join(basePath, 'shops', oldShopName);
+                const newShopImagesPath = path.join(basePath, 'shops', newShopName);
+                
+                // Product images folder
+                const oldProductImagesPath = path.join(basePath, 'products', oldShopName);
+                const newProductImagesPath = path.join(basePath, 'products', newShopName);
+                
+                // Check and rename shop images folder
+                const shopFolderExists = await fs.access(oldShopImagesPath)
+                    .then(() => true)
+                    .catch(() => false);
+                    
+                if (shopFolderExists) {
+                    console.log(`Renaming shop images folder from ${oldShopImagesPath} to ${newShopImagesPath}`);
+                    await handleDirectoryRename(oldShopImagesPath, newShopImagesPath);
+                }
+                
+                // Check and rename product images folder
+                const productFolderExists = await fs.access(oldProductImagesPath)
+                    .then(() => true)
+                    .catch(() => false);
+                    
+                if (productFolderExists) {
+                    console.log(`Renaming product images folder from ${oldProductImagesPath} to ${newProductImagesPath}`);
+                    await handleDirectoryRename(oldProductImagesPath, newProductImagesPath);
+                }
+            } catch (fsError) {
+                console.error('File system operation failed:', fsError);
+                // Continue with database update even if folder operations fail
+                console.warn('Continuing with database update despite file system error');
+            }
+        }
 
         // Update shop data including schedule fields
         const updateData = { 
