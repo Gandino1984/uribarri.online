@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useProduct } from '../../app_context/ProductContext.jsx';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
-import { Calendar, Package, Percent, RefreshCw, Clock, EyeOff } from 'lucide-react';
+import { Calendar, Package, Percent, RefreshCw, EyeOff } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsUtils';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
+import PropTypes from 'prop-types'; // UPDATE: Added PropTypes import for prop validation
 
-const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilters }) => {
+const FiltersForProducts = ({ onResetFilters }) => {
 
   const { 
     filterOptions, 
@@ -18,11 +19,9 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
 
   const {
     handleFilterChange,
-    handleSearchChange,
     handleOnSaleChange,
     handleExcessChange,
     handleNearExpirationChange,
-    // UPDATE: Imported new handler functions
     handleSecondHandChange,
     handleNewProductsChange,
     handleShowInactiveChange,
@@ -118,7 +117,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </select>
           </div>
 
-          {/* UPDATE: New Products Filter */}
+          {/* New Products Filter */}
           <div className={styles.filterWrapper}>
             <select
               value={filters.nuevos_productos || ""}
@@ -201,7 +200,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </div>
           </div>
           
-          {/* UPDATE: Second Hand Toggle */}
+          {/* Second Hand Toggle */}
           <div className={styles.toggleFilterWrapper}>
             <div className={styles.toggleSwitchContainer}>
               <span className={styles.toggleIconLabel}>
@@ -223,7 +222,7 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
             </div>
           </div>
 
-          {/* UPDATE: Show Inactive Toggle */}
+          {/* Show Inactive Toggle */}
           <div className={styles.toggleFilterWrapper}>
             <div className={styles.toggleSwitchContainer}>
               <span className={styles.toggleIconLabel}>
@@ -262,6 +261,16 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
       </div>
     </div>
   );
+};
+
+// UPDATE: Added PropTypes validation for the onResetFilters prop
+FiltersForProducts.propTypes = {
+  onResetFilters: PropTypes.func
+};
+
+// UPDATE: Added defaultProps to specify default behavior when prop is not provided
+FiltersForProducts.defaultProps = {
+  onResetFilters: null
 };
 
 export default FiltersForProducts;

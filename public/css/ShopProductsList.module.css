@@ -283,6 +283,24 @@
     background-color: var(--saturated-orange);
 }
 
+/* UPDATE: Added styles for inactive products */
+.inactiveProduct {
+    background-color: #ffebee; /* Light red color for inactive products */
+}
+
+.inactiveProduct:hover {
+    background-color: #ffcdd2; /* Slightly darker red on hover */
+}
+
+/* When a row is both selected and inactive */
+.tableRow.selected.inactiveProduct {
+    background-color: #ef9a9a; /* Slightly reddish variant of the selected color */
+}
+
+.tableRow.selected.inactiveProduct:hover {
+    background-color: #ef9a9a; /* Keep consistent on hover */
+}
+
 .noProducts {
     font-size: 0.85rem;
     color: #666;

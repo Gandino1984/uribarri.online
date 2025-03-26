@@ -19,9 +19,14 @@ const ProductTableRow = ({
   formatSecondHand,
   currentDeletingProduct
 }) => {
+  // UPDATE: Added logic to determine if product is inactive to apply styling
+  const isInactive = product.active_product === false || product.active_product === 0;
+  
   return (
     <tr
-      className={`${styles.tableRow} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
+      className={`${styles.tableRow} 
+        ${selectedProducts.has(product.id_product) ? styles.selected : ''} 
+        ${isInactive ? styles.inactiveProduct : ''}`}
       onClick={() => handleProductRowClick(product)}
       style={{ cursor: 'pointer' }}
     >

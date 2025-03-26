@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useAuth } from '../../../../../../../src/app_context/AuthContext.jsx';
+import { useEffect, useState, useRef } from 'react';
 import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
@@ -23,7 +22,7 @@ import ProductsTable from './components/ProductsTable.jsx';
 
 const ShopProductsList = () => {
   // Auth context
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth();
 
   // UI context
   const {
@@ -32,10 +31,10 @@ const ShopProductsList = () => {
     isAccepted, setIsAccepted,
     isDeclined, setIsDeclined,
     isImageModalOpen, setIsImageModalOpen,
-    setModalMessage,
+    // setModalMessage,
     setShowSuccessCard,
     setShowErrorCard,
-    success, setSuccess,
+    setSuccess,
     selectedImageForModal, setSelectedImageForModal
   } = useUI();
 
@@ -46,7 +45,7 @@ const ShopProductsList = () => {
   const {
     products,
     filters,
-    filteredProducts, setFilteredProducts,
+    setFilteredProducts,
     selectedProducts, setSelectedProducts,
     productToDelete, setProductToDelete,
     selectedProductDetails, setSelectedProductDetails,
@@ -56,7 +55,6 @@ const ShopProductsList = () => {
     refreshProductList
   } = useProduct();
 
-  const [contentVisible, setContentVisible] = useState(false);
   const [showProductCard, setShowProductCard] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
@@ -64,8 +62,7 @@ const ShopProductsList = () => {
   const [showFilters, setShowFilters] = useState(false);
   // State to track which product's actions menu is active (for mobile)
   const [activeActionsMenu, setActiveActionsMenu] = useState(null);
-  // To track if products have been loaded at least once
-  const [productsLoaded, setProductsLoaded] = useState(false);
+  // 🧹 UPDATE: Removed unused productsLoaded state variable
   
   // Use the hook from FiltersForProductsUtils for consistent counting
   const { getActiveFiltersCount, handleResetFilters } = useFiltersForProducts();
@@ -75,6 +72,7 @@ const ShopProductsList = () => {
   
   // Add a ref to track deletion in progress
   const deletionInProgress = useRef(false);
+  
   // Add a ref to track what product we're deleting
   const currentDeletingProduct = useRef(null);
 
@@ -90,7 +88,7 @@ const ShopProductsList = () => {
     handleAddProduct,
     handleUpdateProduct,
     handleToggleActiveStatus,
-    getImageUrl,
+    // getImageUrl,
     handleProductImageDoubleClick,
     formatDate,
     formatSecondHand,
@@ -104,9 +102,9 @@ const ShopProductsList = () => {
   } = ShopProductsListUtils();
 
   // Wrapper Utils to pass the required state
-  const handleBack = () => {
-    setShowProductManagement(false);
-  };
+  // const handleBack = () => {
+  //   setShowProductManagement(false);
+  // };
 
   // Wrapper Utils that use the ones from ShopProductsListUtils
   const handleSearchChange = (e) => {
@@ -137,13 +135,6 @@ const ShopProductsList = () => {
     handleBulkUpdateFn(selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setContentVisible(true);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, []);
-
   // UPDATE: Enhanced product fetching with better error handling and state management
   useEffect(() => {
     const loadProducts = async () => {
@@ -152,7 +143,7 @@ const ShopProductsList = () => {
         try {
           const fetchedProducts = await fetchProductsByShop();
           console.log(`Loaded ${fetchedProducts?.length || 0} products for shop ${selectedShop.id_shop}`);
-          setProductsLoaded(true);
+          // 🧹 UPDATE: Removed setProductsLoaded call as the state is not used
         } catch (error) {
           console.error('Error loading products:', error);
           setError(prevError => ({
