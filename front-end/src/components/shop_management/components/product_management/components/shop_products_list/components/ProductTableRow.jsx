@@ -13,6 +13,7 @@ const ProductTableRow = ({
   handleDeleteProduct,
   handleSelectProduct,
   handleSelectForImageUpload,
+  handleToggleActiveStatus,
   handleProductImageDoubleClick,
   formatDate,
   formatSecondHand,
@@ -32,6 +33,7 @@ const ProductTableRow = ({
         handleDeleteProduct={handleDeleteProduct}
         handleSelectProduct={handleSelectProduct}
         handleSelectForImageUpload={handleSelectForImageUpload}
+        handleToggleActiveStatus={handleToggleActiveStatus}
         selectedProducts={selectedProducts}
         currentDeletingProduct={currentDeletingProduct}
       />

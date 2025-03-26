@@ -488,6 +488,24 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.visibleButton {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .visibleButton:hover {
+    background-color: #3e8e41;
+  }
+  
+  .hiddenButton {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .hiddenButton:hover {
+    background-color: #e68a00;
+  }
+
 @media (max-width: 768px) {
     .buttonText {
         display: none;

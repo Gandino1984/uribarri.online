@@ -5,7 +5,9 @@ import {
   CheckCircle, 
   ImagePlus,
   ArrowRightFromLine,
-  ArrowLeftFromLine 
+  ArrowLeftFromLine,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
 
@@ -17,6 +19,7 @@ const ProductActionsCell = ({
   handleDeleteProduct,
   handleSelectProduct,
   handleSelectForImageUpload,
+  handleToggleActiveStatus,
   selectedProducts,
   currentDeletingProduct
 }) => {
@@ -84,6 +87,22 @@ const ProductActionsCell = ({
             title="Seleccionar para subir imagen"
           >
             <ImagePlus size={20} />
+          </button>
+          {/* UPDATE: Added toggle active status button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleActiveStatus(product.id_product);
+              toggleActionsMenu(product.id_product, e);
+            }}
+            className={`${styles.actionButton} ${product.active_product ? styles.visibleButton : styles.hiddenButton}`}
+            title={product.active_product ? "Desactivar producto" : "Activar producto"}
+          >
+            {product.active_product ? (
+              <Eye size={20} />
+            ) : (
+              <EyeOff size={20} />
+            )}
           </button>
         </div>
       </div>

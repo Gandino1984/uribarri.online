@@ -44,7 +44,9 @@ async function create(productData) {
             surplus_product,
             expiration_product,
             country_product,
-            locality_product
+            locality_product,
+            // UPDATE: Added active_product to the parameters (optional)
+            active_product
         } = productData;
 
         const product = await product_model.create({
@@ -62,7 +64,10 @@ async function create(productData) {
             surplus_product,
             expiration_product,
             country_product,
-            locality_product
+            locality_product,
+            // UPDATE: Set active_product if provided, otherwise use model default (true)
+            active_product: active_product !== undefined ? active_product : true
+            // Note: creation_product will be automatically set to current timestamp by model default
         });
         
         return { 
@@ -92,7 +97,9 @@ async function update(id, productData) {
             surplus_product,
             expiration_product,
             country_product,
-            locality_product
+            locality_product,
+            // UPDATE: Added active_product to the parameters
+            active_product
         } = productData;
 
         const product = await product_model.findByPk(id);
@@ -116,6 +123,8 @@ async function update(id, productData) {
         if (expiration_product) product.expiration_product = expiration_product;
         if (country_product) product.country_product = country_product;
         if (locality_product) product.locality_product = locality_product;
+        // UPDATE: Update active_product if provided
+        if (active_product !== undefined) product.active_product = active_product;
         
         await product.save();
 
@@ -176,23 +185,78 @@ async function removeByShopId(id_shop, transaction) {
     }
 }
 
-async function getByShopId(id_shop) {
+// UPDATE: Modified to add an active parameter for filtering
+async function getByShopId(id_shop, activeStatus = null) {
     try {
+        // Create the where clause with id_shop
+        const whereClause = { id_shop: id_shop };
+        
+        // Add active_product filter if specified
+        if (activeStatus !== null) {
+            whereClause.active_product = activeStatus;
+        }
+        
         const products = await product_model.findAll({
-            where: { id_shop: id_shop }
+            where: whereClause
         });
 
         if (!products || products.length === 0) {
-            return { data: [], 
-                success: "No hay productos en el comercio"};
+            return { 
+                data: [], 
+                success: activeStatus === true 
+                    ? "No hay productos activos en el comercio" 
+                    : activeStatus === false
+                        ? "No hay productos inactivos en el comercio"
+                        : "No hay productos en el comercio"
+            };
         }
 
-        return { data: products,
-            success: "Productos encontrados"
-         };
+        return { 
+            data: products,
+            success: activeStatus === true 
+                ? "Productos activos encontrados" 
+                : activeStatus === false
+                    ? "Productos inactivos encontrados"
+                    : "Productos encontrados"
+        };
     } catch (err) {
         console.error("-> product_controller.js - getByShopId() - Error = ", err);
         return { error: "Productos no encontrados" };
+    }
+}
+
+// UPDATE: Added function to get only active products by shop ID
+async function getActiveByShopId(id_shop) {
+    return getByShopId(id_shop, true);
+}
+
+// UPDATE: Added function to get only inactive products by shop ID
+async function getInactiveByShopId(id_shop) {
+    return getByShopId(id_shop, false);
+}
+
+// UPDATE: Added function to toggle product active status
+async function toggleActiveStatus(id_product) {
+    try {
+        const product = await product_model.findByPk(id_product);
+        
+        if (!product) {
+            return { error: "Producto no encontrado" };
+        }
+        
+        // Toggle the active status
+        product.active_product = !product.active_product;
+        await product.save();
+        
+        return { 
+            data: product,
+            success: product.active_product 
+                ? "Producto activado correctamente" 
+                : "Producto desactivado correctamente" 
+        };
+    } catch (err) {
+        console.error("-> product_controller.js - toggleActiveStatus() - Error = ", err);
+        return { error: "Error al cambiar el estado del producto" };
     }
 }
 
@@ -434,7 +498,11 @@ export {
     deleteImage,
     verifyProductName,
     getByCountry,
-    getByLocality
+    getByLocality,
+    // UPDATE: Export new functions
+    toggleActiveStatus,
+    getActiveByShopId,
+    getInactiveByShopId
 }
 
 export default { 
@@ -451,5 +519,9 @@ export default {
     deleteImage,
     verifyProductName,
     getByCountry,
-    getByLocality
+    getByLocality,
+    // UPDATE: Export new functions
+    toggleActiveStatus,
+    getActiveByShopId,
+    getInactiveByShopId
 }

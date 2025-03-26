@@ -77,6 +77,16 @@ const product_model = sequelize.define("product", {
     locality_product: {
         type: DataTypes.STRING(100),
         allowNull: true
+    },
+    active_product: {
+        type: DataTypes.TINYINT(1),
+        allowNull: false,
+        defaultValue: 1
+    },
+    creation_product: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')  // UPDATE: Changed to sequelize.literal to ensure proper default value during migration
     }
 }, {
     timestamps: false,

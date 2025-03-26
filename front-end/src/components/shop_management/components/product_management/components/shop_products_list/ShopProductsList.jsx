@@ -60,12 +60,12 @@ const ShopProductsList = () => {
   const [showProductCard, setShowProductCard] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
-  
   // State to manage filter visibility
   const [showFilters, setShowFilters] = useState(false);
-  
   // State to track which product's actions menu is active (for mobile)
   const [activeActionsMenu, setActiveActionsMenu] = useState(null);
+  // To track if products have been loaded at least once
+  const [productsLoaded, setProductsLoaded] = useState(false);
   
   // Use the hook from FiltersForProductsUtils for consistent counting
   const { getActiveFiltersCount, handleResetFilters } = useFiltersForProducts();
@@ -89,6 +89,7 @@ const ShopProductsList = () => {
     handleBulkDelete,
     handleAddProduct,
     handleUpdateProduct,
+    handleToggleActiveStatus,
     getImageUrl,
     handleProductImageDoubleClick,
     formatDate,
@@ -143,14 +144,30 @@ const ShopProductsList = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // UPDATE: Enhanced product fetching with better error handling and state management
   useEffect(() => {
-    console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
-    if (selectedShop?.id_shop) {
-      fetchProductsByShop();
-    }
-  }, [selectedShop, productListKey]); 
+    const loadProducts = async () => {
+      console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
+      if (selectedShop?.id_shop) {
+        try {
+          const fetchedProducts = await fetchProductsByShop();
+          console.log(`Loaded ${fetchedProducts?.length || 0} products for shop ${selectedShop.id_shop}`);
+          setProductsLoaded(true);
+        } catch (error) {
+          console.error('Error loading products:', error);
+          setError(prevError => ({
+            ...prevError,
+            productError: "Error al cargar los productos"
+          }));
+          setShowErrorCard(true);
+        }
+      }
+    };
+    
+    loadProducts();
+  }, [selectedShop, productListKey, fetchProductsByShop, setError, setShowErrorCard]); 
 
-  // Update displayed products based on search and filters
+  // UPDATE: Improved product filtering with active status check and explicit dependencies
   useEffect(() => {
     if (!Array.isArray(products)) {
       console.log('Products is not an array:', products);
@@ -158,6 +175,8 @@ const ShopProductsList = () => {
       return;
     }
 
+    console.log(`Filtering ${products.length} products with current filters and search term`);
+    
     // First apply filters
     let filtered = filterProducts(products, filters);
     
@@ -182,6 +201,10 @@ const ShopProductsList = () => {
       });
     }
     
+    // UPDATE: Fixed filtering for active_product to handle both boolean and numeric values (1 or true)
+    filtered = filtered.filter(product => product.active_product === true || product.active_product === 1);
+    
+    console.log(`Displaying ${filtered.length} products after filtering`);
     setFilteredProducts(filtered);
     setDisplayedProducts(filtered);
   }, [products, filters, searchTerm, filterProducts, setFilteredProducts]);
@@ -399,6 +422,7 @@ const ShopProductsList = () => {
               handleDeleteProduct={handleDeleteProduct}
               handleSelectProduct={handleSelectProduct}
               handleSelectForImageUpload={handleSelectForImageUpload}
+              handleToggleActiveStatus={handleToggleActiveStatus}
               handleProductImageDoubleClick={handleProductImageDoubleClick}
               currentDeletingProduct={currentDeletingProduct}
             />

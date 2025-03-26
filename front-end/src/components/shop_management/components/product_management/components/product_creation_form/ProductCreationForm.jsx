@@ -16,7 +16,7 @@ import ProductDetails from './components/ProductDetails.jsx';
 import StepTracker from '../../../../../navigation_components/StepTracker.jsx';
 import NavigationButtons from '../../../../../navigation_components/NavigationButtons.jsx';
 
-// UPDATE: Refactored to use specialized context hooks instead of AppContext
+// UPDATE: Fixed context access for shopToProductTypesMap, moved from useShop to useProduct
 const ProductCreationForm = () => {
   const {
     handleChange,
@@ -37,7 +37,7 @@ const ProductCreationForm = () => {
   const { setError, uploading, setShowErrorCard } = useUI();
   
   // Shop context
-  const { selectedShop, shopToProductTypesMap } = useShop();
+  const { selectedShop } = useShop();
   
   // Product context
   const { 
@@ -50,7 +50,8 @@ const ProductCreationForm = () => {
     setSelectedProductToUpdate,
     productTypesAndSubtypes,
     setNewProductData,
-    refreshProductList
+    refreshProductList,
+    shopToProductTypesMap
   } = useProduct();
 
   const [selectedImage, setSelectedImage] = useState(null);

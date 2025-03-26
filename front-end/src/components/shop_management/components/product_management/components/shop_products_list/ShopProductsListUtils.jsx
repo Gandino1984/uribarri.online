@@ -7,7 +7,6 @@ import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import ProductCreationFormUtils from '../product_creation_form/ProductCreationFormUtils.jsx';
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
-// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ShopProductsListUtils = () => {
   // Auth context
   const { currentUser } = useAuth();
@@ -543,6 +542,59 @@ const ShopProductsListUtils = () => {
     }
   }, [products, setSelectedProductToUpdate, setIsUpdatingProduct]);
 
+  // UPDATE: Added function to toggle product active status
+  const handleToggleActiveStatus = useCallback(async (id_product) => {
+    try {
+      console.log(`Toggling active status for product: ${id_product}`);
+      
+      // Call the API to toggle the product status
+      const response = await axiosInstance.post('/product/toggle-active', {
+        id_product
+      });
+      
+      if (response.data && response.data.success) {
+        // Success message
+        setSuccess(prev => ({
+          ...prev,
+          productSuccess: response.data.success
+        }));
+        setShowSuccessCard(true);
+        
+        // Refresh the product list to update UI
+        await fetchProductsByShop();
+        refreshProductList();
+        
+        return {
+          success: true,
+          data: response.data.data,
+          message: response.data.success
+        };
+      } else {
+        // Error handling
+        setError(prevError => ({
+          ...prevError,
+          productError: response.data.error || "Error al cambiar el estado del producto"
+        }));
+        setShowErrorCard(true);
+        return {
+          success: false,
+          message: response.data.error
+        };
+      }
+    } catch (err) {
+      console.error('Error toggling product active status:', err);
+      setError(prevError => ({
+        ...prevError,
+        productError: "Error al cambiar el estado del producto"
+      }));
+      setShowErrorCard(true);
+      return {
+        success: false,
+        message: "Error al cambiar el estado del producto"
+      };
+    }
+  }, [setError, setShowErrorCard, setSuccess, setShowSuccessCard, fetchProductsByShop, refreshProductList]);
+
   // Use the formatImageUrl function from imageUploadService.js for consistency
   const getImageUrl = (imagePath) => {
     return formatImageUrl(imagePath);
@@ -568,6 +620,7 @@ const ShopProductsListUtils = () => {
     handleBulkDelete,
     handleAddProduct,
     handleUpdateProduct,
+    handleToggleActiveStatus,
     getImageUrl,
     handleProductImageDoubleClick,
     formatDate,

@@ -15,6 +15,7 @@ const ProductsTable = ({
   handleDeleteProduct,
   handleSelectProduct,
   handleSelectForImageUpload,
+  handleToggleActiveStatus,
   handleProductImageDoubleClick,
   currentDeletingProduct
 }) => {
@@ -36,6 +37,7 @@ const ProductsTable = ({
             handleDeleteProduct={handleDeleteProduct}
             handleSelectProduct={handleSelectProduct}
             handleSelectForImageUpload={handleSelectForImageUpload}
+            handleToggleActiveStatus={handleToggleActiveStatus}
             handleProductImageDoubleClick={handleProductImageDoubleClick}
             formatDate={formatDate}
             formatSecondHand={formatSecondHand}
