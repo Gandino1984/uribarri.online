@@ -62,6 +62,26 @@ const ShopProductsListUtils = () => {
     return diffDays >= 0 && diffDays <= 7;
   };
 
+  // UPDATE: Added helper function to check if a product is new based on creation date
+  const isNewProduct = useCallback((creationDate, timeframe) => {
+    if (!creationDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    let startDate = new Date(today);
+    
+    if (timeframe === 'last_month') {
+      startDate.setMonth(today.getMonth() - 1);
+    } else if (timeframe === 'last_week') {
+      startDate.setDate(today.getDate() - 7);
+    } // For 'today', startDate is already set to the start of today
+    
+    const productDate = new Date(creationDate);
+    
+    return productDate >= startDate;
+  }, []);
+
   // Format date strings
   const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -191,19 +211,29 @@ const ShopProductsListUtils = () => {
       const calificationMatch = !filters.calificacion || 
         product.calification_product >= Number(filters.calificacion);
       
-      // Surplus match - added to fix filter inconsistency
+      // Surplus match
       const surplusMatch = !filters.excedente || 
         (filters.excedente === 'Sí' && product.surplus_product > 0);
       
       // Near expiration match
       const expirationMatch = !filters.proxima_caducidad || 
         (filters.proxima_caducidad === 'Sí' && isNearExpiration(product.expiration_product));
+      
+      // UPDATE: Added second hand match
+      const secondHandMatch = !filters.second_hand || 
+        (filters.second_hand === 'Sí' && (product.second_hand === true || product.second_hand === 1));
+      
+      // UPDATE: Added new products match based on creation date
+      const newProductsMatch = !filters.nuevos_productos || isNewProduct(product.creation_product, filters.nuevos_productos);
+      
+      // Note: Active product filtering is handled in ShopProductsList.jsx
   
       return seasonMatch && typeMatch && subtypeMatch && 
              onSaleMatch && calificationMatch && 
-             surplusMatch && expirationMatch;
+             surplusMatch && expirationMatch &&
+             secondHandMatch && newProductsMatch;
     });
-  }, []);
+  }, [isNewProduct]);
 
   const fetchProductsByShop = useCallback(async () => {
     try {
@@ -631,7 +661,8 @@ const ShopProductsListUtils = () => {
     handleSearchChange,
     handleResetAllFilters,
     handleSelectForImageUpload,
-    handleBulkUpdate
+    handleBulkUpdate,
+    isNewProduct
   };
 };
 

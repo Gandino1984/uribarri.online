@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useProduct } from '../../app_context/ProductContext.jsx';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
-import { Calendar, Package, Percent } from 'lucide-react';
+import { Calendar, Package, Percent, RefreshCw, Clock, EyeOff } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsUtils';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
 
@@ -22,6 +22,10 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
     handleOnSaleChange,
     handleExcessChange,
     handleNearExpirationChange,
+    // UPDATE: Imported new handler functions
+    handleSecondHandChange,
+    handleNewProductsChange,
+    handleShowInactiveChange,
     handleResetFilters,
     getAvailableSubtypes,
     getActiveFiltersCount
@@ -113,6 +117,20 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
               ))}
             </select>
           </div>
+
+          {/* UPDATE: New Products Filter */}
+          <div className={styles.filterWrapper}>
+            <select
+              value={filters.nuevos_productos || ""}
+              onChange={handleNewProductsChange}
+              className={`${styles.filterSelect} ${filters.nuevos_productos ? styles.hasValue : ''}`}
+            >
+              <option value="">Por fecha de creación</option>
+              <option value="today">Hoy</option>
+              <option value="last_week">Última semana</option>
+              <option value="last_month">Último mes</option>
+            </select>
+          </div>
         </div>
 
         {/* Checkbox Filters Row */}
@@ -172,6 +190,50 @@ const FiltersForProducts = ({ isVisible, searchTerm, setSearchTerm, onResetFilte
                 checked={filters.proxima_caducidad === 'Sí'}
                 onChange={(isChecked) => {
                   handleNearExpirationChange({
+                    target: {
+                      checked: isChecked
+                    }
+                  });
+                }}
+                leftLabel="No"
+                rightLabel="Sí"
+              />
+            </div>
+          </div>
+          
+          {/* UPDATE: Second Hand Toggle */}
+          <div className={styles.toggleFilterWrapper}>
+            <div className={styles.toggleSwitchContainer}>
+              <span className={styles.toggleIconLabel}>
+                <RefreshCw size={14} />
+                <span>Segunda mano</span>
+              </span>
+              <CustomToggleSwitch 
+                checked={filters.second_hand === 'Sí'}
+                onChange={(isChecked) => {
+                  handleSecondHandChange({
+                    target: {
+                      checked: isChecked
+                    }
+                  });
+                }}
+                leftLabel="No"
+                rightLabel="Sí"
+              />
+            </div>
+          </div>
+
+          {/* UPDATE: Show Inactive Toggle */}
+          <div className={styles.toggleFilterWrapper}>
+            <div className={styles.toggleSwitchContainer}>
+              <span className={styles.toggleIconLabel}>
+                <EyeOff size={14} />
+                <span>Mostrar inactivos</span>
+              </span>
+              <CustomToggleSwitch 
+                checked={filters.mostrar_inactivos === 'Sí'}
+                onChange={(isChecked) => {
+                  handleShowInactiveChange({
                     target: {
                       checked: isChecked
                     }

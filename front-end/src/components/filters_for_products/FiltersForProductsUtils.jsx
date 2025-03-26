@@ -101,6 +101,30 @@ const FiltersForProductsUtils = () => {
     }));
   }, [setFilters]);
 
+  // UPDATE: Added handler for second-hand filter
+  const handleSecondHandChange = useCallback((e) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      second_hand: e.target.checked ? 'Sí' : null
+    }));
+  }, [setFilters]);
+
+  // UPDATE: Added handler for new products filter
+  const handleNewProductsChange = useCallback((e) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      nuevos_productos: e.target.value || null
+    }));
+  }, [setFilters]);
+
+  // UPDATE: Added handler for showing inactive products
+  const handleShowInactiveChange = useCallback((e) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      mostrar_inactivos: e.target.checked ? 'Sí' : null
+    }));
+  }, [setFilters]);
+
   const handleResetFilters = useCallback(() => {
     setFilters({
       temporada: null,
@@ -110,6 +134,10 @@ const FiltersForProductsUtils = () => {
       calificacion: null,
       excedente: null,
       proxima_caducidad: null,
+      // UPDATE: Added new filters to the reset function
+      second_hand: null,
+      nuevos_productos: null,
+      mostrar_inactivos: null,
     });
     setSearchTerm('');
   }, [setFilters]);
@@ -147,6 +175,26 @@ const FiltersForProductsUtils = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return diffDays >= 0 && diffDays <= 7;
+  }, []);
+
+  // UPDATE: Added function to check if a product is new based on creation date
+  const isNewProduct = useCallback((creationDate, timeframe) => {
+    if (!creationDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    let startDate = new Date(today);
+    
+    if (timeframe === 'last_month') {
+      startDate.setMonth(today.getMonth() - 1);
+    } else if (timeframe === 'last_week') {
+      startDate.setDate(today.getDate() - 7);
+    } // For 'today', startDate is already set to the start of today
+    
+    const productDate = new Date(creationDate);
+    
+    return productDate >= startDate;
   }, []);
 
   // Simplified applyFilters function by removing date range logic
@@ -214,8 +262,25 @@ const FiltersForProductsUtils = () => {
       );
     }
 
+    // UPDATE: Filter for second-hand products
+    if (filters.second_hand === 'Sí') {
+      filtered = filtered.filter(product => 
+        product.second_hand === true || product.second_hand === 1
+      );
+    }
+
+    // UPDATE: Filter for new products based on creation date
+    if (filters.nuevos_productos) {
+      filtered = filtered.filter(product => 
+        isNewProduct(product.creation_product, filters.nuevos_productos)
+      );
+    }
+
+    // UPDATE: Active/inactive products are handled in ShopProductsList.jsx
+    // We don't filter by active status here to maintain consistent approach
+
     setFilteredProducts(filtered);
-  }, [filters, products, searchTerm, isNearExpiration, setFilteredProducts]);
+  }, [filters, products, searchTerm, isNearExpiration, isNewProduct, setFilteredProducts]);
 
   return {
     isVisible,
@@ -225,9 +290,14 @@ const FiltersForProductsUtils = () => {
     handleOnSaleChange,
     handleExcessChange,
     handleNearExpirationChange,
+    // UPDATE: Added new handlers to the return object
+    handleSecondHandChange,
+    handleNewProductsChange,
+    handleShowInactiveChange,
     handleResetFilters,
     getAvailableSubtypes,
-    getActiveFiltersCount
+    getActiveFiltersCount,
+    isNewProduct
   };
 };
 

@@ -201,8 +201,10 @@ const ShopProductsList = () => {
       });
     }
     
-    // UPDATE: Fixed filtering for active_product to handle both boolean and numeric values (1 or true)
-    filtered = filtered.filter(product => product.active_product === true || product.active_product === 1);
+    // UPDATE: Only filter out inactive products if mostrar_inactivos is not enabled
+    if (filters.mostrar_inactivos !== 'Sí') {
+      filtered = filtered.filter(product => product.active_product === true || product.active_product === 1);
+    }
     
     console.log(`Displaying ${filtered.length} products after filtering`);
     setFilteredProducts(filtered);
