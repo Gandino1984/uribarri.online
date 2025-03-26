@@ -58,6 +58,7 @@ export const UIProvider = ({ children }) => {
   const [imageError, setImageError] = useState(false);
   const [ip, setIp] = useState('');
 
+  // 🔄 UPDATE: Improved clear functions to ensure only one message is displayed at a time
   const clearError = () => {
     setError({
       userError: '',
@@ -98,6 +99,77 @@ export const UIProvider = ({ children }) => {
     setShowInfoCard(false);
   };
 
+  // 🔄 UPDATE: Helper functions to set single messages and clear others
+  const setSingleError = (key, message) => {
+    // First clear all errors
+    const clearedErrors = {
+      userError: '',
+      passwordError: '',
+      passwordRepeatError: '',
+      ipError: '',
+      userlocationError: '',
+      userTypeError: '',
+      databaseResponseError: '',
+      shopError: '',
+      productError: '',
+      imageError: ''
+    };
+    
+    // Then set only the specific error
+    setError({
+      ...clearedErrors,
+      [key]: message
+    });
+    
+    if (message) {
+      setShowErrorCard(true);
+    }
+  };
+
+  const setSingleSuccess = (key, message) => {
+    // First clear all success messages
+    const clearedSuccess = {
+      loginSuccess: '',
+      shopSuccess: '',
+      productSuccess: '',
+      updateSuccess: '',
+      deleteSuccess: '',
+      imageSuccess: ''
+    };
+    
+    // Then set only the specific success message
+    setSuccess({
+      ...clearedSuccess,
+      [key]: message
+    });
+    
+    if (message) {
+      setShowSuccessCard(true);
+    }
+  };
+
+  const setSingleInfo = (key, message) => {
+    // First clear all info messages
+    const clearedInfo = {
+      loginInfo: '',
+      shopInfo: '',
+      productInfo: '',
+      updateInfo: '',
+      deleteInfo: '',
+      imageInfo: ''
+    };
+    
+    // Then set only the specific info message
+    setInfo({
+      ...clearedInfo,
+      [key]: message
+    });
+    
+    if (message) {
+      setShowInfoCard(true);
+    }
+  };
+
   const value = {
     // Modal states
     isModalOpen, setIsModalOpen,
@@ -120,12 +192,15 @@ export const UIProvider = ({ children }) => {
     showErrorCard, setShowErrorCard,
     error, setError,
     clearError,
+    setSingleError,
     showSuccessCard, setShowSuccessCard,
     success, setSuccess,
     clearSuccess,
+    setSingleSuccess,
     showInfoCard, setShowInfoCard,
     info, setInfo,
     clearInfo,
+    setSingleInfo,
     imageError, setImageError,
     ip, setIp,
   };

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Camera, ImagePlus, Trash2, Loader } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
 
@@ -14,16 +14,17 @@ const ShopImageUpload = ({
   setError,
   setShowErrorCard
 }) => {
-  const [showImageUploadButton, setShowImageUploadButton] = useState(false);
+  // 🔄 UPDATE: Removed showImageUploadButton state as we'll trigger the input directly
 
-  // Handle container click to toggle upload button visibility
+  // 🔄 UPDATE: Simplified to trigger file input directly
   const handleImageContainerClick = () => {
-    setShowImageUploadButton(prev => !prev);
+    if (!uploading && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   // Handle file selection and preview
   const handleImageSelect = (e) => {
-    e.stopPropagation(); // Prevent container click event
     const file = e.target.files[0];
     if (!file) return;
 
@@ -56,9 +57,6 @@ const ShopImageUpload = ({
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
-    
-    // Hide the upload button after selection
-    setShowImageUploadButton(false);
   };
 
   // Function to clear the selected image
@@ -91,7 +89,6 @@ const ShopImageUpload = ({
           ) : (
             <div className={styles.imagePlaceholder} >
               <ImagePlus size={40} style={{ marginBottom: '10px', opacity: 0.5 }} />
-              {/* <span>Imagen de comercio</span> */}
             </div>
           )}
           
@@ -114,48 +111,39 @@ const ShopImageUpload = ({
             </div>
           )}
           
-          {/* Image upload button */}
-          {showImageUploadButton && !uploading && (
-            <div 
-              className={styles.uploadButtonOverlay}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <input
-                type="file"
-                id="shop_image"
-                ref={fileInputRef}
-                accept="image/jpeg,image/png,image/jpg,image/webp"
-                style={{ display: 'none' }}
-                onChange={handleImageSelect}
-                disabled={uploading}
-              />
-              
-              <label 
-                htmlFor="shop_image" 
-                className={styles.imageButton}
-              >
-                <Camera size={16} />
-                {imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen'}
-              </label>
-              
-              {imagePreview && (
-                <button
-                  type="button"
-                  onClick={handleClearImage}
-                  disabled={uploading}
-                >
-                  <Trash2 size={16} />
-                  Quitar
-                </button>
-              )}
+          {/* 🔄 UPDATE: Removed uploadButtonOverlay in favor of direct input triggering */}
+          
+          {/* File input (hidden) */}
+          <input
+            type="file"
+            id="shop_image"
+            ref={fileInputRef}
+            accept="image/jpeg,image/png,image/jpg,image/webp"
+            style={{ display: 'none' }}
+            onChange={handleImageSelect}
+            disabled={uploading}
+          />
+          
+          {/* Edit overlay hint */}
+          {!uploading && (
+            <div className={styles.editOverlay}>
+              <Camera size={18} />
+              <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
             </div>
           )}
           
-          {/* Edit overlay hint */}
-          {!showImageUploadButton && !uploading && (
-            <div className={styles.editOverlay} >
-              {/* <Camera size={18} /> */}
-              <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
+          {/* 🔄 UPDATE: Added overlay with remove button when image exists */}
+          {imagePreview && !uploading && (
+            <div className={styles.removeButtonOverlay}>
+              <button
+                type="button"
+                onClick={handleClearImage}
+                disabled={uploading}
+                className={styles.removeButton}
+              >
+                <Trash2 size={16} />
+                Quitar
+              </button>
             </div>
           )}
         </div>
