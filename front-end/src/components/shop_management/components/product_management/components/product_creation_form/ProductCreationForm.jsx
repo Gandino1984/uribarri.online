@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ProductCreationFormUtils from './ProductCreationFormUtils.jsx';
 import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
-import { AlertCircle, PackagePlus, Save } from 'lucide-react';
+import { AlertCircle, PackagePlus, Save, RefreshCw } from 'lucide-react';
 
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
@@ -16,7 +16,6 @@ import ProductDetails from './components/ProductDetails.jsx';
 import StepTracker from '../../../../../navigation_components/StepTracker.jsx';
 import NavigationButtons from '../../../../../navigation_components/NavigationButtons.jsx';
 
-// UPDATE: Fixed context access for shopToProductTypesMap, moved from useShop to useProduct
 const ProductCreationForm = () => {
   const {
     handleChange,
@@ -27,14 +26,28 @@ const ProductCreationForm = () => {
     productLimit,
     fetchProductsByShop,
     handleImageUpload,
-    handleViewProductList: navigateToProductList
+    // handleViewProductList: navigateToProductList,
+    resetNewProductData
   } = ProductCreationFormUtils();
 
   // Auth context
   const { currentUser } = useAuth();
   
   // UI context
-  const { setError, uploading, setShowErrorCard } = useUI();
+  const { 
+    setError, 
+    uploading, 
+    setShowErrorCard,
+    setSuccess,
+    setShowSuccessCard,
+    // 🔄 UPDATE: Added modal state for reset confirmation
+    setIsModalOpen,
+    setModalMessage,
+    isAccepted,
+    setIsAccepted,
+    isDeclined,
+    setIsDeclined
+  } = useUI();
   
   // Shop context
   const { selectedShop } = useShop();
@@ -43,11 +56,11 @@ const ProductCreationForm = () => {
   const { 
     newProductData: productData,
     filterOptions,
-    setShowProductManagement,
+    // setShowProductManagement,
     isUpdatingProduct,
-    setIsUpdatingProduct,
+    // setIsUpdatingProduct,
     selectedProductToUpdate,
-    setSelectedProductToUpdate,
+    // setSelectedProductToUpdate,
     productTypesAndSubtypes,
     setNewProductData,
     refreshProductList,
@@ -61,6 +74,9 @@ const ProductCreationForm = () => {
   
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
+  
+  // 🔄 UPDATE: Added state to track if form reset is pending
+  const [isResetPending, setIsResetPending] = useState(false);
   
   // Get available product types based on shop type
   const availableProductTypes = selectedShop?.type_shop 
@@ -122,9 +138,72 @@ const ProductCreationForm = () => {
     }
   }, [selectedShop, selectedProductToUpdate, setNewProductData]);
 
-  // Using the navigation handler
-  const handleViewProductList = () => {
-    navigateToProductList(setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement);
+  // 🔄 UPDATE: Added effect to handle modal confirmation for form reset
+  useEffect(() => {
+    if (isAccepted && isResetPending) {
+      // Reset form if user confirmed
+      resetForm();
+      setIsAccepted(false);
+      setIsResetPending(false);
+    } else if (isDeclined && isResetPending) {
+      // Cancel reset if user declined
+      setIsDeclined(false);
+      setIsResetPending(false);
+    }
+  }, [isAccepted, isDeclined, isResetPending]);
+
+  // // Using the navigation handler
+  // const handleViewProductList = () => {
+  //   navigateToProductList(setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement);
+  // };
+
+  // 🔄 UPDATE: Added resetForm function
+  const resetForm = () => {
+    // Reset to first step
+    setCurrentStep(1);
+    
+    // Clear product data using existing utility
+    resetNewProductData();
+    
+    // Reset image-related states
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    
+    // Reset upload progress
+    setUploadProgress(0);
+    
+    // Show success message
+    setSuccess(prevSuccess => ({
+      ...prevSuccess,
+      productSuccess: "Formulario limpiado correctamente"
+    }));
+    setShowSuccessCard(true);
+    
+    console.log('Product form has been reset to default values');
+  };
+
+  // 🔄 UPDATE: Added confirmation method to use modal dialog
+  const confirmResetForm = () => {
+    // Check if form has any data worth confirming
+    const isFormEmpty = !productData.name_product && 
+                        !productData.price_product && 
+                        !productData.type_product && 
+                        !selectedImage;
+    
+    if (isFormEmpty) {
+      resetForm();
+      return;
+    }
+    
+    // Set pending reset flag to true
+    setIsResetPending(true);
+    
+    // Open confirmation modal
+    setModalMessage("¿Estás seguro de limpiar todos los campos del formulario?");
+    setIsModalOpen(true);
   };
 
   // Add navigation Utils
@@ -312,21 +391,34 @@ const ProductCreationForm = () => {
         </div>
       )}
 
-      
-      
       <form onSubmit={handleFormSubmit} className={styles.form}>
         {renderStepContent()}
-            
-        <NavigationButtons 
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          onNext={handleNextClick}
-          onPrevious={goToPreviousStep}
-          isSubmitting={uploading}
-          submitLabel={selectedProductToUpdate ? 'Actualizar' : 'Crear'}
-          processingLabel="Procesando..."
-          SubmitIcon={selectedProductToUpdate ? Save : PackagePlus}
-        />
+          
+        {/* 🔄 UPDATE: Added form buttons container to include reset button */}
+        <div className={styles.buttonsContainer}>
+          {/* Reset button */}
+          <button
+            type="button"
+            onClick={confirmResetForm}
+            className={styles.resetButton}
+            title="Limpiar formulario"
+            disabled={uploading}
+          >
+            <RefreshCw size={16} className={styles.resetIcon} />
+            Limpiar
+          </button>
+          
+          <NavigationButtons 
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            onNext={handleNextClick}
+            onPrevious={goToPreviousStep}
+            isSubmitting={uploading}
+            submitLabel={selectedProductToUpdate ? 'Actualizar' : 'Crear'}
+            processingLabel="Procesando..."
+            SubmitIcon={selectedProductToUpdate ? Save : PackagePlus}
+          />
+        </div>
         
         {!selectedProductToUpdate && productCount >= productLimit && (
           <p className={styles.errorMessage}>

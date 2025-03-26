@@ -4,9 +4,10 @@ import styles from '../../../../public/css/FiltersForProducts.module.css';
 import { Calendar, Package, Percent, RefreshCw, EyeOff } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsUtils';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
-import PropTypes from 'prop-types'; // UPDATE: Added PropTypes import for prop validation
+import PropTypes from 'prop-types';
 
-const FiltersForProducts = ({ onResetFilters }) => {
+// ⚠️ UPDATE: Changed to use default parameter instead of defaultProps
+const FiltersForProducts = ({ onResetFilters = null }) => {
 
   const { 
     filterOptions, 
@@ -263,14 +264,11 @@ const FiltersForProducts = ({ onResetFilters }) => {
   );
 };
 
-// UPDATE: Added PropTypes validation for the onResetFilters prop
+// Keep PropTypes for documentation and type-checking
 FiltersForProducts.propTypes = {
   onResetFilters: PropTypes.func
 };
 
-// UPDATE: Added defaultProps to specify default behavior when prop is not provided
-FiltersForProducts.defaultProps = {
-  onResetFilters: null
-};
+// ⚠️ UPDATE: Removed defaultProps - now using default parameters in the function signature
 
 export default FiltersForProducts;

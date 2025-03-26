@@ -12,7 +12,6 @@ const FiltersForProductsUtils = () => {
 
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  // 🔄 UPDATE: Replaced filterUpdateTimeout state with useRef to avoid dependency cycle
   const filterUpdateTimeoutRef = useRef(null);
 
   // Set visibility after mount
@@ -37,6 +36,54 @@ const FiltersForProductsUtils = () => {
     
     return count;
   }, [filters]);
+
+  // ⚠️ FIX: Define isNearExpiration and isNewProduct before they're used in other functions
+  // Improved isNearExpiration function to handle date boundaries better
+  const isNearExpiration = useCallback((expirationDate) => {
+    if (!expirationDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    // Handle different date formats
+    let expDate;
+    if (typeof expirationDate === 'string') {
+      // If it's an ISO string like "2025-03-11T00:00:00.000Z", extract just the date part
+      const dateStr = expirationDate.includes('T') ? 
+        expirationDate.split('T')[0] : 
+        expirationDate;
+        
+      expDate = new Date(dateStr);
+    } else {
+      expDate = new Date(expirationDate);
+    }
+    
+    expDate.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    const diffTime = expDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays >= 0 && diffDays <= 7;
+  }, []);
+
+  const isNewProduct = useCallback((creationDate, timeframe) => {
+    if (!creationDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    let startDate = new Date(today);
+    
+    if (timeframe === 'last_month') {
+      startDate.setMonth(today.getMonth() - 1);
+    } else if (timeframe === 'last_week') {
+      startDate.setDate(today.getDate() - 7);
+    } // For 'today', startDate is already set to the start of today
+    
+    const productDate = new Date(creationDate);
+    
+    return productDate >= startDate;
+  }, []);
 
   // Simplified applyFilters function by removing date range logic
   const applyFilters = useCallback(() => {
@@ -123,7 +170,6 @@ const FiltersForProductsUtils = () => {
     setFilteredProducts(filtered);
   }, [filters, products, searchTerm, isNearExpiration, isNewProduct, setFilteredProducts]);
 
-  // 🔄 UPDATE: Fixed useEffect to use ref instead of state for timeout to solve dependency issues
   useEffect(() => {
     if (filterUpdateTimeoutRef.current) {
       clearTimeout(filterUpdateTimeoutRef.current);
@@ -228,53 +274,6 @@ const FiltersForProductsUtils = () => {
     }
     return productTypesAndSubtypes[filters.tipo];
   }, [filters.tipo, productTypesAndSubtypes]);
-
-  // Improved isNearExpiration function to handle date boundaries better
-  const isNearExpiration = useCallback((expirationDate) => {
-    if (!expirationDate) return false;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
-    
-    // Handle different date formats
-    let expDate;
-    if (typeof expirationDate === 'string') {
-      // If it's an ISO string like "2025-03-11T00:00:00.000Z", extract just the date part
-      const dateStr = expirationDate.includes('T') ? 
-        expirationDate.split('T')[0] : 
-        expirationDate;
-        
-      expDate = new Date(dateStr);
-    } else {
-      expDate = new Date(expirationDate);
-    }
-    
-    expDate.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
-    
-    const diffTime = expDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays >= 0 && diffDays <= 7;
-  }, []);
-
-  const isNewProduct = useCallback((creationDate, timeframe) => {
-    if (!creationDate) return false;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
-    
-    let startDate = new Date(today);
-    
-    if (timeframe === 'last_month') {
-      startDate.setMonth(today.getMonth() - 1);
-    } else if (timeframe === 'last_week') {
-      startDate.setDate(today.getDate() - 7);
-    } // For 'today', startDate is already set to the start of today
-    
-    const productDate = new Date(creationDate);
-    
-    return productDate >= startDate;
-  }, []);
 
   return {
     isVisible,
