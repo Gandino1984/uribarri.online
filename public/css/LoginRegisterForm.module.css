@@ -3,8 +3,11 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   width: 100%;
+  min-height: calc(100vh - var(--topbar-height));
+  /* margin-top: var(--topbar-height);   */
+  padding-top: 1rem; /* 📌 UPDATE: Add padding for better spacing */
 }
 
 .formContainer {
@@ -12,6 +15,20 @@
   justify-content: center;  
   align-items: center;
   flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem;
+  margin: auto;
+  position: relative;
+}
+
+.formContentWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top-left-radius: 8px;
 }
 
 .formContent {
@@ -23,6 +40,15 @@
   position: relative;
   background-color: white;
   padding: 1rem;
+  border: 1px solid var(--light-orange);
+  border-top: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 0;
+  z-index: 0;
+  width: 100%;
 }
 
 .inputSection{
@@ -37,11 +63,15 @@
 
 .formActions {
   display: flex;
-  align-items: center;
-  justify-content: right;
   width: 100%;
   margin: 0;
   padding: 0;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  justify-content: right;
+  z-index: 10;
 }
 
 .formActions button :hover{
@@ -63,11 +93,17 @@
   padding-bottom: .5rem;
 }
 
-.submitButton{
-  border-bottom-right-radius: 0px;
+.submitButton {
   border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-top-left-radius: 5px;
   border-top-right-radius: 0px;
   border-bottom: none;
+  position: relative;
+  /* margin-bottom: -1px; */
+  z-index: 5;
+  min-width: 80px;
+  align-self: flex-start;
 }
 
 .submitButton:hover{
@@ -75,13 +111,17 @@
   background-color: var(--saturated-blue) !important;
 }
 
-.toggleButton{
-  /* border-bottom-right-radius: 0px; */
-
+.toggleButton {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   border-top-left-radius: 0px;
+  border-top-right-radius: 8px;
   border-bottom: none;
+  position: relative;
+  /* margin-bottom: -1px; */
+  z-index: 5;
+  min-width: 80px;
+  align-self: flex-end;
 }
 
 .validationMessage {
@@ -157,15 +197,17 @@
 }
 
 @media screen and (min-width: 500px) {
-  .container{
-    padding-top: 1rem;
+  .container {
+    display: flex;
+    justify-content: center;
+    padding: 0;
   }
 
   .formContent {
     flex-direction: row;
   }
 
-  .inputSection{
+  .inputSection {
     padding-right: 1rem;
   }
 }
@@ -224,5 +266,14 @@
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
+    max-width: 700px;
+  }
+  
+  .toggleButton {
+    min-width: 120px;
+  }
+  
+  .submitButton {
+    min-width: 120px;
   }
 }

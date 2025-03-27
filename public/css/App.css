@@ -67,6 +67,7 @@ input[type="text"] {
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   cursor: pointer;
   font-size: 0.9rem;
+  border-radius: 5px;
   min-height: 2.5rem;
   font-weight: 500;
   margin-bottom: var(--spacing-sm);
@@ -190,8 +191,7 @@ button:hover {
   border: none;
   color: white;
   background-color: var(--saturated-blue);
-  border-top: 3px solid var(--light-blue);
-  transform: scale(1.05);
+  border-top: 2px solid var(--light-blue);
 }
 
 button:active {

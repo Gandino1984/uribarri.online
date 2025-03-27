@@ -58,8 +58,8 @@ export const topBarAnimation = {
     opacity: 0.95
   },
   expanded: { 
-    maxHeight: '8rem',
-    padding: '0.4rem 1.5rem',
+    maxHeight: '6rem', // 🔄 UPDATE: Reduced from 8rem to 4.5rem for more subtle expansion
+    padding: '0.3rem 1.5rem', // 🔄 UPDATE: Reduced padding difference for smoother transition
     opacity: 1
   },
   config: {
@@ -69,7 +69,7 @@ export const topBarAnimation = {
   },
 };
 
-// 🔍 UPDATE: Further reduced scale value for collapsed state
+// Further reduced scale value for collapsed state
 export const userInfoCardAnimation = {
   collapsed: {
     transform: 'scale(0.6)',

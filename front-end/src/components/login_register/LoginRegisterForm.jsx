@@ -10,10 +10,13 @@ import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 const FormContent = () => {
   return (
-    <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
-      <FormFields />
-      <KeyboardSection />
-    </form>
+    <div className={styles.formContentWrapper}>
+      <FormActions />
+      <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
+        <FormFields />
+        <KeyboardSection />
+      </form>
+    </div>
   );
 };
 
@@ -45,7 +48,6 @@ const LoginRegisterForm = () => {
   return (
     <div className={styles.container}>
       <div className={styles.formContainer}>
-        <FormActions />
         <FormContent />
       </div>
     </div>
