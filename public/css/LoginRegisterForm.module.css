@@ -129,7 +129,7 @@
 }
 
 .inactive {
-  background-color: var(--superlight-gray);
+  background-color: var(--saturated-orange);
   color: var(--gray);
   cursor: not-allowed;
   opacity: 0.3;

@@ -30,7 +30,7 @@
     font-size: 0.9rem;
     color: var(--saturated-orange);
     text-align: center;
-    white-space: normal;
+    /* white-space: normal; */
 }
 
 /* Responsive adjustments */

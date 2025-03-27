@@ -1,7 +1,8 @@
 :root {
   --saturated-orange: #ee870a;
-  --dark-orange: #d06f00;
-  --superdark-orange: #391e00;
+  --light-orange: #ffe1bc;
+  --dark-orange: #965101;
+  --superdark-orange: #351c00;
 
   --superlight-orange: #fff4e7;
   --superlight-gray: #e9e9e9;
@@ -13,7 +14,14 @@
   --topbar-height: 5rem;
   --saturated-blue: #088DD0;
   --light-blue: #40b8f5;
-  
+
+  --light-green: rgb(126, 255, 115);
+  --superlight-green: rgb(220, 255, 220);
+
+  --light-red: rgb(255, 217, 217);
+
+
+
   /* Responsive spacing units */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.3rem;
@@ -164,6 +172,7 @@ button {
   outline: none;
   border: none;
   background-color: white; 
+  border-radius: 5px;
   color: var(--dark-orange);
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: 0.85rem;
@@ -172,14 +181,15 @@ button {
   gap: var(--spacing-sm);
   letter-spacing: 0.01rem;
   height: 2rem;
-  /* transition: all 0.15s ease; */
+  transition: all 0.15s ease;
   touch-action: manipulation;
 }
 
 button:hover {
   color: white;
-  background-color: var(--dark-orange);
+  background-color: var(--saturated-blue);
   border-top: 3px solid var(--light-blue);
+  transform: scale(1.05);
 }
 
 button:active {

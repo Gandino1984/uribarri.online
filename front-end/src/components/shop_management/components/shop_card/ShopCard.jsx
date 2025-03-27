@@ -3,7 +3,7 @@ import styles from '../../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from './components/shop_cover_image/ShopCoverImage.jsx';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
-import { useProduct } from '../../../../app_context/ProductContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx'; // 🔄 UPDATE: Added import for UIContext
 import ShopMap from './components/shop_map/ShopMap.jsx';
 import ShopHeader from './components/ShopHeader.jsx';
 import MinimizedCard from './components/MinimizedCard.jsx';
@@ -19,16 +19,15 @@ const ShopCard = ({ shop }) => {
   // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { setSelectedShop, setShowShopCreationForm } = useShop();
-  const { setShowProductManagement } = useProduct();
+  const { setShowProductManagement } = useUI(); // 🔄 UPDATE: Now importing from UIContext instead of ProductContext
   
-  // UPDATE: Added formatOpenDays function from ShopCardUtils
   const { formatTime, formatShopType, checkHasContinuousSchedule, formatOpenDays } = ShopCardUtils();
 
   // Event handlers
   const toggleMinimized = useCallback(() => {
     setMinimized(prevState => !prevState);
     
-    // UPDATE: Hide map when minimizing
+    // Hide map when minimizing
     if (!minimized === false) {
       setShowMap(false);
     }
@@ -56,7 +55,7 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
-  // UPDATE: Enhanced layout handling for minimized state
+  // Enhanced layout handling for minimized state
   return (
     <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 

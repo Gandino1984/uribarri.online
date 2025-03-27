@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Camera, Loader, Eye } from 'lucide-react';
+import { Camera, Loader, Eye, User } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
-import ImageModal from '../../../image_modal/ImageModal.jsx';
 import styles from '../../../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 
 const UserInfoCard = () => {
-  // UPDATE: Using useAuth and useUI hooks instead of AppContext
   const { 
     currentUser 
   } = useAuth();
@@ -15,7 +13,9 @@ const UserInfoCard = () => {
   const {
     uploading,
     setError,
-    setInfo
+    setInfo,
+    setIsImageModalOpen,
+    setSelectedImageForModal
   } = useUI();
 
   const {
@@ -25,11 +25,10 @@ const UserInfoCard = () => {
     localImageUrl
   } = UserInfoCardUtils();
 
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [modalImageUrl, setModalImageUrl] = useState(null);
   const fileInputRef = useRef(null);
   const [imageKey, setImageKey] = useState(Date.now()); 
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768);
+  const [hasValidImage, setHasValidImage] = useState(false);
   
   // State for showing the action buttons
   const [showButtons, setShowButtons] = useState(false);
@@ -52,25 +51,51 @@ const UserInfoCard = () => {
     setShowButtons(false);
   };
 
-
   const handleViewClick = (e) => {
     e.stopPropagation();
-    if (currentUser?.image_user) {
+    if (currentUser?.image_user && hasValidImage) {
       const imageUrl = getImageUrl(currentUser.image_user);
       if (imageUrl) {
-        setModalImageUrl(imageUrl);
+        setSelectedImageForModal(imageUrl);
         setIsImageModalOpen(true);
         setShowButtons(false);
       }
     }
   };
 
+  // Check if user has a valid image on component mount and when currentUser changes
+  useEffect(() => {
+    const checkImage = async () => {
+      if (currentUser?.image_user) {
+        const imageUrl = getImageUrl(currentUser.image_user);
+        if (imageUrl) {
+          try {
+            await new Promise((resolve, reject) => {
+              const img = new Image();
+              img.onload = resolve;
+              img.onerror = reject;
+              img.src = imageUrl;
+            });
+            setHasValidImage(true);
+          } catch (error) {
+            setHasValidImage(false);
+          }
+        } else {
+          setHasValidImage(false);
+        }
+      } else {
+        setHasValidImage(false);
+      }
+    };
+    
+    checkImage();
+  }, [currentUser?.image_user, getImageUrl]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       const profileContainer = profileContainerRef.current;
       const popupMenu = document.getElementById('profile-actions-popup');
       
-      // Check if click is outside both the profile container and popup menu
       if ((profileContainer && !profileContainer.contains(e.target)) && 
           (popupMenu && !popupMenu.contains(e.target)) && 
           showButtons) {
@@ -114,23 +139,25 @@ const UserInfoCard = () => {
     }
   }, [currentUser?.image_user, getImageUrl, setError]);
 
-  const handleModalClose = () => {
-    setIsImageModalOpen(false);
-    setModalImageUrl(null);
+  // 🖋️ UPDATE: Modified welcome message to wrap user name in a span with font-weight 600
+  const getWelcomeMessage = () => {
+    if (!currentUser) {
+      return isSmallScreen ? 
+        '¡Hola de nuevo!' : 
+        '¡Hola de nuevo! Inicia sesión';
+    }
+    
+    const userName = currentUser.name_user || 'usuario';
+    
+    return isSmallScreen ? 
+      <span className={styles.userName}>{userName}</span> : 
+      <>¡Hola de nuevo, <span className={styles.userName}>{userName}</span>!</>;
   };
-
-  const welcomeMessage = isSmallScreen
-    ? currentUser
-      ? `${currentUser.name_user}`
-      : '¡Hola de nuevo!'
-    : currentUser
-      ? `¡Hola de nuevo, ${currentUser.name_user || 'usuario'}!`
-      : '¡Hola de nuevo! Inicia sesión';
 
   return (
     <div className={styles.userInfoCard}>
         {!currentUser ? (
-            <div className={styles.message}>{welcomeMessage}</div>
+            <div className={styles.message}>{getWelcomeMessage()}</div>
         ) : (
           <>
             <div className={styles.profileSection}>
@@ -144,7 +171,7 @@ const UserInfoCard = () => {
                       </div>
                       
                       {/* View button (only if there's an image) */}
-                      {currentUser?.image_user && (
+                      {hasValidImage && (
                       <div className={styles.actionButton} onClick={handleViewClick}>
                           <Eye size={16} className={styles.actionIcon} />
                           <span className={styles.actionText}>Ver Imagen</span>
@@ -158,29 +185,36 @@ const UserInfoCard = () => {
                   className={styles.profileImageContainer}
                   onClick={toggleButtons}
                 >
-                  {/* Profile image */}
-                  <img
-                    key={imageKey}
-                    src={getImageUrl(currentUser.image_user) || ''}
-                    alt="Imagen de perfil"
-                    className={styles.profileImage}
-                    onError={() => {
-                      setInfo(prevInfo => ({
-                        ...prevInfo,
-                        imageInfo: "No tienes imagen de perfil"
-                      }));
-                    }}
-                    onLoad={() => {
-                      setError(prevError => ({
-                        ...prevError,
-                        imageError: ''
-                      }));
-                      setInfo(prevInfo => ({
-                        ...prevInfo,
-                        imageInfo: ''
-                      }));
-                    }}
-                  />
+                  {hasValidImage ? (
+                    <img
+                      key={imageKey}
+                      src={getImageUrl(currentUser.image_user) || ''}
+                      alt="Imagen de perfil"
+                      className={styles.profileImage}
+                      onError={() => {
+                        setHasValidImage(false);
+                        setInfo(prevInfo => ({
+                          ...prevInfo,
+                          imageInfo: "No tienes imagen de perfil"
+                        }));
+                      }}
+                      onLoad={() => {
+                        setHasValidImage(true);
+                        setError(prevError => ({
+                          ...prevError,
+                          imageError: ''
+                        }));
+                        setInfo(prevInfo => ({
+                          ...prevInfo,
+                          imageInfo: ''
+                        }));
+                      }}
+                    />
+                  ) : (
+                    <div className={styles.placeholderImage}>
+                      <User size={48} className={styles.placeholderIcon} />
+                    </div>
+                  )}
                   
                   {/* Hidden file input */}
                   <input
@@ -220,16 +254,9 @@ const UserInfoCard = () => {
                     </div>
                   )}
                 </div>
-                
-                <ImageModal
-                  isOpen={isImageModalOpen}
-                  onClose={handleModalClose}
-                  imageUrl={modalImageUrl}
-                  altText={`Imagen de perfil de ${currentUser?.name_user}`}
-                />
             </div>
             {/* Welcome message */}
-            <p className={styles.welcomeMessage}>{welcomeMessage}</p>
+            <p className={styles.welcomeMessage}>{getWelcomeMessage()}</p>
           </>
         )}
     </div>

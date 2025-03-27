@@ -27,7 +27,7 @@
   color: var(--saturated-orange);
   margin: 2px 0;
   text-align: left;
-  white-space: normal;
+  /* white-space: normal;  */
   line-height: 1.2;
 }
 

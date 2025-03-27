@@ -140,9 +140,15 @@
   margin-bottom: .5rem;
 }
 
+.alertIcon{
+  /* outline: 1px solid var(--saturated-orange); */
+  border-radius: 50%;
+  background-color: var(--light-green);
+}
+
 .upgradeMessage {
   font-size: 0.85rem;
-  color: #dc3545;
+  color: var(--light-orange);
   margin-top: 5px;
 }
 

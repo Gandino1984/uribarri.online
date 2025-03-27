@@ -44,7 +44,7 @@
   top: 1rem;
   right: 1rem;
   padding: .2rem .2rem;
-  background-color: var(--superlight-gray);
+  background-color: var(--saturated-orange);
   /* border-radius: 6px; */
   transition: all 0.15s ease;
 }

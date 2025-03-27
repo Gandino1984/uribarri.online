@@ -8,9 +8,10 @@ import ErrorCard from './components/error_card/ErrorCard.jsx';
 import SuccessCard from './components/success_card/SuccessCard.jsx';
 import UserInfoCard from './components/user_info_card/UserInfoCard.jsx';
 import InfoCard from './components/info_card/InfoCard.jsx';
+import ImageModal from '../image_modal/ImageModal.jsx'; // 🖼️ UPDATE: Added ImageModal import
 
 function TopBar() {
-  // UPDATE: Using useUI and useShop hooks instead of AppContext
+  // Using useUI and useShop hooks instead of AppContext
   const {
     error,
     success,
@@ -29,36 +30,38 @@ function TopBar() {
 
   return (
     <div className={styles.container}>
-    
-        <div className={styles.messageWrapper}>
-            {error && <ErrorCard />}
-            {success && <SuccessCard />}
-            {info && <InfoCard />}
-        </div>
-        
-        <div className={styles.contentWrapper}>
-            {(selectedShop || showShopCreationForm) && (
-              <button
-                className={styles.backButton}
-                onClick={handleBack}
-                title="Volver"
-              >
-                  <ArrowLeft size={16} />
-              </button>
-            )}
-
-            <UserInfoCard />
-
-            <button 
-              type="button" 
-              className={styles.logoutButton} 
-              onClick={clearUserSession}
-              title="Cerrar sesión"
+      {/* 🖼️ UPDATE: Added ImageModal component */}
+      <ImageModal />
+      
+      <div className={styles.messageWrapper}>
+          {error && <ErrorCard />}
+          {success && <SuccessCard />}
+          {info && <InfoCard />}
+      </div>
+      
+      <div className={styles.contentWrapper}>
+          {(selectedShop || showShopCreationForm) && (
+            <button
+              className={styles.backButton}
+              onClick={handleBack}
+              title="Volver"
             >
-                Cerrar
-                <DoorClosed size={16}/>
+                <ArrowLeft size={16} />
             </button>
-        </div>
+          )}
+
+          <UserInfoCard />
+
+          <button 
+            type="button" 
+            className={styles.logoutButton} 
+            onClick={clearUserSession}
+            title="Cerrar sesión"
+          >
+              Cerrar
+              <DoorClosed size={16}/>
+          </button>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { Camera, Loader } from 'lucide-react';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { ShopCoverImageUtils } from './ShopCoverImageUtils.jsx';
@@ -8,13 +8,13 @@ const ShopCoverImage = ({ id_shop }) => {
   // Using useShop hook instead of AppContext
   const { selectedShop, shops } = useShop();
   const [imageKey, setImageKey] = useState(Date.now()); // Force re-render when needed
+  const fileInputRef = useRef(null); // 🖱️ UPDATE: Added ref for direct file input access
   
   const {
     handleContainerClick,
     handleUploadButtonClick,
     handleImageUpload,
     getShopCoverUrl,
-    showUploadButton,
     uploading,
     uploadProgress,
     localImageUrl,
@@ -36,6 +36,14 @@ const ShopCoverImage = ({ id_shop }) => {
       console.log(`Selected shop ${id_shop} image path:`, getShopCoverUrl(shop.image_shop));
     }
   }, [isSelected, shop?.image_shop, getShopCoverUrl, id_shop]);
+
+  // 🖱️ UPDATE: New direct click handler for one-click upload
+  const handleDirectClick = (e) => {
+    if (isSelected && !uploading && fileInputRef.current) {
+      e.stopPropagation();
+      fileInputRef.current.click();
+    }
+  };
 
   // Get the appropriate image URL with fallbacks
   const getImageSource = () => {
@@ -64,7 +72,7 @@ const ShopCoverImage = ({ id_shop }) => {
     <div className={styles.container}>
       <div 
         className={`${styles.imageWrapper} ${isSelected ? styles.selectedShop : ''}`}
-        onClick={() => handleContainerClick(id_shop)}
+        onClick={handleDirectClick} // 🖱️ UPDATE: Changed to direct click handler
       >
         {imageSource ? (
           <img
@@ -81,30 +89,16 @@ const ShopCoverImage = ({ id_shop }) => {
           </div>
         )}
 
-        {showUploadButton && isSelected && (
-          <div 
-            className={styles.uploadButtonContainer}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/jpg,image/webp"
-              onChange={(e) => handleImageUpload(e, id_shop)}
-              className={styles.fileInput}
-              id={`shop-cover-input-${id_shop}`}
-              disabled={uploading}
-            />
-            <label
-              htmlFor={`shop-cover-input-${id_shop}`}
-              className={styles.uploadButton}
-              style={{ cursor: uploading ? 'wait' : 'pointer' }}
-              onClick={handleUploadButtonClick}
-            >
-              <Camera size={16} className={styles.cameraIcon} />
-              <span className={styles.uploadText}>Subir imagen</span>
-            </label>
-          </div>
-        )}
+        {/* 🖱️ UPDATE: Hidden file input that's directly triggered on container click */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/jpg,image/webp"
+          onChange={(e) => handleImageUpload(e, id_shop)}
+          className={styles.fileInput}
+          id={`shop-cover-input-${id_shop}`}
+          disabled={uploading}
+        />
 
         {uploading && (
           <div className={styles.loader}>
@@ -121,7 +115,7 @@ const ShopCoverImage = ({ id_shop }) => {
           </div>
         )}
         
-        {isSelected && !showUploadButton && !uploading && (
+        {isSelected && !uploading && (
           <div className={styles.editOverlay}>
             <Camera size={20} className={styles.editIcon} />
             <span className={styles.editText}>{shop?.image_shop ? 'Cambiar imagen' : 'Subir imagen'}</span>

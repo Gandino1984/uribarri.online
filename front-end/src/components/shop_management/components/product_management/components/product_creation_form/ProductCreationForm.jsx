@@ -317,7 +317,7 @@ const ProductCreationForm = () => {
     return (
       <div className={styles.productLimitInfo}>
           <div className={styles.limitHeader}>
-              <AlertCircle size={16} color={statusColor} />
+              <AlertCircle size={20} color={statusColor} className={styles.alertIcon}/>
               <span>Límite de productos: {productCount} / {productLimit}</span>
           </div>
           {!currentUser?.category_user && productCount >= productLimit * 0.7 && (

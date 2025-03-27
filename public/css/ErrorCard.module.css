@@ -29,8 +29,8 @@
     line-height: 1.2;
     font-size: 0.9rem;
     color: red;
-    text-align: left;
-    white-space: normal;
+    text-align: center;
+    /* white-space: normal; */
 }
 
 /* Responsive adjustments */

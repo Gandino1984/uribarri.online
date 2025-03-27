@@ -28,6 +28,10 @@
   line-height: 1.2;
 }
 
+.userName {
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .userInfoCard {
     flex-direction: column;
@@ -71,6 +75,29 @@
   height: 3.75rem;
   border-radius: 50%;
   object-fit: cover;
+}
+
+/* 🔄 UPDATE: Added styles for placeholder image */
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 2px solid var(--light-gray);
+  border-radius: 50%;
+  /* border: 2px solid var(--saturation-blue); */
+}
+
+.placeholderIcon {
+  color: var(--lighter-gray);
+  transition: opacity 0.2s ease;
+
+}
+
+.profileImageContainer:hover .placeholderIcon {
+  opacity: 0;
 }
 
 .uploadButton {
@@ -145,6 +172,7 @@
 }
 
 .profileImageContainer:hover .editOverlay {
+  border  : 2px solid var(--saturated-blue);
   opacity: 1;
 }
 
@@ -177,18 +205,6 @@
   transform-origin: top center;
 }
 
-/* Triangle pointer at the top of popup */
-/* .actionsPopup::before {
-  content: "";
-  position: absolute;
-  top: -0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 0 0.5rem 0.5rem 0.5rem;
-  border-style: solid;
-  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
-} */
-
 /* Action button in popup */
 .actionButton {
   display: flex;
@@ -203,7 +219,7 @@
 }
 
 .actionButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .actionIcon {
