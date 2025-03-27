@@ -44,7 +44,7 @@
 }
 
 .backButton {
-    border: none;
+    /* border: none; */
     margin-right: 0.5rem;
     cursor: pointer;
     display: flex;

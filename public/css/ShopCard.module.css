@@ -8,7 +8,7 @@
   position: relative;
   transition: all 0.3s ease;
   overflow: hidden;
-  background-color: white;
+  background-color: var(--superlight-orange);
   border-radius: 6px; /* 🧩 UPDATE: Added 6px border radius to the card */
 }
 
@@ -27,7 +27,7 @@
 
 .infoContainer {
   width: 100%;
-  background-color: white;
+  /* background-color: white; */
   /* border-radius: 0 0 0.5rem 0.5rem; */
   /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
   padding: .5rem;
@@ -130,10 +130,10 @@ header p{
 
 .minimizeButton {
   color: var(--dark-orange);
-  opacity: .9;
+  opacity: .8;
   background-color: rgba(255, 255, 255, 0.638);
   border: none;
-  border-radius: 6px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,7 +146,7 @@ header p{
   opacity: 1;
   color: white;
   background-color: var(--saturated-blue);
-  transform: scale(1.05);
+  /* transform: scale(1.05); */
 }
 
 /* Styles for the update button */
@@ -311,11 +311,11 @@ header p{
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  /* transition: background-color 0.2s ease; */
+  transition: background-color 0.15s ease;
 }
 
 .backButton:hover {
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
   color: white;
 }
 

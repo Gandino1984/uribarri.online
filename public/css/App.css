@@ -24,8 +24,8 @@
 
   /* Responsive spacing units */
   --spacing-xs: 0.25rem;
-  --spacing-sm: 0.3rem;
-  --spacing-md: .7rem;
+  --spacing-sm: 0.1rem;
+  --spacing-md: .5rem;
   --spacing-lg: 1rem;
   --spacing-xl: 1.5rem;
 }
