@@ -14,9 +14,11 @@ const ShopManagement = () => {
   const { 
     showShopCreationForm, 
     shops,
-    selectedShop,
-    setshowShopManagement
+    selectedShop
   } = useShop();
+  
+  // 🌟 UPDATE: Corrected function import from UIContext instead of ShopContext
+  const { setShowShopManagement } = useUI();
   
   // UPDATE: Get showProductManagement from UI context where it's defined
   const { showProductManagement } = useUI();
@@ -39,7 +41,7 @@ const ShopManagement = () => {
 
   if (!currentUser || currentUser.type_user !== 'seller') {
     console.log('Non-seller user in ShopManagement, redirecting to login');
-    setshowShopManagement(false);
+    setShowShopManagement(false);
     return null;
   }
   

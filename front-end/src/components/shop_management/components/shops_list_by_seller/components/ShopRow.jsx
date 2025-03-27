@@ -27,7 +27,7 @@ const ShopRow = ({ shop, isSelected, onSelect, onUpdate, onDelete }) => {
           className={styles.updateButton}
           title="Actualizar comercio"
         >
-          <Edit size={16} />
+          <Edit size={14} />
         </button>
         
         <button 
@@ -38,7 +38,7 @@ const ShopRow = ({ shop, isSelected, onSelect, onUpdate, onDelete }) => {
           className={styles.deleteButton}
           title="Eliminar comercio"
         >
-          <Trash2 size={16} />
+          <Trash2 size={14} />
         </button>
       </td>
       <td className={styles.tableCell}>{shop.name_shop}</td>

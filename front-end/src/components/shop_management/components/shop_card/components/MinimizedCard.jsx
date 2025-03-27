@@ -6,7 +6,7 @@ const MinimizedCard = memo(({ toggleMinimized }) => {
   return (
     <div className={styles.minimizedCard} onClick={toggleMinimized}>
       <div className={styles.minimizedContent}>
-        <span className={styles.minimizedText}>Mi tienda</span>
+        <span className={styles.minimizedText}>Tarjeta de tienda  </span>
         <Maximize2 size={18} className={styles.toggleIcon} />
       </div>
     </div>

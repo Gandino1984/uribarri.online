@@ -55,7 +55,7 @@
 
 .key:hover{
     color: white;
-    background-color: var(--saturated-orange);
+    background-color: var(--saturated-blue);
     transition: all .15s ease;
 }
 
@@ -64,7 +64,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    gap: .3rem;
+    gap: 1rem;
 }
 
 /* @media screen and (min-width: 500px) {

@@ -58,8 +58,8 @@ export const topBarAnimation = {
     opacity: 0.95
   },
   expanded: { 
-    maxHeight: '6rem', // 🔄 UPDATE: Reduced from 8rem to 4.5rem for more subtle expansion
-    padding: '0.3rem 1.5rem', // 🔄 UPDATE: Reduced padding difference for smoother transition
+    maxHeight: '6rem',
+    padding: '0.3rem 1.5rem',
     opacity: 1
   },
   config: {
@@ -82,4 +82,90 @@ export const userInfoCardAnimation = {
     tension: 220,
     friction: 26,
   },
+};
+
+// 🌟 UPDATE: Enhanced animation for LoginRegisterForm with smoother transitions
+export const loginFormAnimation = {
+  from: { 
+    opacity: 0,
+    transform: 'translateY(50px)',
+  },
+  enter: { 
+    opacity: 1,
+    transform: 'translateY(0)',
+  },
+  leave: { 
+    opacity: 0,
+    transform: 'translateY(-100px)', // Increased distance for more visible exit
+  },
+  config: {
+    mass: 1.2,        // Slightly increased mass for more physical weight
+    tension: 210,     // Reduced tension for slower animation
+    friction: 26,     // Increased friction to slow down movement
+    clamp: false,     // Ensures animation completes naturally
+    duration: 300     // Explicitly set duration to ensure sufficient time
+  },
+};
+
+// 🚀 UPDATE: Animations for ShopsListBySeller component
+export const shopsListAnimations = {
+  // Title animation with smooth fade effect
+  titleAnimation: {
+    from: { 
+      opacity: 0,
+      transform: 'translateY(-20px)',
+    },
+    enter: { 
+      opacity: 1,
+      transform: 'translateY(0px)',
+    },
+    leave: { 
+      opacity: 0,
+      transform: 'translateY(-20px)',
+    },
+    config: {
+      tension: 280,
+      friction: 60,
+    },
+  },
+  
+  // Table animation with vertical slide effect
+  tableAnimation: {
+    from: { 
+      opacity: 0,
+      transform: 'translateY(50px)',
+    },
+    enter: { 
+      opacity: 1,
+      transform: 'translateY(0px)',
+    },
+    leave: { 
+      opacity: 0,
+      transform: 'translateY(50px)',
+    },
+    config: {
+      tension: 280,
+      friction: 60,
+    },
+  },
+  
+  // Shop card animation with fade and slight bounce
+  shopCardAnimation: {
+    from: { 
+      opacity: 0,
+      transform: 'translateY(30px)', 
+    },
+    enter: { 
+      opacity: 1,
+      transform: 'translateY(0px)',
+    },
+    leave: { 
+      opacity: 0,
+      transform: 'translateY(30px)',
+    },
+    config: {
+      tension: 230,
+      friction: 22,
+    },
+  }
 };
