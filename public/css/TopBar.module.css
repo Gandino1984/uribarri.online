@@ -10,7 +10,7 @@
     z-index: 1000; 
     height: auto; 
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Prevent child elements from overflowing */
+    /* overflow: hidden; */
     position: relative; /* 🔍 UPDATE: Ensure proper stacking context */
 }
 

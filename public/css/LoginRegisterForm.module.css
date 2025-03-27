@@ -63,6 +63,27 @@
   padding-bottom: .5rem;
 }
 
+.submitButton{
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom: none;
+}
+
+.submitButton:hover{
+  color: white !important;
+  background-color: var(--saturated-blue) !important;
+}
+
+.toggleButton{
+  /* border-bottom-right-radius: 0px; */
+
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border-bottom: none;
+}
+
 .validationMessage {
   display: flex;
   align-items: center;
