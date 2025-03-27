@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../../public/css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
@@ -11,6 +11,11 @@ import UserInfoCard from './components/user_info_card/UserInfoCard.jsx';
 import InfoCard from './components/info_card/InfoCard.jsx';
 import ImageModal from '../image_modal/ImageModal.jsx';
 import { topBarAnimation } from '../../utils/animation/transitions.js';
+
+// Created context for TopBar state to share with child components
+export const TopBarStateContext = React.createContext({
+  isExpanded: false
+});
 
 function TopBar() {
   // Using useUI and useShop hooks instead of AppContext
@@ -30,7 +35,7 @@ function TopBar() {
     clearUserSession
   } = TopBarUtils();
 
-  // 🎭 UPDATE: Added state and animation for expandable TopBar
+  // State for expandable TopBar
   const [isExpanded, setIsExpanded] = useState(false);
   
   const springProps = useSpring({
@@ -46,45 +51,47 @@ function TopBar() {
   };
 
   return (
-    <animated.div 
-      className={styles.container}
-      style={springProps}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-      onClick={handleContainerClick}
-    >
-      <ImageModal />
-      
-      <div className={styles.messageWrapper}>
-          {error && <ErrorCard />}
-          {success && <SuccessCard />}
-          {info && <InfoCard />}
-      </div>
-      
-      <div className={styles.contentWrapper}>
-          {(selectedShop || showShopCreationForm) && (
-            <button
-              className={styles.backButton}
-              onClick={handleBack}
-              title="Volver"
+    <TopBarStateContext.Provider value={{ isExpanded }}>
+      <animated.div 
+        className={styles.container}
+        style={springProps}
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+        onClick={handleContainerClick}
+      >
+        <ImageModal />
+        
+        <div className={styles.messageWrapper}>
+            {error && <ErrorCard />}
+            {success && <SuccessCard />}
+            {info && <InfoCard />}
+        </div>
+        
+        <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+            {(selectedShop || showShopCreationForm) && (
+              <button
+                className={styles.backButton}
+                onClick={handleBack}
+                title="Volver"
+              >
+                  <ArrowLeft size={16} />
+              </button>
+            )}
+
+            <UserInfoCard />
+
+            <button 
+              type="button" 
+              className={styles.logoutButton} 
+              onClick={clearUserSession}
+              title="Cerrar sesión"
             >
-                <ArrowLeft size={16} />
+                {isExpanded ? 'Cerrar' : ''}
+                <DoorClosed size={16}/>
             </button>
-          )}
-
-          <UserInfoCard />
-
-          <button 
-            type="button" 
-            className={styles.logoutButton} 
-            onClick={clearUserSession}
-            title="Cerrar sesión"
-          >
-              Cerrar
-              <DoorClosed size={16}/>
-          </button>
-      </div>
-    </animated.div>
+        </div>
+      </animated.div>
+    </TopBarStateContext.Provider>
   );
 }
 

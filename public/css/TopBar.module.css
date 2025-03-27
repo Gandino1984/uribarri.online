@@ -10,6 +10,8 @@
     z-index: 1000; 
     height: auto; 
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Prevent child elements from overflowing */
+    position: relative; /* 🔍 UPDATE: Ensure proper stacking context */
 }
 
 .contentWrapper {
@@ -19,7 +21,16 @@
     width: 100%;
     gap: 1rem;
     padding: 0.25rem 0; 
-    /* flex-wrap: wrap;  */
+    transition: all 0.3s ease; /* Added transition for smoother state changes */
+}
+
+/* Added styles for collapsed and expanded states */
+.contentWrapper.collapsed {
+    height: 2.4rem;
+}
+
+.contentWrapper.expanded {
+    height: auto;
 }
 
 .messageWrapper {
@@ -36,12 +47,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* transition: all 0.2s ease; */
 }
 
 .logoutButton {
     gap: 0.5rem;
-    /* transition: all 0.2s ease; */
+    white-space: nowrap; /* Prevent text wrapping */
+    display: flex;
+    align-items: center;
 }
 
 @media (max-width: 768px) {

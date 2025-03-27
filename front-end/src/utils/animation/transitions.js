@@ -1,3 +1,4 @@
+// animations/transitions.js
 import { config } from '@react-spring/web';
 
 export const fadeInScale = {
@@ -63,7 +64,22 @@ export const topBarAnimation = {
   },
   config: {
     mass: 1,
-    tension: 280,
-    friction: 20,
+    tension: 220,
+    friction: 26,
+  },
+};
+
+// 🔍 UPDATE: Further reduced scale value for collapsed state
+export const userInfoCardAnimation = {
+  collapsed: {
+    transform: 'scale(0.6)',
+  },
+  expanded: {
+    transform: 'scale(1)',
+  },
+  config: {
+    mass: 1,
+    tension: 220,
+    friction: 26,
   },
 };
