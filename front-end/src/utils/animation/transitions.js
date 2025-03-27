@@ -1,4 +1,3 @@
-// animations/transitions.js
 import { config } from '@react-spring/web';
 
 export const fadeInScale = {
@@ -49,4 +48,22 @@ export const popIn = {
     transform: 'scale(0.8)',
   },
   config: config.wobbly,
+};
+
+export const topBarAnimation = {
+  collapsed: { 
+    maxHeight: '2.8rem',
+    padding: '0.2rem 1.5rem',
+    opacity: 0.95
+  },
+  expanded: { 
+    maxHeight: '8rem',
+    padding: '0.4rem 1.5rem',
+    opacity: 1
+  },
+  config: {
+    mass: 1,
+    tension: 280,
+    friction: 20,
+  },
 };

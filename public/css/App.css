@@ -171,7 +171,8 @@ button {
   justify-content: center;
   outline: none;
   border: none;
-  background-color: white; 
+  background-color: white;
+  border: 1px solid var(--light-orange); 
   border-radius: 5px;
   color: var(--dark-orange);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -186,6 +187,7 @@ button {
 }
 
 button:hover {
+  border: none;
   color: white;
   background-color: var(--saturated-blue);
   border-top: 3px solid var(--light-blue);

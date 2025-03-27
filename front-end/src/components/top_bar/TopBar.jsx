@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../../public/css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
 import { ArrowLeft, DoorClosed } from 'lucide-react';
@@ -8,7 +9,8 @@ import ErrorCard from './components/error_card/ErrorCard.jsx';
 import SuccessCard from './components/success_card/SuccessCard.jsx';
 import UserInfoCard from './components/user_info_card/UserInfoCard.jsx';
 import InfoCard from './components/info_card/InfoCard.jsx';
-import ImageModal from '../image_modal/ImageModal.jsx'; // 🖼️ UPDATE: Added ImageModal import
+import ImageModal from '../image_modal/ImageModal.jsx';
+import { topBarAnimation } from '../../utils/animation/transitions.js';
 
 function TopBar() {
   // Using useUI and useShop hooks instead of AppContext
@@ -28,9 +30,29 @@ function TopBar() {
     clearUserSession
   } = TopBarUtils();
 
+  // 🎭 UPDATE: Added state and animation for expandable TopBar
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const springProps = useSpring({
+    ...(isExpanded ? topBarAnimation.expanded : topBarAnimation.collapsed),
+    config: topBarAnimation.config
+  });
+
+  const handleContainerClick = (e) => {
+    // Only toggle if clicking directly on the container, not on child elements
+    if (e.target === e.currentTarget) {
+      setIsExpanded(prev => !prev);
+    }
+  };
+
   return (
-    <div className={styles.container}>
-      {/* 🖼️ UPDATE: Added ImageModal component */}
+    <animated.div 
+      className={styles.container}
+      style={springProps}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
+      onClick={handleContainerClick}
+    >
       <ImageModal />
       
       <div className={styles.messageWrapper}>
@@ -62,7 +84,7 @@ function TopBar() {
               <DoorClosed size={16}/>
           </button>
       </div>
-    </div>
+    </animated.div>
   );
 }
 
