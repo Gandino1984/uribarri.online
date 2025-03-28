@@ -12,6 +12,11 @@
   border-radius: 8px; 
 }
 
+.container:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.01);
+}
+
 /* Added specific styles for minimized container to override min-height */
 .container.minimized {
   min-height: unset;
