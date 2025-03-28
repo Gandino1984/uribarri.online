@@ -95,6 +95,24 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`package`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
+  `id_package` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_shop` INT UNSIGNED NOT NULL,
+  `id_product1` INT UNSIGNED NOT NULL,
+  `id_product2` INT UNSIGNED NULL,
+  `id_product3` INT UNSIGNED NULL,
+  `id_product4` INT UNSIGNED NULL,
+  `id_product5` INT UNSIGNED NULL,
+  `name_package` VARCHAR(100) NULL,
+  `creation_package` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `active_package` TINYINT(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id_package`),
+  UNIQUE INDEX `id_package_UNIQUE` (`id_package` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`orders`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`orders` (

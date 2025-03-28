@@ -4,6 +4,7 @@ import userApiRouter from "./user_api_router.js";
 import productApiRouter from "./product_api_router.js";
 import shopApiRouter from "./shop_api_router.js";
 import providerApiRouter from "./provider_api_router.js";
+import packageApiRouter from "./package_api_router.js"; 
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.use("/shop", shopApiRouter);
 
 router.use("/provider", providerApiRouter);
 
-// router.use("/order", orderApiRouter);
+router.use("/package", packageApiRouter); 
+
 
 export default router;

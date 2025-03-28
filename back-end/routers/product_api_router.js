@@ -1,8 +1,8 @@
 import { Router } from "express";
 import productApiController from "../controllers/product/product_api_controller.js";
-import path from 'path';
-import { handleProductImageUpload } from '../middleware/ProductUploadMiddleware.js';
 import productController from '../controllers/product/product_controller.js';
+import { handleProductImageUpload } from '../middleware/ProductUploadMiddleware.js';
+// import path from 'path';
 
 const router = Router();
 
