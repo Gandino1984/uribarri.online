@@ -5,7 +5,7 @@ import styles from '../../../../../../../../../public/css/ShopProductsList.modul
 const SearchBar = ({ searchTerm, handleSearchChange }) => {
   return (
     <div className={styles.searchInputWrapper}>
-      <Search size={18} className={styles.searchIcon} />
+      <Search size={18} className={styles.searchIcon} strokeWidth={3}/>
       <input
         type="text"
         value={searchTerm}

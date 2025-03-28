@@ -63,8 +63,7 @@
 /* Text input with blue for entered text */
 input[type="text"] {
   color: var(--saturated-blue); /* Blue color for entered text */
-  border: 2px solid var(--medium-gray);
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
   font-size: 0.9rem;
   border-radius: 5px;
@@ -72,6 +71,7 @@ input[type="text"] {
   font-weight: 500;
   margin-bottom: var(--spacing-sm);
   width: 100%;
+  outline: none;
   /* transition: border-color 0.2s ease, box-shadow 0.2s ease; */
 }
 
@@ -83,13 +83,13 @@ input[type="text"]::placeholder {
 
 input[type="text"]:focus {
   color: var(--saturated-blue); /* Keep blue color when focused */
-  border: 2px solid var(--saturated-orange);
+  border: 2px solid var(--saturated-blue);
   outline: none;
   box-shadow: var(--focus-shadow);
 }
 
 input[type="text"]:hover { 
-  border: 2px solid var(--saturated-orange);
+  border: 2px solid var(--saturated-blue);
 }
 
 /* Number inputs with blue for entered text */
@@ -191,7 +191,7 @@ button:hover {
   border: none;
   color: white;
   background-color: var(--saturated-blue);
-  border-top: 2px solid var(--light-blue);
+  border-top: 1px solid var(--light-blue);
 }
 
 button:active {
@@ -201,6 +201,7 @@ button:active {
 
 /* Fixed select element styling with lighter gray for placeholder */
 select {
+
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
@@ -213,7 +214,7 @@ select {
   color: var(--lighter-gray) !important; /* Lighter gray for placeholder */
   background-color: white;
   border: 2px solid var(--medium-gray);
-  /* border-radius: 5px; */
+  border-radius: 5px;
   margin-bottom: var(--spacing-sm);
   cursor: pointer;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -225,15 +226,14 @@ select {
 
 /* Hover state - color changes to orange */
 select:hover {
-  color: var(--dark-orange) !important;
-  border-color: var(--saturated-orange);
+  color: var(--saturated-blue) !important;
+  border-color: var(--saturated-blue) !important;
 }
 
 /* Clear any default selected styling */
 select:focus:not(.has-value) {
   color: var(--lighter-gray) !important;
-  border-color: var(--saturated-orange);
-  box-shadow: var(--focus-shadow);
+  border-color: var(--saturated-orange) !important;
   outline: none;
 }
 
@@ -245,7 +245,7 @@ select.has-value {
 /* Ensure hovering a selected value keeps it blue */
 select.has-value:hover {
   color: var(--saturated-blue) !important;
-  border-color: var(--saturated-orange);
+  border-color: var(--saturated-blue);
 }
 
 /* Option styling */

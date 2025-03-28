@@ -8,8 +8,8 @@
   position: relative;
   transition: all 0.3s ease;
   overflow: hidden;
-  background-color: var(--superlight-orange);
-  border-radius: 6px; /* 🧩 UPDATE: Added 6px border radius to the card */
+  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+  border-radius: 8px; 
 }
 
 /* Added specific styles for minimized container to override min-height */

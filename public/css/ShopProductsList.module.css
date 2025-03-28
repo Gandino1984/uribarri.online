@@ -81,6 +81,7 @@
     user-select: none;
     color: var(--superdark-orange);
     font-weight: 600;
+    text-shadow: var(--light-orange) 2px 1px 0px;
 }
 
 .productsCount {
@@ -451,7 +452,7 @@
 
 .searchIcon {
     margin-right: 0.5rem;
-    color: #666;
+    color: white;
     pointer-events: none;
 }
 
