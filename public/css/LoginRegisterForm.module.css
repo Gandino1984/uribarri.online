@@ -8,6 +8,7 @@
   min-height: calc(100vh - var(--topbar-height));
   /* margin-top: var(--topbar-height);   */
   padding-top: 1rem; /* 📌 UPDATE: Add padding for better spacing */
+
 }
 
 .formContainer {
@@ -29,6 +30,7 @@
   flex-direction: column;
   align-items: center;
   border-top-left-radius: 8px;
+  box-shadow:rgba(0, 0, 0, 0.2) 0px 0px 10px;
 }
 
 .formContent {
@@ -38,7 +40,7 @@
   align-items: stretch;
   justify-content: center;
   position: relative;
-  background-color: white;
+  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
   padding: 1rem;
   border: 1px solid var(--light-orange);
   border-top: none;

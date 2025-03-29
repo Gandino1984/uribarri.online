@@ -29,7 +29,7 @@ const validateUserData = (userData) => {
     if (userData.type_user) {
         const validTypes = ['user', 'seller', 'provider', 'admin'];
         if (!validTypes.includes(userData.type_user)) {
-            errors.push('Tipo de usuario no valido');
+            errors.push('Tipo de usuari@ no valido');
         }
     }
     if (!userData.location_user) {

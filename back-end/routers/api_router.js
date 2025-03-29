@@ -18,5 +18,4 @@ router.use("/provider", providerApiRouter);
 
 router.use("/package", packageApiRouter); 
 
-
 export default router;
