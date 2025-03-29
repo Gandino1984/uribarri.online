@@ -260,7 +260,7 @@ const ShopCreationForm = () => {
         if (!newShop.name_shop || !newShop.type_shop || !newShop.subtype_shop || !newShop.location_shop) {
           setError(prevError => ({
             ...prevError,
-            shopError: "Completa todos los campos obligatorios antes de continuar."
+            shopError: "Completa todos los campos."
           }));
           setShowErrorCard(true);
           return false;
