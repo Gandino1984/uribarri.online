@@ -87,6 +87,7 @@ input[type="text"]:focus {
   border: 2px solid var(--saturated-blue);
   outline: none;
   box-shadow: var(--focus-shadow);
+  background-color: var(--superlight-orange);
 }
 
 input[type="text"]:hover { 
@@ -212,7 +213,7 @@ select {
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--lighter-gray) !important; /* Lighter gray for placeholder */
+  color: var(--light-gray) !important; /* Lighter gray for placeholder */
   background-color: white;
   border: 2px solid var(--medium-gray);
   border-radius: 5px;
@@ -234,7 +235,8 @@ select:hover {
 /* Clear any default selected styling */
 select:focus:not(.has-value) {
   color: var(--lighter-gray) !important;
-  border-color: var(--saturated-orange) !important;
+  border-color: var(--saturated-blue) !important;
+  background-color: var(--superlight-orange) !important;
   outline: none;
 }
 
@@ -265,7 +267,7 @@ select option:not(:first-child) {
 }
 
 select:invalid {
-  color: lightgray;
+  color: rgb(230, 230, 230);
 }
 
 select:disabled {
