@@ -103,7 +103,7 @@ export const ShopCreationFormUtils = () => {
       if (morningOpenTime >= afternoonCloseTime) {
         return {
           isValid: false,
-          error: 'El horario de apertura debe ser anterior al de cierre.'
+          error: 'Error en el horario.'
         };
       }
     } else {
@@ -114,21 +114,21 @@ export const ShopCreationFormUtils = () => {
       if (morningOpenTime >= morningCloseTime) {
         return {
           isValid: false,
-          error: 'El horario de apertura de la mañana debe ser anterior al de cierre.'
+          error: 'Error en el horario de apertura de la mañana.'
         };
       }
 
       if (morningCloseTime >= afternoonOpenTime) {
         return {
           isValid: false,
-          error: 'El horario de cierre de la mañana debe ser anterior al de apertura de la tarde.'
+          error: 'Error en el horario de cierre de la mañana.'
         };
       }
 
       if (afternoonOpenTime >= afternoonCloseTime) {
         return {
           isValid: false,
-          error: 'El horario de apertura de la tarde debe ser anterior al de cierre.'
+          error: 'Error en el horario de apertura de la tarde.'
         };
       }
     }
@@ -160,7 +160,7 @@ export const ShopCreationFormUtils = () => {
         optimizedFile = await optimizeImage(file, {
           maxWidth: 1200,
           maxHeight: 1200,
-          quality: 0.85,
+          quality: 0.8,
           format: 'image/webp',
           maxSizeKB: 1024 // Límite de 1MB
           });
