@@ -48,7 +48,7 @@
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   border-top-left-radius: 8px;
-  border-top-right-radius: 0;
+  border-top-right-radius: 0; 
   z-index: 0;
   width: 100%;
 }
@@ -86,7 +86,7 @@
   justify-content: center;
   flex-direction: column;
   margin-top: .3rem;
-  gap: .5rem;
+  gap: 1rem;
   width: 100%;
 }
 
@@ -210,7 +210,7 @@
   }
 
   .inputSection {
-    padding-right: 1rem;
+    padding-right: 1.5rem;
   }
 }
 

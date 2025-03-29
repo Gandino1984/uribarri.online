@@ -203,14 +203,13 @@ button:active {
 
 /* Fixed select element styling with lighter gray for placeholder */
 select {
-
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   width: 100%;
   max-height: 2rem;
   min-height: 2.5rem;
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--light-gray) !important; /* Lighter gray for placeholder */
@@ -366,13 +365,17 @@ input[type="radio"] {
     transform: none;
   }
   
-  /* Keep original font sizes for consistency */
+  /* Updated padding for mobile screens */
   input[type="text"],
   input[type="number"],
-  textarea,
-  select {
+  textarea {
     font-size: 0.9rem; /* Maintain original size */
     padding: calc(var(--spacing-sm) + 2px); /* More padding for touch */
+  }
+  
+  /* 🔧 UPDATE: Keep consistent horizontal padding for select elements on mobile */
+  select {
+    font-size: 0.9rem;
   }
   
   /* Ensure buttons maintain exactly 2rem height on mobile */
@@ -410,9 +413,14 @@ input[type="radio"] {
   /* Keep original font size */
   input[type="text"],
   input[type="number"],
-  textarea,
+  textarea {
+    font-size: 0.8rem;
+  }
+  
+  /* 🔧 UPDATE: Maintain padding consistency for tablet select elements */
   select {
     font-size: 0.8rem;
+    /* padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); */
   }
   
   /* Ensure buttons maintain exactly 2rem height on tablets */
@@ -441,8 +449,7 @@ input[type="radio"] {
   /* Keep original font size */
   input[type="text"],
   input[type="number"],
-  textarea,
-  select {
+  textarea {
     font-size: 0.8rem;
   }
   
