@@ -7,7 +7,7 @@ import LandingPage from "../landing_page/LandingPage.jsx";
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
-import { loginFormAnimation } from '../../utils/animation/transitions.js';
+import { formAnimation } from '../../utils/animation/transitions.js';
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 const FormContent = () => {
@@ -26,7 +26,7 @@ const LoginRegisterForm = () => {
   const { currentUser, type_user } = useAuth();
   const { showShopManagement, showLandingPage, setShowLandingPage } = useUI();
   
-  // 🌟 UPDATE: Simplified component state management
+  // ✨ UPDATE: Using a single isExiting flag for animation control - same approach as ShopCreationForm
   const [isExiting, setIsExiting] = useState(false);
   
   // Handler to proceed from landing to login/register form
@@ -34,43 +34,47 @@ const LoginRegisterForm = () => {
     setShowLandingPage(false);
   };
   
-  // 🌟 UPDATE: Determine what to show based on current application state
+  // Determine what to show based on current application state
   const showLoginForm = !showLandingPage && !showShopManagement && !currentUser;
   
-  // 🌟 UPDATE: Track when we need to start an exit animation
+  // Reset the exit animation state when the component mounts or visibility changes
   useEffect(() => {
-    // Reset exit animation state when component state changes
-    setIsExiting(false);
+    if (showLoginForm) {
+      setIsExiting(false);
+    }
   }, [showLoginForm]);
   
-  // 🌟 UPDATE: Prepare exit animation when user logs in
-  const prepareExit = () => {
-    if (showLoginForm) {
-      setIsExiting(true);
-    }
+  // ✨ UPDATE: Function to handle closing the form with animation - matches ShopCreationForm
+  const handleCloseForm = (callback) => {
+    setIsExiting(true);
+    setTimeout(() => {
+      if (callback) callback();
+    }, 500); // Same timing as ShopCreationForm
   };
   
-  // Add listeners to start exit animations when user logs in or navigates
+  // ✨ UPDATE: Add listener for authentication state changes to trigger exit animation
   useEffect(() => {
-    // Listen for authentication state changes
+    // If the form is no longer needed but hasn't started exiting yet
     if (!showLoginForm && !isExiting) {
-      prepareExit();
+      setIsExiting(true);
     }
   }, [showLoginForm, isExiting]);
   
-  // 🌟 UPDATE: Transition for login form animation
+  // ✨ UPDATE: Form transition using the exact same pattern as ShopCreationForm
   const formTransition = useTransition(showLoginForm && !isExiting, {
-    from: loginFormAnimation.from,
-    enter: loginFormAnimation.enter,
-    leave: loginFormAnimation.leave,
-    config: loginFormAnimation.config,
+    from: formAnimation.from,
+    enter: formAnimation.enter,
+    leave: formAnimation.leave,
+    config: formAnimation.config,
     onRest: () => {
-      // Animation has completed
-      setIsExiting(false);
+      // Animation has completed - same cleanup as ShopCreationForm
+      if (isExiting) {
+        setIsExiting(false);
+      }
     }
   });
   
-  // Handle component rendering logic
+  // Handle what to render based on current state
   if (showShopManagement || currentUser) {
     const userType = currentUser?.type_user || type_user;
     return userType === 'seller' ? <ShopManagement /> : <LandingPage />;
@@ -80,7 +84,7 @@ const LoginRegisterForm = () => {
     return <LandingPage onProceedToLogin={handleProceedToLogin} />;
   }
   
-  // Render login form with animation when neither of the above conditions are met
+  // Render login form with animation - exactly matching ShopCreationForm's approach
   return (
     <>
       {formTransition((style, show) => 

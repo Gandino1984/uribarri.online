@@ -43,12 +43,10 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--saturated-orange);
-  margin-left: 12px;
+  margin-left: .5rem;
   text-align: center;
-  white-space: normal;
 }
-
-/* Responsive adjustments */
+/* 
 @media (max-width: 768px) {
   .container {
       padding: 0.4rem 0.75rem;
@@ -65,4 +63,4 @@
       padding: 0.3rem 0.5rem;
       max-width: 95%;
   }
-}
+} */

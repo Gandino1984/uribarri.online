@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
+import { useTransition, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
 import { Box, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
+import { formAnimation } from '../../../../utils/animation/transitions.js'; // ✨ UPDATE: Using the unified formAnimation
 
 import ShopImageUpload from './components/ShopImageUpload.jsx';
 import ShopBasicInfo from './components/ShopBasicInfo.jsx';
@@ -40,7 +42,10 @@ const ShopCreationForm = () => {
     shopTypesAndSubtypes,
     selectedShop,
     setShowShopCreationForm,
-    setSelectedShop
+    setSelectedShop,
+    // ✨ UPDATE: Get notifyFormExit function from ShopContext if it exists
+    // This will be implemented in ShopContext to allow controlled exit animations
+    notifyFormExit
   } = useShop();
 
   const {
@@ -66,6 +71,18 @@ const ShopCreationForm = () => {
   
   // 🔄 UPDATE: Added state to track if form reset is pending
   const [isResetPending, setIsResetPending] = useState(false);
+  
+  // ✨ UPDATE: Added state to handle animation when component exits - same as LoginRegisterForm
+  const [isExiting, setIsExiting] = useState(false);
+  
+  // ✨ UPDATE: Function to handle closing the form with animation - same timing as LoginRegisterForm
+  const handleCloseForm = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setShowShopCreationForm(false);
+      setSelectedShop(null);
+    }, 500); // Match timing with animation duration and LoginRegisterForm
+  };
 
   // 🧹 UPDATE: Default shop values for form reset
   const defaultShopValues = {
@@ -440,12 +457,14 @@ const ShopCreationForm = () => {
         }
       }
       
-      // If successful, close the form
+      // If successful, start exit animation then close the form
       if (success) {
+        // ✨ UPDATE: Trigger exit animation first, then close form after animation completes
+        setIsExiting(true);
         setTimeout(() => {
           setShowShopCreationForm(false);
           setSelectedShop(null);
-        }, 1000); // Short delay to allow success message to be seen
+        }, 500); // Same delay as LoginRegisterForm
       }
       
     } catch (error) {
@@ -502,51 +521,75 @@ const ShopCreationForm = () => {
     }
   };
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <div className={styles.header}>   
-            <h2 className={styles.headerTitle}>
-              {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-            </h2>
+  // ✨ UPDATE: Setup form animation using unified formAnimation
+  const formTransition = useTransition(!isExiting, {
+    from: formAnimation.from,
+    enter: formAnimation.enter,
+    leave: formAnimation.leave,
+    config: formAnimation.config,
+    onRest: () => {
+      // Animation has completed, reset exit state if needed
+      // This would only run if the component is still mounted
+      if (isExiting) {
+        setIsExiting(false);
+      }
+    }
+  });
 
-            <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
-        </div>   
-        
-        {/* Use handleFormSubmit instead of handleSubmit */}
-        <form onSubmit={handleFormSubmit} className={styles.form}>
-          {/* Render step content */}
-          {renderStepContent()}
-            
-          <div className={styles.buttonsContainer}>
-            {/* 🧹 UPDATE: Added reset form button */}
-            <button
-              type="button"
-              onClick={confirmResetForm}
-              className={styles.resetButton}
-              title="Limpiar formulario"
-              disabled={uploading || isFormSubmitting}
-            >
-              <RefreshCw size={16} className={styles.resetIcon} />
-              Limpiar
-            </button>
-            
-            <NavigationButtons 
-              currentStep={currentStep}
-              totalSteps={totalSteps}
-              onNext={handleNextClick}
-              onPrevious={goToPreviousStep}
-              isSubmitting={uploading || isFormSubmitting}
-              submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
-              processingLabel="Procesando..."
-              SubmitIcon={Box}
-              // Only show submit button on the last step
-              showSubmitButton={currentStep === totalSteps}
-            />
-          </div>
-        </form>
-      </div>
-    </div>
+  return (
+    <>
+      {formTransition((style, show) => 
+        show && (
+          <animated.div 
+            className={styles.container} 
+            style={style}
+          >
+            <div className={styles.content}>
+              <div className={styles.header}>   
+                <h2 className={styles.headerTitle}>
+                  {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
+                </h2>
+
+                <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
+              </div>   
+              
+              {/* Use handleFormSubmit instead of handleSubmit */}
+              <form onSubmit={handleFormSubmit} className={styles.form}>
+                {/* Render step content */}
+                {renderStepContent()}
+                  
+                <div className={styles.buttonsContainer}>
+                  {/* 🧹 UPDATE: Added reset form button */}
+                  <button
+                    type="button"
+                    onClick={confirmResetForm}
+                    className={styles.resetButton}
+                    title="Limpiar formulario"
+                    disabled={uploading || isFormSubmitting}
+                  >
+                    <RefreshCw size={16} className={styles.resetIcon} />
+                    Limpiar
+                  </button>
+                  
+                  <NavigationButtons 
+                    currentStep={currentStep}
+                    totalSteps={totalSteps}
+                    onNext={handleNextClick}
+                    onPrevious={goToPreviousStep}
+                    isSubmitting={uploading || isFormSubmitting}
+                    submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
+                    processingLabel="Procesando..."
+                    SubmitIcon={Box}
+                    // Only show submit button on the last step
+                    showSubmitButton={currentStep === totalSteps}
+                  />
+                </div>
+              </form>
+            </div>
+          </animated.div>
+        )
+      )}
+    </>
   );
 };
 

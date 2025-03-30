@@ -26,6 +26,7 @@
   color: #333;
   line-height: 1.85rem;
   margin: 0;
+  padding-right: .5rem;
 }
 
 
@@ -88,7 +89,7 @@
 .sectionDescription {
   font-size: 0.85rem;
   color: #666;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
 }
 
 .formFields {
@@ -221,7 +222,7 @@
 }
 
 .scheduleContainer {
-  margin-bottom: 25px;
+  /* margin-bottom: 25px; */
 }
 
 .scheduleTypeToggle {
@@ -285,7 +286,7 @@
   background-color: var(--saturated-blue);
 }
 
-/* Submit button styles */
+
 .submitButton {
   display: flex;
   align-items: center;
@@ -301,7 +302,7 @@
 } 
 
 .submitButton:hover {
-  background-color: var(--dark-orange);
+  background-color: var(--saturated-blue);
 } 
 
 .submitButton:disabled {
@@ -432,7 +433,7 @@
   border: 1px solid #d1d5db;
   border-radius: 0.25rem;
   font-size: 0.875rem;
-  width: 100%;
+  /* width: 100%; */
   transition: all 0.2s ease;
 }
 
@@ -461,8 +462,8 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  width: 100%; /* 🚀 UPDATE: Ensure schedule fields take full width */
-  justify-content: flex-start; /* 🚀 UPDATE: Align to left instead of center */
+  width: 100%; 
+  /* justify-content: flex-start; */
 }
 
 .timeSeparator {
@@ -484,7 +485,7 @@
 
 /* Days selection container */
 .daysSelectionContainer {
-  margin-top: 1.5rem;
+  /* margin-top: 1.5rem; */
   padding: 1rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;
@@ -522,7 +523,7 @@
 
 /* Delivery container */
 .deliveryContainer {
-  margin-top: 1.5rem;
+  /* margin-top: 1.5rem; */
   padding: 1rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;

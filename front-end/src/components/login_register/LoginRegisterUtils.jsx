@@ -365,7 +365,7 @@ export const LoginRegisterUtils = () => {
         const canRegister = await validateIPRegistration();
 
         if (!canRegister) {
-          setError(prevError => ({ ...prevError, ipError: "Demasiados registros en este dispositivo. Intente en 72 horas." }));
+          setError(prevError => ({ ...prevError, ipError: "Demasiados registros." }));
 
           console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Validación de IP fallida. No se permite el registro.');
           return;

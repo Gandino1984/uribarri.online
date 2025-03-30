@@ -30,7 +30,9 @@ export const ShopCreationFormUtils = () => {
     setShowShopCreationForm,
     setSelectedShop,
     selectedShop,
-    shops
+    shops,
+    // ✨ UPDATE: Added animation control function from shop context
+    startFormExitAnimation
   } = useShop();
 
   // Function to refresh the list of shops from the server

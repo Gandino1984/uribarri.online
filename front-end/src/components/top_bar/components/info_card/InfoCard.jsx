@@ -61,7 +61,7 @@ const InfoCard = () => {
     <div className={styles.container}>
       {shouldShowPasswordMessage ? (
         <div className={styles.passwordMessageContainer}>
-          <KeyRound color="var(--saturated-orange)" size={20} />
+          <KeyRound color="var(--saturated-orange)" size={20} className={styles.repeatPasswordIcon}/>
           <div className={styles.repeatPasswordMessage}>
             Confirma la contraseña
           </div>
@@ -71,7 +71,6 @@ const InfoCard = () => {
           <>
             <MessageCircleWarning color="#F59925" size={20} />
             <div className={styles.infoList}>
-              {/* 🔄 UPDATE: Only display the latest info message */}
               <div className={styles.infoItem}>
                 {latestInfo}
               </div>

@@ -84,28 +84,32 @@ export const userInfoCardAnimation = {
   },
 };
 
-// 🌟 UPDATE: Enhanced animation for LoginRegisterForm with smoother transitions
-export const loginFormAnimation = {
+// ✨ UPDATE: Unified form animation for both LoginRegisterForm and ShopCreationForm
+export const formAnimation = {
   from: { 
     opacity: 0,
-    transform: 'translateY(50px)',
+    transform: 'translateY(30px) scale(0.95)',
   },
   enter: { 
     opacity: 1,
-    transform: 'translateY(0)',
+    transform: 'translateY(0px) scale(1)',
   },
   leave: { 
     opacity: 0,
-    transform: 'translateY(-100px)', // Increased distance for more visible exit
+    transform: 'translateY(-30px) scale(0.95)',
   },
   config: {
-    mass: 1.2,        // Slightly increased mass for more physical weight
-    tension: 210,     // Reduced tension for slower animation
-    friction: 26,     // Increased friction to slow down movement
-    clamp: false,     // Ensures animation completes naturally
-    duration: 300     // Explicitly set duration to ensure sufficient time
+    mass: 1,
+    tension: 240,
+    friction: 26,
+    clamp: false,
+    duration: 350
   },
 };
+
+// For backward compatibility
+export const loginFormAnimation = formAnimation;
+export const shopFormAnimation = formAnimation;
 
 // 🚀 UPDATE: Animations for ShopsListBySeller component
 export const shopsListAnimations = {

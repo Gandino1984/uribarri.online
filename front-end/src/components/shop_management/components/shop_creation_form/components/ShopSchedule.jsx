@@ -106,11 +106,11 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                     className={`${styles.timeInput} ${newShop.morning_open ? styles.hasValue : ''}`}
                     required
                   />
-                  {newShop.morning_open && (
+                  {/* {newShop.morning_open && (
                     <span className={styles.timeDisplay}>
                       {formatTimeDisplay(newShop.morning_open)}
                     </span>
-                  )}
+                  )} */}
                 </div>
                 
                 <span className={styles.timeSeparator}>a</span>
@@ -124,11 +124,11 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                     className={`${styles.timeInput} ${newShop.morning_close ? styles.hasValue : ''}`}
                     required
                   />
-                  {newShop.morning_close && (
+                  {/* {newShop.morning_close && (
                     <span className={styles.timeDisplay}>
                       {formatTimeDisplay(newShop.morning_close)}
                     </span>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
@@ -148,11 +148,11 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                     className={`${styles.timeInput} ${newShop.afternoon_open ? styles.hasValue : ''}`}
                     required
                   />
-                  {newShop.afternoon_open && (
+                  {/* {newShop.afternoon_open && (
                     <span className={styles.timeDisplay}>
                       {formatTimeDisplay(newShop.afternoon_open)}
                     </span>
-                  )}
+                  )} */}
                 </div>
                 
                 <span className={styles.timeSeparator}>a</span>
@@ -166,11 +166,11 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                     className={`${styles.timeInput} ${newShop.afternoon_close ? styles.hasValue : ''}`}
                     required
                   />
-                  {newShop.afternoon_close && (
+                  {/* {newShop.afternoon_close && (
                     <span className={styles.timeDisplay}>
                       {formatTimeDisplay(newShop.afternoon_close)}
                     </span>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

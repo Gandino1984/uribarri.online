@@ -14,7 +14,7 @@ export const useIPValidation = () => {
       if (!response.data.canRegister) {
         const hoursLeft = Math.ceil(response.data.hoursUntilReset);
 
-        setError(prevError => ({ ...prevError, ipError: `Demasiados registros en este dispositivo. Intente en ${hoursLeft} horas.` }));
+        setError(prevError => ({ ...prevError, ipError: 'Demasiados registros.'}));
         return false;
       }
       return true;
