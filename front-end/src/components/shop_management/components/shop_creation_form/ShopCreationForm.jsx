@@ -506,9 +506,9 @@ const ShopCreationForm = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>   
-            <h1 className={styles.headerTitle}>
+            <h2 className={styles.headerTitle}>
               {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-            </h1>
+            </h2>
 
             <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
         </div>   

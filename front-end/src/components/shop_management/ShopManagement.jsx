@@ -6,6 +6,7 @@ import ShopsListBySeller from './components/shops_list_by_seller/ShopsListBySell
 import ShopCreationForm from './components/shop_creation_form/ShopCreationForm.jsx';
 import ProductManagement from './components/product_management/ProductManagement.jsx';
 import { ShopManagementUtils } from './ShopManagementUtils.jsx';
+import styles from '../../../../public/css/ShopManagement.module.css'; // 🚀 UPDATE: Imported styles correctly
 
 const ShopManagement = () => {
   // UPDATE: Using separate contexts instead of AppContext
@@ -17,7 +18,6 @@ const ShopManagement = () => {
     selectedShop
   } = useShop();
   
-  // 🌟 UPDATE: Corrected function import from UIContext instead of ShopContext
   const { setShowShopManagement } = useUI();
   
   // UPDATE: Get showProductManagement from UI context where it's defined
@@ -58,7 +58,14 @@ const ShopManagement = () => {
     componentToRender = <ShopsListBySeller />;
   }
   
-  return componentToRender;
+  // 🚀 UPDATE: Wrapped component with container div for proper spacing
+  return (
+    <div className={styles.container}>
+      <div className={styles.contentWrapper}>
+        {componentToRender}
+      </div>
+    </div>
+  );
 };
 
 export default ShopManagement;
