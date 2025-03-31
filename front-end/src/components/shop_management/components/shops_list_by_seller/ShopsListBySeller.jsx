@@ -13,9 +13,12 @@ import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopsTable from './components/ShopsTable';
 
 const ShopsListBySeller = () => {
-  // 🚀 UPDATE: Added state for animation control
+  // State for animation control
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  
+  // 📱 UPDATE: Added state to track screen width for responsive layout decisions
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
@@ -42,7 +45,7 @@ const ShopsListBySeller = () => {
     shouldShowShopCard
   } = ShopsListBySellerUtils();
 
-  // 🚀 UPDATE: Using title animation from transitions file
+  // Using title animation from transitions file
   const titleAnimation = useSpring({
     opacity: isVisible ? 1 : 0,
     transform: isVisible 
@@ -51,7 +54,7 @@ const ShopsListBySeller = () => {
     config: shopsListAnimations.titleAnimation.config
   });
 
-  // 🚀 UPDATE: Using table transition from transitions file
+  // Using table transition from transitions file
   const tableTransition = useTransition(isVisible && !isExiting, {
     from: shopsListAnimations.tableAnimation.from,
     enter: shopsListAnimations.tableAnimation.enter,
@@ -65,7 +68,7 @@ const ShopsListBySeller = () => {
     }
   });
 
-  // 🚀 UPDATE: Using shop card animation from transitions file
+  // Using shop card animation from transitions file
   const cardAnimation = useSpring({
     opacity: selectedShop && shouldShowShopCard() && !showProductManagement 
       ? shopsListAnimations.shopCardAnimation.enter.opacity 
@@ -76,6 +79,18 @@ const ShopsListBySeller = () => {
     config: shopsListAnimations.shopCardAnimation.config
   });
 
+  // 📱 UPDATE: Added event listener for screen resize to update responsive layout
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   // Load shops when necessary
   useEffect(() => {
     if ((!shops || shops.length === 0) && currentUser?.id_user) {
@@ -83,7 +98,7 @@ const ShopsListBySeller = () => {
     }
   }, [currentUser?.id_user, fetchUserShops, shops]);
 
-  // 🚀 UPDATE: Handle visibility changes on mount/unmount
+  // Handle visibility changes on mount/unmount
   useEffect(() => {
     // Component mounted
     setIsVisible(true);
@@ -103,7 +118,7 @@ const ShopsListBySeller = () => {
 
   return (
     <div className={styles.container}>
-      {/* Content with proper containment */}
+      {/* 📱 UPDATE: Fixed content wrapper to ensure proper containment on small screens */}
       <div className={styles.content}>
         {/* Header with title and add button - now with animation */}
         <div className={styles.headerContainer}>
@@ -118,8 +133,9 @@ const ShopsListBySeller = () => {
               title="Crear nuevo comercio"
               disabled={shopCount >= shopLimit}
             >
-              Crear
-              <Box size={16} />
+              {/* 📱 UPDATE: Conditionally show text based on screen size */}
+              {screenWidth > 480 && <span>Crear</span>}
+              <Box size={screenWidth > 480 ? 16 : 20} />
             </button>
           </animated.div>
         
@@ -133,12 +149,12 @@ const ShopsListBySeller = () => {
           </animated.div>
         </div>
 
-        {/* Improved shop management container */}
+        {/* 📱 UPDATE: Improved shop management container with explicit width constraints */}
         <div className={styles.shopManagementContainer}>
-          {/* Table container with slide animation */}
+          {/* Table container with slide animation and better containment */}
           {tableTransition((style, show) => 
             show && (
-              <animated.div style={style} className={styles.tableContainer}>
+              <animated.div style={{...style, width: '100%'}} className={styles.tableContainer}>
                 <ShopsTable 
                   shops={shops}
                   isShopSelected={isShopSelected}

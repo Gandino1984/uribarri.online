@@ -29,11 +29,8 @@
 }
 
 .welcomeMessage {
-  margin: 0;
   font-size: 0.8rem;
   max-width: 100%;
-  /* word-wrap: break-word; */
-  /* overflow-wrap: break-word; */
   line-height: 1.2;
   transition: all 0.2s ease;
   margin-left: 0.125rem;
