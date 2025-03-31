@@ -5,7 +5,7 @@ import { useProduct } from '../../../../app_context/ProductContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
-import { Box } from 'lucide-react';
+import { HousePlus } from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
 
@@ -133,9 +133,8 @@ const ShopsListBySeller = () => {
               title="Crear nuevo comercio"
               disabled={shopCount >= shopLimit}
             >
-              {/* 📱 UPDATE: Conditionally show text based on screen size */}
-              {screenWidth > 480 && <span>Crear</span>}
-              <Box size={screenWidth > 480 ? 16 : 20} />
+              <span>Crear</span>
+              <HousePlus size={screenWidth > 480 ? 16 : 20} />
             </button>
           </animated.div>
         

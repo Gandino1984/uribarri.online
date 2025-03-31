@@ -29,7 +29,8 @@
   max-width: 28rem;
   margin: 0 1rem;
   background-color: white;
-  /* border-radius: 0.5rem; */
+  border-radius: 12px;
+  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
@@ -43,16 +44,16 @@
   justify-content: center;
   top: 1rem;
   right: 1rem;
-  padding: .2rem .2rem;
-  background-color: var(--saturated-orange);
-  /* border-radius: 6px; */
+  padding: .2rem .35rem;
+  border: 1px solid var(--light-orange);
+  border-radius: 50%;
   transition: all 0.15s ease;
 }
 
 .closeButton:hover {
   font-weight: 600;
   color: white;
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
 }
 
 .modalContent {
@@ -74,8 +75,8 @@
   height: 3rem;
   padding: .4rem;
   /* border-radius: 16px; */
-  color: #d97706;
-  background-color: #fef3c7;
+  color: var(--saturated-orange);
+  /* background-color: #fef3c7; */
 }
 
 .icon {
@@ -115,14 +116,13 @@
   padding: .3rem .5rem;
   font-size: 1rem;
   background-color: white;
-  /* border-radius: 6px; */
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .cancelButton:hover {
   font-weight: 600;
   color: white;
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
 }
 
 .continueButton {

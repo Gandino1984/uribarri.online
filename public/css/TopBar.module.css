@@ -9,12 +9,12 @@
     z-index: 1000; 
     height: auto; 
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-    /* overflow: hidden; */
-    position: fixed; /* 📌 UPDATE: Fixed positioning to top of screen */
-    top: 0; /* 📌 UPDATE: Ensure TopBar stays at the top */
-    left: 0; /* 📌 UPDATE: Full width alignment from left edge */
-    right: 0; /* 📌 UPDATE: Full width alignment to right edge */
-    margin-bottom: 0; /* 📌 UPDATE: Remove bottom margin */
+    background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    margin-bottom: 0; 
 }
 
 .contentWrapper {
