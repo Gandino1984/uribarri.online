@@ -20,7 +20,7 @@
 
 .responsiveContainerColumn {
     flex-direction: column;
-    padding: 0 1rem;
+    padding: 0 .5rem;
 }
 
 .responsiveContainerRow {
@@ -73,11 +73,20 @@
     gap: 1rem;
 }
 
+.buttonGroupContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
 .buttonGroup {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     width: 100%;
 }
 
@@ -329,7 +338,6 @@
     align-items: center;
     justify-content: center;
     padding: 0.5rem;
-    position: sticky;
     left: 0;
     z-index: 20;
     white-space: nowrap;
@@ -338,8 +346,6 @@
     width: auto;
     height: 3.5rem;
     overflow: visible;
-    background-color: white;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .actionButtonsContainer {
@@ -354,7 +360,7 @@
     padding: 0.4rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border: 2px solid var(--light-blue);
-    z-index: 10;
+    z-index: 999999999999999999999;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease-in-out;
@@ -372,7 +378,7 @@
     border: none;
     cursor: pointer;
     position: relative;
-    z-index: 11;
+    z-index: 5;
     padding: 0;
 }
 
@@ -385,20 +391,18 @@
 }
 
 .mainActionButton:hover {
-    background-color: var(--dark-orange);
+    background-color: var(--saturated-blue);
 }
 
 .mainActionButton.active {
-    background-color: var(--dark-orange);
+    background-color: var(--saturated-blue);
     color: white;
-    border: 1px solid var(--dark-orange);
 }
 
 .actionsCellWrapper {
     position: relative;
     display: inline-flex;
     align-items: center;
-    border: 1px solid var(--saturated-orange);
 }
 
 .actionsCellWrapper.active .actionButtonsContainer {
@@ -507,7 +511,9 @@
 .buttonGroupContainer {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    /* 🔄 UPDATE: Ensure buttonGroupContainer stays horizontal and centered */
+    flex-direction: row;
+    justify-content: center;
     gap: 0.5rem;
 }
 
@@ -589,6 +595,17 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        /* 🔄 UPDATE: Keep horizontal layout even on mobile */
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+    
+    /* 🔄 UPDATE: Ensure buttonGroupContainer also stays horizontal */
+    .buttonGroupContainer {
+        flex-direction: row;
+        justify-content: center;
     }
 
     .filterBadge {
@@ -626,9 +643,6 @@
         padding: 0;
     }
     
-    .actionsCell {
-        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.15);
-    }
     
     .container {
         padding-left: 0.5rem;
@@ -664,6 +678,8 @@
     .buttonGroup {
         gap: 0.3rem;
         padding: 0;
+        /* 🔄 UPDATE: Keep horizontal layout */
+        flex-direction: row;
     }
     
     .actionButton {
@@ -685,8 +701,8 @@
     .responsiveContainerRow {
         padding: 0;
         margin: 0 0 1rem 0;
-        max-width: 100vw;
-        box-sizing: border-box;
+        /* max-width: 100vw; */
+        /* box-sizing: border-box; */
     }
     
     .productsCount {
@@ -697,6 +713,24 @@
         padding: 0.35rem;
         min-width: 30px;
         min-height: 30px;
+    }
+    
+    /* 🔄 UPDATE: Ensure buttonGroup remains horizontal, no wrapping */
+    .buttonGroup {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: center;
+        padding-bottom: 4px;
+        gap: 0.3rem;
+    }
+    
+    /* 🔄 UPDATE: Keep buttonGroupContainer horizontal */
+    .buttonGroupContainer {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+        overflow-x: auto;
     }
     
     /* 🌟 UPDATE: Reduced padding in small screens */
@@ -755,7 +789,7 @@
     }
     
     .actionButtonsContainer {
-        flex-direction: column;
+        /* flex-direction: column; */
         left: 0;
         top: 100%;
         transform: translateY(0);
