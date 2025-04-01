@@ -375,14 +375,15 @@ const ShopProductsList = () => {
           <div className={styles.listTitleWrapper}>
             <h1 className={styles.listTitle}>Lista de Productos</h1>
           </div>
-          <div className={styles.buttonGroup}>
-            {/* Use the SearchBar component */}
-            <SearchBar 
-              searchTerm={searchTerm}
-              handleSearchChange={handleSearchChange}
-            />
-            
-            {/* Use the ActionButtons component */}
+          
+          {/* 🌟 UPDATE: Removed extra container divs to eliminate any potential width constraints */}
+          <SearchBar 
+            searchTerm={searchTerm}
+            handleSearchChange={handleSearchChange}
+          />
+          
+          <div className={styles.buttonGroupContainer}>
+            {/* 🌟 UPDATE: Moved ActionButtons to its own container */}
             <ActionButtons 
               handleAddProduct={handleAddProduct}
               handleBulkUpdate={handleBulkUpdate}

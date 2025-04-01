@@ -23,12 +23,14 @@ const SearchBar = ({ searchTerm, handleSearchChange }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  // 🌟 UPDATE: Enhanced search bar with full width and improved styling
   return (
     <div className={styles.searchInputWrapper}>
       <Search 
         size={isSmallScreen ? 16 : 18} 
         className={styles.searchIcon} 
         strokeWidth={3}
+        color="white"
       />
       <input
         type="text"
@@ -36,6 +38,7 @@ const SearchBar = ({ searchTerm, handleSearchChange }) => {
         onChange={handleSearchChange}
         placeholder={placeholder}
         className={styles.searchInput}
+        aria-label="Buscar productos"
       />
       {searchTerm && (
         <button 
