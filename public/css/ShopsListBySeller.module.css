@@ -78,7 +78,7 @@
   background-color: white;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   /* Force the container to respect width constraints */
   margin: 0 auto;
@@ -107,7 +107,7 @@
 .tableHeaderCell {
   padding: 0.7rem 1rem;
   text-align: left;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: rgb(104, 104, 104);
   white-space: nowrap;

@@ -17,10 +17,42 @@ const ProductTableRow = ({
   handleProductImageDoubleClick,
   formatDate,
   formatSecondHand,
-  currentDeletingProduct
+  currentDeletingProduct,
+  showExtendedInfo,
+  showMediumInfo,
+  isSmallScreen
 }) => {
-  // UPDATE: Added logic to determine if product is inactive to apply styling
+  // Determine if product is inactive to apply styling
   const isInactive = product.active_product === false || product.active_product === 0;
+  
+  // 📱 UPDATE: Enhanced text formatting with very strict truncation for tiny screens
+  const formatText = (text, maxLength = 20) => {
+    if (!text) return '-';
+    
+    // Different maximum lengths based on screen size
+    const actualMaxLength = isSmallScreen 
+      ? (window.innerWidth < 374 ? 5 : window.innerWidth < 480 ? 8 : 12) 
+      : maxLength;
+    
+    if (text.length > actualMaxLength) {
+      return `${text.substring(0, actualMaxLength)}...`;
+    }
+    return text;
+  };
+  
+  // 📱 UPDATE: Simplified price formatting for tiny screens
+  const formatPrice = (price) => {
+    if (!price) return '-';
+    return window.innerWidth < 374 ? `€${price}` : `€${price}`;
+  };
+  
+  // 📱 UPDATE: Super compact discount formatting for tiny screens
+  const formatDiscount = (discount) => {
+    if (!discount || discount <= 0) {
+      return window.innerWidth < 374 ? '-' : (isSmallScreen ? '-' : 'No');
+    }
+    return window.innerWidth < 374 ? `${discount}` : `${discount}%`;
+  };
   
   return (
     <tr
@@ -41,6 +73,7 @@ const ProductTableRow = ({
         handleToggleActiveStatus={handleToggleActiveStatus}
         selectedProducts={selectedProducts}
         currentDeletingProduct={currentDeletingProduct}
+        isSmallScreen={isSmallScreen}
       />
       <td 
         className={`${styles.tableCell} ${styles.smallCell}`}
@@ -51,21 +84,55 @@ const ProductTableRow = ({
       >
         <ProductImage id_product={product.id_product} />
       </td>
-      <td className={`${styles.tableCell} ${styles.mediumCell}`}>{product.name_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>&euro;{product.price_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.type_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.subtype_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.country_product || '-'}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.locality_product || '-'}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.season_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>
-        {product.discount_product > 0 ? `${product.discount_product}%` : 'No'}
+      <td className={`${styles.tableCell} ${styles.mediumCell}`}>
+        {formatText(product.name_product, isSmallScreen ? 12 : 30)}
       </td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.sold_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatSecondHand(product.second_hand)}</td>
-      <td className={`${styles.tableCell} ${styles.largeCell}`}>{product.info_product}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{formatDate(product.expiration_product)}</td>
-      <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.surplus_product}</td>
+      <td className={`${styles.tableCell} ${styles.smallCell}`}>
+        {formatPrice(product.price_product)}
+      </td>
+      <td className={`${styles.tableCell} ${styles.smallCell}`}>
+        {formatText(product.type_product, isSmallScreen ? 6 : 15)}
+      </td>
+      <td className={`${styles.tableCell} ${styles.smallCell}`}>
+        {formatText(product.subtype_product, isSmallScreen ? 6 : 15)}
+      </td>
+      {showMediumInfo && (
+        <>
+          <td className={`${styles.tableCell} ${styles.smallCell}`}>
+            {formatText(product.country_product, 8) || '-'}
+          </td>
+          <td className={`${styles.tableCell} ${styles.smallCell}`}>
+            {formatText(product.locality_product, 8) || '-'}
+          </td>
+        </>
+      )}
+      <td className={`${styles.tableCell} ${styles.smallCell}`}>
+        {formatText(product.season_product, isSmallScreen ? 5 : 15)}
+      </td>
+      <td className={`${styles.tableCell} ${styles.smallCell}`}>
+        {formatDiscount(product.discount_product)}
+      </td>
+      {showMediumInfo && (
+        <>
+          <td className={`${styles.tableCell} ${styles.smallCell}`}>
+            {product.sold_product}
+          </td>
+          <td className={`${styles.tableCell} ${styles.smallCell}`}>
+            {isSmallScreen ? (product.second_hand ? 'Sí' : 'No') : formatSecondHand(product.second_hand)}
+          </td>
+        </>
+      )}
+      {showExtendedInfo && (
+        <>
+          <td className={`${styles.tableCell} ${styles.largeCell}`}>
+            {formatText(product.info_product, isSmallScreen ? 15 : 50)}
+          </td>
+          <td className={`${styles.tableCell} ${styles.smallCell}`}>
+            {formatDate(product.expiration_product)}
+          </td>
+        </>
+      )}
+      {showMediumInfo && <td className={`${styles.tableCell} ${styles.smallCell}`}>{product.surplus_product}</td>}
     </tr>
   );
 };

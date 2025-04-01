@@ -101,8 +101,9 @@ input[type="number"] {
   width: auto;
   min-width: 3rem;
   border: 2px solid var(--medium-gray);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
   font-size: 0.9rem;
+  border-radius: 5px;
   min-height: 2.5rem;
   font-weight: 500;
   color: var(--saturated-blue); 
@@ -117,12 +118,13 @@ input[type="number"]::placeholder {
 }
 
 input[type="number"]:hover {
-  border: 2px solid var(--saturated-orange);
+  border: 2px solid var(--saturated-blue);
 }
 
 input[type="number"]:focus {
   color: var(--saturated-blue); /* Keep blue color when focused */
-  border: 2px solid var(--saturated-orange);
+  border: 2px solid var(--saturated-blue);
+  background-color: var(--superlight-blue);
   outline: none;
   box-shadow: var(--focus-shadow);
 }

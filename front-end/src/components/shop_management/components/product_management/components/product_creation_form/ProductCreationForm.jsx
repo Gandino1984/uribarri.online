@@ -384,10 +384,12 @@ const ProductCreationForm = () => {
         <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
       </div>
       
-      {/* Shop type guidance */}
+      {/* Shop type and subtype guidance */}
       {selectedShop && !selectedProductToUpdate && (
         <div className={styles.shopTypeGuidance}>
           <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
+          {/* 🏪 UPDATE: Added shop subtype display */}
+          <p>Subtipo: <strong>{selectedShop.subtype_shop || 'No especificado'}</strong></p>
         </div>
       )}
 

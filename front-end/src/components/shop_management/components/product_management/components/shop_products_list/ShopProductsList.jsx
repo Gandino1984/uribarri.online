@@ -18,6 +18,7 @@ import ProductsCount from './components/ProductsCount.jsx';
 import NoProductsMessage from './components/NoProductsMessage.jsx';
 import NoShopSelected from './components/NoShopSelected.jsx';
 import ProductsTable from './components/ProductsTable.jsx';
+import useScreenSize from '../../../shop_card/components/useScreenSize.js'; // 🔄 UPDATE: Import useScreenSize hook for responsive behavior
 
 
 const ShopProductsList = () => {
@@ -62,7 +63,9 @@ const ShopProductsList = () => {
   const [showFilters, setShowFilters] = useState(false);
   // State to track which product's actions menu is active (for mobile)
   const [activeActionsMenu, setActiveActionsMenu] = useState(null);
-  // 🧹 UPDATE: Removed unused productsLoaded state variable
+  
+  // 🔄 UPDATE: Get screen size for responsive behavior
+  const isSmallScreen = useScreenSize(768);
   
   // Use the hook from FiltersForProductsUtils for consistent counting
   const { getActiveFiltersCount, handleResetFilters } = useFiltersForProducts();
@@ -143,7 +146,6 @@ const ShopProductsList = () => {
         try {
           const fetchedProducts = await fetchProductsByShop();
           console.log(`Loaded ${fetchedProducts?.length || 0} products for shop ${selectedShop.id_shop}`);
-          // 🧹 UPDATE: Removed setProductsLoaded call as the state is not used
         } catch (error) {
           console.error('Error loading products:', error);
           setError(prevError => ({
@@ -362,31 +364,36 @@ const ShopProductsList = () => {
           />
         )}
 
-        {selectedShop && <ShopCard shop={selectedShop} />}
-            <div className={styles.listHeaderTop}>
-              <div className={styles.listTitleWrapper}>
-                <h1 className={styles.listTitle}>Lista de Productos</h1>
-              </div>
-              <div className={styles.buttonGroup}>
-                {/* Use the SearchBar component */}
-                <SearchBar 
-                  searchTerm={searchTerm}
-                  handleSearchChange={handleSearchChange}
-                />
-                
-                {/* Use the ActionButtons component */}
-                <ActionButtons 
-                  handleAddProduct={handleAddProduct}
-                  handleBulkUpdate={handleBulkUpdate}
-                  handleBulkDelete={handleBulkDelete}
-                  toggleFilters={toggleFilters}
-                  showFilters={showFilters}
-                  selectedProducts={selectedProducts}
-                  activeFiltersCount={activeFiltersCount}
-                />
-              </div>
-            </div>
-        
+        {/* 🔄 UPDATE: Wrap ShopCard in the same responsive container as in ShopsListBySeller */}
+        {selectedShop && (
+          <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
+            <ShopCard shop={selectedShop} />
+          </div>
+        )}
+
+        <div className={styles.listHeaderTop}>
+          <div className={styles.listTitleWrapper}>
+            <h1 className={styles.listTitle}>Lista de Productos</h1>
+          </div>
+          <div className={styles.buttonGroup}>
+            {/* Use the SearchBar component */}
+            <SearchBar 
+              searchTerm={searchTerm}
+              handleSearchChange={handleSearchChange}
+            />
+            
+            {/* Use the ActionButtons component */}
+            <ActionButtons 
+              handleAddProduct={handleAddProduct}
+              handleBulkUpdate={handleBulkUpdate}
+              handleBulkDelete={handleBulkDelete}
+              toggleFilters={toggleFilters}
+              showFilters={showFilters}
+              selectedProducts={selectedProducts}
+              activeFiltersCount={activeFiltersCount}
+            />
+          </div>
+        </div>
 
         {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
         {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}

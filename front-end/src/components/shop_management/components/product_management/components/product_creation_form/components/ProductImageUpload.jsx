@@ -192,6 +192,7 @@ const ProductImageUpload = ({
           step="0.01"
           min="0"
           required
+          placeholder="0.00" /* 💰 UPDATE: Added placeholder for price format */
         />
       </div>
     </section>

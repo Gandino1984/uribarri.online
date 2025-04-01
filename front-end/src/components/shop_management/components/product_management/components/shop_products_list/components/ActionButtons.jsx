@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PackagePlus, Pencil, Trash2, Filter, ChevronDown } from 'lucide-react';
 import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
 
@@ -9,9 +9,42 @@ const ActionButtons = ({
   toggleFilters, 
   showFilters, 
   selectedProducts, 
-  activeFiltersCount,
-  filterButtonAnimation 
+  activeFiltersCount
 }) => {
+  // 📱 UPDATE: Add state to track if we're on a small screen
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 600);
+  
+  // 📱 UPDATE: Set icon size based on screen size
+  const [iconSize, setIconSize] = useState(17);
+  
+  // 📱 UPDATE: Set filter button animation styles
+  const [filterButtonAnimation, setFilterButtonAnimation] = useState({
+    transform: 'rotate(0deg)',
+    transition: 'transform 0.3s ease'
+  });
+  
+  // 📱 UPDATE: Update filter button animation when showFilters changes
+  useEffect(() => {
+    setFilterButtonAnimation({
+      transform: showFilters ? 'rotate(180deg)' : 'rotate(0deg)',
+      transition: 'transform 0.3s ease'
+    });
+  }, [showFilters]);
+  
+  // 📱 UPDATE: Track screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      const smallScreen = window.innerWidth <= 600;
+      setIsSmallScreen(smallScreen);
+      setIconSize(smallScreen ? 16 : 17);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   return (
     <div className={styles.buttonGroup}>
       <button
@@ -19,7 +52,7 @@ const ActionButtons = ({
         className={`${styles.actionButton} ${styles.addButton}`}
         title="Añadir producto"
       >
-        <PackagePlus size={17} />
+        <PackagePlus size={iconSize} />
         <span className={styles.buttonText}>Añadir</span>
       </button>
 
@@ -29,7 +62,7 @@ const ActionButtons = ({
         disabled={selectedProducts.size === 0}
         title="Actualizar producto"
       >
-        <Pencil size={17} />
+        <Pencil size={iconSize} />
         <span className={styles.buttonText}>Actualizar</span>
       </button>
       
@@ -39,7 +72,7 @@ const ActionButtons = ({
         disabled={selectedProducts.size === 0}
         title="Borrar producto"
       >
-        <Trash2 size={17} />
+        <Trash2 size={iconSize} />
         <span className={styles.buttonText}>Borrar</span>
       </button>
       
@@ -49,13 +82,13 @@ const ActionButtons = ({
         className={`${styles.actionButton} ${styles.filterButton} ${showFilters ? styles.active : ''}`}
         title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
       >
-        <Filter size={17} />
+        <Filter size={iconSize} />
         <span className={styles.buttonText}>Filtros</span>
         {activeFiltersCount > 0 && (
           <span className={styles.filterBadge}>{activeFiltersCount}</span>
         )}
         <div style={filterButtonAnimation} className={styles.filterButtonIcon}>
-          <ChevronDown size={14} />
+          <ChevronDown size={isSmallScreen ? 12 : 14} />
         </div>
       </button>
     </div>
