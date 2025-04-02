@@ -18,13 +18,13 @@ import ProductsCount from './components/ProductsCount.jsx';
 import NoProductsMessage from './components/NoProductsMessage.jsx';
 import NoShopSelected from './components/NoShopSelected.jsx';
 import ProductsTable from './components/ProductsTable.jsx';
-import useScreenSize from '../../../shop_card/components/useScreenSize.js'; // 🔄 UPDATE: Import useScreenSize hook for responsive behavior
+import useScreenSize from '../../../shop_card/components/useScreenSize.js';
 
+// 🌟 UPDATE: Import React Spring for animations
+import { useTransition, animated } from '@react-spring/web';
+import { formAnimation, fadeInScale } from '../../../../../../utils/animation/transitions.js';
 
 const ShopProductsList = () => {
-  // Auth context
-  // const { currentUser } = useAuth();
-
   // UI context
   const {
     clearError, setError,
@@ -32,7 +32,6 @@ const ShopProductsList = () => {
     isAccepted, setIsAccepted,
     isDeclined, setIsDeclined,
     isImageModalOpen, setIsImageModalOpen,
-    // setModalMessage,
     setShowSuccessCard,
     setShowErrorCard,
     setSuccess,
@@ -64,7 +63,7 @@ const ShopProductsList = () => {
   // State to track which product's actions menu is active (for mobile)
   const [activeActionsMenu, setActiveActionsMenu] = useState(null);
   
-  // 🔄 UPDATE: Get screen size for responsive behavior
+  // Get screen size for responsive behavior
   const isSmallScreen = useScreenSize(768);
   
   // Use the hook from FiltersForProductsUtils for consistent counting
@@ -79,6 +78,9 @@ const ShopProductsList = () => {
   // Add a ref to track what product we're deleting
   const currentDeletingProduct = useRef(null);
 
+  // 🌟 UPDATE: Add visibility state for component animation
+  const [isVisible, setIsVisible] = useState(true);
+
   // Get all Utils from ShopProductsListUtils
   const {
     filterProducts,
@@ -91,7 +93,6 @@ const ShopProductsList = () => {
     handleAddProduct,
     handleUpdateProduct,
     handleToggleActiveStatus,
-    // getImageUrl,
     handleProductImageDoubleClick,
     formatDate,
     formatSecondHand,
@@ -104,10 +105,27 @@ const ShopProductsList = () => {
     handleBulkUpdate: handleBulkUpdateFn
   } = ShopProductsListUtils();
 
-  // Wrapper Utils to pass the required state
-  // const handleBack = () => {
-  //   setShowProductManagement(false);
-  // };
+  // 🌟 UPDATE: Create animation transitions using React Spring
+  const contentTransition = useTransition(isVisible, {
+    ...formAnimation,
+    config: {
+      mass: 1,
+      tension: 280,
+      friction: 24
+    }
+  });
+
+  // 🌟 UPDATE: Create separate transition for ShopCard
+  const shopCardTransition = useTransition(isVisible && selectedShop, {
+    ...fadeInScale,
+    config: {
+      mass: 1,
+      tension: 280,
+      friction: 24
+    }
+  });
+
+  // 🌟 UPDATE: Removed back button and handleBack function
 
   // Wrapper Utils that use the ones from ShopProductsListUtils
   const handleSearchChange = (e) => {
@@ -146,6 +164,8 @@ const ShopProductsList = () => {
         try {
           const fetchedProducts = await fetchProductsByShop();
           console.log(`Loaded ${fetchedProducts?.length || 0} products for shop ${selectedShop.id_shop}`);
+          // 🌟 UPDATE: Set visible to true once products are loaded
+          setIsVisible(true);
         } catch (error) {
           console.error('Error loading products:', error);
           setError(prevError => ({
@@ -158,7 +178,7 @@ const ShopProductsList = () => {
     };
     
     loadProducts();
-  }, [selectedShop, productListKey, fetchProductsByShop, setError, setShowErrorCard]); 
+  }, [selectedShop, productListKey, fetchProductsByShop, setError, setShowErrorCard]);
 
   // UPDATE: Improved product filtering with active status check and explicit dependencies
   useEffect(() => {
@@ -327,109 +347,118 @@ const ShopProductsList = () => {
 
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
-    // Use the NoShopSelected component
     return <NoShopSelected setShowProductManagement={setShowProductManagement} />;
   }
 
   return (
-    <div className={styles.container}>
-        <ConfirmationModal 
-          isOpen={isModalOpen}
-          onConfirm={() => {
-            setIsModalOpen(false);
-            setIsAccepted(true);
-          }}
-          onCancel={() => {
-            setIsModalOpen(false);
-            setIsDeclined(true);
-          }}
-        />
+    <>
+      <ConfirmationModal 
+        isOpen={isModalOpen}
+        onConfirm={() => {
+          setIsModalOpen(false);
+          setIsAccepted(true);
+        }}
+        onCancel={() => {
+          setIsModalOpen(false);
+          setIsDeclined(true);
+        }}
+      />
 
-        <ImageModal
-          isOpen={isImageModalOpen}
+      <ImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => {
+          setIsImageModalOpen(false);
+          setSelectedImageForModal(null);
+        }}
+        imageUrl={selectedImageForModal}
+        altText="Product full size image"
+      />
+
+      {showProductCard && selectedProductDetails && (
+        <ProductCard 
           onClose={() => {
-            setIsImageModalOpen(false);
-            setSelectedImageForModal(null);
-          }}
-          imageUrl={selectedImageForModal}
-          altText="Product full size image"
+            setShowProductCard(false);
+            setSelectedProductDetails(null);
+          }} 
         />
+      )}
 
-        {showProductCard && selectedProductDetails && (
-          <ProductCard 
-            onClose={() => {
-              setShowProductCard(false);
-              setSelectedProductDetails(null);
-            }} 
-          />
-        )}
+      {contentTransition((style, item) => 
+        item && (
+          <animated.div style={style} className={styles.container}>
+            {/* 🌟 UPDATE: Animated ShopCard */}
+            {shopCardTransition((cardStyle, shop) => 
+              shop && (
+                <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
+                  <ShopCard shop={selectedShop} />
+                </animated.div>
+              )
+            )}
 
-        {/* 🔄 UPDATE: Wrap ShopCard in the same responsive container as in ShopsListBySeller */}
-        {selectedShop && (
-          <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
-            <ShopCard shop={selectedShop} />
-          </div>
-        )}
+            <div className={styles.listHeaderTop}>
+              <div className={styles.listTitleWrapper}>
+                <h1 className={styles.listTitle}>Lista de Productos</h1>
+              </div>
+              
+              {/* 🌟 UPDATE: Removed extra container divs to eliminate any potential width constraints */}
+              <SearchBar 
+                searchTerm={searchTerm}
+                handleSearchChange={handleSearchChange}
+              />
+              
+              <div className={styles.buttonGroupContainer}>
+                {/* 🌟 UPDATE: ActionButtons container */}
+                <ActionButtons 
+                  handleAddProduct={handleAddProduct}
+                  handleBulkUpdate={handleBulkUpdate}
+                  handleBulkDelete={handleBulkDelete}
+                  toggleFilters={toggleFilters}
+                  showFilters={showFilters}
+                  selectedProducts={selectedProducts}
+                  activeFiltersCount={activeFiltersCount}
+                />
+              </div>
+            </div>
 
-        <div className={styles.listHeaderTop}>
-          <div className={styles.listTitleWrapper}>
-            <h1 className={styles.listTitle}>Lista de Productos</h1>
-          </div>
-          
-          {/* 🌟 UPDATE: Removed extra container divs to eliminate any potential width constraints */}
-          <SearchBar 
-            searchTerm={searchTerm}
-            handleSearchChange={handleSearchChange}
-          />
-          
-          <div className={styles.buttonGroupContainer}>
-            {/* 🌟 UPDATE: Moved ActionButtons to its own container */}
-            <ActionButtons 
-              handleAddProduct={handleAddProduct}
-              handleBulkUpdate={handleBulkUpdate}
-              handleBulkDelete={handleBulkDelete}
-              toggleFilters={toggleFilters}
-              showFilters={showFilters}
-              selectedProducts={selectedProducts}
-              activeFiltersCount={activeFiltersCount}
-            />
-          </div>
-        </div>
-
-        {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
-        {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
-        
-        {displayedProducts.length === 0 ? (
-          /* Use the NoProductsMessage component */
-          <NoProductsMessage products={products} />
-        ) : (       
-          <div className={styles.tableContainer}>
-            {/* Use the ProductsCount component */}
-            <ProductsCount 
-              displayedProducts={displayedProducts}
-              selectedProducts={selectedProducts}
-            />
+            {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
+            {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
             
-            {/* Use the ProductsTable component */}
-            <ProductsTable 
-              displayedProducts={displayedProducts}
-              selectedProducts={selectedProducts}
-              formatDate={formatDate}
-              formatSecondHand={formatSecondHand}
-              handleProductRowClick={handleProductRowClick}
-              activeActionsMenu={activeActionsMenu}
-              toggleActionsMenu={toggleActionsMenu}
-              handleUpdateProduct={handleUpdateProduct}
-              handleDeleteProduct={handleDeleteProduct}
-              handleSelectProduct={handleSelectProduct}
-              handleSelectForImageUpload={handleSelectForImageUpload}
-              handleToggleActiveStatus={handleToggleActiveStatus}
-              handleProductImageDoubleClick={handleProductImageDoubleClick}
-              currentDeletingProduct={currentDeletingProduct}
-            />
-          </div>
-        )}
-    </div>
+            {displayedProducts.length === 0 ? (
+              /* Use the NoProductsMessage component */
+              <NoProductsMessage products={products} />
+            ) : (       
+              <div className={styles.tableContainer}>
+                {/* Use the ProductsCount component */}
+                <ProductsCount 
+                  displayedProducts={displayedProducts}
+                  selectedProducts={selectedProducts}
+                />
+                
+                {/* Use the ProductsTable component */}
+                <ProductsTable 
+                  displayedProducts={displayedProducts}
+                  selectedProducts={selectedProducts}
+                  formatDate={formatDate}
+                  formatSecondHand={formatSecondHand}
+                  handleProductRowClick={handleProductRowClick}
+                  activeActionsMenu={activeActionsMenu}
+                  toggleActionsMenu={toggleActionsMenu}
+                  handleUpdateProduct={handleUpdateProduct}
+                  handleDeleteProduct={handleDeleteProduct}
+                  handleSelectProduct={handleSelectProduct}
+                  handleSelectForImageUpload={handleSelectForImageUpload}
+                  handleToggleActiveStatus={handleToggleActiveStatus}
+                  handleProductImageDoubleClick={handleProductImageDoubleClick}
+                  currentDeletingProduct={currentDeletingProduct}
+                />
+              </div>
+            )}
+          
+
+          </animated.div>
+        )
+      )}
+    </>
   );
 };
 

@@ -102,7 +102,7 @@
     user-select: none;
     color: var(--superdark-orange);
     font-weight: 600;
-    text-shadow: var(--light-orange) 2px 1px 0px;
+    text-shadow: var(--light-orange) 2px 1px 0px;   
 }
 
 .productsCount {
@@ -145,7 +145,7 @@
 }
 
 .updateButton:not(:disabled):hover {
-    background-color: var(--saturated-orange);
+    background-color: var(--saturated-blue);
 }
 
 .filterButton {
@@ -294,7 +294,7 @@
 /* Table row styles */
 .tableRow {
     border-top: 1px solid #f0f0f0;
-    transition: all 0.15s ease;
+    /* transition: all 0.15s ease; */
 }
 
 .tableRow:hover {
@@ -447,13 +447,30 @@
 }
 
 .selectButton.selected {
-    color: #0ee25c;
-    background-color: transparent;
+    color: white;
+    background-color: var(--saturated-blue);  
 }
 
 .selectButton:hover {
-    color: var(--saturated-orange);
+    background-color: var(--saturated-blue);
+    color: white;
 }
+
+.uploadButton {
+    color: #666;
+}
+
+.imageButton{
+    color: var(--dark-orange);
+    background-color: white;
+}
+
+.imageButton:hover {
+    background-color: var(--saturated-blue);
+    color: white;
+}
+
+
 
 /* 🌟 UPDATE: Modified search input wrapper to take full width and grow with screen */
 .searchInputWrapper {
@@ -533,12 +550,11 @@
 
 /* Status button styles */
 .visibleButton {
-    background-color: #4caf50;
-    color: white;
+    color: var(--dark-orange);
 }
   
 .visibleButton:hover {
-    background-color: #3e8e41;
+    background-color: var(--saturated-blue);
 }
   
 .hiddenButton {
