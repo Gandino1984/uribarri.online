@@ -419,7 +419,7 @@ async function updateProductImage(id_product, imagePath) {
 
         return { 
             data: { image_product: imagePath },
-            success: "Imagen de producto actualizada correctamente"
+            success: "Imagen de producto actualizada ."
         };
     } catch (err) {
         console.error("-> product_api_controller.js - updateProductImage() - Error =", err);

@@ -261,7 +261,7 @@ const ShopProductsList = () => {
               // Set a success message for deletion
               setSuccess(prev => ({
                 ...prev,
-                deleteSuccess: "Producto eliminado exitosamente" 
+                deleteSuccess: "Producto eliminado." 
               }));
               setShowSuccessCard(true);
               
@@ -285,7 +285,7 @@ const ShopProductsList = () => {
               // Set success message for bulk deletion
               setSuccess(prev => ({
                 ...prev,
-                deleteSuccess: `${bulkResult.successCount} productos eliminados exitosamente`
+                deleteSuccess: `${bulkResult.successCount} productos eliminados.`
               }));
               setShowSuccessCard(true);
               

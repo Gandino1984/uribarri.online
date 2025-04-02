@@ -89,7 +89,7 @@ export const UserInfoCardUtils = () => {
                 }
             });
 
-            console.log('Imagen cargada exitosamente. Ruta recibida:', imagePath);
+            console.log('Imagen cargada. Ruta recibida:', imagePath);
 
             // Generate a new timestamp for this specific upload
             imageTimestampRef.current = Date.now();

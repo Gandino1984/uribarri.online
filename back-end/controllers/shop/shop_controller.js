@@ -449,7 +449,7 @@ async function removeById(id_shop) {
 
       return { 
         data:  id_shop,
-        message: "El comercio se ha borrado correctamente" 
+        message: "El comercio se ha borrado ." 
         };
     } catch (err) {
       console.error("-> shop_controller.js - removeById() - Error = ", err);
@@ -494,7 +494,7 @@ async function removeByIdWithProducts(id_shop) {
 
             return { 
                 data: id_shop,
-                message: "El comercio, sus productos y archivos se han borrado correctamente",
+                message: "El comercio, sus productos y archivos se han borrado .",
                 productsRemoved: productResult.count
             };
 

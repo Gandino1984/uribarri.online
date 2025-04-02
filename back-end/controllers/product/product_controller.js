@@ -251,8 +251,8 @@ async function toggleActiveStatus(id_product) {
         return { 
             data: product,
             success: product.active_product 
-                ? "Producto activado correctamente" 
-                : "Producto desactivado correctamente" 
+                ? "Producto activado." 
+                : "Producto desactivado ." 
         };
     } catch (err) {
         console.error("-> product_controller.js - toggleActiveStatus() - Error = ", err);
@@ -349,7 +349,7 @@ async function updateProductImage(id_product, imagePath) {
 
         return { 
             data: { image_product: imagePath },
-            success: "Imagen de producto actualizada correctamente"
+            success: "Imagen de producto actualizada ."
         };
     } catch (err) {
         console.error("-> product_controller.js - updateProductImage() - Error = ", err);

@@ -319,7 +319,7 @@ async function update(id, userData) {
 
         console.log("Updated user:", user);
         return { 
-            message: "Usuario actualizado correctamente" ,
+            message: "Usuario actualizado ." ,
             data: user
             
         };
@@ -350,7 +350,7 @@ async function removeById(id_user) {
         
         return { 
             data: id_user,
-            message: "El usuario se ha borrado correctamente" 
+            message: "El usuario se ha borrado ." 
         };
 
     } catch (err) {
@@ -379,7 +379,7 @@ async function updateProfileImage(userName, imagePath) {
 
         return {
             data: { image_user: imagePath },
-            message: "Imagen de perfil actualizada correctamente"
+            message: "Imagen de perfil actualizada ."
         };
     } catch (err) {
         console.error("Error updating profile image:", err);

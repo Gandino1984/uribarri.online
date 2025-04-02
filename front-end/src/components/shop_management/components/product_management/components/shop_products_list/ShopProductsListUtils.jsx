@@ -335,7 +335,7 @@ const ShopProductsListUtils = () => {
             // Apply proper success message for deletion
             setSuccess(prev => ({
               ...prev,
-              deleteSuccess: "Producto eliminado exitosamente",
+              deleteSuccess: "Producto eliminado.",
               // Clear other product-related messages to avoid confusion
               productSuccess: '',
               createSuccess: '',
@@ -345,7 +345,7 @@ const ShopProductsListUtils = () => {
             
             return { 
               success: true, 
-              message: response.data.success || "Producto eliminado exitosamente" 
+              message: response.data.success || "Producto eliminado." 
             };
           } else {
             console.warn('Product deletion API returned success but with unexpected data:', response.data);
@@ -423,7 +423,7 @@ const ShopProductsListUtils = () => {
       refreshProductList();
 
       // Show result message
-      const message = `${successCount} productos eliminados exitosamente${failCount > 0 ? `, ${failCount} fallos` : ''}`;
+      const message = `${successCount} productos eliminados ${failCount > 0 ? `, ${failCount} fallos` : ''}`;
       
       if (failCount > 0) {
         setError(prevError => ({

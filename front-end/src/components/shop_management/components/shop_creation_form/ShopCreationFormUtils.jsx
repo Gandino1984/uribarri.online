@@ -351,7 +351,7 @@ export const ShopCreationFormUtils = () => {
       // Agregar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
-        shopSuccess: "¡Comercio creado exitosamente!"
+        shopSuccess: "Comercio creado."
       }));
       setShowSuccessCard(true);
       
@@ -481,7 +481,7 @@ export const ShopCreationFormUtils = () => {
       // Mostrar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
-        shopSuccess: "¡Comercio actualizado exitosamente!"
+        shopSuccess: "Comercio actualizado."
       }));
       setShowSuccessCard(true);
       

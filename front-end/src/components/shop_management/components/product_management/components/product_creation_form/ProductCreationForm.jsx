@@ -178,7 +178,7 @@ const ProductCreationForm = () => {
     // Show success message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      productSuccess: "Formulario limpiado correctamente"
+      productSuccess: "Formulario limpiado ."
     }));
     setShowSuccessCard(true);
     

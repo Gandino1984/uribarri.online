@@ -233,7 +233,7 @@ const ShopsListBySellerUtils = () => {
         }
         
         // Mostrar mensaje de éxito
-        setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado correctamente" }));
+        setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado ." }));
         setShowSuccessCard(true);
       } catch (err) {
         console.error('Error deleting shop:', err);

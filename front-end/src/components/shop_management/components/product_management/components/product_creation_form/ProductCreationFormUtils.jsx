@@ -437,7 +437,7 @@ const ProductCreationFormUtils = () => {
         
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          imageSuccess: "Imagen subida correctamente"
+          imageSuccess: "Imagen subida ."
         }));
         setShowSuccessCard(true);
         
@@ -517,7 +517,7 @@ const ProductCreationFormUtils = () => {
         // Use createSuccess for creation operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          createSuccess: "Producto creado exitosamente",
+          createSuccess: "Producto creado.",
           // Clear other operations to avoid confusion
           productSuccess: '',
           updateSuccess: '',
@@ -710,7 +710,7 @@ const ProductCreationFormUtils = () => {
         // Use updateSuccess for update operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          updateSuccess: "Producto actualizado correctamente",
+          updateSuccess: "Producto actualizado .",
           // Clear other operations to avoid confusion
           productSuccess: '',
           createSuccess: '',

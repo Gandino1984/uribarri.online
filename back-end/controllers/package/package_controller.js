@@ -289,8 +289,8 @@ async function toggleActiveStatus(id_package) {
         return { 
             data: package_found,
             success: package_found.active_package 
-                ? "Paquete activado correctamente" 
-                : "Paquete desactivado correctamente" 
+                ? "Paquete activado ." 
+                : "Paquete desactivado ." 
         };
     } catch (err) {
         console.error("-> package_controller.js - toggleActiveStatus() - Error = ", err);
@@ -311,7 +311,7 @@ async function removeById(id_package) {
 
         return {
             data: id_package,
-            success: "Paquete eliminado correctamente",
+            success: "Paquete eliminado .",
         };
     } catch (err) {
         console.error("-> package_controller.js - removeById() - Error = ", err);

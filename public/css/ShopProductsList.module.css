@@ -303,7 +303,7 @@
 
 .tableRow:hover {
     color: var(--saturated-blue);
-    font-weight: 500;
+    /* font-weight: 500; */
     background-color: var(--superlight-blue);
 }
 
@@ -383,12 +383,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--saturated-orange);
-    color: #ffffff;
+    color: var(--dark-orange);
+    background-color: white;
     width: 40px;
     height: 40px;
-    border: none;
+    border: 1px solid var(--light-orange);
     cursor: pointer;
+
     /* position: relative; */
     z-index: 5;
     padding: 0;

@@ -225,7 +225,7 @@ const ShopCreationForm = () => {
     // Show info message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      shopSuccess: "Formulario limpiado correctamente"
+      shopSuccess: "Formulario limpiado ."
     }));
     setShowSuccessCard(true);
     
@@ -404,7 +404,7 @@ const ShopCreationForm = () => {
           // Show success notification
           setSuccess(prevSuccess => ({
             ...prevSuccess,
-            shopSuccess: "¡Comercio actualizado exitosamente!"
+            shopSuccess: "Comercio actualizado."
           }));
           setShowSuccessCard(true);
         }
@@ -421,7 +421,7 @@ const ShopCreationForm = () => {
           // Show success notification
           setSuccess(prevSuccess => ({
             ...prevSuccess,
-            shopSuccess: "¡Comercio creado exitosamente!"
+            shopSuccess: "Comercio creado."
           }));
           setShowSuccessCard(true);
         }

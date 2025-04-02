@@ -149,7 +149,7 @@ async function updateProfileImage(userName, imagePath) {
             data: {
                 image_user: imagePath
             },
-            message: "Imagen de perfil actualizada correctamente"
+            message: "Imagen de perfil actualizada ."
         };
     } catch (err) {
         console.error("Error updating profile image:", err);
