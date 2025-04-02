@@ -87,6 +87,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
+    gap: 1rem;    
     width: 100%;
 }
 
@@ -124,10 +125,10 @@
     transition: all 0.15s ease;
 }
 
-.actionButton:disabled {
+/* .actionButton:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-}
+} */
 
 .deleteButton {
     color: #ff0000;
@@ -155,7 +156,7 @@
     flex-wrap: nowrap;
     color: var(--dark-orange);
     background-color: white;
-    position: relative;
+    /* position: relative; */
     padding: 0.3rem 1.8rem 0.3rem 0.5rem;
 }
 
@@ -197,7 +198,7 @@
     font-weight: 600;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    z-index: 1;
+    z-index: 100;
 }
 
 /* Table styles */
@@ -368,7 +369,7 @@
     padding: 0.4rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border: 2px solid var(--light-blue);
-    z-index: 999999999999999999999;
+    z-index: 1000;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease-in-out;
@@ -385,7 +386,7 @@
     height: 40px;
     border: none;
     cursor: pointer;
-    position: relative;
+    /* position: relative; */
     z-index: 5;
     padding: 0;
 }
@@ -476,8 +477,8 @@
 .searchInputWrapper {
     display: flex;
     align-items: center;
-    position: relative;
-    background-color: var(--saturated-orange);
+    justify-content: center;
+    /* position: relative; */
     padding: 0.5rem 1rem;
 }
 

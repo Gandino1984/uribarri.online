@@ -297,7 +297,7 @@ header p{
 
 /* Ensure popup appears above other elements */
 .mapContainer :global(.leaflet-popup) {
-  z-index: 1000;
+  z-index: 9999999999999999999999;
 }
 
 /* Improved back button styles */

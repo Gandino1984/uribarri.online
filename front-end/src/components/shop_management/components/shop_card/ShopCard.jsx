@@ -89,7 +89,7 @@ const ShopCard = ({ shop }) => {
       {showMap && !minimized && (
         <div 
           className={styles.mapWrapper} 
-          style={!isSmallScreen ? { flex: '1 0 60%', maxWidth: '60%' } : {}}
+          // style={!isSmallScreen ? { flex: '1 0 60%', maxWidth: '60%' } : {}}
         >
           <ShopMap 
             shop={shop} 

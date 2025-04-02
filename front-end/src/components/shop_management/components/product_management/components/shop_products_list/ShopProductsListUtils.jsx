@@ -173,7 +173,7 @@ const ShopProductsListUtils = () => {
       // Multiple products selected
       setError(prevError => ({
         ...prevError,
-        productError: "Solo puedes actualizar un producto a la vez. Por favor selecciona solo un producto."
+        productError: "Puedes actualizar un producto a la vez."
       }));
       setShowErrorCard(true);
     } else {

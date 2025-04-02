@@ -12,7 +12,7 @@
   
   /* Ensure popup appears above other elements */
   .mapContainer :global(.leaflet-popup) {
-    z-index: 1000;
+    z-index: 99999999999999999;
   }
   
   .backButton:hover {
