@@ -45,10 +45,11 @@ const ProductCreationFormUtils = () => {
     refreshProductList
   } = useProduct();
 
-  // Estado para llevar la cuenta de productos y el límite
+
   const [productCount, setProductCount] = useState(0);
-  const [productLimit, setProductLimit] = useState(7); // Valor por defecto para usuarios no sponsor
-  // Add state to track current operation type to prevent conflicts
+  
+  const [productLimit, setProductLimit] = useState(7);
+
   const [currentOperation, setCurrentOperation] = useState(null); // can be 'create', 'update', or null
 
   // Función para obtener productos por tienda
