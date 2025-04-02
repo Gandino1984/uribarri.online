@@ -107,8 +107,9 @@
 
 .productsCount {
     text-align: center;
-    font-size: 0.875rem;
-    color: #666;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 500;
     margin-bottom: 1rem;
 }
 
@@ -297,14 +298,14 @@
 }
 
 .tableRow:hover {
-    color: white;
+    color: var(--saturated-blue);
     font-weight: 500;
-    background-color: var(--saturated-blue);
+    background-color: var(--superlight-blue);
 }
 
 .tableRow.selected {
-    background-color: var(--superlight-blue);
-    color: var(--saturated-blue);
+    background-color: var(--saturated-blue);
+    color: white;
     font-weight: 500;
 }
 
@@ -398,7 +399,7 @@
 }
 
 .mainActionButton:hover {
-    background-color: var(--saturated-blue);
+    background-color: var(--dark-blue);
 }
 
 .mainActionButton.active {
