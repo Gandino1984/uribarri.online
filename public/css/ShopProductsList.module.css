@@ -55,6 +55,10 @@
     color: #666;
 }
 
+.mapCanvas {
+    margin-bottom: 1rem;
+   }
+
 /* List header styles */
 .listHeader {
     width: 100%;

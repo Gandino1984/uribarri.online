@@ -293,10 +293,12 @@ header p{
   width: 100%;
   height: 100%;
   min-height: 300px;
+
 }
 
 /* Ensure popup appears above other elements */
 .mapContainer :global(.leaflet-popup) {
+  margin-bottom: 1rem;
   z-index: 9999999999999999999999;
 }
 

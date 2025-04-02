@@ -69,17 +69,29 @@
 }
 
 /* Optional: Add a loading spinner or placeholder */
-.productImageContainer.loading {
-  background-color: #f0f0f0;
+.productImageContainer{
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px dashed #ccc;
+}
+
+.productImageContainer.loading {
+  /* background-color: #f0f0f0; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
 
 .productImageContainer.loading::after {
   content: "Loading...";
-  font-size: 16px;
+  font-size: 10px;
   color: #666;
+}
+
+.noImage{
+  font-size: .6rem;
 }
 
 /* Media queries for responsive behavior */

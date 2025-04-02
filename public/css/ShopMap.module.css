@@ -8,12 +8,15 @@
     overflow: hidden;
     /* margin-left: .5rem; */
     transition: all 0.3s ease;
+    padding-bottom: 1rem;
   }
   
   /* Ensure popup appears above other elements */
   .mapContainer :global(.leaflet-popup) {
     z-index: 99999999999999999;
   }
+
+
   
   .backButton:hover {
     color: white !important;
