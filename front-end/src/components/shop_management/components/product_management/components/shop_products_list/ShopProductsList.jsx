@@ -3,6 +3,7 @@ import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
 import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx'; // ✨ UPDATE: Import Package context
+import ShopPackagesList from './components/shop_packages_list/ShopPackagesList.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
 
@@ -89,6 +90,9 @@ const ShopProductsList = () => {
 
   // 🌟 UPDATE: Add visibility state for component animation
   const [isVisible, setIsVisible] = useState(true);
+  
+  // 🔄 UPDATE: Add state to control showing packages list
+  const [showPackages, setShowPackages] = useState(false);
 
   // Get all Utils from ShopProductsListUtils
   const {
@@ -96,12 +100,14 @@ const ShopProductsList = () => {
     fetchProductsByShop,
     deleteProduct,
     bulkDeleteProducts,
+    confirmBulkDelete,
     handleSelectProduct,
     handleDeleteProduct,
     handleBulkDelete,
     handleAddProduct,
     handleUpdateProduct,
     handleToggleActiveStatus,
+    getImageUrl,
     handleProductImageDoubleClick,
     formatDate,
     formatSecondHand,
@@ -111,7 +117,8 @@ const ShopProductsList = () => {
     handleSearchChange: handleSearchChangeFn,
     handleResetAllFilters: handleResetAllFiltersFn,
     handleSelectForImageUpload: handleSelectForImageUploadFn,
-    handleBulkUpdate: handleBulkUpdateFn
+    handleBulkUpdate: handleBulkUpdateFn,
+    isNewProduct
   } = ShopProductsListUtils();
 
   // 🌟 UPDATE: Create animation transitions using React Spring
@@ -413,6 +420,15 @@ const ShopProductsList = () => {
     console.log('No shop selected in ShopProductsList');
     return <NoShopSelected setShowProductManagement={setShowProductManagement} />;
   }
+  
+  // 🔄 UPDATE: If showPackages is true, render the ShopPackagesList component
+  if (showPackages) {
+    return (
+      <ShopPackagesList 
+        onBack={() => setShowPackages(false)} // Function to return to products view
+      />
+    );
+  }
 
   return (
     <>
@@ -471,7 +487,7 @@ const ShopProductsList = () => {
               />
               
               <div className={styles.buttonGroupContainer}>
-                {/* 🌟 UPDATE: ActionButtons container with new handleCreatePackage function */}
+                {/* 🔄 UPDATE: ActionButtons container with navigateToPackages prop */}
                 <ActionButtons 
                   handleAddProduct={handleAddProduct}
                   handleBulkUpdate={handleBulkUpdate}
@@ -481,6 +497,7 @@ const ShopProductsList = () => {
                   showFilters={showFilters}
                   selectedProducts={selectedProducts}
                   activeFiltersCount={activeFiltersCount}
+                  navigateToPackages={() => setShowPackages(true)}
                 />
               </div>
             </div>

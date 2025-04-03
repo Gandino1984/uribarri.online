@@ -5,7 +5,8 @@ import {
   Trash2, 
   Filter, 
   ChevronDown,
-  Package
+  Package,
+  PackageOpen // 🔄 FIXED: Changed from 'Packages' to 'PackageOpen' which is available in lucide-react
 } from 'lucide-react';
 import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
 
@@ -14,10 +15,11 @@ const ActionButtons = ({
   handleBulkUpdate, 
   handleBulkDelete, 
   toggleFilters, 
-  handleCreatePackage, // ✨ UPDATE: Added new handler for package creation
+  handleCreatePackage,
   showFilters, 
   selectedProducts, 
-  activeFiltersCount
+  activeFiltersCount,
+  navigateToPackages
 }) => {
   // 📱 UPDATE: Add state to track if we're on a small screen
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 600);
@@ -93,6 +95,16 @@ const ActionButtons = ({
       >
         <Package size={iconSize} />
         <span className={styles.buttonText}>Crear paquete</span>
+      </button>
+      
+      {/* 🔄 UPDATE: Fixed button to navigate to packages view with correct icon */}
+      <button
+        onClick={navigateToPackages}
+        className={`${styles.actionButton} ${styles.viewPackagesButton}`}
+        title="Ver lista de paquetes"
+      >
+        <PackageOpen size={iconSize} />
+        <span className={styles.buttonText}>Ver paquetes</span>
       </button>
       
       {/* Filter Toggle Button with Animation */}
