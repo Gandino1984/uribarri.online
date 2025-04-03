@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { PackagePlus, Pencil, Trash2, Filter, ChevronDown } from 'lucide-react';
+import { 
+  PackagePlus, 
+  Pencil, 
+  Trash2, 
+  Filter, 
+  ChevronDown,
+  Package
+} from 'lucide-react';
 import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
 
 const ActionButtons = ({ 
@@ -7,6 +14,7 @@ const ActionButtons = ({
   handleBulkUpdate, 
   handleBulkDelete, 
   toggleFilters, 
+  handleCreatePackage, // ✨ UPDATE: Added new handler for package creation
   showFilters, 
   selectedProducts, 
   activeFiltersCount
@@ -45,16 +53,12 @@ const ActionButtons = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // 🔄 UPDATE: Added style to ensure consistent button widths even when text is hidden
-  // const buttonStyle = isSmallScreen ? { minWidth: '36px', justifyContent: 'center' } : {};
-  
   return (
     <div className={styles.buttonGroup}>
       <button
         onClick={handleAddProduct}
         className={`${styles.actionButton} ${styles.addButton}`}
         title="Añadir producto"
-        // style={buttonStyle}
       >
         <PackagePlus size={iconSize} />
         <span className={styles.buttonText}>Añadir</span>
@@ -65,7 +69,6 @@ const ActionButtons = ({
         className={`${styles.actionButton} ${styles.updateButton}`}
         disabled={selectedProducts.size === 0}
         title="Actualizar producto"
-        // style={buttonStyle}
       >
         <Pencil size={iconSize} />
         <span className={styles.buttonText}>Actualizar</span>
@@ -76,10 +79,20 @@ const ActionButtons = ({
         className={`${styles.actionButton} ${styles.deleteButton}`}
         disabled={selectedProducts.size === 0}
         title="Borrar producto"
-        // style={buttonStyle}
       >
         <Trash2 size={iconSize} />
         <span className={styles.buttonText}>Borrar</span>
+      </button>
+      
+      {/* ✨ UPDATE: New button for package creation */}
+      <button
+        onClick={handleCreatePackage}
+        className={`${styles.actionButton} ${styles.packageButton}`}
+        disabled={selectedProducts.size === 0}
+        title="Crear paquete con productos seleccionados"
+      >
+        <Package size={iconSize} />
+        <span className={styles.buttonText}>Crear paquete</span>
       </button>
       
       {/* Filter Toggle Button with Animation */}
@@ -87,7 +100,6 @@ const ActionButtons = ({
         onClick={toggleFilters}
         className={`${styles.actionButton} ${styles.filterButton} ${showFilters ? styles.active : ''}`}
         title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
-        // style={buttonStyle}
       >
         <Filter size={iconSize} />
         <span className={styles.buttonText}>Filtros</span>

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
+import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx'; // ✨ UPDATE: Import Package context
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
 
@@ -54,6 +55,14 @@ const ShopProductsList = () => {
     setShowProductManagement,
     refreshProductList
   } = useProduct();
+
+  // ✨ UPDATE: Package context
+  const {
+    setNewPackageData,
+    initNewPackageData,
+    setShowPackageCreationForm,
+    setIsAddingPackage
+  } = usePackage();
 
   const [showProductCard, setShowProductCard] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -125,8 +134,6 @@ const ShopProductsList = () => {
     }
   });
 
-  // 🌟 UPDATE: Removed back button and handleBack function
-
   // Wrapper Utils that use the ones from ShopProductsListUtils
   const handleSearchChange = (e) => {
     handleSearchChangeFn(e, setSearchTerm);
@@ -154,6 +161,63 @@ const ShopProductsList = () => {
 
   const handleBulkUpdate = () => {
     handleBulkUpdateFn(selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard);
+  };
+
+  // ✨ UPDATE: Added function to handle package creation
+  const handleCreatePackage = () => {
+    if (selectedProducts.size === 0) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "No hay productos seleccionados para crear un paquete"
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    if (selectedProducts.size > 5) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "Máximo 5 productos por paquete"
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    try {
+      // Get the selected product IDs as an array
+      const selectedProductIds = Array.from(selectedProducts);
+
+      // Initialize new package data object
+      const packageData = {
+        id_shop: selectedShop.id_shop,
+        id_product1: selectedProductIds[0] || '',
+        id_product2: selectedProductIds[1] || null,
+        id_product3: selectedProductIds[2] || null,
+        id_product4: selectedProductIds[3] || null,
+        id_product5: selectedProductIds[4] || null,
+        name_package: '',
+        active_package: true
+      };
+
+      // Set the package data in context
+      setNewPackageData(packageData);
+      
+      // Set isAddingPackage to true
+      setIsAddingPackage(true);
+      
+      // Show the package creation form
+      setShowPackageCreationForm(true);
+      
+      // Success message for log only
+      console.log('Prepared package with selected products:', selectedProductIds);
+    } catch (error) {
+      console.error('Error preparing package creation:', error);
+      setError(prevError => ({
+        ...prevError,
+        productError: "Error al preparar la creación del paquete"
+      }));
+      setShowErrorCard(true);
+    }
   };
 
   // UPDATE: Enhanced product fetching with better error handling and state management
@@ -407,11 +471,12 @@ const ShopProductsList = () => {
               />
               
               <div className={styles.buttonGroupContainer}>
-                {/* 🌟 UPDATE: ActionButtons container */}
+                {/* 🌟 UPDATE: ActionButtons container with new handleCreatePackage function */}
                 <ActionButtons 
                   handleAddProduct={handleAddProduct}
                   handleBulkUpdate={handleBulkUpdate}
                   handleBulkDelete={handleBulkDelete}
+                  handleCreatePackage={handleCreatePackage}
                   toggleFilters={toggleFilters}
                   showFilters={showFilters}
                   selectedProducts={selectedProducts}
