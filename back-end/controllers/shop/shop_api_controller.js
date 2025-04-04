@@ -343,18 +343,23 @@ async function removeByIdWithProducts(req, res) {
             return;
         }
 
-        const { error, data, success } = await shopController.removeByIdWithProducts(id_shop);
+        const { error, data, success, productsRemoved, packagesRemoved } = await shopController.removeByIdWithProducts(id_shop); // ✨ UPDATE: Added packagesRemoved to destructuring
 
         if (error) {
             res.status(400).json({ error });
             return;
         }
 
-        res.json({ data, success });
-    } catch (err) {
+        res.json({ 
+            data, 
+            success,
+            productsRemoved,
+            packagesRemoved // ✨ UPDATE: Added packagesRemoved to response
+        });
+      } catch (err) {
         console.error("-> shop_api_controller.js - removeByIdWithProducts() - Error =", err);
         res.status(500).json({ 
-            error: "Error al eliminar el comercio y sus productos",
+            error: "Error al eliminar el comercio, sus productos y paquetes", // ✨ UPDATE: Added packages to error message
         });
     }
 }

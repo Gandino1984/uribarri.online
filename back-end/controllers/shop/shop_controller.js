@@ -1,6 +1,7 @@
 import shop_model from "../../models/shop_model.js";
 import user_model from "../../models/user_model.js";
 import productController from "../product/product_controller.js";
+import packageController from "../package/package_controller.js"; // ✨ UPDATE: Added import for package controller
 import product_model from "../../models/product_model.js";
 import { Op } from 'sequelize';
 import path from 'path';
@@ -475,7 +476,15 @@ async function removeByIdWithProducts(id_shop) {
         const transaction = await shop_model.sequelize.transaction();
 
         try {
-            // First remove all products using the product controller
+            // ✨ UPDATE: First remove all packages using the package controller
+            const packageResult = await packageController.removeByShopId(id_shop, transaction);
+            
+            if (packageResult.error) {
+                await transaction.rollback();
+                return { error: packageResult.error };
+            }
+
+            // Then remove all products using the product controller
             const productResult = await productController.removeByShopId(id_shop, transaction);
             
             if (productResult.error) {
@@ -494,8 +503,9 @@ async function removeByIdWithProducts(id_shop) {
 
             return { 
                 data: id_shop,
-                message: "El comercio, sus productos y archivos se han borrado .",
-                productsRemoved: productResult.count
+                message: "El comercio, sus productos, paquetes y archivos se han borrado .", // ✨ UPDATE: Added packages to success message
+                productsRemoved: productResult.count,
+                packagesRemoved: packageResult.count // ✨ UPDATE: Added packages count to response
             };
 
         } catch (err) {
