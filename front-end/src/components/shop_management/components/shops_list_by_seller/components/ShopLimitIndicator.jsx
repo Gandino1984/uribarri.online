@@ -29,7 +29,7 @@ const ShopLimitIndicator = ({ shopCount, shopLimit, isUserSponsor }) => {
 
       {!isUserSponsor && shopCount >= shopLimit * 0.7 && (
         <p className={styles.upgradeMessage}>
-          Conviértete en sponsor para aumentar tu límite a 5 comercios.
+          Conviértete en sponsor para aumentar tu límite a 3 comercios.
         </p>
       )}
     </div>

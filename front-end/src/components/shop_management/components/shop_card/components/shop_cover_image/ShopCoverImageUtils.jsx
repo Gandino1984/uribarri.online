@@ -11,7 +11,7 @@ export const ShopCoverImageUtils = () => {
   const { setError, setUploading, uploading } = useUI();
   const { selectedShop, setShops, shops, setSelectedShop } = useShop();
 
-  const [showUploadButton, setShowUploadButton] = useState(false);
+  // 🖱️ UPDATE: Removed showUploadButton state since we're using direct click
   const [uploadProgress, setUploadProgress] = useState(0);
   const [localImageUrl, setLocalImageUrl] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(Date.now());
@@ -19,12 +19,11 @@ export const ShopCoverImageUtils = () => {
   // Añadir un ref para rastrear la operación en curso
   const uploadInProgress = useRef(false);
 
-  // Toggle the upload button visibility when clicking the container
+  // 🖱️ UPDATE: This function is no longer needed but kept for compatibility
   const handleContainerClick = useCallback((id_shop) => {
-    if (selectedShop?.id_shop === id_shop) {
-      setShowUploadButton(prev => !prev);
-    }
-  }, [selectedShop]);
+    // This function is maintained for API compatibility but no longer toggles button visibility
+    console.log('Container clicked for shop:', id_shop);
+  }, []);
 
   // Prevent event propagation when clicking the upload button
   const handleUploadButtonClick = useCallback((e) => {
@@ -136,8 +135,6 @@ export const ShopCoverImageUtils = () => {
       setTimeout(() => {
         setLocalImageUrl(null);
       }, 3000);
-      
-      setShowUploadButton(false);
     } catch (error) {
       console.error('Error in handleImageUpload:', error);
       setError(prevError => ({
@@ -191,7 +188,6 @@ export const ShopCoverImageUtils = () => {
     handleUploadButtonClick,
     handleImageUpload,
     getShopCoverUrl,
-    showUploadButton,
     uploading,
     uploadProgress,
     localImageUrl,

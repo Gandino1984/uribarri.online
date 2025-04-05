@@ -40,15 +40,17 @@ export const TopBarUtils = () => {
     } = useProduct();
 
     const handleBack = () => {
-        // If we're in the product creation/update form, go back to the products list
-        if (selectedShop && !showShopCreationForm && !isUpdatingProduct && !showProductManagement) {
-            // We're in the ProductCreationForm and need to go back to ShopProductsList
-            setShowProductManagement(true);
+        // 🔄 UPDATE: Fixed navigation flow - when in ShopProductsList, go back to shop list
+        if (selectedShop && showProductManagement && !isUpdatingProduct) {
+            console.log('Navigating from ShopProductsList back to ShopsListBySeller');
+            setShowProductManagement(false);
+            setSelectedShop(null);
             return;
         }
         
-        // Handle the product update form case
-        if (selectedShop && isUpdatingProduct) {
+        // 🔄 UPDATE: Improved condition for product creation/update form
+        if (selectedShop && !showShopCreationForm && isUpdatingProduct) {
+            console.log('Navigating from ProductCreationForm back to ShopProductsList');
             setIsUpdatingProduct(false);
             setSelectedProductToUpdate(null);
             setShowProductManagement(true);
@@ -62,8 +64,8 @@ export const TopBarUtils = () => {
             return;
         }
         
-        // If we have a selected shop, go back to shop selection
-        if (selectedShop) {
+        // 🔄 UPDATE: Clarified condition for selected shop without product management
+        if (selectedShop && !showProductManagement) {
             setSelectedShop(null);
             setShowShopManagement(true);
             return;

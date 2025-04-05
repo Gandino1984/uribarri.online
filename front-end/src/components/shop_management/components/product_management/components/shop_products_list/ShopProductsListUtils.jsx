@@ -7,7 +7,6 @@ import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import ProductCreationFormUtils from '../product_creation_form/ProductCreationFormUtils.jsx';
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
-// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ShopProductsListUtils = () => {
   // Auth context
   const { currentUser } = useAuth();
@@ -62,6 +61,26 @@ const ShopProductsListUtils = () => {
     
     return diffDays >= 0 && diffDays <= 7;
   };
+
+  // UPDATE: Added helper function to check if a product is new based on creation date
+  const isNewProduct = useCallback((creationDate, timeframe) => {
+    if (!creationDate) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    let startDate = new Date(today);
+    
+    if (timeframe === 'last_month') {
+      startDate.setMonth(today.getMonth() - 1);
+    } else if (timeframe === 'last_week') {
+      startDate.setDate(today.getDate() - 7);
+    } // For 'today', startDate is already set to the start of today
+    
+    const productDate = new Date(creationDate);
+    
+    return productDate >= startDate;
+  }, []);
 
   // Format date strings
   const formatDate = (dateString) => {
@@ -154,7 +173,7 @@ const ShopProductsListUtils = () => {
       // Multiple products selected
       setError(prevError => ({
         ...prevError,
-        productError: "Solo puedes actualizar un producto a la vez. Por favor selecciona solo un producto."
+        productError: "Puedes actualizar un producto a la vez."
       }));
       setShowErrorCard(true);
     } else {
@@ -192,19 +211,29 @@ const ShopProductsListUtils = () => {
       const calificationMatch = !filters.calificacion || 
         product.calification_product >= Number(filters.calificacion);
       
-      // Surplus match - added to fix filter inconsistency
+      // Surplus match
       const surplusMatch = !filters.excedente || 
         (filters.excedente === 'Sí' && product.surplus_product > 0);
       
       // Near expiration match
       const expirationMatch = !filters.proxima_caducidad || 
         (filters.proxima_caducidad === 'Sí' && isNearExpiration(product.expiration_product));
+      
+      // UPDATE: Added second hand match
+      const secondHandMatch = !filters.second_hand || 
+        (filters.second_hand === 'Sí' && (product.second_hand === true || product.second_hand === 1));
+      
+      // UPDATE: Added new products match based on creation date
+      const newProductsMatch = !filters.nuevos_productos || isNewProduct(product.creation_product, filters.nuevos_productos);
+      
+      // Note: Active product filtering is handled in ShopProductsList.jsx
   
       return seasonMatch && typeMatch && subtypeMatch && 
              onSaleMatch && calificationMatch && 
-             surplusMatch && expirationMatch;
+             surplusMatch && expirationMatch &&
+             secondHandMatch && newProductsMatch;
     });
-  }, []);
+  }, [isNewProduct]);
 
   const fetchProductsByShop = useCallback(async () => {
     try {
@@ -306,7 +335,7 @@ const ShopProductsListUtils = () => {
             // Apply proper success message for deletion
             setSuccess(prev => ({
               ...prev,
-              deleteSuccess: "Producto eliminado exitosamente",
+              deleteSuccess: "Producto eliminado.",
               // Clear other product-related messages to avoid confusion
               productSuccess: '',
               createSuccess: '',
@@ -316,7 +345,7 @@ const ShopProductsListUtils = () => {
             
             return { 
               success: true, 
-              message: response.data.success || "Producto eliminado exitosamente" 
+              message: response.data.success || "Producto eliminado." 
             };
           } else {
             console.warn('Product deletion API returned success but with unexpected data:', response.data);
@@ -394,7 +423,7 @@ const ShopProductsListUtils = () => {
       refreshProductList();
 
       // Show result message
-      const message = `${successCount} productos eliminados exitosamente${failCount > 0 ? `, ${failCount} fallos` : ''}`;
+      const message = `${successCount} productos eliminados ${failCount > 0 ? `, ${failCount} fallos` : ''}`;
       
       if (failCount > 0) {
         setError(prevError => ({
@@ -543,6 +572,59 @@ const ShopProductsListUtils = () => {
     }
   }, [products, setSelectedProductToUpdate, setIsUpdatingProduct]);
 
+  // UPDATE: Added function to toggle product active status
+  const handleToggleActiveStatus = useCallback(async (id_product) => {
+    try {
+      console.log(`Toggling active status for product: ${id_product}`);
+      
+      // Call the API to toggle the product status
+      const response = await axiosInstance.post('/product/toggle-active', {
+        id_product
+      });
+      
+      if (response.data && response.data.success) {
+        // Success message
+        setSuccess(prev => ({
+          ...prev,
+          productSuccess: response.data.success
+        }));
+        setShowSuccessCard(true);
+        
+        // Refresh the product list to update UI
+        await fetchProductsByShop();
+        refreshProductList();
+        
+        return {
+          success: true,
+          data: response.data.data,
+          message: response.data.success
+        };
+      } else {
+        // Error handling
+        setError(prevError => ({
+          ...prevError,
+          productError: response.data.error || "Error al cambiar el estado del producto"
+        }));
+        setShowErrorCard(true);
+        return {
+          success: false,
+          message: response.data.error
+        };
+      }
+    } catch (err) {
+      console.error('Error toggling product active status:', err);
+      setError(prevError => ({
+        ...prevError,
+        productError: "Error al cambiar el estado del producto"
+      }));
+      setShowErrorCard(true);
+      return {
+        success: false,
+        message: "Error al cambiar el estado del producto"
+      };
+    }
+  }, [setError, setShowErrorCard, setSuccess, setShowSuccessCard, fetchProductsByShop, refreshProductList]);
+
   // Use the formatImageUrl function from imageUploadService.js for consistency
   const getImageUrl = (imagePath) => {
     return formatImageUrl(imagePath);
@@ -568,6 +650,7 @@ const ShopProductsListUtils = () => {
     handleBulkDelete,
     handleAddProduct,
     handleUpdateProduct,
+    handleToggleActiveStatus,
     getImageUrl,
     handleProductImageDoubleClick,
     formatDate,
@@ -578,7 +661,8 @@ const ShopProductsListUtils = () => {
     handleSearchChange,
     handleResetAllFilters,
     handleSelectForImageUpload,
-    handleBulkUpdate
+    handleBulkUpdate,
+    isNewProduct
   };
 };
 

@@ -1,6 +1,7 @@
 import shop_model from "../../models/shop_model.js";
 import user_model from "../../models/user_model.js";
 import productController from "../product/product_controller.js";
+import packageController from "../package/package_controller.js"; // ✨ UPDATE: Added import for package controller
 import product_model from "../../models/product_model.js";
 import { Op } from 'sequelize';
 import path from 'path';
@@ -191,13 +192,23 @@ async function create(shopData) {
             };
         }
 
-        // Format time fields if they exist
+        // Format time fields and include new fields with defaults if not provided
         const formattedData = {
             ...shopData,
             morning_open: shopData.morning_open || null,
             morning_close: shopData.morning_close || null,
             afternoon_open: shopData.afternoon_open || null,
-            afternoon_close: shopData.afternoon_close || null
+            afternoon_close: shopData.afternoon_close || null,
+            // UPDATE: Added delivery service field with default if not provided
+            has_delivery: shopData.has_delivery !== undefined ? shopData.has_delivery : false,
+            // UPDATE: Added days of week fields with defaults if not provided
+            open_monday: shopData.open_monday !== undefined ? shopData.open_monday : true,
+            open_tuesday: shopData.open_tuesday !== undefined ? shopData.open_tuesday : true,
+            open_wednesday: shopData.open_wednesday !== undefined ? shopData.open_wednesday : true,
+            open_thursday: shopData.open_thursday !== undefined ? shopData.open_thursday : true,
+            open_friday: shopData.open_friday !== undefined ? shopData.open_friday : true,
+            open_saturday: shopData.open_saturday !== undefined ? shopData.open_saturday : true,
+            open_sunday: shopData.open_sunday !== undefined ? shopData.open_sunday : false
         };
 
         // If no existing shop, proceed with creation
@@ -246,7 +257,7 @@ async function update(id, shopData) {
 
         console.log('Current shop data:', shop.toJSON());
 
-        // Create update data object
+        // Create update data object including new fields
         const updateData = {
             name_shop: shopData.name_shop,
             location_shop: shopData.location_shop,
@@ -258,7 +269,17 @@ async function update(id, shopData) {
             morning_open: shopData.morning_open,
             morning_close: shopData.morning_close,
             afternoon_open: shopData.afternoon_open,
-            afternoon_close: shopData.afternoon_close
+            afternoon_close: shopData.afternoon_close,
+            // UPDATE: Added delivery field
+            has_delivery: shopData.has_delivery !== undefined ? shopData.has_delivery : shop.has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday: shopData.open_monday !== undefined ? shopData.open_monday : shop.open_monday,
+            open_tuesday: shopData.open_tuesday !== undefined ? shopData.open_tuesday : shop.open_tuesday,
+            open_wednesday: shopData.open_wednesday !== undefined ? shopData.open_wednesday : shop.open_wednesday,
+            open_thursday: shopData.open_thursday !== undefined ? shopData.open_thursday : shop.open_thursday,
+            open_friday: shopData.open_friday !== undefined ? shopData.open_friday : shop.open_friday,
+            open_saturday: shopData.open_saturday !== undefined ? shopData.open_saturday : shop.open_saturday,
+            open_sunday: shopData.open_sunday !== undefined ? shopData.open_sunday : shop.open_sunday
         };
 
         console.log('Update data being applied:', updateData);
@@ -350,13 +371,23 @@ async function updateWithFolder(id, shopData) {
             }
         }
 
-        // Update shop data including schedule fields
+        // Update shop data including schedule fields and new fields
         const updateData = { 
             ...shopData,
             morning_open: shopData.morning_open || shop.morning_open,
             morning_close: shopData.morning_close || shop.morning_close,
             afternoon_open: shopData.afternoon_open || shop.afternoon_open,
-            afternoon_close: shopData.afternoon_close || shop.afternoon_close
+            afternoon_close: shopData.afternoon_close || shop.afternoon_close,
+            // UPDATE: Added delivery field
+            has_delivery: shopData.has_delivery !== undefined ? shopData.has_delivery : shop.has_delivery,
+            // UPDATE: Added days of week fields
+            open_monday: shopData.open_monday !== undefined ? shopData.open_monday : shop.open_monday,
+            open_tuesday: shopData.open_tuesday !== undefined ? shopData.open_tuesday : shop.open_tuesday,
+            open_wednesday: shopData.open_wednesday !== undefined ? shopData.open_wednesday : shop.open_wednesday,
+            open_thursday: shopData.open_thursday !== undefined ? shopData.open_thursday : shop.open_thursday,
+            open_friday: shopData.open_friday !== undefined ? shopData.open_friday : shop.open_friday,
+            open_saturday: shopData.open_saturday !== undefined ? shopData.open_saturday : shop.open_saturday,
+            open_sunday: shopData.open_sunday !== undefined ? shopData.open_sunday : shop.open_sunday
         };
         delete updateData.old_name_shop;
         
@@ -419,7 +450,7 @@ async function removeById(id_shop) {
 
       return { 
         data:  id_shop,
-        message: "El comercio se ha borrado correctamente" 
+        message: "El comercio se ha borrado ." 
         };
     } catch (err) {
       console.error("-> shop_controller.js - removeById() - Error = ", err);
@@ -445,7 +476,15 @@ async function removeByIdWithProducts(id_shop) {
         const transaction = await shop_model.sequelize.transaction();
 
         try {
-            // First remove all products using the product controller
+            // ✨ UPDATE: First remove all packages using the package controller
+            const packageResult = await packageController.removeByShopId(id_shop, transaction);
+            
+            if (packageResult.error) {
+                await transaction.rollback();
+                return { error: packageResult.error };
+            }
+
+            // Then remove all products using the product controller
             const productResult = await productController.removeByShopId(id_shop, transaction);
             
             if (productResult.error) {
@@ -464,8 +503,9 @@ async function removeByIdWithProducts(id_shop) {
 
             return { 
                 data: id_shop,
-                message: "El comercio, sus productos y archivos se han borrado correctamente",
-                productsRemoved: productResult.count
+                message: "El comercio, sus productos, paquetes y archivos se han borrado .", // ✨ UPDATE: Added packages to success message
+                productsRemoved: productResult.count,
+                packagesRemoved: packageResult.count // ✨ UPDATE: Added packages count to response
             };
 
         } catch (err) {

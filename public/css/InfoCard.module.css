@@ -1,46 +1,67 @@
-/* UPDATE: Added styles for the repeat password message */
 .container {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: white;
-    border: 2px solid var(--saturated-orange);
-    padding: .3rem .5rem;
-    z-index: 1000;
-    max-width: 90%;
-    width: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 1); /* Solid background */
+  border: 2px solid var(--saturated-orange);
+  padding: 0.5rem 1rem;
+  z-index: 1000;
+  width: auto;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 90%;
+  margin-top: 0.5rem;
+  border-radius: 8px;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
+}
+
+.infoItem {
+  font-size: 0.875rem;
+  color: var(--saturated-orange);
+  margin: 2px 0;
+  text-align: left;
+  /* white-space: normal;  */
+  line-height: 1.2;
+}
+
+/* Password message styles */
+.passwordMessageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.repeatPasswordMessage {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--saturated-orange);
+  margin-left: .5rem;
+  text-align: center;
+}
+/* 
+@media (max-width: 768px) {
+  .container {
+      padding: 0.4rem 0.75rem;
+      max-width: 90%;
   }
   
-  .infoList {
-    display: flex;
-    flex-direction: column;
-    margin-left: 12px;
-    max-width: calc(100% - 40px);
+  .infoItem, .repeatPasswordMessage {
+      font-size: 0.8rem;
   }
-  
-  .infoItem {
-    font-size: 0.875rem;
-    color: var(--saturated-orange);
-    margin: 2px 0;
-    text-align: left;
-    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .container {
+      padding: 0.3rem 0.5rem;
+      max-width: 95%;
   }
-  
-  /* New styles for the password message */
-  .passwordMessageContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .repeatPasswordMessage {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--saturated-orange);
-    margin-left: 12px;
-    text-align: center;
-  }
+} */

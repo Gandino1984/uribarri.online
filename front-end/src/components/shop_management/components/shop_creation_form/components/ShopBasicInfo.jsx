@@ -13,64 +13,65 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
         Proporciona los detalles principales de tu comercio
       </p>
       
-      <div className={styles.formField}>
-        <input
-          type="text"
-          placeholder='Nombre del comercio:'
-          value={newShop.name_shop}
-          onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
-          className={styles.input}
-          required
-        />
-      </div>
-      
-      <div className={styles.formField}>
-        {/* UPDATE: Added has-value class when a value is selected */}
-        <select
-          value={newShop.type_shop || ""}
-          onChange={(e) => {
-            setNewShop({
-              ...newShop, 
-              type_shop: e.target.value,
-              subtype_shop: ''
-            })
-          }}
-          className={`${styles.input} ${newShop.type_shop ? 'has-value' : ''}`}
-          required
-        >
-          <option value="" disabled>Categoría</option>
-          {shopTypes.map(type => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
-
-      {newShop.type_shop && (
+      {/* 🚀 UPDATE: Added wrapper div for better centering and max-width control */}
+      <div className={styles.basicInfoInputWrapper}>
         <div className={styles.formField}>
-          {/* UPDATE: Added has-value class when a value is selected */}
+          <input
+            type="text"
+            placeholder='Nombre del comercio:'
+            value={newShop.name_shop}
+            onChange={(e) => setNewShop({...newShop, name_shop: e.target.value})}
+            className={styles.input}
+            required
+          />
+        </div>
+        
+        <div className={styles.formField}>
           <select
-            value={newShop.subtype_shop || ""}
-            onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
-            className={`${styles.input} ${newShop.subtype_shop ? 'has-value' : ''}`}
+            value={newShop.type_shop || ""}
+            onChange={(e) => {
+              setNewShop({
+                ...newShop, 
+                type_shop: e.target.value,
+                subtype_shop: ''
+              })
+            }}
+            className={`${styles.input} ${newShop.type_shop ? 'has-value' : ''}`}
             required
           >
-            <option value="" disabled>Subcategoría</option>
-            {subtypes.map(subtype => (
-              <option key={subtype} value={subtype}>{subtype}</option>
+            <option value="" disabled>Categoría</option>
+            {shopTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
             ))}
           </select>
         </div>
-      )}
-      
-      <div className={styles.formField}>
-        <input
-          type="text"
-          placeholder='Dirección del comercio:'
-          value={newShop.location_shop}
-          onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
-          className={styles.input}
-          required
-        />
+
+        {newShop.type_shop && (
+          <div className={styles.formField}>
+            <select
+              value={newShop.subtype_shop || ""}
+              onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
+              className={`${styles.input} ${newShop.subtype_shop ? 'has-value' : ''}`}
+              required
+            >
+              <option value="" disabled>Subcategoría</option>
+              {subtypes.map(subtype => (
+                <option key={subtype} value={subtype}>{subtype}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        
+        <div className={styles.formField}>
+          <input
+            type="text"
+            placeholder='Dirección del comercio:'
+            value={newShop.location_shop}
+            onChange={(e) => setNewShop({...newShop, location_shop: e.target.value})}
+            className={styles.input}
+            required
+          />
+        </div>
       </div>
     </section>
   );

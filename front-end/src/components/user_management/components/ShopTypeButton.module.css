@@ -11,7 +11,7 @@
   border-radius: 6px;
   padding: .4rem;
   gap: .5rem;
-  background-color: var(--superlight-gray);
+  background-color: var(--saturated-orange);
   transition: all 0.15s ease;
 }
 

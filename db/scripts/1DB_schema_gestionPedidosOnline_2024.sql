@@ -55,6 +55,14 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
   `calification_shop` INT NOT NULL DEFAULT 5,
   `image_shop` VARCHAR(255) NULL,
   `id_user` INT UNSIGNED NOT NULL,
+  `has_delivery` TINYINT(1) NOT NULL DEFAULT 0,
+  `open_monday` TINYINT(1) NOT NULL DEFAULT 1,
+  `open_tuesday` TINYINT(1) NOT NULL DEFAULT 1,
+  `open_wednesday` TINYINT(1) NOT NULL DEFAULT 1,
+  `open_thursday` TINYINT(1) NOT NULL DEFAULT 1,
+  `open_friday` TINYINT(1) NOT NULL DEFAULT 1,
+  `open_saturday` TINYINT(1) NOT NULL DEFAULT 1,
+  `open_sunday` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_shop`),
   UNIQUE INDEX `id_shop_UNIQUE` (`id_shop` ASC) VISIBLE
 ) ENGINE = InnoDB;
@@ -78,10 +86,30 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   `second_hand` TINYINT(1) NOT NULL DEFAULT 0,
   `expiration_product` DATE,
   `surplus_product` INT NOT NULL DEFAULT 0,
-  `country_product` VARCHAR(100) NULL ,
-  `locality_product` VARCHAR(100) NULL ,
+  `country_product` VARCHAR(100) NULL,
+  `locality_product` VARCHAR(100) NULL,
+  `active_product` TINYINT(1) NOT NULL DEFAULT 1,
+  `creation_product` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_product`),
   UNIQUE INDEX `id_product_UNIQUE` (`id_product` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`package`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
+  `id_package` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_shop` INT UNSIGNED NOT NULL,
+  `id_product1` INT UNSIGNED NOT NULL,
+  `id_product2` INT UNSIGNED NULL,
+  `id_product3` INT UNSIGNED NULL,
+  `id_product4` INT UNSIGNED NULL,
+  `id_product5` INT UNSIGNED NULL,
+  `name_package` VARCHAR(100) NULL,
+  `creation_package` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `active_package` TINYINT(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id_package`),
+  UNIQUE INDEX `id_package_UNIQUE` (`id_package` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------

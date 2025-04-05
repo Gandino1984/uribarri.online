@@ -1,45 +1,51 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import styles from '../../../../../../public/css/SuccessCard.module.css';
 import { CircleCheckBig } from 'lucide-react';
 
 const SuccessCard = () => {
-  // UPDATE: Using useUI hook instead of AppContext
+  // 🔄 UPDATE: Added state to track the most recent success message
+  const [latestSuccess, setLatestSuccess] = useState('');
+  
   const {
     showSuccessCard,
     setShowSuccessCard,
     success,
+    clearSuccess
   } = useUI();
 
   useEffect(() => {
-    const hasSuccess = Object.values(success).some(msg => msg !== '');
+    const successEntries = Object.entries(success).filter(([_, value]) => value !== '');
+    const hasSuccess = successEntries.length > 0;
     
     if (!hasSuccess) {
       setShowSuccessCard(false);
+      setLatestSuccess('');
     } else {
+      // 🔄 UPDATE: Find the latest success message
+      const mostRecentSuccess = successEntries[successEntries.length - 1][1];
+      setLatestSuccess(mostRecentSuccess);
       setShowSuccessCard(true);
       
       const timer = setTimeout(() => {
         setShowSuccessCard(false);
+        // Clear all success messages after the timeout
+        clearSuccess();
       }, 6000);
 
       return () => clearTimeout(timer);
     }
-  }, [success, setShowSuccessCard]);
-
-  const activeSuccessMessages = Object.entries(success).filter(([_, value]) => value !== '');
+  }, [success, setShowSuccessCard, clearSuccess]);
 
   return (
-    showSuccessCard && activeSuccessMessages.length > 0 && (
+    showSuccessCard && latestSuccess && (
       <div className={styles.container}>
         <CircleCheckBig color="var(--saturated-orange)" size={20} />
-
         <div className={styles.successList}>
-          {activeSuccessMessages.map(([key, value]) => (
-            <div className={styles.successItem} key={key}>
-              {value}
-            </div>
-          ))}
+          {/* 🔄 UPDATE: Only display the latest success message */}
+          <div className={styles.successItem}>
+            {latestSuccess}
+          </div>
         </div>
       </div>
     )

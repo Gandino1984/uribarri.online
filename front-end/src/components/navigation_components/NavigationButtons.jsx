@@ -15,7 +15,7 @@ const NavigationButtons = ({
   SubmitIcon = Box,
   showSubmitButton = true
 }) => {
-  // UPDATE: Prevent event bubbling in navigation buttons
+  // 🔄 UPDATE: Prevent event bubbling in navigation buttons
   const handleNextClick = (e) => {
     e.preventDefault(); // Prevent form submission
     e.stopPropagation(); // Stop event bubbling
@@ -37,7 +37,7 @@ const NavigationButtons = ({
           onClick={handlePreviousClick}
         >
           <ChevronLeft size={16} />
-          {previousLabel}
+          <span className={styles.buttonText}>{previousLabel}</span>
         </button>
       )}
       
@@ -47,7 +47,7 @@ const NavigationButtons = ({
           className={styles.navButton}
           onClick={handleNextClick}
         >
-          {nextLabel}
+          <span className={styles.buttonText}>{nextLabel}</span>
           <ChevronRight size={16} />
         </button>
       ) : (

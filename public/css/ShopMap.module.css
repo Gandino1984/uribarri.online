@@ -8,33 +8,20 @@
     overflow: hidden;
     /* margin-left: .5rem; */
     transition: all 0.3s ease;
+    padding-bottom: 1rem;
   }
   
   /* Ensure popup appears above other elements */
   .mapContainer :global(.leaflet-popup) {
-    z-index: 1000;
+    z-index: 99999999999999999;
   }
-  
-  /* .mapContainer button{
-    position: absolute;
-    top: 10px;
-    right: 10px; 
-    z-index: 1001;
-    border: none;
-    border-radius: 50%;
-    width: 3rem;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s ease;
-  }
+
+
   
   .backButton:hover {
-    background-color: var(--saturated-orange);
-  } */
+    color: white !important;
+    background-color: var(--saturated-blue) !important;
+  } 
   
   @media (max-width: 768px) {
     .mapContainer {

@@ -8,8 +8,8 @@ import axiosInstance from '../../utils/app/axiosConfig.js';
 export const ShopManagementUtils = () => {
   // UPDATE: Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
-  const { setInfo } = useUI();
-  const { setShops, setSelectedShop, setshowShopManagement } = useShop();
+  const { setInfo, setShowShopManagement } = useUI();
+  const { setShops, setSelectedShop } = useShop();
   const { setShowProductManagement } = useProduct();
   
   // UPDATE: Usar un ref para rastrear si ya se ha hecho la petición
@@ -91,10 +91,10 @@ export const ShopManagementUtils = () => {
   }, [currentUser, setShops]);
 
   const handleBack = useCallback(() => {
-    setshowShopManagement(false);
+    setShowShopManagement(false);
     setShowProductManagement(false);
     setSelectedShop(null);
-  }, [setshowShopManagement, setShowProductManagement, setSelectedShop]);
+  }, [setShowShopManagement, setShowProductManagement, setSelectedShop]);
 
   const handleSelectShop = useCallback((shop) => {
     console.log('Selecting shop:', shop);

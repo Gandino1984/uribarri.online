@@ -232,7 +232,7 @@ export const LoginRegisterUtils = () => {
       }
 
       // Explicitly set user type in context before login
-      console.log('-> LoginRegisterUtils.jsx - handleLogin() - Tipo de usuario extraido de la DB = ', type);
+      console.log('-> LoginRegisterUtils.jsx - handleLogin() - Tipo de usuari@ extraido de la DB = ', type);
       
       setUserType(type);
 
@@ -365,7 +365,7 @@ export const LoginRegisterUtils = () => {
         const canRegister = await validateIPRegistration();
 
         if (!canRegister) {
-          setError(prevError => ({ ...prevError, ipError: "Demasiados registros en este dispositivo. Intente en 72 horas." }));
+          setError(prevError => ({ ...prevError, ipError: "Demasiados registros." }));
 
           console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Validación de IP fallida. No se permite el registro.');
           return;
@@ -376,8 +376,8 @@ export const LoginRegisterUtils = () => {
       const { isValid, cleanedUsername, errors } = validateUsername(name_user);
 
       if (!isValid) {
-        console.error('-> LoginRegisterUtils.jsx - handleFormSubmit() - Error en el nombre de usuario');
-        setError(prevError => ({ ...prevError, userError: "Error en el nombre de usuario" }));
+        console.error('-> LoginRegisterUtils.jsx - handleFormSubmit() - Error en el Nombre de usuari@');
+        setError(prevError => ({ ...prevError, userError: "Error en el Nombre de usuari@" }));
         return;
       }
   

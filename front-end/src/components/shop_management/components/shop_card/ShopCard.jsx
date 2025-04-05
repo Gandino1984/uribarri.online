@@ -3,7 +3,7 @@ import styles from '../../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from './components/shop_cover_image/ShopCoverImage.jsx';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
-import { useProduct } from '../../../../app_context/ProductContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx'; // 🔄 UPDATE: Added import for UIContext
 import ShopMap from './components/shop_map/ShopMap.jsx';
 import ShopHeader from './components/ShopHeader.jsx';
 import MinimizedCard from './components/MinimizedCard.jsx';
@@ -16,17 +16,22 @@ const ShopCard = ({ shop }) => {
   const [showMap, setShowMap] = useState(false);
   const isSmallScreen = useScreenSize(768);
   
-  // UPDATE: Using split context hooks instead of AppContext
+  // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { setSelectedShop, setShowShopCreationForm } = useShop();
-  const { setShowProductManagement } = useProduct();
+  const { setShowProductManagement } = useUI(); // 🔄 UPDATE: Now importing from UIContext instead of ProductContext
   
-  const { formatTime, formatShopType, checkHasContinuousSchedule } = ShopCardUtils();
+  const { formatTime, formatShopType, checkHasContinuousSchedule, formatOpenDays } = ShopCardUtils();
 
   // Event handlers
   const toggleMinimized = useCallback(() => {
     setMinimized(prevState => !prevState);
-  }, []);
+    
+    // Hide map when minimizing
+    if (!minimized === false) {
+      setShowMap(false);
+    }
+  }, [minimized]);
 
   const toggleMap = useCallback((e) => {
     e.stopPropagation(); 
@@ -50,7 +55,7 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
-  // Enhanced responsive layout with fullscreen mobile map
+  // Enhanced layout handling for minimized state
   return (
     <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 
@@ -74,6 +79,7 @@ const ShopCard = ({ shop }) => {
               formatTime={formatTime}
               formatShopType={shopTypeFormatted}
               hasContinuousSchedule={hasContinuousSchedule}
+              formatOpenDays={formatOpenDays}
             />
           </>
         )}
@@ -83,7 +89,7 @@ const ShopCard = ({ shop }) => {
       {showMap && !minimized && (
         <div 
           className={styles.mapWrapper} 
-          style={!isSmallScreen ? { flex: '1 0 60%', maxWidth: '60%' } : {}}
+          // style={!isSmallScreen ? { flex: '1 0 60%', maxWidth: '60%' } : {}}
         >
           <ShopMap 
             shop={shop} 

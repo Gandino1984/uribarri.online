@@ -37,7 +37,7 @@ const ProductDetails = ({
 
   return (
     <section className={styles.detailsSection}>
-      <h2 className={styles.sectionTitle}>Detalles adicionales</h2>
+      <h2 className={styles.sectionTitle}>Detalles opcionales</h2>
       <p className={styles.sectionDescription}>
         Completa la información para una mejor descripción del producto
       </p>
@@ -106,6 +106,7 @@ const ProductDetails = ({
           step="1"
           min="0"
           max="100"
+          placeholder="0-100" /* 🔖 UPDATE: Added placeholder for discount range */
         />
       </div>
 
@@ -118,6 +119,7 @@ const ProductDetails = ({
           value={productData.surplus_product}
           onChange={onNumericInputChange}
           min="0"
+          placeholder="0" /* 📈 UPDATE: Added placeholder for surplus value */
           required
         />
       </div>

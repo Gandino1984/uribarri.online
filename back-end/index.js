@@ -12,13 +12,12 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
+
 // Always use 3000 internally for Docker compatibility
 const INTERNAL_PORT = 3000;
+
 // APP_PORT is only for external mapping in Docker
 const EXTERNAL_PORT = process.env.APP_PORT || 3007;
-
-console.log(`Server will listen on internal port ${INTERNAL_PORT}`);
-console.log(`External port mapping is set to ${EXTERNAL_PORT}`);
 
 // Middlewares
 // Serve static files from the public directory at project root

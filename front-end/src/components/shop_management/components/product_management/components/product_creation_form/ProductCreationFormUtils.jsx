@@ -9,7 +9,6 @@ import { uploadProductImage } from '../../../../../../utils/image/imageUploadSer
 import { validateImageFile } from '../../../../../../utils/image/imageValidation.js';
 import { optimizeImage } from '../../../../../../utils/image/imageOptimizer.js';
 
-// UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ProductCreationFormUtils = () => {
   // Auth context
   const { currentUser } = useAuth();
@@ -26,7 +25,8 @@ const ProductCreationFormUtils = () => {
     setIsDeclined, 
     setUploading,
     setSuccess,
-    setShowSuccessCard
+    setShowSuccessCard,
+    setShowProductManagement
   } = useUI();
   
   // Shop context
@@ -38,7 +38,6 @@ const ProductCreationFormUtils = () => {
     setNewProductData,
     products, 
     setProducts,
-    setShowProductManagement,
     selectedProductToUpdate,
     setIsUpdatingProduct,
     setSelectedProductToUpdate,
@@ -46,10 +45,11 @@ const ProductCreationFormUtils = () => {
     refreshProductList
   } = useProduct();
 
-  // Estado para llevar la cuenta de productos y el límite
+
   const [productCount, setProductCount] = useState(0);
-  const [productLimit, setProductLimit] = useState(7); // Valor por defecto para usuarios no sponsor
-  // Add state to track current operation type to prevent conflicts
+  
+  const [productLimit, setProductLimit] = useState(7);
+
   const [currentOperation, setCurrentOperation] = useState(null); // can be 'create', 'update', or null
 
   // Función para obtener productos por tienda
@@ -59,15 +59,16 @@ const ProductCreationFormUtils = () => {
         console.error('No hay comercio seleccionado');
         setError(prevError => ({ ...prevError, shopError: "No hay comercio seleccionado" }));
         setProducts([]);
-        return;
+        return [];
       }
       
+      // UPDATE: Added logging to track the fetch process
+      console.log(`ProductCreationFormUtils - Fetching products for shop ID: ${selectedShop.id_shop}`);
       const response = await axiosInstance.get(`/product/by-shop-id/${selectedShop.id_shop}`);
+
       const fetchedProducts = response.data.data || [];
       
-      console.log(`Fetched ${fetchedProducts.length} products for shop ${selectedShop.name_shop}`);
-      
-      // Filter out invalid empty products
+      // Additional validation - skip empty products
       const validProducts = fetchedProducts.filter(product => 
         product.name_product && product.name_product.trim() !== ''
       );
@@ -76,7 +77,10 @@ const ProductCreationFormUtils = () => {
         console.warn(`Filtered out ${fetchedProducts.length - validProducts.length} empty products`);
       }
       
-      // Sort products by ID (most recent first)
+      console.log(`Successfully fetched ${validProducts.length} valid products for shop ${selectedShop.name_shop}`);
+      
+      // Sort the products to maintain consistent order after updates
+      // Most recent products first (assuming higher ID means more recent)
       const sortedProducts = [...validProducts].sort((a, b) => {
         return b.id_product - a.id_product;
       });
@@ -94,14 +98,14 @@ const ProductCreationFormUtils = () => {
       setProducts([]);
       return [];
     } 
-  }, [selectedShop, setError, setProducts]);
+  }, [selectedShop, setProducts, setError]);
 
   // Determinar el límite de productos basado en la categoría del usuario
   useEffect(() => {
     if (currentUser?.category_user) {
-      setProductLimit(25); // Límite para usuarios sponsor
+      setProductLimit(200); // Límite para usuarios sponsor
     } else {
-      setProductLimit(3); // Límite para usuarios no sponsor
+      setProductLimit(7); // Límite para usuarios no sponsor
     }
   }, [currentUser]);
 
@@ -332,7 +336,8 @@ const ProductCreationFormUtils = () => {
       surplus_product: 0,
       expiration_product: null,
       country_product: '',
-      locality_product: ''  
+      locality_product: '',
+      active_product: true  // Ensure new product has active_product set to true by default
     });
     
     setError(prevError => ({
@@ -432,7 +437,7 @@ const ProductCreationFormUtils = () => {
         
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          imageSuccess: "Imagen subida correctamente"
+          imageSuccess: "Imagen subida ."
         }));
         setShowSuccessCard(true);
         
@@ -453,9 +458,11 @@ const ProductCreationFormUtils = () => {
     }
   }, [selectedShop, products, setUploading, setError, setProducts, refreshProductList, setSuccess, setShowSuccessCard, setShowErrorCard]);
 
-  // Updated createProduct with better success message handling
+  // UPDATE: Enhanced createProduct function with better error handling, logging, and state management
   const createProduct = useCallback(async () => {
     try {
+      console.log('Starting product creation process...');
+      
       // Verificar que no se haya alcanzado el límite
       if (productCount >= productLimit) {
         setError(prevError => ({
@@ -470,12 +477,14 @@ const ProductCreationFormUtils = () => {
       const formattedData = {
         ...newProductData,
         price_product: Number(newProductData.price_product).toFixed(2),
+        active_product: true  // Explicitly set active_product to true for new products
       };
 
       console.log('Creating product with data:', formattedData);
       const response = await axiosInstance.post('/product/create', formattedData);
 
       if (response.data.error) {
+        console.error('Error from server during product creation:', response.data.error);
         setError(prevError => ({
           ...prevError,
           databaseResponseError: response.data.error
@@ -486,8 +495,20 @@ const ProductCreationFormUtils = () => {
 
       if (response.data.data) {
         const createdProduct = response.data.data;
+        console.log('Product created successfully:', createdProduct);
         
-        // After successfully creating a product, fetch fresh product list from the server
+        // UPDATE: Add the newly created product to the products array with proper active_product value
+        const newProduct = {
+          ...formattedData,
+          id_product: createdProduct.id_product || createdProduct,
+          image_product: null, // Initial state with no image
+          active_product: true, // Ensure active_product is boolean true for frontend filtering
+          creation_product: new Date().toISOString() // Add creation date
+        };
+        
+        setProducts(prevProducts => [newProduct, ...prevProducts]);
+        
+        // After adding to local state, fetch fresh product list from the server
         await fetchProductsByShop();
         
         // Force refresh the product list in other components
@@ -496,7 +517,7 @@ const ProductCreationFormUtils = () => {
         // Use createSuccess for creation operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          createSuccess: "Producto creado exitosamente",
+          createSuccess: "Producto creado.",
           // Clear other operations to avoid confusion
           productSuccess: '',
           updateSuccess: '',
@@ -504,26 +525,34 @@ const ProductCreationFormUtils = () => {
         }));
         setShowSuccessCard(true);
         
+        // Reset form and navigation
         resetNewProductData();
+        
+        // Ensure we're in product management view
+        setIsUpdatingProduct(false);
         setShowProductManagement(true);
         
         // Return the created product so we can access its ID
         return createdProduct;
       }
       
+      console.warn('Product creation returned no data');
       return false;
     } catch (err) {
+      console.error('Error creating product:', err);
       setError(prevError => ({
         ...prevError,
         databaseResponseError: 'Error al crear el producto'
       }));
       setShowErrorCard(true);
-      console.error('ProductCreationFormUtils - createProduct() - Error al crear el producto =', err);
-      console.error('Error request:', err.request);
-      console.error('Error config:', err.config);
+      console.error('ProductCreationFormUtils - createProduct() - Error request details:', {
+        request: err.request,
+        config: err.config,
+        message: err.message
+      });
       return false;
     }
-  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement]);
+  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setProducts]);
 
   // Updated handleSubmit with operation tracking
   const handleSubmit = useCallback(async (e, imageFile = null) => {
@@ -634,9 +663,10 @@ const ProductCreationFormUtils = () => {
     }
   }, [newProductData, selectedProductToUpdate, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, handleImageUpload, setError, setShowErrorCard]);
   
-  // Updated updateProductInDB with improved success message handling
+  // UPDATE: Improved updateProductInDB with better state management
   const updateProductInDB = useCallback(async (updateData) => {
     try {
+      console.log('Starting product update with data:', updateData);
       const response = await axiosInstance.patch('/product/update', updateData);
     
       if (!response.data) {
@@ -644,6 +674,7 @@ const ProductCreationFormUtils = () => {
       }
     
       if (response.data.error) {
+        console.error('Error from server during product update:', response.data.error);
         setError(prevError => ({
           ...prevError,
           databaseResponseError: response.data.error
@@ -653,7 +684,19 @@ const ProductCreationFormUtils = () => {
       }
     
       if (response.data.data) {
-        // After successfully updating a product, fetch fresh product list
+        console.log('Product updated successfully:', response.data.data);
+        
+        // Update the product in local state first
+        setProducts(prevProducts => {
+          return prevProducts.map(product => {
+            if (product.id_product === updateData.id_product) {
+              return { ...product, ...updateData };
+            }
+            return product;
+          });
+        });
+        
+        // After updating local state, fetch fresh product list from the server
         await fetchProductsByShop();
         
         // Force refresh the product list in other components
@@ -667,7 +710,7 @@ const ProductCreationFormUtils = () => {
         // Use updateSuccess for update operations
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          updateSuccess: "Producto actualizado correctamente",
+          updateSuccess: "Producto actualizado .",
           // Clear other operations to avoid confusion
           productSuccess: '',
           createSuccess: '',
@@ -678,11 +721,13 @@ const ProductCreationFormUtils = () => {
         return true;
       }
       
+      console.warn('Product update returned no data');
       return false;
     } catch (err) {
+      console.error('Error updating product:', err);
       throw err;
     }
-  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard]);
+  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setProducts]);
 
   // Function to get available product types for the selected shop
   const getAvailableProductTypesForShop = useCallback(() => {
@@ -745,7 +790,7 @@ const ProductCreationFormUtils = () => {
     }
   }, []);
   
-  // Added function to handle view product list navigation
+  // UPDATE: Improved handling of navigation back to product list
   const handleViewProductList = useCallback((setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement) => {
     console.log('Returning to product list from ProductCreationForm');
     
@@ -753,11 +798,14 @@ const ProductCreationFormUtils = () => {
     setIsUpdatingProduct(false);
     setSelectedProductToUpdate(null);
     
+    // Ensure products are refreshed
+    refreshProductList();
+    
     // Then set showProductManagement to ensure ProductManagement renders ShopProductsList
     setShowProductManagement(true);
     
     console.log('Navigation back to product list complete');
-  }, []);
+  }, [refreshProductList]);
 
   return {
     handleChange,
@@ -770,11 +818,10 @@ const ProductCreationFormUtils = () => {
     fetchProductsByShop,
     getAvailableProductTypesForShop,
     handleImageUpload,
-    // Export new image-related Utils
     handleImageSelect,
     clearImage,
     handleViewProductList
   };
 };
 
-export default ProductCreationFormUtils;
+export default ProductCreationFormUtils;  

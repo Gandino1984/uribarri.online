@@ -30,7 +30,9 @@ export const ShopCreationFormUtils = () => {
     setShowShopCreationForm,
     setSelectedShop,
     selectedShop,
-    shops
+    shops,
+    // ✨ UPDATE: Added animation control function from shop context
+    startFormExitAnimation
   } = useShop();
 
   // Function to refresh the list of shops from the server
@@ -103,7 +105,7 @@ export const ShopCreationFormUtils = () => {
       if (morningOpenTime >= afternoonCloseTime) {
         return {
           isValid: false,
-          error: 'El horario de apertura debe ser anterior al de cierre.'
+          error: 'Error en el horario.'
         };
       }
     } else {
@@ -114,21 +116,21 @@ export const ShopCreationFormUtils = () => {
       if (morningOpenTime >= morningCloseTime) {
         return {
           isValid: false,
-          error: 'El horario de apertura de la mañana debe ser anterior al de cierre.'
+          error: 'Error en el horario de apertura de la mañana.'
         };
       }
 
       if (morningCloseTime >= afternoonOpenTime) {
         return {
           isValid: false,
-          error: 'El horario de cierre de la mañana debe ser anterior al de apertura de la tarde.'
+          error: 'Error en el horario de cierre de la mañana.'
         };
       }
 
       if (afternoonOpenTime >= afternoonCloseTime) {
         return {
           isValid: false,
-          error: 'El horario de apertura de la tarde debe ser anterior al de cierre.'
+          error: 'Error en el horario de apertura de la tarde.'
         };
       }
     }
@@ -160,7 +162,7 @@ export const ShopCreationFormUtils = () => {
         optimizedFile = await optimizeImage(file, {
           maxWidth: 1200,
           maxHeight: 1200,
-          quality: 0.85,
+          quality: 0.8,
           format: 'image/webp',
           maxSizeKB: 1024 // Límite de 1MB
           });
@@ -272,7 +274,16 @@ export const ShopCreationFormUtils = () => {
       // Ensure the user ID matches the current user
       const shopData = {
         ...formData,
-        id_user: currentUser.id_user
+        id_user: currentUser.id_user,
+          // UPDATE: Ensure delivery and days of week fields are included with defaults if not present
+          has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
+          open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
+          open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
+          open_wednesday: formData.open_wednesday !== undefined ? formData.open_wednesday : true,
+          open_thursday: formData.open_thursday !== undefined ? formData.open_thursday : true,
+          open_friday: formData.open_friday !== undefined ? formData.open_friday : true,
+          open_saturday: formData.open_saturday !== undefined ? formData.open_saturday : true,
+          open_sunday: formData.open_sunday !== undefined ? formData.open_sunday : false
       };
   
       console.log('Creating shop with data:', shopData);
@@ -340,7 +351,7 @@ export const ShopCreationFormUtils = () => {
       // Agregar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
-        shopSuccess: "¡Comercio creado exitosamente!"
+        shopSuccess: "Comercio creado."
       }));
       setShowSuccessCard(true);
       
@@ -376,7 +387,16 @@ export const ShopCreationFormUtils = () => {
         morning_open: formData.morning_open,
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
-        afternoon_close: formData.afternoon_close
+        afternoon_close: formData.afternoon_close,
+         // UPDATE: Log new fields
+         has_delivery: formData.has_delivery,
+         open_monday: formData.open_monday,
+         open_tuesday: formData.open_tuesday,
+         open_wednesday: formData.open_wednesday,
+         open_thursday: formData.open_thursday,
+         open_friday: formData.open_friday,
+         open_saturday: formData.open_saturday,
+         open_sunday: formData.open_sunday
       });
   
       const isNameChanged = selectedShop && selectedShop.name_shop !== formData.name_shop;
@@ -394,7 +414,16 @@ export const ShopCreationFormUtils = () => {
         morning_open: formData.morning_open,
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
-        afternoon_close: formData.afternoon_close
+        afternoon_close: formData.afternoon_close,
+        // UPDATE: Include new fields in update data
+        has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
+        open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
+        open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
+        open_wednesday: formData.open_wednesday !== undefined ? formData.open_wednesday : true,
+        open_thursday: formData.open_thursday !== undefined ? formData.open_thursday : true,
+        open_friday: formData.open_friday !== undefined ? formData.open_friday : true,
+        open_saturday: formData.open_saturday !== undefined ? formData.open_saturday : true,
+        open_sunday: formData.open_sunday !== undefined ? formData.open_sunday : false
       };
   
       if (isNameChanged) {
@@ -452,7 +481,7 @@ export const ShopCreationFormUtils = () => {
       // Mostrar mensaje de éxito
       setSuccess(prevSuccess => ({
         ...prevSuccess,
-        shopSuccess: "¡Comercio actualizado exitosamente!"
+        shopSuccess: "Comercio actualizado."
       }));
       setShowSuccessCard(true);
       

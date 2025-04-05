@@ -5,7 +5,9 @@ import {
   CheckCircle, 
   ImagePlus,
   ArrowRightFromLine,
-  ArrowLeftFromLine 
+  ArrowLeftFromLine,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
 
@@ -17,9 +19,15 @@ const ProductActionsCell = ({
   handleDeleteProduct,
   handleSelectProduct,
   handleSelectForImageUpload,
+  handleToggleActiveStatus,
   selectedProducts,
-  currentDeletingProduct
+  currentDeletingProduct,
+  isSmallScreen  // 📱 UPDATE: Added isSmallScreen prop
 }) => {
+  // 📱 UPDATE: Adjust icon sizes based on screen size
+  const iconSize = isSmallScreen ? 18 : 20;
+  const mainIconSize = isSmallScreen ? 20 : 22;
+  
   return (
     <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
       <div className={`${styles.actionsCellWrapper} ${activeActionsMenu === product.id_product ? styles.active : ''}`}>
@@ -31,11 +39,11 @@ const ProductActionsCell = ({
         >
           {activeActionsMenu === product.id_product ? (
             <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ArrowLeftFromLine size={22} strokeWidth={2} />
+              <ArrowLeftFromLine size={mainIconSize} strokeWidth={2} />
             </span>
           ) : (
             <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ArrowRightFromLine size={22} strokeWidth={2} />
+              <ArrowRightFromLine size={mainIconSize} strokeWidth={2} />
             </span>
           )}
         </button>
@@ -50,7 +58,7 @@ const ProductActionsCell = ({
             className={`${styles.actionButton} ${styles.updateButton}`}
             title="Actualizar producto"
           >
-            <Pencil size={20} />
+            <Pencil size={iconSize} />
           </button>
           <button
             onClick={(e) => {
@@ -63,7 +71,7 @@ const ProductActionsCell = ({
             type="button"
             disabled={currentDeletingProduct?.current === product.id_product}
           >
-            <Trash2 size={20} />
+            <Trash2 size={iconSize} />
           </button>
           <button
             onClick={(e) => {
@@ -76,14 +84,30 @@ const ProductActionsCell = ({
             }`}
             title="Seleccionar producto"
           >
-            <CheckCircle size={20} />
+            <CheckCircle size={iconSize} />
           </button>
           <button
             onClick={(e) => handleSelectForImageUpload(product.id_product, e)}
             className={`${styles.actionButton} ${styles.imageButton}`}
             title="Seleccionar para subir imagen"
           >
-            <ImagePlus size={20} />
+            <ImagePlus size={iconSize} />
+          </button>
+          {/* Toggle active status button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleActiveStatus(product.id_product);
+              toggleActionsMenu(product.id_product, e);
+            }}
+            className={`${styles.actionButton} ${product.active_product ? styles.visibleButton : styles.hiddenButton}`}
+            title={product.active_product ? "Desactivar producto" : "Activar producto"}
+          >
+            {product.active_product ? (
+              <Eye size={iconSize} />
+            ) : (
+              <EyeOff size={iconSize} />
+            )}
           </button>
         </div>
       </div>

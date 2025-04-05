@@ -6,6 +6,7 @@ import ShopsListBySeller from './components/shops_list_by_seller/ShopsListBySell
 import ShopCreationForm from './components/shop_creation_form/ShopCreationForm.jsx';
 import ProductManagement from './components/product_management/ProductManagement.jsx';
 import { ShopManagementUtils } from './ShopManagementUtils.jsx';
+import styles from '../../../../public/css/ShopManagement.module.css'; // 🚀 UPDATE: Imported styles correctly
 
 const ShopManagement = () => {
   // UPDATE: Using separate contexts instead of AppContext
@@ -14,9 +15,10 @@ const ShopManagement = () => {
   const { 
     showShopCreationForm, 
     shops,
-    selectedShop,
-    setshowShopManagement
+    selectedShop
   } = useShop();
+  
+  const { setShowShopManagement } = useUI();
   
   // UPDATE: Get showProductManagement from UI context where it's defined
   const { showProductManagement } = useUI();
@@ -39,7 +41,7 @@ const ShopManagement = () => {
 
   if (!currentUser || currentUser.type_user !== 'seller') {
     console.log('Non-seller user in ShopManagement, redirecting to login');
-    setshowShopManagement(false);
+    setShowShopManagement(false);
     return null;
   }
   
@@ -56,7 +58,14 @@ const ShopManagement = () => {
     componentToRender = <ShopsListBySeller />;
   }
   
-  return componentToRender;
+  // 🚀 UPDATE: Wrapped component with container div for proper spacing
+  return (
+    <div className={styles.container}>
+      <div className={styles.contentWrapper}>
+        {componentToRender}
+      </div>
+    </div>
+  );
 };
 
 export default ShopManagement;

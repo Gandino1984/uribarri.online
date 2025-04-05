@@ -18,6 +18,9 @@ export const ShopProvider = ({ children }) => {
   const [shopType, setShopType] = useState('');
   const [selectedShopType, setSelectedShopType] = useState(null);
   
+  // ✨ UPDATE: Added state to control the exit animation of ShopCreationForm
+  const [shouldExitShopForm, setShouldExitShopForm] = useState(false);
+  
   const [newShop, setNewShop] = useState({
     name_shop: '',
     type_shop: '',
@@ -31,6 +34,13 @@ export const ShopProvider = ({ children }) => {
     afternoon_open: '00:00',
     afternoon_close: '00:00',
     has_delivery: false,
+    open_monday: true,
+    open_tuesday: true,
+    open_wednesday: true,
+    open_thursday: true,
+    open_friday: true,
+    open_saturday: true,
+    open_sunday: false
   });
   
   const [shopTypesAndSubtypes, setShopTypesAndSubtypes] = useState({
@@ -82,6 +92,28 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
+  // ✨ UPDATE: Add animation control functions
+  const startFormExitAnimation = () => {
+    // Set the flag to start exit animation
+    setShouldExitShopForm(true);
+    
+    // Return a promise that resolves when animation should be complete
+    return new Promise(resolve => {
+      setTimeout(() => {
+        // Reset flag after animation duration
+        setShouldExitShopForm(false);
+        resolve();
+      }, 500); // Duration should match animation time in component
+    });
+  };
+  
+  // ✨ UPDATE: Function to close shop form with animation
+  const closeShopFormWithAnimation = async () => {
+    await startFormExitAnimation();
+    setShowShopCreationForm(false);
+    setSelectedShop(null);
+  };
+
   const value = {
     shops, setShops,
     selectedShop, setSelectedShop,
@@ -93,6 +125,10 @@ export const ShopProvider = ({ children }) => {
     newShop, setNewShop,
     shopTypesAndSubtypes, setShopTypesAndSubtypes,
     updateShopManagementVisibility,
+    // ✨ UPDATE: Add new animation-related properties
+    shouldExitShopForm,
+    startFormExitAnimation,
+    closeShopFormWithAnimation
   };
 
   return (

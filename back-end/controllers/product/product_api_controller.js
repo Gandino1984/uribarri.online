@@ -31,7 +31,9 @@ async function create(req, res) {
             surplus_product,
             expiration_product,
             country_product,
-            locality_product
+            locality_product,
+            // UPDATE: Added active_product parameter
+            active_product
         } = req.body;
 
         if (name_product === undefined || 
@@ -47,7 +49,7 @@ async function create(req, res) {
             second_hand === undefined ||
             surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios excepto expiration_product, country_product y locality_product"
+                error: "Todos los campos son obligatorios excepto expiration_product, country_product, locality_product y active_product"
             });
         }
 
@@ -76,7 +78,9 @@ async function create(req, res) {
             surplus_product,
             expiration_product,
             country_product,
-            locality_product
+            locality_product,
+            // UPDATE: Pass active_product parameter if provided
+            active_product
         });
 
         res.json({error, data, success});    
@@ -107,7 +111,9 @@ async function update(req, res) {
             surplus_product,
             expiration_product,
             country_product,
-            locality_product
+            locality_product,
+            // UPDATE: Added active_product parameter
+            active_product
         } = req.body;
 
         if(id_product === undefined || 
@@ -124,7 +130,7 @@ async function update(req, res) {
            second_hand === undefined ||
            surplus_product === undefined) {
             return res.status(400).json({
-                error: "Todos los campos son obligatorios excepto expiration_product, country_product y locality_product"
+                error: "Todos los campos son obligatorios excepto expiration_product, country_product, locality_product y active_product"
             });
         }
 
@@ -155,7 +161,9 @@ async function update(req, res) {
                 surplus_product,
                 expiration_product,
                 country_product,
-                locality_product
+                locality_product,
+                // UPDATE: Pass active_product parameter if provided
+                active_product
             }
         );   
 
@@ -165,6 +173,29 @@ async function update(req, res) {
         res.status(500).json({ 
             error: "Error al actualizar un producto", 
             data: null
+        });
+    }
+}
+
+// UPDATE: Added function to toggle product active status
+async function toggleActiveStatus(req, res) {
+    try {
+        const { id_product } = req.body;
+        
+        if (!id_product) {
+            return res.status(400).json({
+                error: "El ID del producto es obligatorio"
+            });
+        }
+        
+        const { error, data, success } = await productController.toggleActiveStatus(id_product);
+        
+        res.json({ error, data, success });
+    } catch (err) {
+        console.error("-> product_api_controller.js - toggleActiveStatus() - Error =", err);
+        res.status(500).json({
+            error: "Error al cambiar el estado del producto",
+            details: err.message
         });
     }
 }
@@ -215,10 +246,11 @@ async function removeById(req, res) {
     }
 }
 
+// UPDATE: Modified to handle active parameter query
 async function getByShopId(req, res) {
     try {
         const { id_shop } = req.params;
-
+        
         if (!id_shop) {
             console.error('-> product_api_controller.js - getByShopId() - Error = El id del comercio es obligatorio');
             return res.status(400).json({ 
@@ -234,6 +266,52 @@ async function getByShopId(req, res) {
         res.status(500).json({ 
             error: "Error al obtener los productos del comercio", 
             data: null
+        });
+    }
+}
+
+// UPDATE: Added function to get only active products by shop ID
+async function getActiveByShopId(req, res) {
+    try {
+        const { id_shop } = req.params;
+        
+        if (!id_shop) {
+            return res.status(400).json({
+                error: "El ID del comercio es obligatorio"
+            });
+        }
+        
+        const { error, data, success } = await productController.getActiveByShopId(id_shop);
+        
+        res.json({ error, data, success });
+    } catch (err) {
+        console.error("-> product_api_controller.js - getActiveByShopId() - Error =", err);
+        res.status(500).json({
+            error: "Error al obtener los productos activos del comercio",
+            details: err.message
+        });
+    }
+}
+
+// UPDATE: Added function to get only inactive products by shop ID
+async function getInactiveByShopId(req, res) {
+    try {
+        const { id_shop } = req.params;
+        
+        if (!id_shop) {
+            return res.status(400).json({
+                error: "El ID del comercio es obligatorio"
+            });
+        }
+        
+        const { error, data, success } = await productController.getInactiveByShopId(id_shop);
+        
+        res.json({ error, data, success });
+    } catch (err) {
+        console.error("-> product_api_controller.js - getInactiveByShopId() - Error =", err);
+        res.status(500).json({
+            error: "Error al obtener los productos inactivos del comercio",
+            details: err.message
         });
     }
 }
@@ -341,7 +419,7 @@ async function updateProductImage(id_product, imagePath) {
 
         return { 
             data: { image_product: imagePath },
-            success: "Imagen de producto actualizada correctamente"
+            success: "Imagen de producto actualizada ."
         };
     } catch (err) {
         console.error("-> product_api_controller.js - updateProductImage() - Error =", err);
@@ -423,7 +501,11 @@ export {
     deleteImage,
     verifyProductName,
     getByCountry,
-    getByLocality
+    getByLocality,
+    // UPDATE: Export new functions
+    toggleActiveStatus,
+    getActiveByShopId,
+    getInactiveByShopId
 }
 
 export default {
@@ -439,5 +521,9 @@ export default {
     deleteImage,
     verifyProductName,
     getByCountry,
-    getByLocality
+    getByLocality,
+    // UPDATE: Export new functions
+    toggleActiveStatus,
+    getActiveByShopId,
+    getInactiveByShopId
 }

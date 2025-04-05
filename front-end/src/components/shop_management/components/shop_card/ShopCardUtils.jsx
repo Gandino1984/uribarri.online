@@ -6,7 +6,7 @@ import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
 const ShopCardUtils = () => {
-  // UPDATE: Using split context hooks instead of AppContext
+  // Using split context hooks instead of AppContext
   const { setError, setUploading } = useUI();
   const { selectedShop, setShops, shops } = useShop();
   
@@ -105,13 +105,13 @@ const ShopCardUtils = () => {
     return imageUrl;
   }, []);
 
-  // Added time and shop type formatting utilities
+  // UPDATE: Modified formatTime to use 24-hour format
   const formatTime = useCallback((time) => {
     if (!time) return '00:00';
     return new Date(`2000-01-01T${time}`).toLocaleTimeString('es-ES', {
-      hour: 'numeric',
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: false
     });
   }, []);
 
@@ -128,13 +128,79 @@ const ShopCardUtils = () => {
   const checkHasContinuousSchedule = useCallback((shop) => {
     return !shop?.morning_close || !shop?.afternoon_open;
   }, []);
+  
+  // UPDATE: Added function to format open days
+  const formatOpenDays = useCallback((shop) => {
+    if (!shop) return 'No disponible';
+    
+    const daysMap = [
+      { key: 'open_monday', short: 'Lun', full: 'Lunes' },
+      { key: 'open_tuesday', short: 'Mar', full: 'Martes' },
+      { key: 'open_wednesday', short: 'Mié', full: 'Miércoles' },
+      { key: 'open_thursday', short: 'Jue', full: 'Jueves' },
+      { key: 'open_friday', short: 'Vie', full: 'Viernes' },
+      { key: 'open_saturday', short: 'Sáb', full: 'Sábado' },
+      { key: 'open_sunday', short: 'Dom', full: 'Domingo' }
+    ];
+    
+    // Check if shop has all days data
+    const hasOpenDaysData = daysMap.some(day => shop[day.key] !== undefined);
+    
+    if (!hasOpenDaysData) {
+      return 'Lun-Sáb'; // Default if no data
+    }
+    
+    const openDays = daysMap.filter(day => shop[day.key] === true);
+    
+    if (openDays.length === 0) {
+      return 'Cerrado';
+    } else if (openDays.length === 7) {
+      return 'Todos los días';
+    } else if (openDays.length >= 5) {
+      // If only closed on weekend or just Sunday, specify the open days
+      return openDays.map(day => day.short).join(', ');
+    } else {
+      // Group consecutive days for more compact display
+      let result = '';
+      let start = null;
+      let prev = null;
+      
+      for (const day of daysMap) {
+        if (shop[day.key]) {
+          if (start === null) {
+            start = day;
+          }
+          prev = day;
+        } else if (start !== null) {
+          if (start === prev) {
+            result += (result ? ', ' : '') + start.short;
+          } else {
+            result += (result ? ', ' : '') + start.short + '-' + prev.short;
+          }
+          start = null;
+        }
+      }
+      
+      // Handle the last group if it exists
+      if (start !== null) {
+        if (start === prev) {
+          result += (result ? ', ' : '') + start.short;
+        } else {
+          result += (result ? ', ' : '') + start.short + '-' + prev.short;
+        }
+      }
+      
+      return result;
+    }
+  }, []);
 
   return {
     getShopImageUrl,
     handleShopImageUpload,
     formatTime,
     formatShopType,
-    checkHasContinuousSchedule
+    checkHasContinuousSchedule,
+    formatOpenDays
   };
 };
 

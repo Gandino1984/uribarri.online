@@ -2,18 +2,16 @@
 
 .filtersContainer {
   width: 100%;
-  max-width: 100%; /* Match parent container width */
+  max-width: 100%;
   margin-bottom: 1rem;
   padding: 0;
   background-color: white;
-  /* border-radius: 0.5rem; */
   box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   will-change: height, transform, opacity;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  /* Changed gradient to use superlight-orange */
-  /* background: linear-gradient(to bottom, #ffffff, var(--superlight-orange)); */
+  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
 }
 
 .filterControls {
@@ -123,12 +121,11 @@
   padding: 0.5rem 0.75rem;
   background-color: white;
   border: 2px solid #e2e2e2;
-  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); */
   min-height: 40px; /* UPDATE: Added fixed height to ensure alignment */
 }
 
 .toggleSwitchContainer:hover {
-  border: 2px solid var(--saturated-orange);
+  border: 2px solid var(--saturated-blue);
 }
 
 /* UPDATE: Improved toggleContainer vertical alignment */
@@ -192,51 +189,29 @@
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
 }
 
-.resetButton {
-  padding: 0.3rem .5rem;
-  background-color: white;
-  color: var(--dark-orange);
-  cursor: pointer;
-  font-size: 0.85rem;
-  /* transition: all 0.2s ease-in-out; */
-  text-align: center;
-  width: 100%;
-  max-width: 200px;
-  position: relative; /* Added for positioning the filter count */
-  /* Add subtle shadow for depth */
-  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); */
-}
-
-.resetButton:hover {
-  background-color: var(--saturated-orange);
-  border-top: 2px solid var(--light-blue);
-  color: white;
-  /* transform: translateY(-2px); */
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-}
 
 /* Active (pressed) state for reset button */
 .resetButton:active {
   background-color: var(--saturated-blue);
   border-color: var(--saturated-blue);
   color: white;
-  transform: translateY(0);
+  /* transform: translateY(0); */
 }
 
 .filterCount {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  /* top: 0; */
+  right: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.25rem;
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
   color: white;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -247,12 +222,9 @@
   flex-direction: column;
   width: 100%;
   padding: 0.75rem;
-  /* border-radius: 0.375rem; */
   background-color: white;
   border: 1px solid #e2e2e2;
-  /* Add subtle shadow for depth */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  /* Add small delay when animating */
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.08s;
 }
 
@@ -276,7 +248,6 @@
   width: 100%;
   padding: 0.6rem 0.75rem;
   border: 1px solid #e2e2e2;
-  /* border-radius: 0.375rem; */
   font-size: 0.875rem;
   outline: none;
   transition: all 0.2s ease;

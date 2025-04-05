@@ -1,4 +1,3 @@
-/* ShopCard.module.css - Mobile-first approach */
 
 .container {
   width: 100%;
@@ -9,10 +8,22 @@
   position: relative;
   transition: all 0.3s ease;
   overflow: hidden;
-  background-color: white;
+  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+  border-radius: 8px; 
 }
 
-/* UPDATE: Added responsive container class to control width based on device size */
+.container:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.01);
+}
+
+/* Added specific styles for minimized container to override min-height */
+.container.minimized {
+  min-height: unset;
+  height: auto;
+}
+
+/* Added responsive container class to control width based on device size */
 .responsiveContainer {
   width: 100%;
   height: 100%;
@@ -21,7 +32,7 @@
 
 .infoContainer {
   width: 100%;
-  background-color: white;
+  /* background-color: white; */
   /* border-radius: 0 0 0.5rem 0.5rem; */
   /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
   padding: .5rem;
@@ -30,13 +41,21 @@
 
 .header {
   display: flex;
-  flex-direction: column;
+  flex-direction: column;  
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
+header p{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+
 .title {
-  font-size: 1.25rem;
+  /* font-size: 1.25rem; */
   font-weight: 700;
   color: var(--superdark-orange);
   word-break: break-word;
@@ -52,26 +71,28 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
+  /* margin-bottom: 0.75rem; */
+  font-size: 0.8rem;
 }
 
 .locationIcon {
+  color: var(--saturated-blue);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-/* UPDATE: Added shop type styling */
+/* Added shop type styling */
 .shopType {
   color: #4b5563;
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .shopTypeIcon {
+  color: var(--saturated-blue);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -90,12 +111,12 @@
 
 .scheduleTime {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: #4b5563;
   /* gap: 0.5rem; */
 }
 
-/* UPDATE: Estilos para el botón y control de minimizar */
+/* Estilos para el botón y control de minimizar */
 .headerControls {
   /* width: 100%; */
   position: absolute;
@@ -108,26 +129,28 @@
 }
 
 .scheduleIcon{  
+  color: var(--dark-orange);
   margin-right: .5rem;
 }
 
 .minimizeButton {
+  color: var(--dark-orange);
   opacity: .8;
   background-color: rgba(255, 255, 255, 0.638);
   border: none;
-  /* border-radius: 6px; */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
-  /* transition: all 0.2s ease; */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
 }
 
 .minimizeButton:hover {
   opacity: 1;
   color: white;
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
   /* transform: scale(1.05); */
 }
 
@@ -139,7 +162,7 @@
 }
 
 .updateButton {
-  opacity: .8;
+  opacity: .9;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -174,10 +197,11 @@
   font-size: 0.85rem;
 }
 
-/* UPDATE: Estilos para el estado minimizado */
+/* Improved styles for minimized state */
 .minimized {
   max-width: 200px;
-  /* height: auto; */
+  min-height: auto;
+  height: auto;
   cursor: pointer;
   border-radius: 0.5rem;
   /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
@@ -218,13 +242,14 @@
   transform: scale(1.1);
 }
 
-/* UPDATE: Improved responsive container classes for more reliable column and row layout */
+/* Improved responsive container classes to properly handle minimized state */
 .responsiveContainerColumn {
   display: flex;
   flex-direction: column;
   width: 100%;
   position: relative;
   gap: 10px;
+  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
 }
 
 .responsiveContainerRow {
@@ -233,10 +258,17 @@
   width: 100%;
   position: relative;
   gap: 10px;
-  min-height: 300px;
+  min-height: min-content;
+  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
 }
 
-/* UPDATE: Added map wrapper to control map dimensions better */
+/* Adjusted to allow minimized cards to take natural height */
+.responsiveContainerColumn:has(.minimized),
+.responsiveContainerRow:has(.minimized) {
+  min-height: auto;
+}
+
+/* Added map wrapper to control map dimensions better */
 .mapWrapper {
   height: 100%;
   min-height: 300px;
@@ -244,7 +276,7 @@
   width: 60%;
 }
 
-/* UPDATE: Improved map container styles for better leaflet rendering */
+/* Improved map container styles for better leaflet rendering */
 .mapContainer {
   position: relative;
   width: 100%;
@@ -253,21 +285,24 @@
   overflow: hidden;
   border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
+  border-radius: 6px; /* 🧩 UPDATE: Added consistent border radius to map container */
 }
 
-/* UPDATE: Added specific map canvas styling */
+/* Added specific map canvas styling */
 .mapCanvas {
   width: 100%;
   height: 100%;
   min-height: 300px;
+
 }
 
 /* Ensure popup appears above other elements */
 .mapContainer :global(.leaflet-popup) {
-  z-index: 1000;
+  margin-bottom: 1rem;
+  z-index: 9999999999999999999999;
 }
 
-/* UPDATE: Improved back button styles */
+/* Improved back button styles */
 .backButton {
   position: absolute;
   top: 10px;
@@ -283,12 +318,45 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  /* transition: background-color 0.2s ease; */
+  transition: background-color 0.15s ease;
 }
 
 .backButton:hover {
-  background-color: var(--saturated-orange);
+  background-color: var(--saturated-blue);
   color: white;
+}
+
+/* Existing styles remain unchanged */
+
+/* 🌟 UPDATE: Added styles for star rating */
+.starsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.starIcon {
+  margin-right: -0.125rem;
+  transition: transform 0.2s ease;
+}
+
+.filledStar {
+  color: #FFD700; /* Gold color for filled stars */
+}
+
+.emptyStar {
+  color: #d1d1d1; /* Light gray for empty stars */
+}
+
+.ratingText {
+  margin-left: 0.375rem;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* Optional hover effect for stars */
+.starsContainer:hover .starIcon {
+  transform: scale(1.1);
 }
 
 /* Small tablets (640px and up) */
@@ -334,14 +402,14 @@
     font-size: 0.9375rem;
   }
   
-  /* UPDATE: Improved map layout for wider screens */
+  /* Improved map layout for wider screens */
   .mapContainer {
-    border-radius: 4px;
+    border-radius: 6px; /* 🧩 UPDATE: Consistent border radius */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* UPDATE: Fullscreen map on mobile devices */
+/* Fullscreen map on mobile devices */
 @media (max-width: 768px) {
   .mapWrapper {
     width: 100%;
@@ -379,6 +447,12 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     z-index: 1060;
   }
+  
+  /* 🧩 UPDATE: Adjusted mobile padding to be smaller */
+  .responsiveContainerColumn,
+  .responsiveContainerRow {
+    padding: 0 1rem;
+  }
 }
 
 /* Laptops/Desktops (1024px and up) */
@@ -396,8 +470,8 @@
     gap: 1.5rem;
   }
   
-  /* UPDATE: Improved widescreen map layout */
-  .responsiveContainerRow {
+  /* Adjusted widescreen layout */
+  .responsiveContainerRow:not(:has(.minimized)) {
     min-height: 400px;
   }
 }
@@ -408,13 +482,19 @@
     max-width: 800px;
   }
   
-  /* UPDATE: Even larger screen adjustments */
-  .mapWrapper {
+  /* Adjusted large screen map styling */
+  .mapWrapper:not(:has(+ .minimized)) {
     min-height: 450px;
+  }
+  
+  /* 🧩 UPDATE: Increased side padding for larger screens */
+  .responsiveContainerColumn,
+  .responsiveContainerRow {
+    padding: 0 3rem;
   }
 }
 
-/* UPDATE: Print styles to ensure proper rendering when printing */
+/* Print styles to ensure proper rendering when printing */
 @media print {
   .container {
     box-shadow: none;

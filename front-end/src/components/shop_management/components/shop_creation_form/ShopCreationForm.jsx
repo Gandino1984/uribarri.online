@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useTransition, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
-import { Box } from 'lucide-react';
+import { Box, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
+import { formAnimation } from '../../../../utils/animation/transitions.js'; // ✨ UPDATE: Using the unified formAnimation
 
 import ShopImageUpload from './components/ShopImageUpload.jsx';
 import ShopBasicInfo from './components/ShopBasicInfo.jsx';
@@ -22,7 +24,16 @@ const ShopCreationForm = () => {
     uploading,
     setUploading,
     setSuccess,
-    setShowSuccessCard
+    setShowSuccessCard,
+    // setInfo,
+    // setShowInfoCard,
+    // 🔄 UPDATE: Added modal state and message setters for confirmation
+    setIsModalOpen,
+    setModalMessage,
+    isAccepted,
+    setIsAccepted,
+    isDeclined,
+    setIsDeclined
   } = useUI();
   
   const {
@@ -31,7 +42,10 @@ const ShopCreationForm = () => {
     shopTypesAndSubtypes,
     selectedShop,
     setShowShopCreationForm,
-    setSelectedShop
+    setSelectedShop,
+    // ✨ UPDATE: Get notifyFormExit function from ShopContext if it exists
+    // This will be implemented in ShopContext to allow controlled exit animations
+    notifyFormExit
   } = useShop();
 
   const {
@@ -54,6 +68,44 @@ const ShopCreationForm = () => {
   
   // Add debug flag
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
+  
+  // 🔄 UPDATE: Added state to track if form reset is pending
+  const [isResetPending, setIsResetPending] = useState(false);
+  
+  // ✨ UPDATE: Added state to handle animation when component exits - same as LoginRegisterForm
+  const [isExiting, setIsExiting] = useState(false);
+  
+  // ✨ UPDATE: Function to handle closing the form with animation - same timing as LoginRegisterForm
+  const handleCloseForm = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setShowShopCreationForm(false);
+      setSelectedShop(null);
+    }, 500); // Match timing with animation duration and LoginRegisterForm
+  };
+
+  // 🧹 UPDATE: Default shop values for form reset
+  const defaultShopValues = {
+    name_shop: '',
+    type_shop: '',
+    subtype_shop: '',
+    location_shop: '',
+    id_user: currentUser?.id_user || '',
+    calification_shop: 0,
+    image_shop: '',
+    morning_open: '00:00',
+    morning_close: '00:00',
+    afternoon_open: '00:00',
+    afternoon_close: '00:00',
+    has_delivery: false,
+    open_monday: true,
+    open_tuesday: true,
+    open_wednesday: true,
+    open_thursday: true,
+    open_friday: true,
+    open_saturday: true,
+    open_sunday: false
+  };
 
   // Modified useEffect to properly handle user ID
   useEffect(() => {
@@ -89,7 +141,15 @@ const ShopCreationForm = () => {
         morning_open: selectedShop.morning_open || '',
         morning_close: selectedShop.morning_close || '',
         afternoon_open: selectedShop.afternoon_open || '',
-        afternoon_close: selectedShop.afternoon_close || ''
+        afternoon_close: selectedShop.afternoon_close || '',
+        has_delivery: selectedShop.has_delivery || false,
+        open_monday: selectedShop.open_monday !== undefined ? selectedShop.open_monday : true,
+        open_tuesday: selectedShop.open_tuesday !== undefined ? selectedShop.open_tuesday : true,
+        open_wednesday: selectedShop.open_wednesday !== undefined ? selectedShop.open_wednesday : true,
+        open_thursday: selectedShop.open_thursday !== undefined ? selectedShop.open_thursday : true,
+        open_friday: selectedShop.open_friday !== undefined ? selectedShop.open_friday : true,
+        open_saturday: selectedShop.open_saturday !== undefined ? selectedShop.open_saturday : true,
+        open_sunday: selectedShop.open_sunday !== undefined ? selectedShop.open_sunday : false
       });
 
       // Set image preview if exists
@@ -124,6 +184,75 @@ const ShopCreationForm = () => {
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
+  // 🔄 UPDATE: Added effect to handle modal confirmation for form reset
+  useEffect(() => {
+    if (isAccepted && isResetPending) {
+      // Reset form if user confirmed
+      resetForm();
+      setIsAccepted(false);
+      setIsResetPending(false);
+    } else if (isDeclined && isResetPending) {
+      // Cancel reset if user declined
+      setIsDeclined(false);
+      setIsResetPending(false);
+    }
+  }, [isAccepted, isDeclined, isResetPending]);
+
+  // 🧹 UPDATE: Function to reset the form
+  const resetForm = () => {
+    // Reset form to initial step
+    setCurrentStep(1);
+    
+    // Reset shop data
+    setNewShop({
+      ...defaultShopValues,
+      id_user: currentUser?.id_user || ''
+    });
+    
+    // Reset image-related states
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    
+    // Reset schedule toggle
+    setHasContinuousSchedule(false);
+    
+    // Reset upload progress
+    setUploadProgress(0);
+    
+    // Show info message
+    setSuccess(prevSuccess => ({
+      ...prevSuccess,
+      shopSuccess: "Formulario limpiado ."
+    }));
+    setShowSuccessCard(true);
+    
+    console.log('Form has been reset to default values');
+  };
+
+  // 🔄 UPDATE: Updated confirmation method to use modal dialog
+  const confirmResetForm = () => {
+    // If form is empty, just reset without confirmation
+    const isFormEmpty = !newShop.name_shop && 
+                        !newShop.type_shop && 
+                        !newShop.location_shop && 
+                        !selectedImage;
+    
+    if (isFormEmpty) {
+      resetForm();
+      return;
+    }
+    
+    // Set pending reset flag to true
+    setIsResetPending(true);
+    
+    // Open confirmation modal
+    setModalMessage("¿Estás seguro de limpiar todos los campos del formulario?");
+    setIsModalOpen(true);
+  };
+
   // Navigation Utils
   const goToNextStep = () => {
     if (currentStep < totalSteps) {
@@ -148,13 +277,13 @@ const ShopCreationForm = () => {
         if (!newShop.name_shop || !newShop.type_shop || !newShop.subtype_shop || !newShop.location_shop) {
           setError(prevError => ({
             ...prevError,
-            shopError: "Completa todos los campos obligatorios antes de continuar."
+            shopError: "Completa todos los campos."
           }));
           setShowErrorCard(true);
           return false;
         }
         return true;
-      case 3: // Schedule
+      case 3: { // Schedule
         const scheduleValidation = validateSchedule(newShop);
         if (!scheduleValidation.isValid) {
           setError(prevError => ({
@@ -165,6 +294,7 @@ const ShopCreationForm = () => {
           return false;
         }
         return true;
+      }
       default:
         return true;
     }
@@ -259,7 +389,7 @@ const ShopCreationForm = () => {
 
       let success = false;
       let shopId = null;
-      let createdOrUpdatedShop = null;
+      // let createdOrUpdatedShop = null;
 
       if (selectedShop) {
         // Updating existing shop
@@ -269,12 +399,12 @@ const ShopCreationForm = () => {
         
         if (success) {
           console.log('Shop updated successfully:', result);
-          createdOrUpdatedShop = result;
+          // createdOrUpdatedShop = result;
           
           // Show success notification
           setSuccess(prevSuccess => ({
             ...prevSuccess,
-            shopSuccess: "¡Comercio actualizado exitosamente!"
+            shopSuccess: "Comercio actualizado."
           }));
           setShowSuccessCard(true);
         }
@@ -286,12 +416,12 @@ const ShopCreationForm = () => {
         if (success) {
           console.log('New shop created successfully:', result);
           shopId = result.id_shop;
-          createdOrUpdatedShop = result;
+          // createdOrUpdatedShop = result;
           
           // Show success notification
           setSuccess(prevSuccess => ({
             ...prevSuccess,
-            shopSuccess: "¡Comercio creado exitosamente!"
+            shopSuccess: "Comercio creado."
           }));
           setShowSuccessCard(true);
         }
@@ -327,12 +457,14 @@ const ShopCreationForm = () => {
         }
       }
       
-      // If successful, close the form
+      // If successful, start exit animation then close the form
       if (success) {
+        // ✨ UPDATE: Trigger exit animation first, then close form after animation completes
+        setIsExiting(true);
         setTimeout(() => {
           setShowShopCreationForm(false);
           setSelectedShop(null);
-        }, 1000); // Short delay to allow success message to be seen
+        }, 500); // Same delay as LoginRegisterForm
       }
       
     } catch (error) {
@@ -389,37 +521,75 @@ const ShopCreationForm = () => {
     }
   };
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <div className={styles.header}>   
-            <h1 className={styles.headerTitle}>
-              {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-            </h1>
+  // ✨ UPDATE: Setup form animation using unified formAnimation
+  const formTransition = useTransition(!isExiting, {
+    from: formAnimation.from,
+    enter: formAnimation.enter,
+    leave: formAnimation.leave,
+    config: formAnimation.config,
+    onRest: () => {
+      // Animation has completed, reset exit state if needed
+      // This would only run if the component is still mounted
+      if (isExiting) {
+        setIsExiting(false);
+      }
+    }
+  });
 
-            <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
-        </div>   
-        
-        {/* Use handleFormSubmit instead of handleSubmit */}
-        <form onSubmit={handleFormSubmit} className={styles.form}>
-          {/* Render step content */}
-          {renderStepContent()}
-            
-          <NavigationButtons 
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-            onNext={handleNextClick}
-            onPrevious={goToPreviousStep}
-            isSubmitting={uploading || isFormSubmitting}
-            submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
-            processingLabel="Procesando..."
-            SubmitIcon={Box}
-            // Only show submit button on the last step
-            showSubmitButton={currentStep === totalSteps}
-          />
-        </form>
-      </div>
-    </div>
+  return (
+    <>
+      {formTransition((style, show) => 
+        show && (
+          <animated.div 
+            className={styles.container} 
+            style={style}
+          >
+            <div className={styles.content}>
+              <div className={styles.header}>   
+                <h2 className={styles.headerTitle}>
+                  {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
+                </h2>
+
+                <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
+              </div>   
+              
+              {/* Use handleFormSubmit instead of handleSubmit */}
+              <form onSubmit={handleFormSubmit} className={styles.form}>
+                {/* Render step content */}
+                {renderStepContent()}
+                  
+                <div className={styles.buttonsContainer}>
+                  {/* 🧹 UPDATE: Added reset form button */}
+                  <button
+                    type="button"
+                    onClick={confirmResetForm}
+                    className={styles.resetButton}
+                    title="Limpiar formulario"
+                    disabled={uploading || isFormSubmitting}
+                  >
+                    <RefreshCw size={16} className={styles.resetIcon} />
+                    Limpiar
+                  </button>
+                  
+                  <NavigationButtons 
+                    currentStep={currentStep}
+                    totalSteps={totalSteps}
+                    onNext={handleNextClick}
+                    onPrevious={goToPreviousStep}
+                    isSubmitting={uploading || isFormSubmitting}
+                    submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
+                    processingLabel="Procesando..."
+                    SubmitIcon={Box}
+                    // Only show submit button on the last step
+                    showSubmitButton={currentStep === totalSteps}
+                  />
+                </div>
+              </form>
+            </div>
+          </animated.div>
+        )
+      )}
+    </>
   );
 };
 

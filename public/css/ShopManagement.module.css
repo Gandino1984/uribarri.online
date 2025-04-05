@@ -1,11 +1,15 @@
 .container{
-    width: 100vw;
-    /* height: 100%; */
+    width: 100%;
+    min-height: 100vh; 
     display: flex;
+    align-items:flex-start; 
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+.contentWrapper {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    overflow-x: hidden;
 }

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useNumericKeyboardUtils } from './useNumericKeyboardUtils.jsx';
@@ -6,23 +7,21 @@ import { Delete, Eraser } from 'lucide-react';
 import styles from '../../../../../../public/css/NumericKeyboard.module.css';
 import { Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich } from 'lucide-react';
 
+// Move the icons array outside the component to prevent recreation on each render
+const iconComponents = [Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich];
+
 const NumericKeyboard = ({ 
   value, 
   onChange, 
   showMaskedPassword = true, 
   onPasswordComplete   
 }) => {
-  // UPDATE: Using useAuth and useUI hooks instead of AppContext
   const { 
     displayedPassword,
     setDisplayedPassword,
     passwordIcons, 
     setPasswordIcons,
-    clearUserSession,
-    setPassword,
-    setPasswordRepeat,
-    setUserType,
-    setLocationUser,
+    clearUserSession
   } = useAuth();
 
   const { 
@@ -30,16 +29,8 @@ const NumericKeyboard = ({
     setError 
   } = useUI();
 
-  const icons = [Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich];
-
-  const clearForm = () => {
-    setPassword('');
-    setPasswordRepeat('');
-    setUserType('');
-    setLocationUser('');
-    setPasswordIcons([]);
-    setDisplayedPassword('');
-  };
+  // Use useMemo to memoize the icons array
+  const icons = useMemo(() => iconComponents, []);
   
   useEffect(() => {
     if (showMaskedPassword) {
@@ -52,7 +43,7 @@ const NumericKeyboard = ({
     } else {
       setPasswordIcons([]);
     }
-  }, [value, showMaskedPassword, passwordIcons, setPasswordIcons]);
+  }, [value, showMaskedPassword, passwordIcons, setPasswordIcons, icons]);
 
   useEffect(() => {
     if (showMaskedPassword) {
@@ -139,6 +130,14 @@ const NumericKeyboard = ({
       </div>
     </div>
   );
+};
+
+// Add PropTypes validation
+NumericKeyboard.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  showMaskedPassword: PropTypes.bool,
+  onPasswordComplete: PropTypes.func.isRequired
 };
 
 export default NumericKeyboard;

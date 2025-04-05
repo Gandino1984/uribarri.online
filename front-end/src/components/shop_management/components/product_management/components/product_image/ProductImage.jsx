@@ -105,7 +105,7 @@ const ProductImage = ({ id_product }) => {
         />
       ) : (
         <div className={styles.noImage}>
-          <span>No image</span>
+          <span>Sin imagen</span>
         </div>
       )}
 
