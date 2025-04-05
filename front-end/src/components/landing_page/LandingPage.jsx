@@ -54,10 +54,6 @@ const LandingPage = ({ onProceedToLogin }) => {
             </div>
             <h2>Escaparate Comercial</h2>
             <p>Descubre productos locales, ofertas y promociones especiales de comercios cercanos.</p>
-            <button className={styles.sectionButton}>
-              Comenzar
-              <span className={styles.buttonArrow}>→</span>
-            </button>
           </div>
         </animated.div>
 
@@ -73,10 +69,6 @@ const LandingPage = ({ onProceedToLogin }) => {
             </div>
             <h2>Agenda Cultural</h2>
             <p>Eventos, actividades y experiencias culturales para todos los gustos en tu localidad.</p>
-            <button className={styles.sectionButton}>
-              Comenzar
-              <span className={styles.buttonArrow}>→</span>
-            </button>
           </div>
         </animated.div>
 
@@ -90,12 +82,8 @@ const LandingPage = ({ onProceedToLogin }) => {
             <div className={styles.iconWrapper}>
               <BookOpen size={40} />
             </div>
-            <h2>Revista Ache</h2>
+            <h2>Revista Berimbolo</h2>
             <p>Artículos, entrevistas y noticias sobre la vida local, cultura y gastronomía.</p>
-            <button className={styles.sectionButton}>
-              Comenzar
-              <span className={styles.buttonArrow}>→</span>
-            </button>
           </div>
         </animated.div>
       </div>
