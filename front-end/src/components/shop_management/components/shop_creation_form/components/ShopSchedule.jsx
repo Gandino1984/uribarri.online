@@ -61,11 +61,11 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                   className={`${styles.timeInput} ${newShop.morning_open ? styles.hasValue : ''}`}
                   required
                 />
-                {newShop.morning_open && (
+                {/* {newShop.morning_open && (
                   <span className={styles.timeDisplay}>
                     {formatTimeDisplay(newShop.morning_open)}
                   </span>
-                )}
+                )} */}
               </div>
               
               <div className={styles.timeFieldContainer}>
@@ -80,11 +80,11 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
                   className={`${styles.timeInput} ${newShop.afternoon_close ? styles.hasValue : ''}`}
                   required
                 />
-                {newShop.afternoon_close && (
+                {/* {newShop.afternoon_close && (
                   <span className={styles.timeDisplay}>
                     {formatTimeDisplay(newShop.afternoon_close)}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
           </div>

@@ -87,11 +87,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 1rem;    
     width: 100%;
+}
+
+.buttonGroupRow1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: .5rem;
+}
+
+.buttonGroupRow2{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: .5rem;
 }
 
 .listTitleWrapper {
@@ -160,7 +176,7 @@
     color: var(--dark-orange);
     background-color: white;
     /* position: relative; */
-    padding: 0.3rem 1.8rem 0.3rem 0.5rem;
+    /* padding: 0.3rem 1.8rem 0.3rem 0.5rem; */
 }
 
 .filterButton.active {
@@ -616,23 +632,6 @@
         font-size: 0.75rem;
     }
 
-    .buttonGroup {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /* 🔄 UPDATE: Keep horizontal layout even on mobile */
-        flex-direction: row;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding-bottom: 4px;
-    }
-    
-    /* 🔄 UPDATE: Ensure buttonGroupContainer also stays horizontal */
-    .buttonGroupContainer {
-        flex-direction: row;
-        justify-content: center;
-    }
 
     .filterBadge {
         top: -5px;
@@ -701,13 +700,6 @@
         padding: 0.35rem 0.3rem;
     }
     
-    .buttonGroup {
-        gap: 0.3rem;
-        padding: 0;
-        /* 🔄 UPDATE: Keep horizontal layout */
-        flex-direction: row;
-    }
-    
     .actionButton {
         padding: 0.35rem;
         min-width: 30px;
@@ -739,16 +731,6 @@
         padding: 0.35rem;
         min-width: 30px;
         min-height: 30px;
-    }
-    
-    /* 🔄 UPDATE: Ensure buttonGroup remains horizontal, no wrapping */
-    .buttonGroup {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        justify-content: center;
-        padding-bottom: 4px;
-        gap: 0.3rem;
     }
     
     /* 🔄 UPDATE: Keep buttonGroupContainer horizontal */

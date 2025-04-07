@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  PackagePlus, 
+  SquarePlus, 
   Pencil, 
   Trash2, 
   Filter, 
@@ -57,13 +57,14 @@ const ActionButtons = ({
   
   return (
     <div className={styles.buttonGroup}>
+      <div className={styles.buttonGroupRow1}>
       <button
         onClick={handleAddProduct}
         className={`${styles.actionButton} ${styles.addButton}`}
         title="Añadir producto"
       >
-        <PackagePlus size={iconSize} />
-        <span className={styles.buttonText}>Añadir</span>
+        <SquarePlus size={iconSize} />
+        <span className={styles.buttonText}>Crear</span>
       </button>
 
       <button
@@ -86,7 +87,25 @@ const ActionButtons = ({
         <span className={styles.buttonText}>Borrar</span>
       </button>
       
-      {/* ✨ UPDATE: New button for package creation */}
+      {/* Filter Toggle Button with Animation */}
+      <button
+        onClick={toggleFilters}
+        className={`${styles.actionButton} ${styles.filterButton} ${showFilters ? styles.active : ''}`}
+        title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+      >
+        <Filter size={iconSize} />
+        <span className={styles.buttonText}>Filtros</span>
+        {activeFiltersCount > 0 && (
+          <span className={styles.filterBadge}>{activeFiltersCount}</span>
+        )}
+        <div style={filterButtonAnimation} className={styles.filterButtonIcon}>
+          <ChevronDown size={isSmallScreen ? 12 : 14} />
+        </div>
+      </button>
+      </div>
+      
+
+      <div className={styles.buttonGroupRow2}>
       <button
         onClick={handleCreatePackage}
         className={`${styles.actionButton} ${styles.packageButton}`}
@@ -106,22 +125,7 @@ const ActionButtons = ({
         <PackageOpen size={iconSize} />
         <span className={styles.buttonText}>Ver paquetes</span>
       </button>
-      
-      {/* Filter Toggle Button with Animation */}
-      <button
-        onClick={toggleFilters}
-        className={`${styles.actionButton} ${styles.filterButton} ${showFilters ? styles.active : ''}`}
-        title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
-      >
-        <Filter size={iconSize} />
-        <span className={styles.buttonText}>Filtros</span>
-        {activeFiltersCount > 0 && (
-          <span className={styles.filterBadge}>{activeFiltersCount}</span>
-        )}
-        <div style={filterButtonAnimation} className={styles.filterButtonIcon}>
-          <ChevronDown size={isSmallScreen ? 12 : 14} />
-        </div>
-      </button>
+      </div>
     </div>
   );
 };
