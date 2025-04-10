@@ -19,6 +19,8 @@ export const UIProvider = ({ children }) => {
   const [showShopManagement, setShowShopManagement] = useState(false);
   const [showProductManagement, setShowProductManagement] = useState(false);
   const [showLandingPage, setShowLandingPage] = useState(true);
+  // 🌟 UPDATE: Added state to control TopBar visibility
+  const [showTopBar, setShowTopBar] = useState(false);
   
   // Notification states
   const [showErrorCard, setShowErrorCard] = useState(false);
@@ -58,7 +60,6 @@ export const UIProvider = ({ children }) => {
   const [imageError, setImageError] = useState(false);
   const [ip, setIp] = useState('');
 
-  // 🔄 UPDATE: Improved clear functions to ensure only one message is displayed at a time
   const clearError = () => {
     setError({
       userError: '',
@@ -99,7 +100,6 @@ export const UIProvider = ({ children }) => {
     setShowInfoCard(false);
   };
 
-  // 🔄 UPDATE: Helper functions to set single messages and clear others
   const setSingleError = (key, message) => {
     // First clear all errors
     const clearedErrors = {
@@ -187,6 +187,8 @@ export const UIProvider = ({ children }) => {
     showShopManagement, setShowShopManagement,
     showProductManagement, setShowProductManagement,
     showLandingPage, setShowLandingPage,
+    // 🌟 UPDATE: Added TopBar visibility to context value
+    showTopBar, setShowTopBar,
     
     // Notification states
     showErrorCard, setShowErrorCard,

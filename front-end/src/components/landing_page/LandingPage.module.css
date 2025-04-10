@@ -1,76 +1,80 @@
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  padding: 2rem 1rem;
+  padding: 0; /* 🚀 UPDATE: Removed padding that was causing blank space */
+  padding-bottom: 4rem;
+  margin: 0; /* 🚀 UPDATE: Explicitly set margin to zero */
   overflow-x: hidden;
+  position: absolute; /* 🚀 UPDATE: Added absolute positioning */
+  top: 0; /* 🚀 UPDATE: Ensure it starts at the very top */
+  left: 0; /* 🚀 UPDATE: Ensure it starts at the very left */
+  right: 0; /* 🚀 UPDATE: Stretch to the right edge */
+  bottom: 0; /* 🚀 UPDATE: Stretch to the bottom edge */
+  will-change: background-color;
 }
 
-/* 🔄 UPDATE: Reorganized hero section for new layout */
 .heroSection {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
-  min-height: calc(100vh - 4rem); /* Account for container padding */
+  height: 100%; /* 🚀 UPDATE: Ensure it takes full height */
+  min-height: 100vh; /* 🚀 UPDATE: Changed from calc to 100vh */
   position: relative;
   overflow: hidden;
 }
 
-/* 🔄 UPDATE: Repositioned hero content to top */
 .heroContent {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  height: 100%;
+  padding-top: 10vh; /* 🚀 UPDATE: Added padding to top instead of relying on container padding */
   position: relative;
 }
 
 .heroContent h1 {
   color: white;
-  font-size: 3.5rem;
+  font-size: 2.5rem;
+  letter-spacing: .06rem;
   margin-bottom: 0.75rem;
   font-weight: 800;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
-  /* align-self: center; */
 }
 
 .heroContent p {
   color: white;
-  font-size: 1.5rem;
-  margin-bottom: 0;
+  font-size: 1.3rem;
+  /* margin-bottom: 0; */
   opacity: 0.9;
   color: rgb(151, 71, 255);
   font-weight: 500;
-  /* text-shadow: 0px 0px 1px white; */
-
 }
 
-/* 🔄 UPDATE: Created wrapper for button to center it */
 .buttonWrapper {
-  position: absolute;
+  /* position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   z-index: 1;
+  margin-top: 4rem;
+  perspective: 1000px;
 }
 
 /* Button styling */
 .oButton {
-  
   position: relative;
   display: flex;
   align-items: center;
@@ -88,6 +92,8 @@
   overflow: visible;
   z-index: 1;
   -webkit-tap-highlight-color: transparent; /* Remove blue highlight on mobile */
+  will-change: transform;
+  transform-origin: center center;
 }
 
 .oButton::before {
@@ -105,10 +111,33 @@
   );
   z-index: -1;
   box-shadow: 
-    0 0 15px 2px rgba(92, 37, 141, 0.6),
-    0 0 30px 5px rgba(92, 37, 141, 0.3);
-  animation: rotateSquare 10s linear infinite;
+    0 0 15px 2px rgba(92, 37, 141, 0.5),
+    0 0 30px 5px rgba(92, 37, 141, 0.5);
+  animation: rotateSquare 12s linear infinite;
   transition: all 0.3s ease;
+  will-change: transform, filter;
+}
+
+.oButton:hover {
+  background-color: transparent;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.oButton:hover::before {
+  filter: blur(4px) brightness(1.3);
+  box-shadow: 
+    0 0 25px 7px rgba(151, 71, 255, 0.7),
+    0 0 50px 15px rgba(151, 71, 255, 0.4);
+}
+
+.buttonClick {
+  animation: buttonClickEffect 0.3s ease-out;
+}
+
+@keyframes buttonClickEffect {
+  0% { transform: scale(0.92) translateY(3px); }
+  50% { transform: scale(1.08) translateY(-8px); }
+  100% { transform: scale(1) translateY(-5px); }
 }
 
 @keyframes rotateSquare {
@@ -118,18 +147,6 @@
   100% {
     transform: rotate(360deg);
   }
-}
-
-.oButton:hover {
-  background-color: transparent;
-  text-shadow: black 0 0 7px;
-}
-
-.oButton:hover::before {
-  filter: blur(3px) brightness(1.2);
-  box-shadow: 
-    0 0 20px 5px rgba(92, 37, 141, 0.7),
-    0 0 40px 10px rgba(92, 37, 141, 0.4);
 }
 
 .oButton:focus {
@@ -145,12 +162,8 @@
   transform: rotate(15deg) scale(0.95);
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - simplified to remove padding */
 @media (min-width: 640px) {
-  .container {
-    padding: 3rem 2rem;
-  }
-  
   .heroContent h1 {
     font-size: 3rem;
   }
@@ -158,20 +171,9 @@
   .heroContent p {
     font-size: 1.75rem;
   }
-
-}
-
-@media (min-width: 768px) {
-  .container {
-    padding: 4rem 3rem;
-  }
 }
 
 @media (min-width: 1024px) {
-  .container {
-    padding: 5rem 3rem;
-  }
-  
   .heroContent h1 {
     font-size: 3.5rem;
   }
@@ -179,5 +181,4 @@
   .heroContent p {
     font-size: 2rem;
   }
-  
 }

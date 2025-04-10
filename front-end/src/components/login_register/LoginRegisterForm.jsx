@@ -24,14 +24,19 @@ const FormContent = () => {
 
 const LoginRegisterForm = () => {
   const { currentUser, type_user } = useAuth();
-  const { showShopManagement, showLandingPage, setShowLandingPage } = useUI();
+  const { 
+    showShopManagement, 
+    showLandingPage, 
+    setShowLandingPage, 
+    setShowTopBar  // 🌟 UPDATE: Added TopBar state
+  } = useUI();
   
-  // ✨ UPDATE: Using a single isExiting flag for animation control - same approach as ShopCreationForm
   const [isExiting, setIsExiting] = useState(false);
   
-  // Handler to proceed from landing to login/register form
+  // 🌟 UPDATE: Enhanced handler to manage TopBar visibility
   const handleProceedToLogin = () => {
     setShowLandingPage(false);
+    // Note: TopBar visibility is now handled in LandingPage.jsx when the O button is clicked
   };
   
   // Determine what to show based on current application state
@@ -44,15 +49,13 @@ const LoginRegisterForm = () => {
     }
   }, [showLoginForm]);
   
-  // ✨ UPDATE: Function to handle closing the form with animation - matches ShopCreationForm
   const handleCloseForm = (callback) => {
     setIsExiting(true);
     setTimeout(() => {
       if (callback) callback();
-    }, 500); // Same timing as ShopCreationForm
+    }, 500);
   };
   
-  // ✨ UPDATE: Add listener for authentication state changes to trigger exit animation
   useEffect(() => {
     // If the form is no longer needed but hasn't started exiting yet
     if (!showLoginForm && !isExiting) {
@@ -60,31 +63,31 @@ const LoginRegisterForm = () => {
     }
   }, [showLoginForm, isExiting]);
   
-  // ✨ UPDATE: Form transition using the exact same pattern as ShopCreationForm
   const formTransition = useTransition(showLoginForm && !isExiting, {
     from: formAnimation.from,
     enter: formAnimation.enter,
     leave: formAnimation.leave,
     config: formAnimation.config,
     onRest: () => {
-      // Animation has completed - same cleanup as ShopCreationForm
       if (isExiting) {
         setIsExiting(false);
       }
     }
   });
   
-  // Handle what to render based on current state
+  // 🌟 UPDATE: Added TopBar visibility management for different views
   if (showShopManagement || currentUser) {
     const userType = currentUser?.type_user || type_user;
-    return userType === 'seller' ? <ShopManagement /> : <LandingPage />;
+    // Keep TopBar visible when in ShopManagement view
+    return userType === 'seller' ? <ShopManagement /> : <LandingPage onProceedToLogin={handleProceedToLogin} />;
   }
   
+  // 🌟 UPDATE: Reset TopBar visibility when showing landing page
   if (showLandingPage) {
+    // TopBar not displayed with the landing page - will only show after O button click
     return <LandingPage onProceedToLogin={handleProceedToLogin} />;
   }
   
-  // Render login form with animation - exactly matching ShopCreationForm's approach
   return (
     <>
       {formTransition((style, show) => 
