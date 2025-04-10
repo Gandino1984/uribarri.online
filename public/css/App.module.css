@@ -7,7 +7,10 @@
   width: 100%;
   max-width: 100vw;
   /* min-width: 350px; */
-  background-color: var(--saturated-orange);
+  
+  /* 🔄 UPDATE: Changed background to pure black */
+  background: #000000;
+  
   margin: 0;
   padding-top: var(--topbar-height); /* 📌 UPDATE: Add padding for fixed TopBar */
   padding-left: 0;
@@ -37,4 +40,4 @@
     padding-left: 0;
     padding-right: 0;
   }
-}
+} 
