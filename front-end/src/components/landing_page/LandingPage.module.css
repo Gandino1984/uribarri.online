@@ -87,6 +87,7 @@
   outline: 5px solid black;  
   color: white;
   font-weight: 800;
+  text-shadow: 0 0 2px rgb(0, 0, 0);
   font-size: 5rem;
   cursor: pointer;
   overflow: visible;
@@ -120,7 +121,7 @@
 
 .oButton:hover {
   background-color: transparent;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 10px rgb(0, 0, 0);
 }
 
 .oButton:hover::before {
