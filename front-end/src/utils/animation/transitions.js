@@ -185,7 +185,7 @@ export const landingPageAnimations = {
       backgroundColor: 'rgb(40, 10, 60)'  // Purple on hover
     },
     exit: { 
-      backgroundColor: 'rgb(231, 61, 158)'  // Red during exit animation
+      backgroundColor: 'rgb(187, 0, 106)'  // Red during exit animation
     },
     config: { 
       tension: 120, 
@@ -213,7 +213,7 @@ export const landingPageAnimations = {
       tension: 45,   // Lower tension for slower acceleration
       friction: 8,   // Very low friction to simulate space/zero-gravity
       mass: 2,       // Higher mass for more inertia
-      duration: 300 // Longer duration for the full effect
+      duration: 200 // Longer duration for the full effect
     },
     floatingConfig: {
       tension: 40,    // Low tension for slow movement
@@ -237,4 +237,12 @@ export const landingPageAnimations = {
       friction: 30 
     }
   }
+};
+
+// ⚙️ UPDATE: Added gradient animation for the login/register form background
+export const gradientAnimation = {
+  from: { backgroundPosition: '0% 50%' },
+  to: { backgroundPosition: '100% 50%' },
+  config: { duration: 20000 },
+  loop: { reverse: true }
 };

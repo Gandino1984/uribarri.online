@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTransition, animated } from '@react-spring/web';
+import { useTransition, animated, useSpring } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import ShopManagement from "../shop_management/ShopManagement.jsx";
@@ -25,15 +25,29 @@ const LoginRegisterForm = () => {
   const { currentUser, type_user } = useAuth();
   const { 
     showShopManagement, 
-    setShowLandingPage, // 💡 UPDATE: Keep this to potentially return to landing page
+    setShowLandingPage,
     setShowTopBar  
   } = useUI();
   
   const [isExiting, setIsExiting] = useState(false);
   
+  // ⚙️ UPDATE: Background gradient animation
+  const gradientProps = useSpring({
+    from: { backgroundPosition: '0% 50%' },
+    to: { backgroundPosition: '100% 50%' },
+    config: { duration: 20000 },
+    loop: { reverse: true }
+  });
   
   // Determine what to show based on current application state
   const showLoginForm = !showShopManagement && !currentUser;
+  
+  // Make sure TopBar is visible when showing the login form
+  useEffect(() => {
+    if (showLoginForm) {
+      setShowTopBar(true);
+    }
+  }, [showLoginForm, setShowTopBar]);
   
   // Reset the exit animation state when the component mounts or visibility changes
   useEffect(() => {
@@ -41,13 +55,6 @@ const LoginRegisterForm = () => {
       setIsExiting(false);
     }
   }, [showLoginForm]);
-  
-  // const handleCloseForm = (callback) => {
-  //   setIsExiting(true);
-  //   setTimeout(() => {
-  //     if (callback) callback();
-  //   }, 500);
-  // };
   
   useEffect(() => {
     // If the form is no longer needed but hasn't started exiting yet
@@ -79,7 +86,10 @@ const LoginRegisterForm = () => {
         show && (
           <animated.div 
             className={styles.container} 
-            style={style}
+            style={{
+              ...style,
+              ...gradientProps
+            }}
           >
             <div className={styles.formContainer}>
               <FormContent />

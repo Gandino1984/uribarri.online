@@ -3,12 +3,41 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  flex: 1;
+  
+  /* ⚙️ UPDATE: Make form take full width and height of the screen */
   width: 100%;
-  min-height: calc(100vh - var(--topbar-height));
-  /* margin-top: var(--topbar-height);   */
-  padding-top: 1rem; /* 📌 UPDATE: Add padding for better spacing */
+  min-height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  /* ⚙️ UPDATE: Add padding-top to account for the TopBar */
+  padding-top: var(--topbar-height);
+  
+  /* ⚙️ UPDATE: Added gradient background directly to the login form container */
+  background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end));
+  background-size: 200% 200%;
+  
+  /* ⚙️ UPDATE: Set z-index lower than TopBar (1000) */
+  z-index: 100;
+}
 
+/* ⚙️ UPDATE: Added grid overlay for the login form container */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .formContainer {
@@ -21,6 +50,7 @@
   padding: 1rem;
   margin: auto;
   position: relative;
+  z-index: 1; /* ⚙️ UPDATE: Ensure form is above the grid overlay */
 }
 
 .formContentWrapper {
@@ -30,7 +60,7 @@
   flex-direction: column;
   align-items: center;
   border-top-left-radius: 8px;
-  box-shadow:rgba(0, 0, 0, 0.2) 0px 0px 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; /* ⚙️ UPDATE: Enhanced shadow for better contrast */
 }
 
 .formContent {
@@ -202,7 +232,6 @@
   .container {
     display: flex;
     justify-content: center;
-    padding: 0;
   }
 
   .formContent {
@@ -216,7 +245,6 @@
 
 @media screen and (min-width: 768px) {
   .container {
-    /* padding-top: 1rem; */
     justify-content: center;
   }
 

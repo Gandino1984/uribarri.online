@@ -10,7 +10,7 @@ import LoginRegisterForm from "../src/components/login_register/LoginRegisterFor
 import TopBar from "../src/components/top_bar/TopBar.jsx";
 import ConfirmationModal from "../src/components/confirmation_modal/ConfirmationModal.jsx";
 import { useUI } from "./app_context/UIContext.jsx";
-import LandingPage from "../src/components/landing_page/LandingPage.jsx"; // 💡 UPDATE: Import LandingPage at App level
+import LandingPage from "../src/components/landing_page/LandingPage.jsx";
 
 // AppContent component to use hooks within the component tree
 const AppContent = () => {

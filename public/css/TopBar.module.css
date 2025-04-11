@@ -6,7 +6,7 @@
     flex-direction: column;
     background-color: var(--superlight-orange);
     padding: 0.4rem 1.5rem;
-    z-index: 1000; 
+    z-index: 1000; /* ⚙️ UPDATE: Verified z-index is higher than LoginRegisterForm */
     height: auto; 
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
     background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
@@ -24,10 +24,9 @@
     width: 100%;
     gap: 1rem;
     padding: 0.25rem 0; 
-    transition: all 0.3s ease; /* Added transition for smoother state changes */
+    transition: all 0.3s ease;
 }
 
-/* Added styles for collapsed and expanded states */
 .contentWrapper.collapsed {
     height: 2.4rem;
 }
@@ -44,7 +43,6 @@
 }
 
 .backButton {
-    /* border: none; */
     margin-right: 0.5rem;
     cursor: pointer;
     display: flex;
@@ -54,7 +52,7 @@
 
 .logoutButton {
     gap: 0.5rem;
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap;
     display: flex;
     align-items: center;
 }
@@ -67,4 +65,4 @@
     .contentWrapper {
         padding: 0.5rem 0;
     }
-}    
+}
