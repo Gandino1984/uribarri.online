@@ -240,7 +240,7 @@ export const shopsListAnimations = {
   }
 };
 
-// ⚡ UPDATE: Ultra-fast LandingPage exit animations
+// 🔴 UPDATE: Fixed LandingPage animations with darker pinkish-red exit color
 export const landingPageAnimations = {
   // Container background animation (handles background color transition)
   containerAnimation: {
@@ -253,14 +253,14 @@ export const landingPageAnimations = {
       zIndex: 500,
     },
     exit: { 
-      backgroundColor: 'rgb(187, 0, 106)',  // Red during exit animation
+      backgroundColor: 'rgb(150, 0, 60)',  // 🔴 Darker pinkish-red for exit animation
       zIndex: 500,
       opacity: 1,                          // Keep visible during exit
     },
     config: { 
       tension: 140, 
       friction: 12,
-      duration: 150  // Even faster
+      duration: 150  // Fast transition
     }
   },
   

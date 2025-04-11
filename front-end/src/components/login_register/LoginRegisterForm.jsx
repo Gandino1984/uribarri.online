@@ -32,7 +32,7 @@ const LoginRegisterForm = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [isReady, setIsReady] = useState(false);
   
-  // ⚡ UPDATE: Immediate readiness when landing page is gone
+  // Immediate readiness when landing page is gone
   useEffect(() => {
     if (!showLandingPage) {
       // Set ready state immediately when landing page is removed
@@ -40,7 +40,7 @@ const LoginRegisterForm = () => {
     }
   }, [showLandingPage]);
   
-  // ⚡ UPDATE: Ultra-fast background gradient animation
+  // Ultra-fast background gradient animation
   const gradientProps = useSpring({
     from: loginRegisterFormAnimations.gradientAnimation.from,
     to: { 
@@ -76,7 +76,7 @@ const LoginRegisterForm = () => {
     }
   }, [shouldRender, isExiting, isReady]);
   
-  // ⚡ UPDATE: Ultra-fast form animation with immediate opacity
+  // Ultra-fast form animation with immediate opacity
   const formTransition = useTransition(shouldRender && !isExiting, {
     from: loginRegisterFormAnimations.formTransition.from,
     enter: {
@@ -99,7 +99,7 @@ const LoginRegisterForm = () => {
     return <ShopManagement />;
   }
   
-  // ⚡ UPDATE: Optimized rendering
+  // The black gradient overlay is now added via CSS in LoginRegisterForm.module.css
   return (
     <>
       {formTransition((style, show) => 
