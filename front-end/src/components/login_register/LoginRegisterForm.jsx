@@ -6,7 +6,7 @@ import ShopManagement from "../shop_management/ShopManagement.jsx";
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
-import { formAnimation, gradientAnimation } from '../../utils/animation/transitions.js';
+import { loginRegisterFormAnimations } from '../../utils/animation/transitions.js';
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 const FormContent = () => {
@@ -22,41 +22,34 @@ const FormContent = () => {
 };
 
 const LoginRegisterForm = () => {
-  const { currentUser, type_user } = useAuth();
+  const { currentUser } = useAuth();
   const { 
     showShopManagement, 
     showLandingPage,
-    setShowLandingPage,
     setShowTopBar  
   } = useUI();
   
   const [isExiting, setIsExiting] = useState(false);
   const [isReady, setIsReady] = useState(false);
   
-  // ⚡ UPDATE: Immediately set ready state when landing page is gone
+  // ⚡ UPDATE: Immediate readiness when landing page is gone
   useEffect(() => {
     if (!showLandingPage) {
-      // Landing page is no longer showing, we can render immediately
+      // Set ready state immediately when landing page is removed
       setIsReady(true);
     }
   }, [showLandingPage]);
   
-  // ⚡ UPDATE: Enhanced background gradient animation with faster fade-in
+  // ⚡ UPDATE: Ultra-fast background gradient animation
   const gradientProps = useSpring({
-    from: { 
-      backgroundPosition: '0% 50%',
-      opacity: 0 // Start invisible
-    },
+    from: loginRegisterFormAnimations.gradientAnimation.from,
     to: { 
-      backgroundPosition: '100% 50%',
+      ...loginRegisterFormAnimations.gradientAnimation.to,
       opacity: !showLandingPage ? 1 : 0 // Only show once landing page is gone
     },
-    config: { 
-      duration: 1000, // Long duration for gradient movement
-      opacity: { duration: 200 } // Even faster fade-in than in transitions.js
-    },
-    loop: { reverse: true },
-    delay: 10 // Minimal delay to ensure immediate visibility
+    config: loginRegisterFormAnimations.gradientAnimation.config,
+    loop: loginRegisterFormAnimations.gradientAnimation.loop,
+    delay: loginRegisterFormAnimations.gradientAnimation.delay // No delay
   });
   
   // Determine if component should render with proper timing
@@ -83,38 +76,17 @@ const LoginRegisterForm = () => {
     }
   }, [shouldRender, isExiting, isReady]);
   
-  // ⚡ UPDATE: Enhanced form transition with faster animation timing
+  // ⚡ UPDATE: Ultra-fast form animation with immediate opacity
   const formTransition = useTransition(shouldRender && !isExiting, {
-    from: {
-      ...formAnimation.from,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    },
+    from: loginRegisterFormAnimations.formTransition.from,
     enter: {
-      ...formAnimation.enter,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      opacity: 1, // Force to 1 immediately for faster appearance
+      ...loginRegisterFormAnimations.formTransition.enter,
+      opacity: 1, // Force to 1 immediately for instantly visible appearance
     },
-    leave: {
-      ...formAnimation.leave,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    },
-    config: {
-      mass: 1,
-      tension: 380, // Higher tension for faster animation
-      friction: 18,  // Lower friction for faster animation
-      duration: 150, // Even shorter duration than in transitions.js
+    leave: loginRegisterFormAnimations.formTransition.leave,
+    config: loginRegisterFormAnimations.formTransition.config,
+    immediate: {
+      opacity: true // Apply opacity change immediately without animation
     },
     onRest: () => {
       if (isExiting) {
@@ -127,7 +99,7 @@ const LoginRegisterForm = () => {
     return <ShopManagement />;
   }
   
-  // ⚡ UPDATE: Immediate render approach for faster appearance
+  // ⚡ UPDATE: Optimized rendering
   return (
     <>
       {formTransition((style, show) => 
@@ -137,7 +109,7 @@ const LoginRegisterForm = () => {
             style={{
               ...style,
               ...gradientProps,
-              willChange: 'opacity, transform', // Performance optimization
+              willChange: 'opacity, transform, background-position', // Performance optimization
             }}
           >
             <div className={styles.formContainer}>
