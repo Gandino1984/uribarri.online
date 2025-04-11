@@ -86,9 +86,9 @@
   align-items: stretch;
   justify-content: center;
   position: relative;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.135), rgba(255, 255, 255, 0.661));
   padding: 1rem;
-  border: 1px solid var(--light-orange);
+  border: 1px solid rgba(255, 255, 255, 0.519);
   border-top: none;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
