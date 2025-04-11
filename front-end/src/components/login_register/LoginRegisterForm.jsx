@@ -3,7 +3,6 @@ import { useTransition, animated } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import ShopManagement from "../shop_management/ShopManagement.jsx";
-import LandingPage from "../landing_page/LandingPage.jsx";
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
@@ -26,21 +25,15 @@ const LoginRegisterForm = () => {
   const { currentUser, type_user } = useAuth();
   const { 
     showShopManagement, 
-    showLandingPage, 
-    setShowLandingPage, 
-    setShowTopBar  // 🌟 UPDATE: Added TopBar state
+    setShowLandingPage, // 💡 UPDATE: Keep this to potentially return to landing page
+    setShowTopBar  
   } = useUI();
   
   const [isExiting, setIsExiting] = useState(false);
   
-  // 🌟 UPDATE: Enhanced handler to manage TopBar visibility
-  const handleProceedToLogin = () => {
-    setShowLandingPage(false);
-    // Note: TopBar visibility is now handled in LandingPage.jsx when the O button is clicked
-  };
   
   // Determine what to show based on current application state
-  const showLoginForm = !showLandingPage && !showShopManagement && !currentUser;
+  const showLoginForm = !showShopManagement && !currentUser;
   
   // Reset the exit animation state when the component mounts or visibility changes
   useEffect(() => {
@@ -49,12 +42,12 @@ const LoginRegisterForm = () => {
     }
   }, [showLoginForm]);
   
-  const handleCloseForm = (callback) => {
-    setIsExiting(true);
-    setTimeout(() => {
-      if (callback) callback();
-    }, 500);
-  };
+  // const handleCloseForm = (callback) => {
+  //   setIsExiting(true);
+  //   setTimeout(() => {
+  //     if (callback) callback();
+  //   }, 500);
+  // };
   
   useEffect(() => {
     // If the form is no longer needed but hasn't started exiting yet
@@ -75,17 +68,9 @@ const LoginRegisterForm = () => {
     }
   });
   
-  // 🌟 UPDATE: Added TopBar visibility management for different views
-  if (showShopManagement || currentUser) {
-    const userType = currentUser?.type_user || type_user;
-    // Keep TopBar visible when in ShopManagement view
-    return userType === 'seller' ? <ShopManagement /> : <LandingPage onProceedToLogin={handleProceedToLogin} />;
-  }
   
-  // 🌟 UPDATE: Reset TopBar visibility when showing landing page
-  if (showLandingPage) {
-    // TopBar not displayed with the landing page - will only show after O button click
-    return <LandingPage onProceedToLogin={handleProceedToLogin} />;
+  if (showShopManagement || currentUser) {
+    return <ShopManagement />;
   }
   
   return (
