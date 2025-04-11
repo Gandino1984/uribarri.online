@@ -5,9 +5,14 @@
   --superdark-orange: #3f2100;
 
   /* 🔄 UPDATE: Added new color variables for the gradient background */
+  --dark-gradient-purple-start: #3e297d;
   --gradient-purple-start: #6d48dd;
+  --light-gradient-purple-start: #6d48dd91;
   --gradient-purple-mid: #9c42dd;
+  --light-gradient-purple-mid: #9d42dd92;
   --gradient-purple-end: #e9487e;
+  --superlight-gradient-purple-end: #e9487e23;
+  
 
   --superlight-orange: #fff1df;
   --superlight-gray: #e9e9e9;
@@ -85,12 +90,12 @@ input[type="text"] {
   border-radius: 5px;
   min-height: 2.5rem;
   max-width: 20rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: .5rem;
   width: 100%;
   outline: none;
-  border: 2px solid var(--medium-gray);
-  transition: all 0.2s ease;
+  border: none;
+  /* transition: all 0.15s ease; */
 }
 
 /* Styling for input placeholders */
@@ -100,15 +105,16 @@ input[type="text"]::placeholder {
 }
 
 input[type="text"]:focus {
-  color: var(--saturated-blue); /* Keep blue color when focused */
-  border: 2px solid var(--saturated-blue);
-  outline: none;
-  box-shadow: var(--focus-shadow);
-  background-color: var(--superlight-blue);
+  color: white; /* Keep blue color when focused */
+  border: 2px solid black;
+  /* box-shadow: var(--focus-shadow); */
+  background-color: black;
 }
 
 input[type="text"]:hover { 
-  border: 2px solid var(--saturated-blue);
+  border: 2px solid var(--gradient-purple-mid);
+  box-shadow: 0 0 10px 3px var(--gradient-purple-mid);
+  background-color: black;
 }
 
 /* Number inputs with blue for entered text */
@@ -192,10 +198,10 @@ button {
   justify-content: center;
   outline: none;
   border: none;
-  background-color: white;
-  border: 1px solid var(--light-orange); 
+  background-color: transparent;
+  /* border: 1px solid var(--light-orange);  */
   border-radius: 5px;
-  color: var(--dark-orange);
+  color: white;
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: 0.85rem;
   font-weight: 500;

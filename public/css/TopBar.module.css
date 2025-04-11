@@ -4,12 +4,12 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background-color: var(--superlight-orange);
+    /* background-color: var(--superlight-orange); */
     padding: 0.4rem 1.5rem;
-    z-index: 1000; /* ⚙️ UPDATE: Verified z-index is higher than LoginRegisterForm */
+    z-index: 1000; 
     height: auto; 
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-    background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+    /* box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1); */
+    /* background: linear-gradient(to bottom, #ffffff, var(--superlight-orange)); */
     position: fixed; 
     top: 0; 
     left: 0; 
