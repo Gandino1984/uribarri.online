@@ -7,8 +7,8 @@
   width: 100%;
   max-width: 100vw;
   
-  /* ⚙️ UPDATE: Set to transparent to allow the LoginRegisterForm background to show through */
-  background: transparent;
+  /* 🌑 UPDATE: Set to black instead of transparent */
+  background: black;
   
   margin: 0;
   padding: 0;

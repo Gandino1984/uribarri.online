@@ -84,26 +84,29 @@ export const userInfoCardAnimation = {
   },
 };
 
-// ✨ UPDATE: Unified form animation for both LoginRegisterForm and ShopCreationForm
+// ⚡ UPDATE: Significantly faster form animation
 export const formAnimation = {
   from: { 
     opacity: 0,
     transform: 'translateY(30px) scale(0.95)',
+    zIndex: -1, // Start with lower z-index
   },
   enter: { 
     opacity: 1,
     transform: 'translateY(0px) scale(1)',
+    zIndex: 100, // Match the container's z-index
   },
   leave: { 
     opacity: 0,
     transform: 'translateY(-30px) scale(0.95)',
+    zIndex: -1, // End with lower z-index
   },
   config: {
     mass: 1,
-    tension: 240,
-    friction: 26,
+    tension: 320, // Higher tension for faster animation
+    friction: 20,  // Lower friction for faster animation
     clamp: false,
-    duration: 350
+    duration: 200  // Reduced from 350ms to 200ms
   },
 };
 
@@ -174,30 +177,33 @@ export const shopsListAnimations = {
   }
 };
 
-// 🌟 UPDATE: Added clean animations for LandingPage
+// ⚡ UPDATE: LandingPage animations with faster exit
 export const landingPageAnimations = {
   // Container background animation (handles background color transition)
   containerAnimation: {
     default: { 
-      backgroundColor: 'rgb(0, 0, 0)'  // Default black
+      backgroundColor: 'rgb(0, 0, 0)',  // Default black
+      zIndex: 500,                      // Higher than LoginRegisterForm initially
     },
     hover: { 
-      backgroundColor: 'rgb(40, 10, 60)'  // Purple on hover
+      backgroundColor: 'rgb(40, 10, 60)',  // Purple on hover
+      zIndex: 500,
     },
     exit: { 
-      backgroundColor: 'rgb(187, 0, 106)'  // Red during exit animation
+      backgroundColor: 'rgb(187, 0, 106)',  // Red during exit animation
+      zIndex: 500,
+      opacity: 1,                          // Keep visible during exit
     },
     config: { 
-      tension: 120, 
-      friction: 14,
-      duration: 600  // Slightly longer transition for exit
+      tension: 140, 
+      friction: 12,
+      duration: 200  // Reduced from 600ms to 400ms
     }
   },
   
-  // 🎈 UPDATE: Added default floating animation for zero-gravity effect
+  // Button animation with enhanced exit coordination
   buttonAnimation: {
     default: {
-      // Default animation is handled in component using useSpring's loop feature
       opacity: 1
     },
     exit: {
@@ -205,15 +211,13 @@ export const landingPageAnimations = {
       transform: 'translateY(-500px) scale(0.1) rotate(1080deg)',
     },
     floating: {
-      // Parameters for the floating animation
       y: { range: [-15, 15], duration: 3000 }, // -15px to 15px over 3 seconds
     },
     config: {
-      // Low friction and tension values create a slow, floaty bounce effect
       tension: 45,   // Lower tension for slower acceleration
       friction: 8,   // Very low friction to simulate space/zero-gravity
       mass: 2,       // Higher mass for more inertia
-      duration: 200 // Longer duration for the full effect
+      duration: 200  // Unchanged
     },
     floatingConfig: {
       tension: 40,    // Low tension for slow movement
@@ -236,13 +240,58 @@ export const landingPageAnimations = {
       tension: 280, 
       friction: 30 
     }
+  },
+  
+  // ⚡ UPDATE: Faster page exit animation
+  pageExitAnimation: {
+    from: { 
+      opacity: 1,
+      transform: 'scale(1)',
+    },
+    to: { 
+      opacity: 0,
+      transform: 'scale(1.05)',
+    },
+    config: {
+      tension: 200,
+      friction: 18,  
+      duration: 100, 
+    }
   }
 };
 
-// ⚙️ UPDATE: Added gradient animation for the login/register form background
+// ⚡ UPDATE: Faster gradient animation for the login/register form background
 export const gradientAnimation = {
-  from: { backgroundPosition: '0% 50%' },
-  to: { backgroundPosition: '100% 50%' },
-  config: { duration: 20000 },
+  from: { 
+    backgroundPosition: '0% 50%',
+    opacity: 0, // Start invisible
+  },
+  to: { 
+    backgroundPosition: '100% 50%',
+    opacity: 1, // Fade in
+  },
+  config: { 
+    duration: 300, // Long duration for gradient movement
+    opacity: { duration: 100 } // Reduced from 600ms to 300ms for faster fade-in
+  },
   loop: { reverse: true }
+};
+
+// ⚡ UPDATE: Faster page transition
+export const pageTransition = {
+  config: {
+    mass: 1,
+    tension: 350, // Higher tension
+    friction: 22, // Lower friction
+    duration: 50, // Reduced from 800ms to 350ms
+  },
+  from: {
+    opacity: 0,
+  },
+  enter: {
+    opacity: 1,
+  },
+  leave: {
+    opacity: 0,
+  },
 };

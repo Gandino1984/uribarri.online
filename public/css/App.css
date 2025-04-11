@@ -38,6 +38,14 @@
   --spacing-xl: 1.5rem;
 }
 
+/* 🌑 UPDATE: Set black background for both html and body to prevent any white showing */
+html, body {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -444,4 +452,4 @@ input[type="radio"] {
   clip: rect(0, 0, 0, 0);
   border: 0;
   white-space: nowrap;
-} 
+}
