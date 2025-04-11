@@ -10,35 +10,28 @@ const LandingPage = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   
-  // Instead of using the complex continuous animation, we'll use a simpler 
-  // approach with separate states for floating and exiting
-  const [buttonY, setButtonY] = useState(0);
-  
-  // Floating effect using useEffect and setTimeout
-  useEffect(() => {
-    let floatingTimer;
-    let direction = 'up';
-    let currentY = 0;
-    
-    const floatStep = () => {
-      if (isExiting) return; // Stop floating when exiting
+  // 💡 UPDATE: Restored the original floating animation using useSpring
+  const floatingAnimation = useSpring({
+    from: { transform: 'translateY(0px)' },
+    to: async (next) => {
+      // Only run the floating animation when not exiting
+      if (isExiting) return;
       
-      if (direction === 'up') {
-        currentY -= 1;
-        if (currentY <= -15) direction = 'down';
-      } else {
-        currentY += 1;
-        if (currentY >= 0) direction = 'up';
+      // Create an infinite loop of floating motion
+      while (!isExiting) {
+        // Float up gently
+        await next({ transform: 'translateY(-15px)' });
+        // Float down gently
+        await next({ transform: 'translateY(0px)' });
       }
-      
-      setButtonY(currentY);
-      floatingTimer = setTimeout(floatStep, 50);
-    };
-    
-    floatingTimer = setTimeout(floatStep, 50);
-    
-    return () => clearTimeout(floatingTimer);
-  }, [isExiting]);
+    },
+    config: {
+      tension: 40,    // Low tension for slow movement
+      friction: 15,   // Higher friction for water resistance
+      mass: 2,      // Higher mass for more inertia
+    },
+    delay: 500,       // Start after initial appearance
+  });
   
   // Main container animation
   const containerAnimation = useSpring({
@@ -55,23 +48,34 @@ const LandingPage = () => {
     delay: isExiting ? 0 : 600,
   });
 
-  // Exit-specific animations - these will definitely work because they use
-  // separate, explicit numeric values for each property
-  const exitButtonAnimation = useSpring({
-    y: isExiting ? -500 : buttonY, // Start from floating position, move up when exiting
-    scale: isExiting ? 0.1 : 1,
-    rotate: isExiting ? 1080 : 0,
-    opacity: isExiting ? 0 : 1,
+  // Exit-specific animation - separate from floating animation
+  const exitAnimation = useSpring({
+    // Only apply these properties when exiting
+    from: { y: 0, scale: 1, rotate: 0 },
+    to: { 
+      y: isExiting ? -500 : 0, 
+      scale: isExiting ? 0.1 : 1, 
+      rotate: isExiting ? 1080 : 0 
+    },
     config: {
       tension: 170,
       friction: 20,
     },
+    // Don't run this animation until exiting
+    immediate: !isExiting,
+  });
+
+  // Button fade animation
+  const fadeAnimation = useSpring({
+    opacity: isExiting ? 0 : 1,
+    delay: isExiting ? 300 : 0,
+    config: { tension: 280, friction: 60 },
   });
 
   // Background color animation for hover and exit
   const backgroundAnimation = useSpring({
     backgroundColor: isExiting
-      ? 'rgb(105, 0, 60)' // 💡 UPDATE: Turn red during exit animation - matching app color scheme
+      ? 'rgb(231, 61, 158)' // Turn red during exit animation - matching app color scheme
       : isHovering 
         ? 'rgb(40, 10, 60)' // Purple on hover
         : 'rgb(0, 0, 0)',    // Default black
@@ -129,9 +133,12 @@ const LandingPage = () => {
           <animated.button 
             ref={floatRef}
             style={{
-              // Using direct style properties for reliable animation
-              transform: `translateY(${exitButtonAnimation.y}px) scale(${exitButtonAnimation.scale}) rotate(${exitButtonAnimation.rotate}deg)`,
-              opacity: exitButtonAnimation.opacity,
+              // 💡 UPDATE: Use floating animation when not exiting, exit animation when exiting
+              // This is the key change to restore floating while keeping exit animation
+              transform: isExiting
+                ? `translateY(${exitAnimation.y}px) scale(${exitAnimation.scale}) rotate(${exitAnimation.rotate}deg)`
+                : floatingAnimation.transform,
+              opacity: fadeAnimation.opacity,
             }}
             className={styles.oButton}
             onClick={handleButtonClick}
