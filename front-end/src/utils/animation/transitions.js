@@ -173,3 +173,68 @@ export const shopsListAnimations = {
     },
   }
 };
+
+// 🌟 UPDATE: Added clean animations for LandingPage
+export const landingPageAnimations = {
+  // Container background animation (handles background color transition)
+  containerAnimation: {
+    default: { 
+      backgroundColor: 'rgb(0, 0, 0)'  // Default black
+    },
+    hover: { 
+      backgroundColor: 'rgb(40, 10, 60)'  // Purple on hover
+    },
+    exit: { 
+      backgroundColor: 'rgb(231, 61, 158)'  // Red during exit animation
+    },
+    config: { 
+      tension: 120, 
+      friction: 14,
+      duration: 600  // Slightly longer transition for exit
+    }
+  },
+  
+  // 🎈 UPDATE: Added default floating animation for zero-gravity effect
+  buttonAnimation: {
+    default: {
+      // Default animation is handled in component using useSpring's loop feature
+      opacity: 1
+    },
+    exit: {
+      opacity: 0,
+      transform: 'translateY(-500px) scale(0.1) rotate(1080deg)',
+    },
+    floating: {
+      // Parameters for the floating animation
+      y: { range: [-15, 15], duration: 3000 }, // -15px to 15px over 3 seconds
+    },
+    config: {
+      // Low friction and tension values create a slow, floaty bounce effect
+      tension: 45,   // Lower tension for slower acceleration
+      friction: 8,   // Very low friction to simulate space/zero-gravity
+      mass: 2,       // Higher mass for more inertia
+      duration: 300 // Longer duration for the full effect
+    },
+    floatingConfig: {
+      tension: 40,    // Low tension for slow movement
+      friction: 15,   // Higher friction for water resistance
+      mass: 2         // Higher mass for more inertia
+    }
+  },
+  
+  // Text content animations
+  textAnimation: {
+    enter: {
+      opacity: 1,
+      transform: 'translateY(0)',
+    },
+    exit: {
+      opacity: 0,
+      transform: 'translateY(-30px)',
+    },
+    config: { 
+      tension: 280, 
+      friction: 30 
+    }
+  }
+};

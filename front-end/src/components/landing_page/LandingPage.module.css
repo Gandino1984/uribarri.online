@@ -5,15 +5,15 @@
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  padding: 0; /* 🚀 UPDATE: Removed padding that was causing blank space */
+  padding: 0;
   padding-bottom: 4rem;
-  margin: 0; /* 🚀 UPDATE: Explicitly set margin to zero */
+  margin: 0;
   overflow-x: hidden;
-  position: absolute; /* 🚀 UPDATE: Added absolute positioning */
-  top: 0; /* 🚀 UPDATE: Ensure it starts at the very top */
-  left: 0; /* 🚀 UPDATE: Ensure it starts at the very left */
-  right: 0; /* 🚀 UPDATE: Stretch to the right edge */
-  bottom: 0; /* 🚀 UPDATE: Stretch to the bottom edge */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   will-change: background-color;
 }
 
@@ -23,8 +23,8 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%; /* 🚀 UPDATE: Ensure it takes full height */
-  min-height: 100vh; /* 🚀 UPDATE: Changed from calc to 100vh */
+  height: 100%;
+  min-height: 100vh;
   position: relative;
   overflow: hidden;
 }
@@ -35,7 +35,7 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding-top: 10vh; /* 🚀 UPDATE: Added padding to top instead of relying on container padding */
+  padding-top: 10vh;
   position: relative;
 }
 
@@ -52,22 +52,16 @@
 .heroContent p {
   color: white;
   font-size: 1.3rem;
-  /* margin-bottom: 0; */
   opacity: 0.9;
   color: rgb(151, 71, 255);
   font-weight: 500;
 }
 
 .buttonWrapper {
-  /* position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  /* height: 100%; */
   z-index: 1;
   margin-top: 4rem;
   perspective: 1000px;
@@ -92,7 +86,7 @@
   cursor: pointer;
   overflow: visible;
   z-index: 1;
-  -webkit-tap-highlight-color: transparent; /* Remove blue highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
   will-change: transform;
   transform-origin: center center;
 }
@@ -131,14 +125,14 @@
     0 0 50px 15px rgba(151, 71, 255, 0.4);
 }
 
-.buttonClick {
-  animation: buttonClickEffect 0.3s ease-out;
-}
-
-@keyframes buttonClickEffect {
-  0% { transform: scale(0.92) translateY(3px); }
-  50% { transform: scale(1.08) translateY(-8px); }
-  100% { transform: scale(1) translateY(-5px); }
+/* 🪐 UPDATE: Added zero-gravity animation keyframes */
+@keyframes zeroGravityBounce {
+  0% { transform: translateY(0) scale(1); }
+  20% { transform: translateY(-15px) scale(1.05); }
+  40% { transform: translateY(-30px) scale(0.95); }
+  60% { transform: translateY(-60px) scale(0.9); }
+  80% { transform: translateY(-90px) scale(0.6); }
+  100% { transform: translateY(-120px) scale(0.3); }
 }
 
 @keyframes rotateSquare {
@@ -159,8 +153,9 @@
   background-color: transparent;
 }
 
+/* 🌟 UPDATE: Simplified active state */
 .oButton:active::before {
-  transform: rotate(15deg) scale(0.95);
+  transform: scale(0.95);
 }
 
 /* Responsive adjustments - simplified to remove padding */

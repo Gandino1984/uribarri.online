@@ -1,16 +1,27 @@
 // src/components/landing_page/LandingPage.jsx
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSpring, animated, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import styles from './LandingPage.module.css';
+import { landingPageAnimations } from '../../utils/animation/transitions.js'; 
 
 const LandingPage = () => {
   const { setShowTopBar, setShowLandingPage } = useUI();
-  const floatRef = useRef(null);
+  const buttonRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   
-  // 💡 UPDATE: Restored the original floating animation using useSpring
+  // 🌟 UPDATE: Use background animation from transitions.js
+  const backgroundAnimation = useSpring({
+    backgroundColor: isExiting
+      ? landingPageAnimations.containerAnimation.exit.backgroundColor
+      : isHovering 
+        ? landingPageAnimations.containerAnimation.hover.backgroundColor
+        : landingPageAnimations.containerAnimation.default.backgroundColor,
+    config: landingPageAnimations.containerAnimation.config
+  });
+
+  // 🎈 UPDATE: Added constant floating animation for the button when not exiting
   const floatingAnimation = useSpring({
     from: { transform: 'translateY(0px)' },
     to: async (next) => {
@@ -25,86 +36,43 @@ const LandingPage = () => {
         await next({ transform: 'translateY(0px)' });
       }
     },
-    config: {
-      tension: 40,    // Low tension for slow movement
-      friction: 15,   // Higher friction for water resistance
-      mass: 2,      // Higher mass for more inertia
-    },
-    delay: 500,       // Start after initial appearance
+    config: landingPageAnimations.buttonAnimation.floatingConfig,
+    immediate: isExiting, // Stop the animation immediately when exiting
   });
-  
-  // Main container animation
+
+  // 🪐 UPDATE: Exit animation for the button
+  const exitAnimation = useSpring({
+    opacity: isExiting ? 0 : 1,
+    transform: isExiting 
+      ? 'translateY(-100px) scale(0.1) rotate(720deg)' 
+      : 'translateY(0px) scale(1) rotate(0deg)',
+    config: landingPageAnimations.buttonAnimation.config,
+    immediate: !isExiting // Only apply when exiting
+  });
+
+  // Text animation for fade effect
+  const textAnimation = useSpring({
+    opacity: isExiting ? landingPageAnimations.textAnimation.exit.opacity : landingPageAnimations.textAnimation.enter.opacity,
+    transform: isExiting ? landingPageAnimations.textAnimation.exit.transform : landingPageAnimations.textAnimation.enter.transform,
+    config: landingPageAnimations.textAnimation.config
+  });
+
+  // Container animation for fade effect
   const containerAnimation = useSpring({
     opacity: isExiting ? 0 : 1,
     config: { tension: 280, friction: 60 },
     delay: isExiting ? 500 : 0,
   });
 
-  // Text animations
-  const textAnimation = useSpring({
-    opacity: isExiting ? 0 : 1,
-    transform: isExiting ? 'translateY(-30px)' : 'translateY(0)',
-    config: { tension: 280, friction: 30 },
-    delay: isExiting ? 0 : 600,
-  });
-
-  // Exit-specific animation - separate from floating animation
-  const exitAnimation = useSpring({
-    // Only apply these properties when exiting
-    from: { y: 0, scale: 1, rotate: 0 },
-    to: { 
-      y: isExiting ? -500 : 0, 
-      scale: isExiting ? 0.1 : 1, 
-      rotate: isExiting ? 1080 : 0 
-    },
-    config: {
-      tension: 170,
-      friction: 20,
-    },
-    // Don't run this animation until exiting
-    immediate: !isExiting,
-  });
-
-  // Button fade animation
-  const fadeAnimation = useSpring({
-    opacity: isExiting ? 0 : 1,
-    delay: isExiting ? 300 : 0,
-    config: { tension: 280, friction: 60 },
-  });
-
-  // Background color animation for hover and exit
-  const backgroundAnimation = useSpring({
-    backgroundColor: isExiting
-      ? 'rgb(231, 61, 158)' // Turn red during exit animation - matching app color scheme
-      : isHovering 
-        ? 'rgb(40, 10, 60)' // Purple on hover
-        : 'rgb(0, 0, 0)',    // Default black
-    config: { 
-      tension: 120, 
-      friction: 14,
-      duration: isExiting ? 600 : undefined // Slightly longer transition for exit
-    },
-  });
-
   const handleButtonClick = () => {
-    // Water ripple effect
-    if (floatRef.current) {
-      floatRef.current.classList.add(styles.buttonClick);
-      setTimeout(() => {
-        if (floatRef.current) {
-          floatRef.current.classList.remove(styles.buttonClick);
-        }
-      }, 300);
-    }
-    
-    // Trigger exit animations
+    // 🪐 UPDATE: Enhanced button click handler for zero-gravity effect
     setIsExiting(true);
     
-    // Navigate after animations complete
+    // Navigate after animations complete - increased timeout to match new animation duration
     setTimeout(() => {
       setShowTopBar(true);
       setShowLandingPage(false);
-    }, 900);
+    }, 1500); // Increased from 900ms to 1500ms to allow for full animation
   };
 
   const handleMouseEnter = () => {
@@ -131,15 +99,8 @@ const LandingPage = () => {
         
         <div className={styles.buttonWrapper}>
           <animated.button 
-            ref={floatRef}
-            style={{
-              // 💡 UPDATE: Use floating animation when not exiting, exit animation when exiting
-              // This is the key change to restore floating while keeping exit animation
-              transform: isExiting
-                ? `translateY(${exitAnimation.y}px) scale(${exitAnimation.scale}) rotate(${exitAnimation.rotate}deg)`
-                : floatingAnimation.transform,
-              opacity: fadeAnimation.opacity,
-            }}
+            ref={buttonRef}
+            style={isExiting ? exitAnimation : floatingAnimation}
             className={styles.oButton}
             onClick={handleButtonClick}
             onMouseEnter={handleMouseEnter}
