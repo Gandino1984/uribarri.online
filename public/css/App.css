@@ -25,9 +25,10 @@
   --topbar-height: 5rem;
 
   --saturated-blue: #088DD0;
+  --saturated-blue-transparent: #088dd0a2;
   --dark-blue: #036ea3;
   --light-blue: #40b8f5;
-  --superlight-blue: #edf9ff;
+  --superlight-blue: #1ab3ff1b;
 
   --light-green: rgb(126, 255, 115);
   --superlight-green: rgb(220, 255, 220);
@@ -84,11 +85,11 @@ html, body {
 
 /* Text input with blue for entered text */
 input[type="text"] {
-  color: var(--saturated-blue); /* Blue color for entered text */
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
+  color: black; /* Blue color for entered text */
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
   cursor: pointer;
   font-size: 0.9rem;
-  border-radius: 5px;
+  border-radius: 15px;
   min-height: 2.5rem;
   max-width: 20rem;
   font-weight: 600;
@@ -96,7 +97,7 @@ input[type="text"] {
   width: 100%;
   outline: none;
   border: none;
-  /* transition: all 0.15s ease; */
+  background-color: rgb(220, 228, 255)
 }
 
 /* Styling for input placeholders */
@@ -106,16 +107,17 @@ input[type="text"]::placeholder {
 }
 
 input[type="text"]:focus {
-  color: white; /* Keep blue color when focused */
-  border: 2px solid black;
+  color: black; /* Keep blue color when focused */
+  border: 2px solid WHITE;
   /* box-shadow: var(--focus-shadow); */
-  background-color: black;
+  background-color: white;
 }
 
 input[type="text"]:hover { 
-  border: 2px solid var(--gradient-purple-mid);
-  box-shadow: 0 0 10px 3px var(--gradient-purple-mid);
-  background-color: black;
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+  /* background-color: var(--saturated-blue); */
 }
 
 /* Number inputs with blue for entered text */
@@ -192,7 +194,7 @@ textarea:hover {
   border: 2px solid var(--saturated-orange);
 }
 
-/* Button styling with new active state */
+
 button {
   display: flex;
   align-items: center;
@@ -200,9 +202,8 @@ button {
   outline: none;
   border: none;
   background-color: transparent;
-  /* border: 1px solid var(--light-orange);  */
   border-radius: 5px;
-  color: white;
+  /* color: var(--superdark-gradient-purple-start); */
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: 0.85rem;
   font-weight: 500;
@@ -215,10 +216,8 @@ button {
 }
 
 button:hover {
-  border: none;
+  /* border: none; */
   color: white;
-  background-color: var(--saturated-blue);
-  /* border-top: 1px solid var(--light-blue); */
 }
 
 button:active {

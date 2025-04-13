@@ -26,9 +26,22 @@ export const UIProvider = ({ children }) => {
   const [showLandingPage, setShowLandingPage] = useState(true); // ⚙️ UPDATE: Show landing page by default
   const [showShopManagement, setShowShopManagement] = useState(false);
   
+  // ⚠️ FIXED: Added showProductManagement state
+  const [showProductManagement, setShowProductManagement] = useState(false);
+  
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
+  
+  // ⚠️ FIXED: Added missing uploading state
+  const [uploading, setUploading] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedImageForModal, setSelectedImageForModal] = useState('');
+  
+  // ⚠️ FIXED: Added missing modal states for shop operations
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isAccepted, setIsAccepted] = useState(false);
 
   // Confirmation modal helpers
   const openConfirmationModal = (message, onConfirm, onCancel) => {
@@ -66,6 +79,19 @@ export const UIProvider = ({ children }) => {
     setError({});
     setSuccess({});
   };
+  
+  // ⚠️ FIXED: Added individual clear functions
+  const clearError = () => {
+    setError({});
+  };
+  
+  const clearInfo = () => {
+    setInfo({});
+  };
+  
+  const clearSuccess = () => {
+    setSuccess({});
+  };
 
   // Open image modal with a specific image
   const openImageModal = (imageSrc) => {
@@ -87,6 +113,10 @@ export const UIProvider = ({ children }) => {
         error, setError,
         success, setSuccess,
         clearNotifications,
+        // ⚠️ FIXED: Added clear functions
+        clearError,
+        clearInfo, 
+        clearSuccess,
         
         // Modal handlers
         showConfirmationModal, setShowConfirmationModal,
@@ -104,10 +134,23 @@ export const UIProvider = ({ children }) => {
         showLandingPage, setShowLandingPage,
         showShopManagement, setShowShopManagement,
         
+        // ⚠️ FIXED: Added showProductManagement state
+        showProductManagement, setShowProductManagement,
+        
         // Image modal handlers
         showImageModal, setShowImageModal,
         modalImageSrc, setModalImageSrc,
-        openImageModal, closeImageModal
+        openImageModal, closeImageModal,
+        
+        // ⚠️ FIXED: Added missing uploading state and image modal states
+        uploading, setUploading,
+        isImageModalOpen, setIsImageModalOpen,
+        selectedImageForModal, setSelectedImageForModal,
+        
+        // ⚠️ FIXED: Added missing modal states for shop operations
+        isModalOpen, setIsModalOpen,
+        modalMessage, setModalMessage,
+        isAccepted, setIsAccepted
       }}
     >
       {children}

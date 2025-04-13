@@ -3,31 +3,14 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  
-  /* ⚙️ UPDATE: Make form take full width and height of the screen */
   width: 100%;
   min-height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  
-  /* ⚙️ UPDATE: Add padding-top to account for the TopBar */
-  padding-top: var(--topbar-height);
-  
-  /* ⚙️ UPDATE: Added gradient background directly to the login form container */
   background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end));
   background-size: 200% 200%;
-  
-  /* 🌑 UPDATE: Added black overlay with bottom-to-top gradient */
   position: relative;
-  
-  /* ⚙️ UPDATE: Set z-index lower than TopBar (1000) */
   z-index: 100;
 }
 
-/* 🌑 UPDATE: Added black gradient overlay from bottom to top */
 .container::after {
   content: '';
   position: absolute;
@@ -75,8 +58,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 12px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; /* ⚙️ UPDATE: Enhanced shadow for better contrast */
+  padding: 1rem;
+  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
 }
 
 .formContent {
@@ -88,8 +71,8 @@
   border-radius: 12px;
   position: relative;
   background: linear-gradient(to top, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
-  padding: .5rem .5rem .5rem .5rem;
-  
+  padding: .5rem .8rem .5rem .8rem;
+  backdrop-filter: blur(1.9px);
   z-index: 0;
   width: 100%;
 }
@@ -107,14 +90,8 @@
 .formActions {
   display: flex;
   width: 100%;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  justify-content: right;
-  z-index: 10;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .formActions button :hover{
@@ -137,21 +114,8 @@
 }
 
 .submitButton {
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 0px;
-  border-bottom: none;
-  position: relative;
-  /* margin-bottom: -1px; */
-  z-index: 5;
   min-width: 80px;
   align-self: flex-start;
-}
-
-.submitButton:hover{
-  color: white !important;
-  background-color: var(--saturated-blue) !important;
 }
 
 .toggleButton {
@@ -221,19 +185,21 @@
 
 .active {
   color: rgb(247, 247, 247);
-  background-color: var(--saturated-orange);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.3);
   color: white;
 }
 
 .active:hover {
   color: white;
-  background-color: var(--dark-orange);
-  /* transform: translateY(-1px); */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+
 }
 
 .inactive {
-  background-color: var(--saturated-orange);
+  /* background-color: var(--saturated-orange); */
   color: var(--gray);
   cursor: not-allowed;
   opacity: 0.3;
