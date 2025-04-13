@@ -61,13 +61,14 @@ function TopBar() {
       >
         <ImageModal />
         
+        {/* 🌊 UPDATE: Updated message wrapper for better card positioning */}
         <div className={styles.messageWrapper}>
             {error && <ErrorCard />}
             {success && <SuccessCard />}
             {info && <InfoCard />}
         </div>
         
-        <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+        <div className={styles.contentWrapper}>
             {(selectedShop || showShopCreationForm) && (
               <button
                 className={styles.backButton}
@@ -86,7 +87,7 @@ function TopBar() {
               onClick={clearUserSession}
               title="Cerrar sesión"
             >
-                {isExpanded ? 'Cerrar' : ''}
+                Cerrar
                 <DoorClosed size={16}/>
             </button>
         </div>

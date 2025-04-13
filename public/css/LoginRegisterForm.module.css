@@ -68,9 +68,17 @@
   gap: .5rem;
   align-items: stretch;
   justify-content: center;
-  border-radius: 12px;
   position: relative;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+  
+  /* 🎨 UPDATE: Reverted to transparent border and background-clip to fix border-radius */
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background-image: 
+    linear-gradient(to top, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  
   padding: .5rem .8rem .5rem .8rem;
   backdrop-filter: blur(1.9px);
   z-index: 0;
@@ -119,16 +127,12 @@
 }
 
 .toggleButton {
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 8px;
-  border-bottom: none;
-  position: relative;
-  /* margin-bottom: -1px; */
-  z-index: 5;
   min-width: 80px;
-  align-self: flex-end;
+}
+
+
+.toggleButton:hover {
+  text-shadow: 0 0 8px var(--saturated-blue);
 }
 
 .validationMessage {

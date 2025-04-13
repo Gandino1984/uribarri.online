@@ -4,6 +4,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import styles from './LandingPage.module.css';
 import { landingPageAnimations } from '../../utils/animation/transitions.js'; 
+import OButton from '../Obutton/Obutton.jsx';
 
 const LandingPage = () => {
   const { setShowTopBar, setShowLandingPage } = useUI();
@@ -35,41 +36,6 @@ const LandingPage = () => {
     config: landingPageAnimations.backgroundHoverAnimation.config
   });
 
-  // Floating animation with exit control
-  const floatingAnimation = useSpring({
-    from: { transform: 'translateY(0px)' },
-    to: async (next) => {
-      // Only run the floating animation when not exiting
-      if (isExiting) return;
-      
-      // Create an infinite loop of floating motion
-      while (!isExiting) {
-        // Float up gently
-        await next({ transform: 'translateY(-15px)' });
-        // Float down gently
-        await next({ transform: 'translateY(0px)' });
-      }
-    },
-    config: landingPageAnimations.buttonAnimation.floatingConfig,
-    immediate: isExiting, // Stop the animation immediately when exiting
-  });
-
-  // ⚡ UPDATE: Ultra-fast button exit animation
-  const exitAnimation = useSpring({
-    opacity: isExiting ? 0 : 1,
-    transform: isExiting 
-      ? 'translateY(-100px) scale(0.1) rotate(720deg)' 
-      : 'translateY(0px) scale(1) rotate(0deg)',
-    config: landingPageAnimations.buttonAnimation.config,
-    immediate: !isExiting, // Only apply when exiting
-    onRest: () => {
-      if (isExiting && animationPhase === 'exiting') {
-        // Button animation has completed, move to next phase immediately
-        setAnimationPhase('completed');
-      }
-    }
-  });
-
   // ⚡ UPDATE: Ultra-fast text animation
   const textAnimation = useSpring({
     opacity: isExiting ? 0 : 1,
@@ -85,6 +51,22 @@ const LandingPage = () => {
       : landingPageAnimations.pageExitAnimation.from,
     config: landingPageAnimations.pageExitAnimation.config
   });
+
+  // 🔄 UPDATE: Custom animations for OButton to match existing behavior
+  const customAnimations = {
+    exit: {
+      config: landingPageAnimations.buttonAnimation.config,
+      onRest: () => {
+        if (isExiting && animationPhase === 'exiting') {
+          // Button animation has completed, move to next phase immediately
+          setAnimationPhase('completed');
+        }
+      }
+    },
+    floating: {
+      config: landingPageAnimations.buttonAnimation.floatingConfig
+    }
+  };
 
   // ⚡ UPDATE: Ultra-fast transition to login form
   useEffect(() => {
@@ -130,20 +112,19 @@ const LandingPage = () => {
         </animated.div>
         
         <div className={styles.buttonWrapper}>
-          <animated.button 
+          {/* 🔄 UPDATE: Replaced button with reusable OButton component */}
+          <OButton 
             ref={buttonRef}
-            style={isExiting ? exitAnimation : floatingAnimation}
-            className={styles.oButton}
             onClick={handleButtonClick}
+            disabled={isExiting}
+            isExiting={isExiting}
+            customAnimations={customAnimations}
+            ariaLabel="Escaparate Comercial"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onTouchStart={handleMouseEnter}
             onTouchEnd={handleMouseLeave}
-            aria-label="Escaparate Comercial"
-            disabled={isExiting}
-          >
-            O
-          </animated.button>
+          />
         </div>
       </animated.div>
     </animated.div>

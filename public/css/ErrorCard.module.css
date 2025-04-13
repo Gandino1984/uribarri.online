@@ -1,54 +1,58 @@
 .container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: absolute;
-    padding: 0.5rem 1rem;
-    gap: 0.5rem; 
-    background-color: rgba(255, 235, 235, 1); /* Solid background */
-    border: 2px solid red;
-    z-index: 99999;
-    width: auto;
-    white-space: nowrap;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    max-width: 90%;
-    margin-top: 0.5rem;
+    background-color: #fff1f0;
+    border: 1px solid #ffccc7;
     border-radius: 8px;
-}
-
-.errorList {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: auto;
+    max-width: 90%; 
+    min-width: 280px; 
+  }
+  
+  /* Modified iconContainer to ensure proper spacing and visualization */
+  .iconContainer {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
+    margin-right: 16px;
+    min-width: 44px; 
+    min-height: 44px;
+    position: relative;
+    flex-shrink: 0; 
+  }
+  
+  .errorList {
+    flex: 1;
+    display: flex;
     flex-direction: column;
-}
-
-.errorItem {
-    display: block;
-    line-height: 1.2;
-    font-size: 0.9rem;
-    color: red;
-    text-align: center;
-    /* white-space: normal; */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
+  }
+  
+  .errorItem {
+    color: #cf1322;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 4px;
+    word-wrap: break-word; /* 🌊 UPDATE: Ensure long words don't overflow */
+    hyphens: auto; /* 🌊 UPDATE: Allow hyphenation for better text wrapping */
+  }
+  
+  .errorItem:last-child {
+    margin-bottom: 0;
+  }
+  
+  
+  /* 🌊 UPDATE: Added responsive adjustments */
+  @media (max-width: 480px) {
     .container {
-        padding: 0.4rem 0.75rem;
-        max-width: 90%;
+      min-width: 250px;
+      max-width: 95%;
+      padding: 10px 12px;
     }
     
     .errorItem {
-        font-size: 0.8rem;
+      font-size: 13px;
     }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 0.3rem 0.5rem;
-        max-width: 95%;
-    }
-}
+  }
