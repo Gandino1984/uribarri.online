@@ -7,9 +7,9 @@ const OButton = forwardRef(({
   onClick, 
   disabled = false,
   text = 'O',
-  size = 'default', // Can be 'default', 'small', 'extraSmall', or 'large'
+  size = 'default', 
   isExiting = false,
-  isFloating = false, // 🔄 UPDATE: Added isFloating prop to make floating animation optional
+  isFloating = false, 
   customAnimations = {},
   className = '',
   ariaLabel = 'Action Button',

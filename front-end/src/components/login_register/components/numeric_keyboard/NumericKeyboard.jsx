@@ -65,7 +65,7 @@ const NumericKeyboard = ({
         
         return (
           <div key={index} className={styles.iconWrapper}>
-            <Icon size={10} color={color} strokeWidth={2.5} />
+            <Icon size={10} color={"black"} strokeWidth={2} />
           </div>
         );
       }));
