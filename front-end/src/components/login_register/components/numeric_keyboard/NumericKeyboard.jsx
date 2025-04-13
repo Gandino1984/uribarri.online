@@ -117,14 +117,14 @@ const NumericKeyboard = ({
             onClick={(e) => handleBackspaceClick(e)}
             title="Borrar"
           >
-            <Delete size={16} />
+            <Delete size={16} strokeWidth={3}/>
           </button>
           <button 
             className={styles.key} 
             onClick={clearUserSession}
             title="Borrar todo"
           >
-            <Eraser size={16} />
+            <Eraser size={16} strokeWidth={3}/>
           </button>
         </div>
       </div>

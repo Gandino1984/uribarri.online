@@ -75,7 +75,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-top-left-radius: 8px;
+  border-radius: 12px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; /* ⚙️ UPDATE: Enhanced shadow for better contrast */
 }
 
@@ -85,10 +85,11 @@
   gap: .5rem;
   align-items: stretch;
   justify-content: center;
+  border-radius: 12px;
   position: relative;
   background: linear-gradient(to top, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
-  padding: 1rem;
-  border-radius: 12px;
+  padding: .5rem .5rem .5rem .5rem;
+  
   z-index: 0;
   width: 100%;
 }
