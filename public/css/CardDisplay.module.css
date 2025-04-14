@@ -1,0 +1,86 @@
+.cardDisplayContainer {
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 1200;
+    pointer-events: none;
+    width: 100%;
+  }
+  
+  .messageWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    pointer-events: none; 
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  /* Allow cards inside wrapper to receive clicks */
+  .messageWrapper > * {
+    pointer-events: auto;
+    margin-bottom: 1rem;
+    width: auto;
+    max-width: 100%;
+  }
+  
+  /* Animation for card entrance */
+  .cardEnterAnimation {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+  
+  /* Animation for card exit */
+  .cardExitAnimation {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
+  
+  @keyframes slideDown {
+    0% {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  /* Media queries for responsive adjustments */
+  @media (max-width: 768px) {
+    .cardDisplayContainer {
+      top: 3.5rem;
+    }
+    
+    .messageWrapper {
+      max-width: 90%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .cardDisplayContainer {
+      top: 3rem;
+    }
+    
+    .messageWrapper {
+      padding: 0 0.5rem;
+    }
+  }
