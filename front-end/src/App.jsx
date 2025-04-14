@@ -8,6 +8,7 @@ import styles from '../../public/css/App.module.css';
 import '../../public/css/App.css'; // Keep this for global styles
 import LoginRegisterForm from "../src/components/login_register/LoginRegisterForm.jsx";
 import TopBar from "../src/components/top_bar/TopBar.jsx";
+import CardDisplay from "../src/components/card_display/CardDisplay.jsx";
 import ConfirmationModal from "../src/components/confirmation_modal/ConfirmationModal.jsx";
 import { useUI } from "./app_context/UIContext.jsx";
 import LandingPage from "../src/components/landing_page/LandingPage.jsx";
@@ -19,7 +20,9 @@ const AppContent = () => {
   return (
     <div className={styles.mainContainer}>
       <ConfirmationModal />
+      {/* 🎴 UPDATE: Added CardDisplay component as a sibling to TopBar */}
       {showTopBar && <TopBar />}
+      <CardDisplay />
       {showLandingPage ? <LandingPage /> : <LoginRegisterForm />} 
     </div>
   );

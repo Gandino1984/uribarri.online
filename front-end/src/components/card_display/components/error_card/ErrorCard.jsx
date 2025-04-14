@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useUI } from '../../../app_context/UIContext.jsx';
-import styles from '../../../../../public/css/ErrorCard.module.css';
-import OButton from '../../Obutton/Obutton.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import styles from '../../../../../../public/css/ErrorCard.module.css';
+import OButton from '../../../Obutton/Obutton.jsx';
 import { MessageCircleX } from 'lucide-react'; // 🚨 UPDATE: Imported MessageCircleX icon from lucide-react
 
 const ErrorCard = () => {
@@ -54,7 +54,7 @@ const ErrorCard = () => {
   // Added container style based on visibility
   const containerStyle = {
     opacity: isVisible ? 1 : 0,
-    transform: isVisible ? 'translateY(0)' : 'translateY(-50px)',
+    transform: isVisible ? 'translateY(0)' : 'translateY(-10px)',
     transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
   };
 
@@ -62,7 +62,6 @@ const ErrorCard = () => {
     showErrorCard && latestError && (
       <div className={styles.container} style={containerStyle}>
         <div className={styles.iconContainer}>
-          {/* 🚨 UPDATE: Added MessageCircleX icon positioned on top of OButton */}
           <div className={styles.iconOverlay}>
             <MessageCircleX size={18} color="#cf1322" />
           </div>

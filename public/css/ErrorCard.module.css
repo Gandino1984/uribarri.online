@@ -3,13 +3,9 @@
   align-items: center;
   background-color: white;
   border: 1px solid red;
-  border-radius: 8px;
-  /* padding: 12px 16px; */
-  /* margin-bottom: 16px; */
-  box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.1);
-  width: auto;
-  /* max-width: 90%;  */
-  /* min-width: 280px;  */
+  border-radius: 12px;
+  padding: .5rem .4rem .2rem .3rem;
+  box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Modified iconContainer to ensure proper spacing and visualization */
@@ -17,54 +13,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
+  margin-right: .5rem;
   min-width: 44px; 
   min-height: 44px;
   position: relative;
   flex-shrink: 0; 
 }
 
-/* 🚨 UPDATE: Added style for the icon overlay to position it on top of the OButton */
 .iconOverlay {
   position: absolute;
   top: -4px;
   right: -11px;
   z-index: 2;
-  /* background-color: white; */
   border-radius: 50%;
-  /* padding: 2px; */
-  /* box-shadow: 0 0 3px rgba(0, 0, 0, 0.3); */
 }
 
 .errorList {
-  flex: 1;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
 }
 
 .errorItem {
-  color: #cf1322;
-  font-size: 14px;
+  color: red;
+  font-size: .7rem;
+  font-weight: 500;
   line-height: 1.5;
   margin-bottom: 4px;
-  word-wrap: break-word; /* Ensure long words don't overflow */
-  hyphens: auto; /* Allow hyphenation for better text wrapping */
+  text-align: center;
+   
 }
 
 .errorItem:last-child {
   margin-bottom: 0;
-}
-
-
-/* Added responsive adjustments */
-@media (max-width: 480px) {
-  .container {
-    min-width: 250px;
-    max-width: 95%;
-    padding: 10px 12px;
-  }
-  
-  .errorItem {
-    font-size: 13px;
-  }
 }

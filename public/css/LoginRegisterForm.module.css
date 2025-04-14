@@ -69,13 +69,11 @@
   align-items: stretch;
   justify-content: center;
   position: relative;
-  
-  /* 🎨 UPDATE: Reverted to transparent border and background-clip to fix border-radius */
   border: 1px solid rgba(255, 255, 255, 0.205);
   border-radius: 12px;
   background-image: 
-    linear-gradient(to top, rgba(255, 255, 255, 0.398), rgba(255, 255, 255, 0)),
-    linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--superlight-gradient-purple-end));
+    linear-gradient(to top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.335)),
+    linear-gradient(180deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--superlight-gradient-purple-end));
   background-origin: border-box;
   background-clip: padding-box, border-box;
   
@@ -114,7 +112,7 @@
   justify-content: center;
   flex-direction: column;
   margin-top: .3rem;
-  gap: .8rem;
+  gap: .6rem;
   width: 100%;
 }
 
@@ -190,10 +188,9 @@
 }
 
 .active {
-  color: rgb(247, 247, 247);
+  color: black;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  background-color: rgba(255, 255, 255, 0.3);
-  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .active:hover {

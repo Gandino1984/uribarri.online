@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../../app_context/AuthContext.jsx';
-import { useUI } from '../../../app_context/UIContext.jsx';
-import { uploadProfileImage, formatImageUrl } from '../../../utils/image/imageUploadService.js';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import { uploadProfileImage, formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 export const UserInfoCardUtils = () => {
     // UPDATE: Using useAuth and useUI hooks instead of AppContext

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../app_context/AuthContext.jsx';
-import { useUI } from '../../../app_context/UIContext.jsx';
-import styles from '../../../../../public/css/InfoCard.module.css';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import styles from '../../../../../../public/css/InfoCard.module.css';
 import { MessageCircleWarning, KeyRound } from 'lucide-react';
 
 const InfoCard = () => {

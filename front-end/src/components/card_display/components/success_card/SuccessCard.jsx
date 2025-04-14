@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useUI } from '../../../app_context/UIContext.jsx';
-import styles from '../../../../../public/css/SuccessCard.module.css';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import styles from '../../../../../../public/css/SuccessCard.module.css';
 import { CircleCheckBig } from 'lucide-react';
 
 const SuccessCard = () => {
