@@ -1,58 +1,70 @@
 .container {
-    display: flex;
-    align-items: center;
-    background-color: #fff1f0;
-    border: 1px solid #ffccc7;
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    width: auto;
-    max-width: 90%; 
-    min-width: 280px; 
-  }
-  
-  /* Modified iconContainer to ensure proper spacing and visualization */
-  .iconContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 16px;
-    min-width: 44px; 
-    min-height: 44px;
-    position: relative;
-    flex-shrink: 0; 
-  }
-  
-  .errorList {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid red;
+  border-radius: 8px;
+  /* padding: 12px 16px; */
+  /* margin-bottom: 16px; */
+  box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.1);
+  width: auto;
+  /* max-width: 90%;  */
+  /* min-width: 280px;  */
+}
+
+/* Modified iconContainer to ensure proper spacing and visualization */
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  min-width: 44px; 
+  min-height: 44px;
+  position: relative;
+  flex-shrink: 0; 
+}
+
+/* 🚨 UPDATE: Added style for the icon overlay to position it on top of the OButton */
+.iconOverlay {
+  position: absolute;
+  top: -4px;
+  right: -11px;
+  z-index: 2;
+  /* background-color: white; */
+  border-radius: 50%;
+  /* padding: 2px; */
+  /* box-shadow: 0 0 3px rgba(0, 0, 0, 0.3); */
+}
+
+.errorList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.errorItem {
+  color: #cf1322;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  word-wrap: break-word; /* Ensure long words don't overflow */
+  hyphens: auto; /* Allow hyphenation for better text wrapping */
+}
+
+.errorItem:last-child {
+  margin-bottom: 0;
+}
+
+
+/* Added responsive adjustments */
+@media (max-width: 480px) {
+  .container {
+    min-width: 250px;
+    max-width: 95%;
+    padding: 10px 12px;
   }
   
   .errorItem {
-    color: #cf1322;
-    font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 4px;
-    word-wrap: break-word; /* 🌊 UPDATE: Ensure long words don't overflow */
-    hyphens: auto; /* 🌊 UPDATE: Allow hyphenation for better text wrapping */
+    font-size: 13px;
   }
-  
-  .errorItem:last-child {
-    margin-bottom: 0;
-  }
-  
-  
-  /* 🌊 UPDATE: Added responsive adjustments */
-  @media (max-width: 480px) {
-    .container {
-      min-width: 250px;
-      max-width: 95%;
-      padding: 10px 12px;
-    }
-    
-    .errorItem {
-      font-size: 13px;
-    }
-  }
+}

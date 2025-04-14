@@ -15,13 +15,15 @@
     will-change: transform;
     transform-origin: center center;
     background-color: black;
+    /* perspective: 1000px; */
   }
   
   /* 🔄 UPDATE: Ensuring the square with rounded corners is always present */
   .oButton::before {
     content: '';
     position: absolute;
-    border-radius: 20px; /* Ensures rounded corners on the square */
+    border: 2px solid black;
+    border-radius: 12px; /* Ensures rounded corners on the square */
     background: conic-gradient(
       from 0deg,
       rgba(66, 142, 255, 0.8) 0%,
@@ -30,9 +32,9 @@
       rgba(66, 142, 255, 0.8) 100%
     );
     z-index: -1;
-    box-shadow: 
+    /* box-shadow: 
       0 0 15px 2px rgba(92, 37, 141, 0.5),
-      0 0 30px 5px rgba(92, 37, 141, 0.5);
+      0 0 30px 5px rgba(92, 37, 141, 0.5); */
     animation: rotateSquare 12s linear infinite; /* Always spinning animation */
     transition: all 0.3s ease;
     will-change: transform, filter;
@@ -64,15 +66,15 @@
   }
   
   .extraSmall {
-    width: 40px;
-    height: 40px;
-    outline: 2.5px solid black;
-    font-size: 2.5rem;
+    width: 30px;
+    height: 30px;
+    outline: 2px solid black;
+    font-size: 2rem;
   }
   
   .extraSmall::before {
-    width: 40px;
-    height: 40px;
+    width: 30.75px;
+    height: 30.75px;
   }
   
   .large {
@@ -120,28 +122,4 @@
     }
   }
   
-  .oButton:focus {
-    outline: none;
-    background-color: transparent;
-  }
-  
-  .oButton:active {
-    background-color: transparent;
-  }
-  
-  .oButton:active::before {
-    transform: scale(0.95);
-  }
-  
-  /* Disabled state */
-  .oButton:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-  
-  .oButton:disabled:hover::before {
-    filter: none;
-    box-shadow: 
-      0 0 15px 2px rgba(92, 37, 141, 0.5),
-      0 0 30px 5px rgba(92, 37, 141, 0.5);
-  }
+

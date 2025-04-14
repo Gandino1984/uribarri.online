@@ -64,7 +64,7 @@
   width: 100%;
   z-index: 1;
   margin-top: 4rem;
-  perspective: 1000px;
+  /* perspective: 1000px; */
 }
 
 /* 🔄 UPDATE: Removed all button styling as it's now in OButton.module.css */

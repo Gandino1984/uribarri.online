@@ -5,10 +5,10 @@ import { TopBarUtils } from './TopBarUtils.jsx';
 import { ArrowLeft, DoorClosed } from 'lucide-react';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
-import ErrorCard from './components/error_card/ErrorCard.jsx';
-import SuccessCard from './components/success_card/SuccessCard.jsx';
-import UserInfoCard from './components/user_info_card/UserInfoCard.jsx';
-import InfoCard from './components/info_card/InfoCard.jsx';
+import ErrorCard from '../card_display/error_card/ErrorCard.jsx';
+import SuccessCard from '../card_display/success_card/SuccessCard.jsx';
+import UserInfoCard from '../card_display/user_info_card/UserInfoCard.jsx';
+import InfoCard from '../card_display/info_card/InfoCard.jsx';
 import ImageModal from '../image_modal/ImageModal.jsx';
 import { topBarAnimation } from '../../utils/animation/transitions.js';
 

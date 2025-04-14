@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useUI } from '../../../../app_context/UIContext.jsx';
-import styles from '../../../../../../public/css/ErrorCard.module.css';
-import OButton from '../../../Obutton/Obutton.jsx';
+import { useUI } from '../../../app_context/UIContext.jsx';
+import styles from '../../../../../public/css/ErrorCard.module.css';
+import OButton from '../../Obutton/Obutton.jsx';
+import { MessageCircleX } from 'lucide-react'; // 🚨 UPDATE: Imported MessageCircleX icon from lucide-react
 
 const ErrorCard = () => {
   // State to track the most recent error message
   const [latestError, setLatestError] = useState('');
-  // 🌊 UPDATE: Added state to track if card should be shown
   const [isVisible, setIsVisible] = useState(false);
   
   const {
@@ -21,7 +21,6 @@ const ErrorCard = () => {
     const hasErrors = errorEntries.length > 0;
     
     if (!hasErrors) {
-      // 🌊 UPDATE: First hide the card, then update state
       setIsVisible(false);
       setTimeout(() => {
         setShowErrorCard(false);
@@ -33,13 +32,13 @@ const ErrorCard = () => {
       setLatestError(mostRecentError);
       setShowErrorCard(true);
       
-      // 🌊 UPDATE: Small delay before showing to ensure animation runs properly
+      // Small delay before showing to ensure animation runs properly
       setTimeout(() => {
         setIsVisible(true);
       }, 50);
       
       const timer = setTimeout(() => {
-        // 🌊 UPDATE: First hide the card with animation
+        // First hide the card with animation
         setIsVisible(false);
         // Then clear the error after animation completes
         setTimeout(() => {
@@ -52,7 +51,7 @@ const ErrorCard = () => {
     }
   }, [error, setShowErrorCard, clearError]);
 
-  // 🌊 UPDATE: Added container style based on visibility
+  // Added container style based on visibility
   const containerStyle = {
     opacity: isVisible ? 1 : 0,
     transform: isVisible ? 'translateY(0)' : 'translateY(-50px)',
@@ -61,9 +60,12 @@ const ErrorCard = () => {
 
   return (
     showErrorCard && latestError && (
-      // 🌊 UPDATE: Applied inline styles to control visibility with smoother transitions
-      <div className={styles.container} >
+      <div className={styles.container} style={containerStyle}>
         <div className={styles.iconContainer}>
+          {/* 🚨 UPDATE: Added MessageCircleX icon positioned on top of OButton */}
+          <div className={styles.iconOverlay}>
+            <MessageCircleX size={18} color="#cf1322" />
+          </div>
           <OButton 
             size="extraSmall" 
             text="O" 

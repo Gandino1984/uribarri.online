@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Camera, Loader, Eye, User } from 'lucide-react';
-import { useAuth } from '../../../../app_context/AuthContext.jsx';
-import { useUI } from '../../../../app_context/UIContext.jsx';
-import styles from '../../../../../../public/css/UserInfoCard.module.css';
+import { useAuth } from '../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../app_context/UIContext.jsx';
+import styles from '../../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
-import { TopBarStateContext } from '../../TopBar.jsx';
-import { userInfoCardAnimation } from '../../../../utils/animation/transitions.js';
+import { TopBarStateContext } from '../../top_bar/TopBar.jsx';
+import { userInfoCardAnimation } from '../../../utils/animation/transitions.js';
 
 const UserInfoCard = () => {
   const { 
