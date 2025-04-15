@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import styles from '../../../../../../public/css/SuccessCard.module.css';
-import { CircleCheckBig } from 'lucide-react';
+import OButton from '../../../Obutton/Obutton.jsx';
+import { CheckCircle } from 'lucide-react'; // 🎉 UPDATE: Imported CheckCircle icon from lucide-react
 
 const SuccessCard = () => {
-  // 🔄 UPDATE: Added state to track the most recent success message
+  // State to track the most recent success message
   const [latestSuccess, setLatestSuccess] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
   
   const {
-    showSuccessCard,
+    showSuccessCard, 
     setShowSuccessCard,
     success,
     clearSuccess
@@ -19,30 +21,59 @@ const SuccessCard = () => {
     const hasSuccess = successEntries.length > 0;
     
     if (!hasSuccess) {
-      setShowSuccessCard(false);
-      setLatestSuccess('');
+      setIsVisible(false);
+      setTimeout(() => {
+        setShowSuccessCard(false);
+        setLatestSuccess('');
+      }, 400); // Matching the animation duration
     } else {
-      // 🔄 UPDATE: Find the latest success message
+      // Find the latest success message (assuming the last non-empty one is newest)
       const mostRecentSuccess = successEntries[successEntries.length - 1][1];
       setLatestSuccess(mostRecentSuccess);
       setShowSuccessCard(true);
       
+      // Small delay before showing to ensure animation runs properly
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 50);
+      
       const timer = setTimeout(() => {
-        setShowSuccessCard(false);
-        // Clear all success messages after the timeout
-        clearSuccess();
+        // First hide the card with animation
+        setIsVisible(false);
+        // Then clear the success after animation completes
+        setTimeout(() => {
+          setShowSuccessCard(false);
+          clearSuccess();
+        }, 400); // Matching the animation duration
       }, 6000);
 
       return () => clearTimeout(timer);
     }
   }, [success, setShowSuccessCard, clearSuccess]);
 
+  // Added container style based on visibility
+  const containerStyle = {
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? 'translateY(0)' : 'translateY(-10px)',
+    transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+  };
+
   return (
     showSuccessCard && latestSuccess && (
-      <div className={styles.container}>
-        <CircleCheckBig color="var(--saturated-orange)" size={20} />
+      <div className={styles.container} style={containerStyle}>
+        <div className={styles.iconContainer}>
+          <div className={styles.iconOverlay}>
+            <CheckCircle size={18} color="#52c41a" />
+          </div>
+          <OButton 
+            size="extraSmall" 
+            text="O" 
+            ariaLabel="Success indicator" 
+            className={styles.successButton}
+            onClick={() => {}}
+          />
+        </div>
         <div className={styles.successList}>
-          {/* 🔄 UPDATE: Only display the latest success message */}
           <div className={styles.successItem}>
             {latestSuccess}
           </div>

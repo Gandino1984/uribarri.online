@@ -6,7 +6,7 @@ import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import UserInfoCard from '../card_display/components/user_info_card/UserInfoCard.jsx';
 
-// 🧩 UPDATE: Simplified TopBar without animation and unnecessary context
+
 function TopBar() {
   // Using hooks for shop and auth context
   const {

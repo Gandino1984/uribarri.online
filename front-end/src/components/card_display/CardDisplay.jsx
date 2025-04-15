@@ -7,7 +7,7 @@ import InfoCard from '../card_display/components/info_card/InfoCard.jsx';
 import ImageModal from '../image_modal/ImageModal.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 
-// 🎴 UPDATE: Fixed CardDisplay component to handle errors gracefully
+// 🎴 UPDATE: Enhanced CardDisplay component to work with updated card designs
 function CardDisplay() {
   // Using useUI hook to access card states
   const {
@@ -27,27 +27,27 @@ function CardDisplay() {
   
   // Auto-hide cards after specified durations
   useEffect(() => {
-    if (error && Object.keys(error).some(key => error[key])) {
+    if (error && Object.keys(error).some(key => error[key]) && !showErrorCard) {
       setShowErrorCard(true);
       if (utils && typeof utils.autoHideCards === 'function') {
         utils.autoHideCards('error');
       }
     }
     
-    if (success && Object.keys(success).some(key => success[key])) {
+    if (success && Object.keys(success).some(key => success[key]) && !showSuccessCard) {
       setShowSuccessCard(true);
       if (utils && typeof utils.autoHideCards === 'function') {
         utils.autoHideCards('success');
       }
     }
     
-    if (info && Object.keys(info).some(key => info[key])) {
+    if (info && Object.keys(info).some(key => info[key]) && !showInfoCard) {
       setShowInfoCard(true);
       if (utils && typeof utils.autoHideCards === 'function') {
         utils.autoHideCards('info');
       }
     }
-  }, [error, success, info, utils]);
+  }, [error, success, info, utils, showErrorCard, showSuccessCard, showInfoCard, setShowErrorCard, setShowSuccessCard, setShowInfoCard]);
 
   // Helper function to check if an object has any non-empty values
   const hasAnyValue = (obj) => {
