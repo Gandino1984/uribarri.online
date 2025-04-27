@@ -12,8 +12,16 @@
     left: 0; 
     right: 0; 
     margin-bottom: 0; 
-    /* background-color: #ffffff; */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.title{
+
+    font-size: 1.5rem;
+    letter-spacing: .1rem;
+    font-weight: 700;
+    color: white;
+    /* margin-bottom: 0.5rem; */
+
 }
 
 .contentWrapper {
@@ -25,7 +33,6 @@
     padding: 0.25rem 0; 
 }
 
-/* 🎴 UPDATE: Added cardDisplayContainer for the new component */
 .cardDisplayContainer {
     position: fixed;
     top: 4rem;

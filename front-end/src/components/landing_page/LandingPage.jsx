@@ -112,7 +112,6 @@ const LandingPage = () => {
         </animated.div>
         
         <div className={styles.buttonWrapper}>
-          {/* 🔄 UPDATE: Replaced button with reusable OButton component */}
           <OButton 
             ref={buttonRef}
             onClick={handleButtonClick}

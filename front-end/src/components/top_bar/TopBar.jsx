@@ -8,7 +8,6 @@ import UserInfoCard from '../card_display/components/user_info_card/UserInfoCard
 
 
 function TopBar() {
-  // Using hooks for shop and auth context
   const {
     showShopCreationForm, 
     selectedShop,
@@ -35,6 +34,8 @@ function TopBar() {
                 <ArrowLeft size={16} />
             </button>
           )}
+
+          <span className={styles.title}>Orain.online</span>
 
           <UserInfoCard />
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import styles from '../../../../../../public/css/SuccessCard.module.css';
 import OButton from '../../../Obutton/Obutton.jsx';
-import { CheckCircle } from 'lucide-react'; // 🎉 UPDATE: Imported CheckCircle icon from lucide-react
+import { MessageCircleHeart } from 'lucide-react'; // 🎉 UPDATE: Imported CheckCircle icon from lucide-react
 
 const SuccessCard = () => {
   // State to track the most recent success message
@@ -63,7 +63,7 @@ const SuccessCard = () => {
       <div className={styles.container} style={containerStyle}>
         <div className={styles.iconContainer}>
           <div className={styles.iconOverlay}>
-            <CheckCircle size={18} color="#52c41a" />
+            <MessageCircleHeart size={18} color="#52c41a" />
           </div>
           <OButton 
             size="extraSmall" 

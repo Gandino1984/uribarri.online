@@ -36,7 +36,7 @@
   }
   
   .successItem {
-    color: #52c41a;
+    color: #3db402;
     font-size: .7rem;
     font-weight: 500;
     line-height: 1.5;
@@ -46,17 +46,4 @@
   
   .successItem:last-child {
     margin-bottom: 0;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .container {
-      max-width: 90%;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .container {
-      max-width: 95%;
-    }
   }

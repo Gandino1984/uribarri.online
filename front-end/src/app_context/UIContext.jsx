@@ -42,6 +42,10 @@ export const UIProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isAccepted, setIsAccepted] = useState(false);
+  // 🚀 UPDATE: Added isDeclined state
+  const [isDeclined, setIsDeclined] = useState(false);
+  // 🚀 UPDATE: Added modalConfirmCallback for better handling of modal actions
+  const [modalConfirmCallback, setModalConfirmCallback] = useState(null);
 
   // Confirmation modal helpers
   const openConfirmationModal = (message, onConfirm, onCancel) => {
@@ -71,6 +75,15 @@ export const UIProvider = ({ children }) => {
       cancelAction();
     }
     closeConfirmationModal();
+  };
+
+  // 🚀 UPDATE: Added new method to open simple confirmation modal
+  const openModal = (message, callback) => {
+    setModalMessage(message);
+    setModalConfirmCallback(() => callback);
+    setIsModalOpen(true);
+    setIsAccepted(false);
+    setIsDeclined(false);
   };
 
   // Clear notifications
@@ -150,7 +163,12 @@ export const UIProvider = ({ children }) => {
         // ⚠️ FIXED: Added missing modal states for shop operations
         isModalOpen, setIsModalOpen,
         modalMessage, setModalMessage,
-        isAccepted, setIsAccepted
+        isAccepted, setIsAccepted,
+        // 🚀 UPDATE: Added isDeclined state
+        isDeclined, setIsDeclined,
+        // 🚀 UPDATE: Added modalConfirmCallback and openModal
+        modalConfirmCallback, setModalConfirmCallback,
+        openModal
       }}
     >
       {children}
