@@ -18,7 +18,7 @@ export const TopBarUtils = () => {
 
     // UI context values
     const {
-        setError, setSuccess, setInfo,
+        // setError, setSuccess, setInfo,
         setShowErrorCard, setShowSuccessCard, setShowInfoCard,
         clearError, clearSuccess, clearInfo,
         setShowShopManagement,

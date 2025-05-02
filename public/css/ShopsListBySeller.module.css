@@ -1,17 +1,47 @@
-/* UPDATE: Modified container structure for better layout management */
-/* 📱 UPDATE: Fixed container to ensure proper containment on small screens */
+
 .container {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
   gap: 1rem;
   z-index: 100;
   padding-bottom: 1rem;
   overflow-x: hidden;
-  /* box-sizing: border-box; */
   max-width: 100%;
+  background: linear-gradient(135deg, var(--gradient-red-start), var(--gradient-red-mid), var(--gradient-red-end));
+  background-size: 200% 200%;
+  position: relative;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 🔴 UPDATE: Added grid overlay pattern */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* 📱 UPDATE: Enhanced content wrapper to prevent overflow on small screens */
@@ -22,6 +52,10 @@
   overflow-x: hidden; /* Contain any overflow */
   padding: 0 10px;
   box-sizing: border-box;
+  
+  /* 🔴 UPDATE: Ensure content appears above the gradient and overlays */
+  position: relative;
+  z-index: 2;
 }
 
 .headerContainer {
@@ -39,10 +73,10 @@
 }
 
 .title {
-  text-shadow: var(--light-orange) 2px 1px 0px;   
+  text-shadow: rgb(255, 165, 165) 2px 1px 0px;   
   font-weight: bold;
   padding-right: 1.5rem;
-  color: var(--superdark-orange);
+  color: white;
 }
 
 .addButton {
@@ -264,12 +298,12 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 4px;
-  color: var(--superdark-orange);
+  color: rgb(255, 165, 165);
 }
 
 .upgradeMessage {
   margin-top: .5rem;
-  color: var(--light-orange);
+  color: rgb(255, 165, 165);
   font-weight: 600;
   font-size: 0.8rem;
 }
@@ -298,7 +332,7 @@
   padding: 0.75rem;
   margin-top: 1rem;
   text-align: center;
-  color: var(--light-orange);
+  color: rgb(255, 165, 165);
 }
 
 .statusGreen {

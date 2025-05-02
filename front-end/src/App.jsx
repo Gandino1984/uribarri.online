@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { UIProvider } from "./app_context/UIContext.jsx";
 import { AuthProvider } from "./app_context/AuthContext.jsx";
 import { ShopProvider } from "./app_context/ShopContext.jsx";

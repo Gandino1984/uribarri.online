@@ -240,9 +240,9 @@ export const shopsListAnimations = {
   }
 };
 
-// 🔴 UPDATE: Fixed LandingPage animations with darker pinkish-red exit color
+// 🔄 UPDATE: Refactored LandingPage animations - only configuration, no functions
 export const landingPageAnimations = {
-  // Container background animation (handles background color transition)
+  // Container background animation states
   containerAnimation: {
     default: { 
       backgroundColor: 'rgb(0, 0, 0)',  // Default black
@@ -253,7 +253,7 @@ export const landingPageAnimations = {
       zIndex: 500,
     },
     exit: { 
-      backgroundColor: 'rgb(150, 0, 60)',  // 🔴 Darker pinkish-red for exit animation
+      backgroundColor: 'rgb(150, 0, 60)',  // Darker pinkish-red for exit animation
       zIndex: 500,
       opacity: 1,                          // Keep visible during exit
     },
@@ -261,10 +261,13 @@ export const landingPageAnimations = {
       tension: 140, 
       friction: 12,
       duration: 150  // Fast transition
+    },
+    opacityConfig: {
+      duration: 150  // Ultra-fast fade-out
     }
   },
   
-  // Button animation with enhanced exit coordination
+  // Button animation configuration
   buttonAnimation: {
     default: {
       opacity: 1
@@ -289,16 +292,8 @@ export const landingPageAnimations = {
     }
   },
   
-  // Text content animations
+  // Text content animation configuration
   textAnimation: {
-    enter: {
-      opacity: 1,
-      transform: 'translateY(0)',
-    },
-    exit: {
-      opacity: 0,
-      transform: 'translateY(-30px)',
-    },
     config: { 
       tension: 340, 
       friction: 24,
@@ -306,7 +301,7 @@ export const landingPageAnimations = {
     }
   },
   
-  // ⚡ UPDATE: Ultra-fast page exit animation
+  // Page exit animation configuration
   pageExitAnimation: {
     from: { 
       opacity: 1,
@@ -323,7 +318,7 @@ export const landingPageAnimations = {
     }
   },
   
-  // Background color animation on button hover
+  // Background color animation configuration
   backgroundHoverAnimation: {
     default: {
       backgroundColor: 'rgb(0, 0, 0)',
