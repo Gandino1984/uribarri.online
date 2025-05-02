@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Camera, Loader, Eye, User } from 'lucide-react';
-import { useAuth } from '../../../../app_context/AuthContext.jsx';
-import { useUI } from '../../../../app_context/UIContext.jsx';
-import styles from '../../../../../../public/css/UserInfoCard.module.css';
+import { useAuth } from '../../../../front-end/src/app_context/AuthContext.jsx';
+import { useUI } from '../../../..//front-end/src/app_context/UIContext.jsx';
+import styles from '../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 
-// 👤 UPDATE: Removed dependency on TopBarStateContext and animations
+
 const UserInfoCard = () => {
   const { 
     currentUser 
@@ -106,6 +106,7 @@ const UserInfoCard = () => {
             });
             setHasValidImage(true);
           } catch (error) {
+            console.error('Error loading image:', error);
             setHasValidImage(false);
           }
         } else {

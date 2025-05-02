@@ -4,8 +4,6 @@ import { TopBarUtils } from './TopBarUtils.jsx';
 import { ArrowLeft, DoorClosed } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
-import UserInfoCard from '../card_display/components/user_info_card/UserInfoCard.jsx';
-
 
 function TopBar() {
   const {
@@ -37,7 +35,7 @@ function TopBar() {
 
           <span className={styles.title}>Orain.online</span>
 
-          <UserInfoCard />
+          {/* 🔄 UPDATE: Removed UserInfoCard from TopBar */}
 
           {currentUser && (
             <button 

@@ -1,16 +1,17 @@
+// src/components/user_info_card/UserInfoCardUtils.jsx
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../../../app_context/AuthContext.jsx';
-import { useUI } from '../../../../app_context/UIContext.jsx';
-import { uploadProfileImage, formatImageUrl } from '../../../../utils/image/imageUploadService.js';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
+import { uploadProfileImage, formatImageUrl } from '../../utils/image/imageUploadService.js';
 
 export const UserInfoCardUtils = () => {
-    // UPDATE: Using useAuth and useUI hooks instead of AppContext
+    // Using useAuth and useUI hooks
     const {
         currentUser, setCurrentUser
     } = useAuth();
 
     const {
-        setUploading, setError, uploading
+        setUploading, setError,
     } = useUI();
 
     const [uploadProgress, setUploadProgress] = useState(0);

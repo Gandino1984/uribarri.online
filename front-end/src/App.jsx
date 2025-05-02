@@ -12,16 +12,24 @@ import CardDisplay from "../src/components/card_display/CardDisplay.jsx";
 import ConfirmationModal from "../src/components/confirmation_modal/ConfirmationModal.jsx";
 import { useUI } from "./app_context/UIContext.jsx";
 import LandingPage from "../src/components/landing_page/LandingPage.jsx";
+import UserInfoCard from "../src/components/user_info_card/UserInfoCard.jsx";
+import { useAuth } from "./app_context/AuthContext.jsx";
 
 // AppContent component to use hooks within the component tree
 const AppContent = () => {
-  const { showTopBar, showLandingPage } = useUI(); 
+  const { showTopBar, showLandingPage } = useUI();
+  const { currentUser } = useAuth();
   
   return (
     <div className={styles.mainContainer}>
       <ConfirmationModal />
-      {/* 🎴 UPDATE: Added CardDisplay component as a sibling to TopBar */}
-      {showTopBar && <TopBar />}
+      <div className={styles.navContainer}>
+        {showTopBar && <TopBar />} 
+      </div>
+      <div className={styles.userInfoContainer}>
+      {currentUser && <UserInfoCard />}
+      </div>
+
       <CardDisplay />
       {showLandingPage ? <LandingPage /> : <LoginRegisterForm />} 
     </div>
