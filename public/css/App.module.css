@@ -15,7 +15,6 @@
 
 .navContainer {
   width: 100%;
-  /* position: relative; */
   z-index: 1000;
 }
 
@@ -26,8 +25,6 @@
   position: absolute;
   left: 0;
   top: 3rem;
-  /* width: 100%; */
-  /* padding-top: 3.5rem; */
   padding-left: 1rem;
   z-index: 2000;
 }
