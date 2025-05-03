@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Camera, Loader, Eye, User } from 'lucide-react';
-import { useAuth } from '../../../../front-end/src/app_context/AuthContext.jsx';
-import { useUI } from '../../../..//front-end/src/app_context/UIContext.jsx';
+import { useAuth } from '../../app_context/AuthContext.jsx';
+import { useUI } from '../../app_context/UIContext.jsx';
 import styles from '../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 
@@ -15,6 +15,7 @@ const UserInfoCard = () => {
     uploading,
     setError,
     setInfo,
+    // 🖼️ UPDATE: Use the correct openImageModal function from UIContext
     openImageModal
   } = useUI();
 
@@ -52,18 +53,25 @@ const UserInfoCard = () => {
     setShowButtons(false);
   };
 
+  // 🖼️ UPDATE: Fixed the handleViewClick function to use the correct image modal function
   const handleViewClick = (e) => {
     e.stopPropagation();
     if (currentUser?.image_user && hasValidImage) {
       const imageUrl = getImageUrl(currentUser.image_user);
       if (imageUrl) {
+        console.log('Opening image modal with URL:', imageUrl);
+        // This uses the first image modal system in UIContext
         openImageModal(imageUrl);
         setShowButtons(false);
+      } else {
+        console.error('No valid image URL obtained from getImageUrl');
       }
+    } else {
+      console.error('No valid image available to view');
     }
   };
 
-  // 👤 UPDATE: Position popup to ensure it's visible
+  // Position popup to ensure it's visible
   useEffect(() => {
     if (showButtons && popupRef.current) {
       const popup = popupRef.current;
@@ -91,6 +99,8 @@ const UserInfoCard = () => {
     }
   }, [showButtons]);
 
+  // Rest of the component remains unchanged...
+  
   // Check if user has a valid image on component mount and when currentUser changes
   useEffect(() => {
     const checkImage = async () => {

@@ -1,36 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUI } from '../../app_context/UIContext.jsx';
-import styles from './ImageModal.module.css';
+import styles from '../../../../public/css/ImageModal.module.css'; 
+import { Loader } from 'lucide-react';
 
 const ImageModal = () => {
-  // UPDATE: Using useUI hook to access image modal state
   const { 
-    isImageModalOpen, 
-    setIsImageModalOpen, 
-    selectedImageForModal: imageUrl
+    showImageModal,
+    setShowImageModal,
+    modalImageSrc
   } = useUI();
 
   const [currentImage, setCurrentImage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
+  useEffect(() => {
+    if (showImageModal) {
+      console.log('ImageModal opened with URL:', modalImageSrc);
+    }
+  }, [showImageModal, modalImageSrc]);
+
   // Update image when modal opens/closes or imageUrl changes
   useEffect(() => {
-    if (isImageModalOpen && imageUrl) {
+    if (showImageModal && modalImageSrc) {
       setIsLoading(true);
       setHasError(false);
       
       // Create a new Image object to preload
       const img = new Image();
       img.onload = () => {
-        setCurrentImage(imageUrl);
+        setCurrentImage(modalImageSrc);
         setIsLoading(false);
+        console.log('Image loaded successfully:', modalImageSrc);
       };
-      img.onerror = () => {
+      img.onerror = (e) => {
+        console.error('Failed to load image:', e);
         setHasError(true);
         setIsLoading(false);
       };
-      img.src = imageUrl;
+      img.src = modalImageSrc;
     } else {
       // Clear all states when modal closes
       setCurrentImage('');
@@ -40,22 +48,22 @@ const ImageModal = () => {
 
     // Cleanup function to reset states when component unmounts or updates
     return () => {
-      if (!isImageModalOpen) {
+      if (!showImageModal) {
         setCurrentImage('');
         setIsLoading(false);
         setHasError(false);
       }
     };
-  }, [isImageModalOpen, imageUrl]);
+  }, [showImageModal, modalImageSrc]);
 
   useEffect(() => {
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape') {
-        setIsImageModalOpen(false);
+        setShowImageModal(false);
       }
     };
 
-    if (isImageModalOpen) {
+    if (showImageModal) {
       document.addEventListener('keydown', handleEscapeKey);
       document.body.style.overflow = 'hidden';
     }
@@ -64,14 +72,14 @@ const ImageModal = () => {
       document.removeEventListener('keydown', handleEscapeKey);
       document.body.style.overflow = 'unset';
     };
-  }, [isImageModalOpen, setIsImageModalOpen]);
+  }, [showImageModal, setShowImageModal]);
 
-  if (!isImageModalOpen) return null;
+  if (!showImageModal || !modalImageSrc) return null;
 
   return (
     <div 
       className={styles.modalOverlay}
-      onClick={() => setIsImageModalOpen(false)}
+      onClick={() => setShowImageModal(false)}
     >
       <div 
         className={styles.modalContent}
@@ -79,25 +87,26 @@ const ImageModal = () => {
       >
         <button
           className={styles.closeButton}
-          onClick={() => setIsImageModalOpen(false)}
+          onClick={() => setShowImageModal(false)}
           title="Cerrar"
         >
           ✕
         </button>
         {isLoading && (
           <div className={styles.loadingSpinner}>
-            Loading...
+            <Loader size={24} className="animate-spin" />
+            <span style={{ marginLeft: '0.5rem' }}>Cargando...</span>
           </div>
         )}
         {hasError && (
           <div className={styles.errorMessage}>
-            Failed to load image
+            Error al cargar la imagen
           </div>
         )}
         {!isLoading && !hasError && currentImage && (
           <img
             src={currentImage}
-            alt="Modal image"
+            alt="Imagen de perfil"
             className={styles.modalImage}
           />
         )}
