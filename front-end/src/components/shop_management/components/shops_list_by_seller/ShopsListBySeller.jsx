@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../app_context/ProductContext.jsx';
@@ -129,7 +129,7 @@ const ShopsListBySeller = () => {
             
             <button 
               onClick={() => handleAddShop(shopLimit)}
-              className={`${styles.addButton} ${shopCount >= shopLimit ? styles.disabledButton : ''}`}
+              className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : ''}`}
               title="Crear nuevo comercio"
               disabled={shopCount >= shopLimit}
             >

@@ -353,6 +353,26 @@
   background-color: var(--light-red);
 }
 
+.active {
+  color: black;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.active:hover {
+  color: white;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+
+}
+
+.inactive {
+  color: var(--gray);
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
 /* 📏 UPDATE: Fixed mobile styles to maintain exact table height */
 @media (max-width: 768px) {
   .container {

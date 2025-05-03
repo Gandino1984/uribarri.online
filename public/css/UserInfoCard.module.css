@@ -96,14 +96,14 @@
   transition: transform 0.2s ease;
   pointer-events: auto;
   /* Added subtle border to enhance visibility against TopBar */
-  border: 2px solid rgb(255, 165, 165);
+  border: 2px solid var(--dark-gradient-purple-start);
 }
 
 .profileImageContainer:hover {
   /* transform: scale(1.05); */
   /* Enhance highlight effect on hover */
-  border-color: white;
-  box-shadow: 0 0 10px rgba(255, 136, 136, 0.877);
+  border-color: var(--gradient-purple-start);
+  box-shadow: 0 0 10px var(--gradient-purple-start);
 }
 
 .profileImage {

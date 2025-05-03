@@ -40,7 +40,7 @@ function TopBar() {
           {currentUser && (
             <button 
               type="button" 
-              className={styles.logoutButton} 
+              className={styles.active} 
               onClick={clearUserSession}
               title="Cerrar sesión"
             >
