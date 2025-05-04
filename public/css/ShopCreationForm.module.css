@@ -2,11 +2,11 @@
   overflow-x: hidden;
   width: 100%;
   max-width: 450px;
-  margin: 1.5rem auto; /* 🚀 UPDATE: Added top/bottom margin for spacing from screen borders */
+  margin-top: 12rem; 
   padding: 1rem;
   background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 1rem;
+  border-radius: 12px;
 }
 
 .content {

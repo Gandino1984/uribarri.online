@@ -98,14 +98,12 @@
   transition: transform 0.2s ease;
   pointer-events: auto;
   /* Added subtle border to enhance visibility against TopBar */
-  border: 2px solid var(--dark-gradient-purple-start);
+  /* border: 2px solid var(--dark-gradient-purple-start); */
 }
 
 .profileImageContainer:hover {
-  /* transform: scale(1.05); */
-  /* Enhance highlight effect on hover */
-  border-color: var(--gradient-purple-start);
-  box-shadow: 0 0 10px var(--gradient-purple-start);
+  border-color: white;
+  box-shadow: 0 0 13px var(--saturated-blue-transparent);
 }
 
 .profileImage {
@@ -121,14 +119,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f0f0f0;
-  border: 2px solid #e0e0e0;
+  background-color: black;
   border-radius: 50%;
+  border: 2px solid var(--dark-gradient-purple-start);
 }
 
 .placeholderIcon {
   color: #909090;
   transition: opacity 0.2s ease;
+}
+
+.profileImageContainer:hover {
+  border: 2px solid white;
 }
 
 .profileImageContainer:hover .placeholderIcon {
