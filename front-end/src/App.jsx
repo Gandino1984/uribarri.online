@@ -25,15 +25,9 @@ const AppContent = () => {
   return (
     <div className={styles.mainContainer}>
       <ConfirmationModal />
-      {/* 🖼️ UPDATE: Added ImageModal component */}
       <ImageModal />
-      <div className={styles.navContainer}>
-        {showTopBar && <TopBar />} 
-      </div>
-      <div className={styles.userInfoContainer}>
+      {showTopBar && <TopBar />} 
       {currentUser && <UserInfoCard />}
-      </div>
-
       <CardDisplay />
       {showLandingPage ? <LandingPage /> : <LoginRegisterForm />} 
     </div>
