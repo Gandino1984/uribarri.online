@@ -45,8 +45,7 @@ const LoginRegisterForm = () => {
     }
   }, [shouldShow, setShowTopBar, isMounted]);
   
-  // Simple appear/disappear transition - no continuous animations
-  // Define transition only ONCE with a stable callback - this is crucial!
+
   const getTransition = useCallback(() => {
     return {
       from: { opacity: 0, transform: 'translateY(10px)' },
