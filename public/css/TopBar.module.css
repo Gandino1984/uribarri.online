@@ -31,25 +31,21 @@
 }
 
 .backButton {
-    margin-right: 0.5rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+    color: black;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .backButton:hover {
-    background-color: #f0f0f0;
+    color: white;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
 .active {
     color: black;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     background-color: rgba(255, 255, 255, 0.2);
 }
   

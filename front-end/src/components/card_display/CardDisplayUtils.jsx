@@ -1,14 +1,13 @@
 import { useUI } from '../../app_context/UIContext.jsx';
 
-export const CardDisplayUtils = () => {
+const CardDisplayUtils = () => {
     // UI context values
     const {
-        setError, setSuccess, setInfo,
         setShowErrorCard, setShowSuccessCard, setShowInfoCard,
         clearError, clearSuccess, clearInfo
     } = useUI();
 
-    // 🎴 UPDATE: Function to handle card animations
+    // ✨ UPDATE: Improved function to handle horizontal slide animations
     const handleCardAnimation = (cardType) => {
         // Function to handle any animation-related behaviors for different card types
         switch (cardType) {
@@ -26,37 +25,53 @@ export const CardDisplayUtils = () => {
         }
     };
     
-    // 🎴 UPDATE: Function to automatically hide cards after a specified duration
+    // ✨ UPDATE: Improved autoHideCards to support right-to-left and left-to-right animation
     const autoHideCards = (cardType) => {
-        // Auto-dismiss based on card type
+        // All cards use the same 4 second display duration as requested
+        const DISPLAY_DURATION = 4000; // 4 seconds display time
+        const ANIMATION_DURATION = 300; // Matches the animation duration in transitions.js
+        
+        // Handle different card types with the same animation timing
         switch (cardType) {
             case 'success':
+                // Keep the card visible during the DISPLAY_DURATION
                 setTimeout(() => {
+                    // After display time, hide the card (which triggers exit animation)
                     setShowSuccessCard(false);
+                    
                     // After animation completes, clear the content
                     setTimeout(() => {
                         clearSuccess();
-                    }, 300);
-                }, 5000); // Auto-dismiss success messages after 5 seconds
+                    }, ANIMATION_DURATION);
+                }, DISPLAY_DURATION);
                 break;
+                
             case 'error':
+                // Keep the card visible during the DISPLAY_DURATION
                 setTimeout(() => {
+                    // After display time, hide the card (which triggers exit animation)
                     setShowErrorCard(false);
+                    
                     // After animation completes, clear the content
                     setTimeout(() => {
                         clearError();
-                    }, 300);
-                }, 8000); // Keep error messages longer - 8 seconds
+                    }, ANIMATION_DURATION);
+                }, DISPLAY_DURATION);
                 break;
+                
             case 'info':
+                // Keep the card visible during the DISPLAY_DURATION
                 setTimeout(() => {
+                    // After display time, hide the card (which triggers exit animation)
                     setShowInfoCard(false);
+                    
                     // After animation completes, clear the content
                     setTimeout(() => {
                         clearInfo();
-                    }, 300);
-                }, 4000); // Info messages dismiss quicker - 4 seconds
+                    }, ANIMATION_DURATION);
+                }, DISPLAY_DURATION);
                 break;
+                
             default:
                 break;
         }
@@ -67,3 +82,5 @@ export const CardDisplayUtils = () => {
         autoHideCards
     };
 };
+
+export default CardDisplayUtils;

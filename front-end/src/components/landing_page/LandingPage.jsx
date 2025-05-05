@@ -55,8 +55,8 @@ const LandingPage = () => {
     >
       <animated.div className={styles.heroSection}>
         <animated.div style={textAnimation} className={styles.heroContent}>
-          <h1>Todo tu barrio está aquí.</h1>
-          <p>uribarri.online.</p>
+          <h1>Todo tu barrio.</h1>
+          <p>uribarri.online</p>
         </animated.div>
         
         <div className={styles.buttonWrapper}>

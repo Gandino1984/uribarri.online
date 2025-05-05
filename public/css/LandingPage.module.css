@@ -55,6 +55,7 @@
   opacity: 0.9;
   color: rgb(151, 71, 255);
   font-weight: 500;
+  letter-spacing: .5rem;
 }
 
 .buttonWrapper {

@@ -352,3 +352,24 @@ export const pageTransition = {
     opacity: 0,
   },
 };
+
+// ✨ UPDATE: Fixed right-to-left card animation
+export const cardAnimation = {
+  from: { 
+    opacity: 0,
+    transform: 'translateX(100%)', // Start from right
+  },
+  enter: { 
+    opacity: 1,
+    transform: 'translateX(0%)',  // Enter to center
+  },
+  leave: { 
+    opacity: 0,
+    transform: 'translateX(100%)', // Exit to right
+  },
+  config: {
+    mass: 0.8,
+    tension: 300,
+    friction: 25,
+  },
+};

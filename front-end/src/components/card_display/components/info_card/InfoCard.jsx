@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import styles from '../../../../../../public/css/InfoCard.module.css';
 import OButton from '../../../Obutton/Obutton.jsx';
-import { MessageCircleWarning, KeyRound } from 'lucide-react'; // 🔔 UPDATE: Using existing imports
+import { MessageCircleWarning, KeyRound } from 'lucide-react';
 
 const InfoCard = () => {
   // State to track the most recent info message
   const [latestInfo, setLatestInfo] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
   
   const {
     isLoggingIn,
@@ -17,69 +16,34 @@ const InfoCard = () => {
   } = useAuth();
 
   const {
-    showInfoCard,
-    setShowInfoCard,
     info,
-    clearInfo
   } = useUI();
 
   // Determine if we should show the password repeat message
   const shouldShowPasswordMessage = !isLoggingIn && showRepeatPasswordMessage && showPasswordRepeat;
 
   useEffect(() => {
-    const infoEntries = Object.entries(info).filter(([_, value]) => value !== '');
+    const infoEntries = Object.entries(info).filter(([, value]) => value !== '');
     const hasInfo = infoEntries.length > 0;
     
-    // Only auto-hide the card if we're showing regular info messages
-    // and not the password repeat message (which should stay visible until password is completed)
-    if (!hasInfo && !shouldShowPasswordMessage) {
-      setIsVisible(false);
-      setTimeout(() => {
-        setShowInfoCard(false);
-        setLatestInfo('');
-      }, 400); // Matching the animation duration
-    } else if (hasInfo) {
+    if (!hasInfo) {
+      setLatestInfo('');
+    } else {
       // Find the latest info message
       const mostRecentInfo = infoEntries[infoEntries.length - 1][1];
       setLatestInfo(mostRecentInfo);
-      setShowInfoCard(true);
-      
-      // Small delay before showing to ensure animation runs properly
-      setTimeout(() => {
-        setIsVisible(true);
-      }, 50);
-      
-      // Only set the timeout if we're not showing the password message
-      if (!shouldShowPasswordMessage) {
-        const timer = setTimeout(() => {
-          // First hide the card with animation
-          setIsVisible(false);
-          // Then clear the info after animation completes
-          setTimeout(() => {
-            setShowInfoCard(false);
-            clearInfo();
-          }, 400); // Matching the animation duration
-        }, 3500);
-
-        return () => clearTimeout(timer);
-      }
     }
-  }, [info, setShowInfoCard, shouldShowPasswordMessage, clearInfo]);
+  }, [info]);
 
-  // Added container style based on visibility
-  const containerStyle = {
-    opacity: isVisible ? 1 : 0,
-    transform: isVisible ? 'translateY(0)' : 'translateY(-10px)',
-    transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
-  };
+  // ✨ UPDATE: No longer managing visibility or animations here - it's handled by the parent using React Spring
 
   // Don't render anything if there's nothing to show
-  if (!shouldShowPasswordMessage && !showInfoCard) {
+  if (!shouldShowPasswordMessage && !latestInfo) {
     return null;
   }
 
   return (
-    <div className={styles.container} style={!shouldShowPasswordMessage ? containerStyle : {}}>
+    <div className={styles.container}>
       {shouldShowPasswordMessage ? (
         <div className={styles.passwordMessageContainer}>
           <div className={styles.iconContainer}>

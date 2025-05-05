@@ -16,9 +16,10 @@
   pointer-events: auto;
   padding-right: 1rem;
   padding-left: 2rem;
-  padding-top: .6rem;
-  padding-bottom: .5rem;
+  padding-top: .4rem;
+  padding-bottom: .3rem;
   border-radius: 12px;
+  border: 1px solid var(--gradient-purple-end);
 }
 
 .welcomeMessage {
@@ -64,7 +65,7 @@
   transition: transform 0.2s ease;
   pointer-events: auto;
   background-color: var(--light-gradient-purple-mid);
-  border: 2px solid var(--light-gradient-purple-mid);
+  
 }
 
 .profileImageContainer:hover {
@@ -87,7 +88,7 @@
   justify-content: center;
   background-color: var(--dark-gradient-purple-star);
   border-radius: 50%;
-  border: 2px solid var(--gradient-purple-end);
+  /* border: 2px solid var(--gradient-purple-end); */
 }
 
 .placeholderIcon {
