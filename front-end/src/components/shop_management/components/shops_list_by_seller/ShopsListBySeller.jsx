@@ -5,7 +5,7 @@ import { useProduct } from '../../../../app_context/ProductContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
-import { HousePlus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
 
@@ -134,7 +134,7 @@ const ShopsListBySeller = () => {
               disabled={shopCount >= shopLimit}
             >
               <span>Crear</span>
-              <HousePlus size={screenWidth > 480 ? 16 : 20} />
+              <Plus size={screenWidth > 480 ? 16 : 20} />
             </button>
           </animated.div>
         

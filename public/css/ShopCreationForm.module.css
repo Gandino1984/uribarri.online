@@ -2,12 +2,25 @@
   overflow-x: hidden;
   width: 100%;
   max-width: 450px;
-  margin-top: 12rem; 
+  margin-top: 10rem; 
   padding: 1rem;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+  background-size: 200% 200%;
+  background: linear-gradient(180deg, var(--gradient-purple-start), var(--gradient-purple-mid), white);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 }
+
+/* .container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.291) 0%, rgba(0, 0, 0, 0.282) 20%, rgba(0, 0, 0, 0.108) 40%, rgba(0, 0, 0, 0.165) 70%);
+  pointer-events: none;
+  z-index: 0;
+} */
 
 .content {
   width: 100%;
@@ -24,7 +37,7 @@
 }
 
 .headerTitle {
-  color: #333;
+  color: white;
   line-height: 1.85rem;
   margin: 0;
 }
@@ -71,7 +84,8 @@
 }
 
 .stepDot.active {
-  background-color: var(--saturated-blue);
+  border: 2px solid var(--saturated-blue);
+  background-color: var(--gradient-purple-mid);
   color: white;
   transform: scale(1.4);
 }
@@ -83,13 +97,13 @@
 .sectionTitle {
   font-size: 1.2rem;
   font-weight: 7px;
-  color: var(--dark-orange);
+  color: var(--dark-gradient-purple-start);
 }
 
 .sectionDescription {
-  font-size: 0.85rem;
-  color: #666;
-  /* margin-bottom: 15px; */
+  font-size: 0.8rem;
+  color: white;
+  margin-bottom: 12px;
 }
 
 .formFields {
