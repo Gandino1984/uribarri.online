@@ -23,6 +23,9 @@ function TopBar() {
   return (
     <div className={styles.container}>
       <div className={styles.contentWrapper}>
+          
+          <span className={styles.title}>uribarri.online</span>
+
           {(selectedShop || showShopCreationForm) && (
             <button
               className={styles.backButton}
@@ -32,10 +35,6 @@ function TopBar() {
                 <ArrowLeft size={16} />
             </button>
           )}
-
-          <span className={styles.title}>Orain.online</span>
-
-          {/* 🔄 UPDATE: Removed UserInfoCard from TopBar */}
 
           {currentUser && (
             <button 

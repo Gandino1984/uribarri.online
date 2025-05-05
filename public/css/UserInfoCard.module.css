@@ -1,43 +1,24 @@
-.mainContainer {
-  position: fixed;
-  top: 0.5rem;
-  right: 5rem;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-}
-
-.message {
-  font-size: 0.8rem;
-  user-select: none;
-  text-align: center;
-}
-
 .userInfoCard {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 4rem;
+  left: -1.5rem;
   z-index: 999;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: left;
-  width: 100%;
-  /* height: 100%; */
+  background-color: rgb(7, 7, 7);
   font-size: 0.8rem;
   text-align: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
   flex-direction: row;
   pointer-events: auto;
-  padding-left: 1rem;
-  padding-top: 5rem;
-}
-
-.userInfoCard p span {
-  font-weight: 600;
+  padding-right: 1rem;
+  padding-left: 2rem;
+  padding-top: .6rem;
+  padding-bottom: .5rem;
+  border-radius: 12px;
 }
 
 .welcomeMessage {
@@ -51,31 +32,16 @@
 
 .userName {
   font-weight: 600;
-  /* color: #40b8f5; */
   color: rgb(255, 165, 165) 2px 1px 0px;   
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .mainContainer {
-    right: 3.5rem;
-    /* Adjust top position to not overlap with TopBar elements */
-    top: 0.75rem;
-  }
-  
   .userInfoCard {
     flex-direction: row;
     gap: 0.25rem;
     margin: 0.25rem 0;
   }
-  
-  .profileSection {
-    margin-right: 0;
-  }
-  
-  /* .welcomeMessage {
-    display: none;
-  } */
 }
 
 /* Profile section styling */
@@ -97,8 +63,8 @@
   border-radius: 50%;
   transition: transform 0.2s ease;
   pointer-events: auto;
-  /* Added subtle border to enhance visibility against TopBar */
-  /* border: 2px solid var(--dark-gradient-purple-start); */
+  background-color: var(--light-gradient-purple-mid);
+  border: 2px solid var(--light-gradient-purple-mid);
 }
 
 .profileImageContainer:hover {
@@ -119,9 +85,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  background-color: var(--dark-gradient-purple-star);
   border-radius: 50%;
-  border: 2px solid var(--dark-gradient-purple-start);
+  border: 2px solid var(--gradient-purple-end);
 }
 
 .placeholderIcon {
@@ -173,7 +139,6 @@
   margin-top: 0.5rem;
   background-color: white;
   padding: 0.5rem;
-  /* Higher z-index to ensure visibility */
   z-index: 2100;
   display: flex;
   flex-direction: column;

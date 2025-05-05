@@ -15,55 +15,19 @@
 }
 
 .title{
-
     font-size: 1.5rem;
     letter-spacing: .1rem;
     font-weight: 700;
     color: white;
-    /* margin-bottom: 0.5rem; */
-
 }
 
 .contentWrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content:right;
     width: 100%;
     gap: 1rem;
     padding: 0.25rem 0; 
-}
-
-.cardDisplayContainer {
-    position: fixed;
-    top: 4rem;
-    left: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    z-index: 1200;
-    pointer-events: none;
-}
-
-.messageWrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1100; 
-    pointer-events: none; 
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* 🎴 UPDATE: Allow cards inside wrapper to receive clicks */
-.messageWrapper > * {
-    pointer-events: auto;
-    margin-bottom: 1rem;
-    width: 100%;
 }
 
 .backButton {
@@ -83,43 +47,18 @@
     background-color: #f0f0f0;
 }
 
-.logoutButton {
-    gap: 0.5rem;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.logoutButton:hover {
-    background-color: #f0f0f0;
-}
-
 .active {
     color: black;
     border: 1px solid rgba(255, 255, 255, 0.3);
     background-color: rgba(255, 255, 255, 0.2);
-  }
+}
   
-  .active:hover {
+.active:hover {
     color: white;
     border: 1px solid white;
     background-color: rgba(255, 255, 255, 0.4) !important;
     box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
-  
-  }
-  
-  .inactive {
-    color: var(--gray);
-    cursor: not-allowed;
-    opacity: 0.3;
-  }
+}
 
 @media (max-width: 768px) {
     .container {
@@ -128,14 +67,5 @@
     
     .contentWrapper {
         padding: 0.5rem 0;
-    }
-    
-    /* 🎴 UPDATE: Adjust card display position on smaller screens */
-    .cardDisplayContainer {
-        top: 3.5rem;
-    }
-    
-    .logoutButton span {
-        display: none;
     }
 }

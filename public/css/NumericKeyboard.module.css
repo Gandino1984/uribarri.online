@@ -1,5 +1,4 @@
 .container{
-    /* width: 100%; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8,34 +7,16 @@
     padding: 0rem .5rem 0rem .5rem;
 }
 
-.numericKeyboardInput{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
 .passwordDisplay{
-
     display: flex;
     align-items: center;
     border: 2px dashed white;
     justify-content: center;
-    /* width: 100%; */
     height: 1.8rem;
     gap: .8rem;
     padding: .2rem .3rem .2rem .3rem;
     overflow: hidden;
     transition: all .3s ease;
-}
-
-.passwordDisplay svg{
-    /* background-color: rgba(255, 255, 255, 0.4); */
-    border-radius: 8px;
-    width: 1.8rem;
-    height: 1.8rem;
-    padding: .3rem;
-    transition: all 0.3s ease;
 }
 
 /* 🎨 UPDATE: Added iconWrapper styling for better icon placement */
@@ -88,10 +69,3 @@
     gap: 1rem;
     padding-bottom: .5rem;
 }
-
-/* @media screen and (min-width: 500px) {
-    .container {
-        padding: 0  rem 0rem 1rem 0rem;
-    }
-  
-  } */

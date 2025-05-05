@@ -36,7 +36,7 @@
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
   pointer-events: none;
-  z-index: 1; /* 🌑 UPDATE: Increased z-index to appear above the black overlay */
+  z-index: 1;
 }
 
 .formContainer {
@@ -49,7 +49,7 @@
   padding: 1rem;
   margin: auto;
   position: relative;
-  z-index: 2; /* 🌑 UPDATE: Increased z-index to appear above both overlays */
+  z-index: 2;
 }
 
 .formContentWrapper {
@@ -59,7 +59,6 @@
   flex-direction: column;
   align-items: center;
   padding: 1rem;
-  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
 }
 
 .formContent {
@@ -76,7 +75,6 @@
     linear-gradient(180deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--superlight-gradient-purple-end));
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  
   padding: .5rem .8rem .5rem .8rem;
   backdrop-filter: blur(1.9px);
   z-index: 0;
@@ -89,10 +87,6 @@
   justify-content: center;
 }
 
-.formTitle {
-  padding-bottom: .5rem;
-}
-
 .formActions {
   display: flex;
   width: 100%;
@@ -100,10 +94,6 @@
   justify-content: space-around;
   margin-top: 1rem;
   margin-bottom: .5rem;
-}
-
-.formActions button :hover{
-  color: white;
 }
 
 .formField {
@@ -116,11 +106,6 @@
   width: 100%;
 }
 
-.formField label {
-  font-weight: 500;
-  padding-bottom: .5rem;
-}
-
 .submitButton {
   min-width: 80px;
   align-self: flex-start;
@@ -130,61 +115,13 @@
   min-width: 80px;
 }
 
-
 .toggleButton:hover {
   text-shadow: 0 0 8px var(--saturated-blue);
-}
-
-.validationMessage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: .5rem;
-}
-
-::placeholder {
-  color: lightgrey;
-  opacity: 1; 
-}
-
-.validText {
-  color: #16a34a;
-  font-weight: 500;
-}
-
-.errorText {
-  color: #dc2626;
-  font-weight: 500;
-}
-
-.validIcon {
-  color: #16a34a;
-}
-
-.errorIcon {
-  color: #dc2626;
-}
-
-.passwordLabel {
-  min-height: 25px;
-  display: block;
 }
 
 .inputError {
   border: 2px solid red;
   color: red;
-}
-
-.inputSuccess {
-  border: 2px solid green;
-  color: green;
-}
-
-.repeatPasswordMessage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .8rem;
 }
 
 .active {
@@ -198,11 +135,9 @@
   border: 1px solid white;
   background-color: rgba(255, 255, 255, 0.4) !important;
   box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
-
 }
 
 .inactive {
-  /* background-color: var(--saturated-orange); */
   color: var(--gray);
   cursor: not-allowed;
   opacity: 0.3;
@@ -233,12 +168,6 @@
     align-items: center;
   }
 
-  .formField label {
-    padding-bottom: 0;
-    text-align: right;
-    margin-right: 1rem;
-  }
-
   input[type="text"],
   input[type="number"],
   select {
@@ -247,14 +176,7 @@
   }
 }
 
-/* Desktop Breakpoint */
 @media screen and (min-width: 1024px) {
-
-  .formTitle {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
   .formField {
     margin-top: 1rem;
     gap: 1rem;
@@ -266,7 +188,6 @@
   }
 }
 
-/* Large Desktop Breakpoint */
 @media screen and (min-width: 1440px) {
   .container {
     justify-content: center;
