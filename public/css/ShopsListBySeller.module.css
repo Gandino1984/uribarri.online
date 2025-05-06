@@ -1,4 +1,3 @@
-
 .container {
   display: flex;
   align-items: center;
@@ -11,49 +10,16 @@
   padding-bottom: 1rem;
   overflow-x: hidden;
   max-width: 100%;
-  background: linear-gradient(135deg, var(--gradient-red-start), var(--gradient-red-mid), var(--gradient-red-end));
-  background-size: 200% 200%;
   position: relative;
 }
 
-.container::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* 🔴 UPDATE: Added grid overlay pattern */
-.container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* 📱 UPDATE: Enhanced content wrapper to prevent overflow on small screens */
 .content {
   width: 100%;
   height: 100%;
   max-width: 100vw;
-  overflow-x: hidden; /* Contain any overflow */
+  overflow-x: hidden;
   padding: 0 10px;
   box-sizing: border-box;
-  
-  /* 🔴 UPDATE: Ensure content appears above the gradient and overlays */
   position: relative;
   z-index: 2;
 }
@@ -92,7 +58,6 @@
   color: gray;
 }
 
-/* 📏 UPDATE: Fixed shopManagementContainer to maintain exact height */
 .shopManagementContainer {
   display: flex;
   flex-direction: column;
@@ -103,26 +68,21 @@
   height: auto;
 }
 
-/* 📱 UPDATE: Fixed table container to prevent overflow on small screens with proper height */
 .tableContainer {
   width: 100%;
   overflow-x: auto;
-  overflow-y: visible; /* Allow vertical content to be fully visible */
+  overflow-y: visible;
   max-width: 100%;
   background-color: white;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  /* Force the container to respect width constraints */
   margin: 0 auto;
-  /* Critical fix to prevent overflow on small screens */
   max-width: calc(100vw - 20px);
-  /* Ensure proper vertical spacing */
   padding-bottom: 10px;
 }
 
-/* 📏 UPDATE: Modified table to maintain exact height needed for content */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -149,60 +109,57 @@
   text-overflow: ellipsis;
 }
 
-/* 🛠️ UPDATE: Improved column width distribution for responsiveness */
 .tableHeaderCell:nth-child(1),
 .tableCell:nth-child(1) {
   width: 80px;
   min-width: 80px;
   max-width: 80px;
-} /* Actions */
+}
 
 .tableHeaderCell:nth-child(2),
 .tableCell:nth-child(2) {
   width: 20%;
   min-width: 120px;
-} /* Name */
+}
 
 .tableHeaderCell:nth-child(3),
 .tableCell:nth-child(3) {
   width: 25%;
   min-width: 150px;
-} /* Location */
+}
 
 .tableHeaderCell:nth-child(4),
 .tableCell:nth-child(4) {
   width: 15%;
   min-width: 100px;
-} /* Type */
+}
 
 .tableHeaderCell:nth-child(5),
 .tableCell:nth-child(5) {
   width: 15%;
   min-width: 100px;
-} /* Sub-type */
+}
 
 .tableHeaderCell:nth-child(6),
 .tableCell:nth-child(6) {
   width: 15%;
   min-width: 80px;
   text-align: center;
-} /* Rating */
+}
 
-/* 📱 UPDATE: Ensure table rows are fully visible with proper height */
 .tableRow {
   background-color: white;
   border-top: 1px solid #f0f0f0;
   cursor: pointer;
   height: auto;
-  min-height: 48px; /* Ensure minimum height for visibility */
+  min-height: 48px;
 }
 
 .tableRow:hover {
   color: var(--saturated-blue);
-  background-color: #e6f3ff; /* Light blue hover effect for better visual feedback */
+  background-color: #e6f3ff;
 }
 
-/* Enhanced selected row styling with blue background */
 .selectedRow {
   background-color: var(--saturated-blue);
   font-weight: 500;
@@ -210,7 +167,6 @@
   border-left: none;
 }
 
-/* 📱 UPDATE: Enhanced table cells to ensure proper height and spacing */
 .tableCell {
   padding: .5rem 1rem;
   font-size: 0.85rem;
@@ -218,8 +174,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
-  /* line-height: 2; */
-  min-height: 22px; /* Minimum height for cell content */
+  min-height: 22px;
 }
 
 .actionsCell {
@@ -230,7 +185,6 @@
   gap: 0.5rem;
   justify-content: center;
   white-space: nowrap;
-  /* width: 80px; */
   height: 100%;
   min-width: 80px;
   max-width: 80px;
@@ -245,7 +199,6 @@
   cursor: pointer;
 }
 
-/* 🛠️ UPDATE: Fixed action buttons spacing and visibility */
 .updateButton {
   width: 28px !important;
   height: 28px !important;
@@ -289,7 +242,6 @@
 
 .shopLimitInfo {
   margin-top: 10px;
-  /* padding-left: 1rem; */
   font-size: 0.8rem;
 }
 
@@ -373,7 +325,6 @@
   opacity: 0.3;
 }
 
-/* 📏 UPDATE: Fixed mobile styles to maintain exact table height */
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem 0;
@@ -407,7 +358,6 @@
     min-height: 22px;
   }
   
-  /* 🛠️ UPDATE: Fixed action cell width for mobile */
   .actionsCell {
     padding: 0.25rem;
     gap: 0.35rem;
@@ -423,7 +373,6 @@
     min-height: 24px;
   }
   
-  /* 🛠️ UPDATE: Fixed button sizes for mobile with better visibility */
   .updateButton, .deleteButton {
     width: 24px !important;
     height: 24px !important;
@@ -439,7 +388,6 @@
 
   .title {
     padding-right: 0;
-    /* font-size: 1.25rem; */
   }
   
   .table {
@@ -452,13 +400,11 @@
     padding: 0;
   }
   
-  /* 📏 UPDATE: Fixed row height for consistent display */
   .tableRow {
     height: auto;
     min-height: 0;
   }
   
-  /* 🛠️ UPDATE: Ensure action column doesn't shrink */
   .tableHeaderCell:nth-child(1),
   .tableCell:nth-child(1) {
     width: 70px;
@@ -466,14 +412,12 @@
     max-width: 70px;
   }
   
-  /* 📏 UPDATE: Removed fixed height values from containers */
   .tableContainer {
     height: auto;
     min-height: 0;
   }
 }
 
-/* 📏 UPDATE: Fixed small screen styles to maintain exact table height */
 @media (max-width: 500px) {
   .container, 
   .content,
@@ -493,14 +437,12 @@
     overflow-y: visible;
   }
   
-  /* 🛠️ UPDATE: Maintained proper button sizes for very small screens */
   .updateButton, .deleteButton {
     width: 22px !important;
     height: 22px !important;
     padding: 3px;
   }
   
-  /* 🛠️ UPDATE: Fixed action cell width for very small screens */
   .actionsCell {
     padding: 0.15rem;
     gap: 0.25rem;
@@ -509,25 +451,21 @@
     max-width: 60px;
   }
   
-  /* Further reduce table minimum width */
   .table {
     min-width: 400px;
     height: auto;
   }
   
-  /* 📏 UPDATE: Fixed row height to fit content exactly */
   .tableRow {
     height: auto;
     min-height: 0;
   }
   
-  /* 📏 UPDATE: Adjusted cell padding for consistent spacing */
   .tableCell {
     padding: 0.6rem 0.25rem;
     min-height: 0;
   }
   
-  /* 🛠️ UPDATE: Fixed action column width for very small screens */
   .tableHeaderCell:nth-child(1),
   .tableCell:nth-child(1) {
     width: 60px;

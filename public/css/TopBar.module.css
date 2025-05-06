@@ -5,6 +5,7 @@
     justify-content: center;
     flex-direction: column;
     padding: 0.4rem 1.5rem;
+    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.567) 10%, rgba(255, 255, 255, 0));
     z-index: 1000; 
     height: auto; 
     position: fixed; 
@@ -24,10 +25,17 @@
 .contentWrapper {
     display: flex;
     align-items: center;
-    justify-content:right;
+    justify-content: space-between;
     width: 100%;
     gap: 1rem;
     padding: 0.25rem 0; 
+}
+
+/* 🍔 UPDATE: Added styles for the buttons container */
+.buttonsContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .backButton {
@@ -54,6 +62,61 @@
     border: 1px solid white;
     background-color: rgba(255, 255, 255, 0.4) !important;
     box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+}
+
+/* 🍔 UPDATE: Added styles for burger menu button */
+.burgerButton {
+    display: none;
+    color: white;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+/* 🍔 UPDATE: Added styles for mobile menu */
+.mobileMenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 0 0 0 8px;
+    flex-direction: column;
+    padding: 1rem;
+    width: auto;
+    min-width: 150px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+}
+
+.mobileMenu.open {
+    display: flex;
+}
+
+.mobileMenu button {
+    margin: 0.5rem 0;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+/* 🍔 UPDATE: Add responsive media query for mobile view */
+@media (max-width: 500px) {
+    .container {
+        padding: 0.4rem 1rem; 
+    }
+    
+    .contentWrapper {
+        padding: 0.5rem 0;
+    }
+
+    .buttonsContainer {
+        display: none;
+    }
+
+    .burgerButton {
+        display: flex;
+    }
 }
 
 @media (max-width: 768px) {

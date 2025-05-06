@@ -33,7 +33,7 @@ const NavigationButtons = ({
       {currentStep > 1 && (
         <button 
           type="button" 
-          className={styles.navButton}
+          className={styles.active}
           onClick={handlePreviousClick}
         >
           <ChevronLeft size={16} />
@@ -44,7 +44,7 @@ const NavigationButtons = ({
       {currentStep < totalSteps ? (
         <button 
           type="button" 
-          className={styles.navButton}
+          className={styles.active}
           onClick={handleNextClick}
         >
           <span className={styles.buttonText}>{nextLabel}</span>

@@ -45,7 +45,7 @@ const ShopCreationForm = () => {
     setSelectedShop,
     // ✨ UPDATE: Get notifyFormExit function from ShopContext if it exists
     // This will be implemented in ShopContext to allow controlled exit animations
-    notifyFormExit
+    // notifyFormExit
   } = useShop();
 
   const {
@@ -75,14 +75,14 @@ const ShopCreationForm = () => {
   // ✨ UPDATE: Added state to handle animation when component exits - same as LoginRegisterForm
   const [isExiting, setIsExiting] = useState(false);
   
-  // ✨ UPDATE: Function to handle closing the form with animation - same timing as LoginRegisterForm
-  const handleCloseForm = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setShowShopCreationForm(false);
-      setSelectedShop(null);
-    }, 500); // Match timing with animation duration and LoginRegisterForm
-  };
+  
+  // const handleCloseForm = () => {
+  //   setIsExiting(true);
+  //   setTimeout(() => {
+  //     setShowShopCreationForm(false);
+  //     setSelectedShop(null);
+  //   }, 500); 
+  // };
 
   // 🧹 UPDATE: Default shop values for form reset
   const defaultShopValues = {
@@ -225,7 +225,7 @@ const ShopCreationForm = () => {
     // Show info message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      shopSuccess: "Formulario limpiado ."
+      shopSuccess: "¡El formulario está limpio! :)"
     }));
     setShowSuccessCard(true);
     
@@ -559,11 +559,10 @@ const ShopCreationForm = () => {
                 {renderStepContent()}
                   
                 <div className={styles.buttonsContainer}>
-                  {/* 🧹 UPDATE: Added reset form button */}
                   <button
                     type="button"
                     onClick={confirmResetForm}
-                    className={styles.resetButton}
+                    className={styles.active}
                     title="Limpiar formulario"
                     disabled={uploading || isFormSubmitting}
                   >
