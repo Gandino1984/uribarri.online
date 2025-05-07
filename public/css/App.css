@@ -213,7 +213,7 @@ button {
   background-color: transparent;
   border-radius: 5px;
   /* color: var(--superdark-gradient-purple-start); */
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0.3rem 0.3rem;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;

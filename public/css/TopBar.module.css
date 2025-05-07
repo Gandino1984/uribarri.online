@@ -18,8 +18,9 @@
 .title{
     font-size: 1.5rem;
     letter-spacing: .1rem;
-    font-weight: 700;
+    font-weight: 800;
     color: white;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
 }
 
 .contentWrapper {
@@ -73,7 +74,7 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.5rem 0.1rem;
     position: relative;
 }
 
