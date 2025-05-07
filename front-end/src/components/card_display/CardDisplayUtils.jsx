@@ -7,7 +7,7 @@ const CardDisplayUtils = () => {
         clearError, clearSuccess, clearInfo
     } = useUI();
 
-    // ✨ UPDATE: Improved function to handle horizontal slide animations
+    // ⭐ UPDATE: Enhanced animation handling for blur effect coordination
     const handleCardAnimation = (cardType) => {
         // Function to handle any animation-related behaviors for different card types
         switch (cardType) {
@@ -25,7 +25,7 @@ const CardDisplayUtils = () => {
         }
     };
     
-    // ✨ UPDATE: Improved autoHideCards to support right-to-left and left-to-right animation
+    // Auto-hide function remains the same as it works with our blur implementation
     const autoHideCards = (cardType) => {
         // All cards use the same 4 second display duration as requested
         const DISPLAY_DURATION = 4000; // 4 seconds display time

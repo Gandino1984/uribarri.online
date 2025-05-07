@@ -6,12 +6,15 @@ import InfoCard from '../card_display/components/info_card/InfoCard.jsx';
 import ImageModal from '../image_modal/ImageModal.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 
-// ✨ UPDATE: Implementation using CSS transitions instead of React Spring
+// ⭐ UPDATE: Enhanced implementation with background blur effect that lasts half as long as cards
 function CardDisplay() {
   // State for card visibility with CSS classes
   const [errorCardClass, setErrorCardClass] = useState(styles.cardContainer);
   const [successCardClass, setSuccessCardClass] = useState(styles.cardContainer);
   const [infoCardClass, setInfoCardClass] = useState(styles.cardContainer);
+  
+  // ⭐ UPDATE: Added blur overlay state
+  const [blurClass, setBlurClass] = useState(styles.blurOverlay);
   
   // State to track if cards are being animated
   const [isErrorAnimating, setIsErrorAnimating] = useState(false);
@@ -40,13 +43,21 @@ function CardDisplay() {
     return obj && Object.values(obj).some(value => value);
   };
   
-  // Helper function for error card animation
+  // Helper function for error card animation with half-time blur
   const animateErrorCard = () => {
     if (isErrorAnimating) return;
     setIsErrorAnimating(true);
     
     // Show card with animation
     setErrorCardClass(`${styles.cardContainer} ${styles.cardVisible}`);
+    
+    // ⭐ UPDATE: Activate blur effect
+    setBlurClass(`${styles.blurOverlay} ${styles.blurActive}`);
+    
+    // ⭐ UPDATE: Remove blur after half the time (2 seconds)
+    setTimeout(() => {
+      setBlurClass(styles.blurOverlay);
+    }, 2000);
     
     // After 4 seconds, hide with animation
     const timer = setTimeout(() => {
@@ -64,13 +75,21 @@ function CardDisplay() {
     return () => clearTimeout(timer);
   };
   
-  // Helper function for success card animation
+  // Helper function for success card animation with half-time blur
   const animateSuccessCard = () => {
     if (isSuccessAnimating) return;
     setIsSuccessAnimating(true);
     
     // Show card with animation
     setSuccessCardClass(`${styles.cardContainer} ${styles.cardVisible}`);
+    
+    // ⭐ UPDATE: Activate blur effect
+    setBlurClass(`${styles.blurOverlay} ${styles.blurActive}`);
+    
+    // ⭐ UPDATE: Remove blur after half the time (2 seconds)
+    setTimeout(() => {
+      setBlurClass(styles.blurOverlay);
+    }, 2000);
     
     // After 4 seconds, hide with animation
     const timer = setTimeout(() => {
@@ -88,13 +107,21 @@ function CardDisplay() {
     return () => clearTimeout(timer);
   };
   
-  // Helper function for info card animation
+  // Helper function for info card animation with half-time blur
   const animateInfoCard = () => {
     if (isInfoAnimating) return;
     setIsInfoAnimating(true);
     
     // Show card with animation
     setInfoCardClass(`${styles.cardContainer} ${styles.cardVisible}`);
+    
+    // ⭐ UPDATE: Activate blur effect
+    setBlurClass(`${styles.blurOverlay} ${styles.blurActive}`);
+    
+    // ⭐ UPDATE: Remove blur after half the time (2 seconds)
+    setTimeout(() => {
+      setBlurClass(styles.blurOverlay);
+    }, 2000);
     
     // After 4 seconds, hide with animation
     const timer = setTimeout(() => {
@@ -155,33 +182,38 @@ function CardDisplay() {
   }, [info, showInfoCard, isInfoAnimating, setShowInfoCard]);
 
   return (
-    <div className={styles.cardDisplayContainer}>
-      {showImageModal && <ImageModal />}
+    <>
+      {/* Blur overlay element */}
+      <div className={blurClass}></div>
       
-      {/* Dedicated container for all notification cards */}
-      <div className={styles.messageWrapper}>
-        {/* Error card with CSS transition animation */}
-        {showErrorCard && hasAnyValue(error) && (
-          <div className={errorCardClass}>
-            <ErrorCard />
-          </div>
-        )}
+      <div className={styles.cardDisplayContainer}>
+        {showImageModal && <ImageModal />}
         
-        {/* Success card with CSS transition animation */}
-        {showSuccessCard && hasAnyValue(success) && (
-          <div className={successCardClass}>
-            <SuccessCard />
-          </div>
-        )}
-        
-        {/* Info card with CSS transition animation */}
-        {showInfoCard && hasAnyValue(info) && (
-          <div className={infoCardClass}>
-            <InfoCard />
-          </div>
-        )}
+        {/* Dedicated container for all notification cards */}
+        <div className={styles.messageWrapper}>
+          {/* Error card with CSS transition animation */}
+          {showErrorCard && hasAnyValue(error) && (
+            <div className={errorCardClass}>
+              <ErrorCard />
+            </div>
+          )}
+          
+          {/* Success card with CSS transition animation */}
+          {showSuccessCard && hasAnyValue(success) && (
+            <div className={successCardClass}>
+              <SuccessCard />
+            </div>
+          )}
+          
+          {/* Info card with CSS transition animation */}
+          {showInfoCard && hasAnyValue(info) && (
+            <div className={infoCardClass}>
+              <InfoCard />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,29 +1,29 @@
 .userInfoCard {
   position: absolute;
-  top: 4rem;
-  left: -1.5rem;
+  top: 3.5rem; /* ⭐ UPDATE: Reduced top position */
+  left: -1.25rem; /* ⭐ UPDATE: Adjusted left position */
   z-index: 999;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: left;
   background-color: rgb(7, 7, 7);
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* ⭐ UPDATE: Reduced font size */
   text-align: center;
-  gap: 0.5rem;
+  gap: 0.4rem; /* ⭐ UPDATE: Reduced gap */
   transition: all 0.3s ease;
   flex-direction: row;
   pointer-events: auto;
-  padding-right: 1rem;
-  padding-left: 2rem;
-  padding-top: .4rem;
-  padding-bottom: .3rem;
-  border-radius: 12px;
+  padding-right: 0.8rem; /* ⭐ UPDATE: Reduced padding */
+  padding-left: 1.8rem; /* ⭐ UPDATE: Reduced padding */
+  padding-top: .35rem; /* ⭐ UPDATE: Reduced padding */
+  padding-bottom: .25rem; /* ⭐ UPDATE: Reduced padding */
+  border-radius: 10px; /* ⭐ UPDATE: Reduced border radius */
   /* border: 1px solid var(--gradient-purple-end); */
 }
 
 .welcomeMessage {
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* ⭐ UPDATE: Reduced font size */
   max-width: 100%;
   line-height: 1.2;
   transition: all 0.2s ease;
@@ -42,6 +42,17 @@
     flex-direction: row;
     gap: 0.25rem;
     margin: 0.25rem 0;
+    /* ⭐ UPDATE: Added mobile-specific size adjustments */
+    padding-right: 0.6rem;
+    padding-left: 1.4rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    left: -1rem;
+  }
+  
+  /* ⭐ UPDATE: Further reduced font size on small screens */
+  .welcomeMessage {
+    font-size: 0.7rem;
   }
 }
 
@@ -59,13 +70,21 @@
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.2rem; /* ⭐ UPDATE: Reduced size */
+  height: 2.2rem; /* ⭐ UPDATE: Reduced size */
   border-radius: 50%;
   transition: transform 0.2s ease;
   pointer-events: auto;
   background-color: var(--light-gradient-purple-mid);
   
+}
+
+/* ⭐ UPDATE: Added media query for smaller screens */
+@media (max-width: 480px) {
+  .profileImageContainer {
+    width: 2rem;
+    height: 2rem;
+  }
 }
 
 .profileImageContainer:hover {
@@ -129,6 +148,9 @@
 
 .editIcon {
   color: white;
+  /* ⭐ UPDATE: Reduced icon size */
+  width: 14px; 
+  height: 14px;
 }
 
 /* Popup menu styling */
@@ -139,13 +161,13 @@
   transform: translateX(-50%);
   margin-top: 0.5rem;
   background-color: rgb(7, 7, 7);
-  padding: 0.5rem;
+  padding: 0.4rem; /* ⭐ UPDATE: Reduced padding */
   z-index: 2100;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 0.25rem;
-  min-width: 9rem;
+  min-width: 8.5rem; /* ⭐ UPDATE: Reduced min-width */
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
@@ -168,7 +190,7 @@
   justify-content: flex-start;
   width: 100%;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.4rem; /* ⭐ UPDATE: Reduced padding */
   cursor: pointer;
   transition: background-color 0.2s;
   border-radius: 0.25rem;
@@ -185,7 +207,7 @@
 
 .actionText {
   color: white;
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* ⭐ UPDATE: Reduced font size */
 }
 
 /* Loader styles */
@@ -207,6 +229,9 @@
 .loaderIcon {
   animation: spin 1s linear infinite;
   color: white;
+  /* ⭐ UPDATE: Reduced size */
+  width: 14px;
+  height: 14px;
 }
 
 @keyframes spin {

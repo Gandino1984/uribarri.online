@@ -5,6 +5,8 @@ import { TopBarUtils } from './TopBarUtils.jsx';
 import { ArrowLeft, DoorClosed, Menu, X } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
+import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
+import userInfoStyles from '../../../../public/css/UserInfoCard.module.css';
 
 function TopBar() {
   // 🍔 UPDATE: Added state for mobile menu toggle
@@ -98,6 +100,13 @@ function TopBar() {
       <div className={styles.contentWrapper}>
           <span className={styles.title}>uribarri.online</span>
 
+          {/* 👤 UPDATE: Added UserInfoCard with relative positioning */}
+          {currentUser && (
+            <div className={styles.userInfoWrapper}>
+              <UserInfoCard />
+            </div>
+          )}
+
           {/* 🍔 UPDATE: Added buttons container for desktop view */}
           <div className={styles.buttonsContainer}>
             {(selectedShop || showShopCreationForm) && (
@@ -123,18 +132,20 @@ function TopBar() {
             )}
           </div>
 
-          {/* 🔻 UPDATE: Updated burger button with ref */}
-          <button 
-            className={styles.active} 
-            onClick={toggleMobileMenu}
-            aria-label="Menu"
-            ref={burgerButtonRef}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* 🔻 UPDATE: Only show burger menu when user is logged in */}
+          {currentUser && (
+            <button 
+              className={styles.active} 
+              onClick={toggleMobileMenu}
+              aria-label="Menu"
+              ref={burgerButtonRef}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          )}
 
           {/* 🔻 UPDATE: Updated mobile menu with ref and new styling */}
-          {mobileMenuOpen && (
+          {mobileMenuOpen && currentUser && (
             <div 
               className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}
               ref={mobileMenuRef}

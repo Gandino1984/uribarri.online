@@ -15,7 +15,6 @@ const UserInfoCard = () => {
     uploading,
     setError,
     setInfo,
-    // 🖼️ UPDATE: Use the correct openImageModal function from UIContext
     openImageModal
   } = useUI();
 
@@ -53,14 +52,12 @@ const UserInfoCard = () => {
     setShowButtons(false);
   };
 
-  // 🖼️ UPDATE: Fixed the handleViewClick function to use the correct image modal function
   const handleViewClick = (e) => {
     e.stopPropagation();
     if (currentUser?.image_user && hasValidImage) {
       const imageUrl = getImageUrl(currentUser.image_user);
       if (imageUrl) {
         console.log('Opening image modal with URL:', imageUrl);
-        // This uses the first image modal system in UIContext
         openImageModal(imageUrl);
         setShowButtons(false);
       } else {
@@ -98,8 +95,6 @@ const UserInfoCard = () => {
       }
     }
   }, [showButtons]);
-
-  // Rest of the component remains unchanged...
   
   // Check if user has a valid image on component mount and when currentUser changes
   useEffect(() => {
@@ -152,6 +147,7 @@ const UserInfoCard = () => {
     };
   }, [showButtons]);
 
+  // ⭐ UPDATE: Enhanced responsive behavior with more breakpoints
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 768);
@@ -178,16 +174,12 @@ const UserInfoCard = () => {
     }
   }, [currentUser?.image_user, getImageUrl, setError]);
 
+  // ⭐ UPDATE: Simplified welcome message function
   const getWelcomeMessage = () => {
-    if (!currentUser) {
-      return isSmallScreen ? 
-        '¡Hola de nuevo!' : 
-        '¡Hola de nuevo! Inicia sesión';
-    }
+    if (!currentUser) return null;
     
     const userName = currentUser.name_user || 'usuario';
     
-    // 👤 UPDATE: Simplified welcome message without TopBar expansion dependency
     if (isSmallScreen) {
       return <span className={styles.userName}>{userName}</span>;
     }
@@ -197,7 +189,6 @@ const UserInfoCard = () => {
     );
   };
 
-  // 👤 UPDATE: If no user is logged in, return null to hide the component
   if (!currentUser) {
     return null;
   }
@@ -214,14 +205,14 @@ const UserInfoCard = () => {
           >
             {/* Upload button */}
             <div className={styles.actionButton} onClick={handleUploadClick}>
-              <Camera size={16} className={styles.actionIcon} />
+              <Camera size={14} className={styles.actionIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
               <span className={styles.actionText}>Subir Imagen</span>
             </div>
             
             {/* View button (only if there's an image) */}
             {hasValidImage && (
             <div className={styles.actionButton} onClick={handleViewClick}>
-              <Eye size={16} className={styles.actionIcon} />
+              <Eye size={14} className={styles.actionIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
               <span className={styles.actionText}>Ver Imagen</span>
             </div>
             )}
@@ -261,7 +252,7 @@ const UserInfoCard = () => {
             />
           ) : (
             <div className={styles.placeholderImage}>
-              <User size={24} className={styles.placeholderIcon} />
+              <User size={18} className={styles.placeholderIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
             </div>
           )}
           
@@ -279,14 +270,14 @@ const UserInfoCard = () => {
           {/* Show the edit overlay with camera icon when hovering */}
           {!uploading && (
             <div className={styles.editOverlay}>
-              <Camera size={16} className={styles.editIcon} />
+              <Camera size={14} className={styles.editIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
             </div>
           )}
           
           {/* Loader and progress bar during upload */}
           {uploading && (
             <div className={styles.loader}>
-              <Loader size={16} className={styles.loaderIcon} />
+              <Loader size={14} className={styles.loaderIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
               
               {uploadProgress > 0 && (
                 <div className={styles.progressContainer}>

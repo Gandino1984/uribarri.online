@@ -43,3 +43,22 @@
   transform: translateX(100%); /* Exit to the right */
   opacity: 0;
 }
+
+/* ⭐ UPDATE: Added blur overlay for background when cards are visible */
+.blurOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px);
+  z-index: 1900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.blurActive {
+  opacity: 1;
+}
