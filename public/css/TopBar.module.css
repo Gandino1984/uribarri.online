@@ -5,7 +5,7 @@
     justify-content: center;
     flex-direction: column;
     padding: 0.4rem 1.5rem;
-    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.567) 10%, rgba(255, 255, 255, 0));
+    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.497) 10%, rgba(255, 255, 255, 0));
     z-index: 1000; 
     height: auto; 
     position: fixed; 
@@ -53,6 +53,7 @@
 
 .active {
     color: black;
+    font-weight: 500;
     border: 1px solid rgba(255, 255, 255, 0.25);
     background-color: rgba(255, 255, 255, 0.2);
 }
@@ -60,7 +61,8 @@
 .active:hover {
     color: white;
     border: 1px solid white;
-    background-color: rgba(255, 255, 255, 0.4) !important;
+    background-color: rgba(255, 255, 255, 0.4);
+    /* text-shadow: 0px 0px 8px 1px var(--saturated-blue-transparent) !important; */
     box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
@@ -72,32 +74,71 @@
     border: none;
     cursor: pointer;
     padding: 0.5rem;
+    position: relative;
 }
 
-/* 🍔 UPDATE: Added styles for mobile menu */
+/* 🔻 UPDATE: Updated mobile menu to match UserInfoCard dropdown style */
 .mobileMenu {
     display: none;
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: white;
-    border-radius: 0 0 0 8px;
+    background-color: rgb(7, 7, 7);
+    border-radius: 8px;
     flex-direction: column;
-    padding: 1rem;
+    padding: 0.5rem;
     width: auto;
     min-width: 150px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 1001;
+    margin-top: 0.5rem;
+}
+
+/* 🔻 UPDATE: Added triangle pointer to the dropdown menu */
+.mobileMenu:before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 16px;
+    transform: translateX(-50%);
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent rgb(7, 7, 7) transparent;
 }
 
 .mobileMenu.open {
     display: flex;
 }
 
+/* 🔻 UPDATE: Updated button styles inside mobile menu to match UserInfoCard */
 .mobileMenu button {
-    margin: 0.5rem 0;
-    width: 100%;
+    display: flex;
+    align-items: center;
     justify-content: flex-start;
+    width: 100%;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 0.25rem;
+    pointer-events: auto;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.mobileMenu button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 🔻 UPDATE: Added button icon and text styles */
+.buttonIcon {
+    color: #aaa;
+}
+
+.buttonText {
+    color: white;
+    font-size: 0.8rem;
 }
 
 /* 🍔 UPDATE: Add responsive media query for mobile view */
