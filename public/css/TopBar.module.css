@@ -16,11 +16,15 @@
 }
 
 .title{
+    user-select: none;
     font-size: 1.5rem;
     letter-spacing: .1rem;
     font-weight: 800;
     color: white;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+    /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 1); */
+    position: relative; /* 🔤 UPDATE: Added relative positioning */
+    display: flex; /* 🔤 UPDATE: Using flexbox for better letter alignment */
+    align-items: center;
 }
 
 .contentWrapper {
@@ -67,15 +71,23 @@
     box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
-/* 🍔 UPDATE: Added styles for burger menu button */
+/* 🔒 UPDATE: Fixed burger button to be hidden by default and only visible on mobile */
 .burgerButton {
     display: none;
     color: white;
     background-color: transparent;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
     cursor: pointer;
-    padding: 0.5rem 0.1rem;
-    position: relative;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.burgerButton:hover {
+    color: white;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
 /* 🔻 UPDATE: Updated mobile menu to match UserInfoCard dropdown style */

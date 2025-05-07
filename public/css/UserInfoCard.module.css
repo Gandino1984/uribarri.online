@@ -1,6 +1,7 @@
 .userInfoCard {
+  cursor: pointer;
   position: absolute;
-  top: 3.5rem; /* ⭐ UPDATE: Reduced top position */
+  top: 4rem; /* ⭐ UPDATE: Reduced top position */
   left: -1.25rem; /* ⭐ UPDATE: Adjusted left position */
   z-index: 999;
   user-select: none;

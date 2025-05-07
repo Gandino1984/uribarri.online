@@ -1,0 +1,45 @@
+.animatedO {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  
+  .letter {
+    position: relative;
+    color: white;
+    z-index: 2;
+    font-weight: 800;
+    /* text-shadow: 0 0 2px rgb(0, 0, 0); */
+    -webkit-tap-highlight-color: transparent;
+    text-shadow: none;
+    font-size: 1.2em;
+    padding-bottom: .35rem;
+    padding-left: .07rem;
+  }
+  
+  .animatedO::before {
+    content: '';
+    position: absolute;
+    border: .2px solid black;
+    border-radius: 5px; /* Rounded corners on the square */
+    background: black;
+    z-index: 1;
+    width: .78em; /* Just slightly bigger than the letter */
+    height: .78em; /* Just slightly bigger than the letter */
+    animation: rotateSquare 12s linear infinite; /* Always spinning animation */
+    will-change: transform;
+  }
+  
+  /* Animation for the spinning square background */
+  @keyframes rotateSquare {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }

@@ -7,6 +7,7 @@ import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 import userInfoStyles from '../../../../public/css/UserInfoCard.module.css';
+import AnimatedO from './components/AnimatedO.jsx';
 
 function TopBar() {
   // 🍔 UPDATE: Added state for mobile menu toggle
@@ -98,7 +99,10 @@ function TopBar() {
   return (
     <div className={styles.container}>
       <div className={styles.contentWrapper}>
-          <span className={styles.title}>uribarri.online</span>
+          {/* 🔤 UPDATE: Using the AnimatedO component in the logo text */}
+          <span className={styles.title}>
+            uribarri.<AnimatedO />nline
+          </span>
 
           {/* 👤 UPDATE: Added UserInfoCard with relative positioning */}
           {currentUser && (
@@ -132,15 +136,15 @@ function TopBar() {
             )}
           </div>
 
-          {/* 🔻 UPDATE: Only show burger menu when user is logged in */}
+          {/* 🍔 UPDATE: Only show burger menu on mobile */}
           {currentUser && (
             <button 
-              className={styles.active} 
+              className={styles.burgerButton} 
               onClick={toggleMobileMenu}
               aria-label="Menu"
               ref={burgerButtonRef}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           )}
 

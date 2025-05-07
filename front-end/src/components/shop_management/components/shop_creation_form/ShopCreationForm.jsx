@@ -225,7 +225,7 @@ const ShopCreationForm = () => {
     // Show info message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      shopSuccess: "¡El formulario está limpio! :)"
+      shopSuccess: "El formulario está limpio."
     }));
     setShowSuccessCard(true);
     
