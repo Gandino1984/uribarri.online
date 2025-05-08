@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   width: 100%;
   height: 100%;
   max-width: 450px;
@@ -11,7 +11,7 @@
   /* background-size: 200% 200%; */
   background: linear-gradient(to top, var(--gradient-purple-start), var(--gradient-purple-mid), rgba(255, 255, 255, 0.685));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  border-radius: 15px;
 }
 
 /* .container::after {
@@ -32,20 +32,48 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;  
-  margin-bottom: 1rem;
-  gap: .3rem;
+  margin-bottom: .5rem;
+  /* gap: 1rem; */
   /* padding-bottom: 12px; */
-  border-bottom: 1px solid #ddd;
+  /* 🌈 UPDATE: Removed the border as we'll add it to the headerTitle */
+  border-bottom: none;
+  position: relative;
 }
 
 .headerTitle {
+  text-shadow: 1px 1px 0px white;
+  width: 100%;
+  text-align: center;
   color: black;
   line-height: 1.85rem;
-  margin: 0;
+  padding-top: .5rem;
+  margin-bottom: .5rem;
+  font-size: 1.8rem;
+  /* 🌈 UPDATE: Added position relative for the pseudo-element */
+  position: relative;
 }
 
+/* 🌈 UPDATE: Added gradient border using pseudo-element */
+.headerTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent 0%, 
+    rgba(221, 221, 221, 0.3) 5%, 
+    rgba(221, 221, 221, 0.8) 15%, 
+    rgba(221, 221, 221, 1) 30%, 
+    rgba(221, 221, 221, 1) 70%, 
+    rgba(221, 221, 221, 0.8) 85%, 
+    rgba(221, 221, 221, 0.3) 95%, 
+    transparent 100%
+  );
+}
 
 .backButton {
   display: flex;
@@ -66,29 +94,36 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 15px 0 25px;
-  position: relative;
+  right: 0;
+  top: -2.3rem;
+  /* margin: 15px 0 25px; */
+  position: absolute;
+  flex-shrink: 1;
+  min-width: min-content;
 }
 
 .stepDot {
-  width: 28px;
-  height: 28px;
+  user-select: none;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background-color: #e0e0e0;
-  margin: 0 15px;
+  margin: 0 .3rem;
   z-index: 2;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #666;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   position: relative;
 }
 
 .stepDot.active {
-  border: 2px solid var(--saturated-blue);
+  margin-right: .5rem;
+  margin-left: .5rem;
+  border: 1px solid var(--saturated-blue);
   background-color: var(--gradient-purple-mid);
   color: white;
   transform: scale(1.4);
@@ -99,16 +134,19 @@
 }
 
 .sectionTitle {
-  text-align: center;
-  font-size: 1.2rem;
+  /* text-align: center; */
+  font-size: 1.1rem;
   font-weight: 7px;
   color: var(--dark-gradient-purple-start);
+  padding-bottom: .5rem;
+  padding-top: .5rem;
 }
 
 .sectionDescription {
   text-align: center;
+  max-width: 90%;
   font-size: 0.8rem;
-  color: white;
+  color: var(--dark-gradient-purple-start);
   font-weight: 500;
   margin-bottom: 12px;
 }
@@ -132,11 +170,20 @@
 }
 
 .imageSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   margin-bottom: 25px;
 }
 
 .imageUploadContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  width: 90%;
+  border-radius: 8px;
   border: 2px dashed #bababa;
   padding: 5px;
   transition: border-color 0.2s ease;
@@ -150,9 +197,10 @@
 }
 
 .imagePreviewBox {
+  border-radius: 8px;
   position: relative;
   width: 100%;
-  height: 150px;
+  height: 130px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -390,11 +438,55 @@
     display: none;
   }
 
+  /* 📱 UPDATE: Enhanced mobile step indicator styles */
   .stepDot {
-    width: 24px;
-    height: 24px;
-    margin: 0 10px;
-    font-size: 0.8rem;
+    width: 20px;
+    height: 20px;
+    margin: 0 0.15rem;
+    font-size: 0.7rem;
+  }
+  
+  /* 📱 UPDATE: Adjusted header alignment for very small screens */
+  .header {
+    gap: 0.2rem;
+  }
+  
+  /* 🌈 UPDATE: Adjusted gradient for smaller screens */
+  .headerTitle::after {
+    background: linear-gradient(to right, 
+      transparent 0%, 
+      rgba(221, 221, 221, 0.4) 10%, 
+      rgba(221, 221, 221, 1) 35%, 
+      rgba(221, 221, 221, 1) 65%, 
+      rgba(221, 221, 221, 0.4) 90%, 
+      transparent 100%
+    );
+  }
+}
+
+/* 📱 UPDATE: Added extremely small screen support */
+@media screen and (max-width: 350px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .stepTracker {
+    align-self: center;
+    margin-top: 0;
+  }
+  
+  /* 🌈 UPDATE: Further adjusted gradient for very small screens */
+  .headerTitle::after {
+    background: linear-gradient(to right, 
+      transparent 0%, 
+      rgba(221, 221, 221, 0.5) 15%, 
+      rgba(221, 221, 221, 1) 40%, 
+      rgba(221, 221, 221, 1) 60%, 
+      rgba(221, 221, 221, 0.5) 85%, 
+      transparent 100%
+    );
   }
 }
 

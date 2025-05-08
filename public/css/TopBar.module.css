@@ -21,7 +21,7 @@
     letter-spacing: .1rem;
     font-weight: 800;
     color: white;
-    /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 1); */
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
     position: relative; /* 🔤 UPDATE: Added relative positioning */
     display: flex; /* 🔤 UPDATE: Using flexbox for better letter alignment */
     align-items: center;
@@ -74,7 +74,7 @@
 /* 🔒 UPDATE: Fixed burger button to be hidden by default and only visible on mobile */
 .burgerButton {
     display: none;
-    color: white;
+    color: black;
     background-color: transparent;
     border: 1px solid rgba(255, 255, 255, 0.25);
     background-color: rgba(255, 255, 255, 0.2);

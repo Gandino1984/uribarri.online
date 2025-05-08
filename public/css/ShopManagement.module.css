@@ -51,11 +51,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%; /* 🎨 UPDATE: Added width for consistent sizing */
+    width: 95%; /* 🎨 UPDATE: Added width for consistent sizing */
     position: relative; /* 🎨 UPDATE: Added position for proper stacking */
     z-index: 2; /* 🎨 UPDATE: Added z-index to place content above backgrounds */
     max-width: 1200px; /* 🎨 UPDATE: Added max-width for better layout on large screens */
-    padding: 0 10px; /* 🎨 UPDATE: Added padding for edge spacing */
+    padding: 0 1rem; /* 🎨 UPDATE: Added padding for edge spacing */
 }
 
 /* 🎨 UPDATE: Added responsive styles */

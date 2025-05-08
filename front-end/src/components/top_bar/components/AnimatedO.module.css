@@ -16,21 +16,21 @@
     /* text-shadow: 0 0 2px rgb(0, 0, 0); */
     -webkit-tap-highlight-color: transparent;
     text-shadow: none;
-    font-size: 1.2em;
+    font-size: 1.18em;
     padding-bottom: .35rem;
-    padding-left: .07rem;
+    padding-left: .087rem;
   }
   
   .animatedO::before {
     content: '';
     position: absolute;
     border: .2px solid black;
-    border-radius: 5px; /* Rounded corners on the square */
+    border-radius: 6px; 
     background: black;
     z-index: 1;
-    width: .78em; /* Just slightly bigger than the letter */
-    height: .78em; /* Just slightly bigger than the letter */
-    animation: rotateSquare 12s linear infinite; /* Always spinning animation */
+    width: .77em; 
+    height: .77em; 
+    animation: rotateSquare 12s linear infinite; 
     will-change: transform;
   }
   

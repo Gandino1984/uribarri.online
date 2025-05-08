@@ -10,7 +10,7 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
     <section className={styles.formFields}>
       <h2 className={styles.sectionTitle}>Información básica</h2>
       <p className={styles.sectionDescription}>
-        Proporciona los detalles principales de tu comercio
+        Proporciona los detalles principales de tu comercio. Esta información será visible para todos los usuarios.
       </p>
       
       {/* 🚀 UPDATE: Added wrapper div for better centering and max-width control */}
