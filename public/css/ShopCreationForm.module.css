@@ -320,7 +320,7 @@
 
 .timeInput {
   padding: 8px 10px;
-  border: 1px solid var(--light-gray);
+  /* border: 1px solid var(--light-gray); */
   font-size: 0.9rem;
 }
 

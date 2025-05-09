@@ -92,9 +92,9 @@ html, body {
   width: 100%;
 }
 
-/* Text input with blue for entered text */
+
 input[type="text"] {
-  color: black; /* Blue color for entered text */
+  color: black;
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
   cursor: pointer;
   font-size: 0.9rem;
@@ -109,16 +109,14 @@ input[type="text"] {
   background-color: rgb(220, 228, 255)
 }
 
-/* Styling for input placeholders */
 input[type="text"]::placeholder {
   color: var(--light-gray);
-  opacity: 1; /* Firefox needs this */
+  opacity: 1; 
 }
 
 input[type="text"]:focus {
-  color: black; /* Keep blue color when focused */
+  color: black; 
   border: 2px solid WHITE;
-  /* box-shadow: var(--focus-shadow); */
   background-color: white;
 }
 
@@ -126,7 +124,6 @@ input[type="text"]:hover {
   border: 2px solid white;
   background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
-  /* background-color: var(--saturated-blue); */
 }
 
 /* Number inputs with blue for entered text */
@@ -245,13 +242,14 @@ select {
   min-height: 2.5rem;
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--light-gray) !important; /* Lighter gray for placeholder */
-  background-color: white;
-  border: 2px solid var(--medium-gray) !important;
-  border-radius: 5px;
+  background-color: rgb(220, 228, 255);
+  border-radius: 8px;
   margin-bottom: .5rem;
   cursor: pointer;
+  outline: none;
+  border: none;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
@@ -259,29 +257,30 @@ select {
   /* transition: all 0.2s ease-in-out; */
 }
 
-/* Hover state - color changes to orange */
 select:hover {
-  color: var(--saturated-blue) !important;
-  border-color: var(--saturated-blue) !important;
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 /* Clear any default selected styling */
 select:focus:not(.has-value) {
   color: var(--lighter-gray) !important;
-  border-color: var(--saturated-blue) !important;
+  border-color: none;
   background-color: var(--superlight-blue) !important;
   outline: none;
+  border: none;
 }
 
 /* Selected state with blue color */
 select.has-value {
-  color: var(--saturated-blue) !important;
+  color: black !important;
 }
 
 /* Ensure hovering a selected value keeps it blue */
 select.has-value:hover {
-  color: var(--saturated-blue) !important;
-  border-color: var(--saturated-blue);
+  color: black;
+  border: none;
 }
 
 /* Option styling */
@@ -291,12 +290,12 @@ select option {
 
 /* First option (placeholder) stays light gray */
 select option:first-child {
-  color: var(--lighter-gray);
+  color: black;
 }
 
 /* Real options are blue */
 select option:not(:first-child) {
-  color: var(--saturated-blue);
+  color: black;
 }
 
 select:invalid {
