@@ -75,7 +75,7 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
         ) : (
           // Schedule with rest period: show all 4 fields
           <>
-            <div>
+            <div className={styles.scheduleWithRest}>
               <h4 className={styles.scheduleTitle}>
                 <Clock size={16} className={styles.timeIcon} />
                 Horario de la mañana
@@ -107,7 +107,7 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
               </div>
             </div>
 
-            <div>
+            <div className={styles.scheduleWithRest}>
               <h4 className={styles.scheduleTitle}>
                 <Clock size={16} className={styles.timeIcon} />
                 Horario de la tarde

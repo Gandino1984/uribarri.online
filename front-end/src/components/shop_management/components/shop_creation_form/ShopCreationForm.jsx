@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
-import { Box, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
@@ -578,7 +578,7 @@ const ShopCreationForm = () => {
                     isSubmitting={uploading || isFormSubmitting}
                     submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
                     processingLabel="Procesando..."
-                    SubmitIcon={Box}
+                    SubmitIcon={Plus}
                     // Only show submit button on the last step
                     showSubmitButton={currentStep === totalSteps}
                   />

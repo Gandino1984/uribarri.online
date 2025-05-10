@@ -83,7 +83,7 @@
   /* text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5); */
   color: var(--dark-gradient-purple-start);
   padding-bottom: .5rem;
-  padding-top: .5rem;
+  /* padding-top: .5rem; */
 }
 
 .sectionDescription {
@@ -91,7 +91,7 @@
   max-width: 90%;
   font-size: 0.8rem;
   color: white;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
@@ -244,19 +244,28 @@
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-  font-size: 1rem;
-  color: var(--dark-gradient-purple-start);
+  margin-right: .5rem;
+  font-size: .8rem;
+  color: white;
   /* text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5); */
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .scheduleFields {
+  gap: 0.5rem;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+
+}
+
+.scheduleWithRest{
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* flex-direction: column; */
 }
 
 .buttonContainer {
@@ -285,7 +294,7 @@
 
 /* Days selection container */
 .daysSelectionContainer {
-  padding: 1rem;
+  padding: .5rem .5rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;
   width: 100%; 
@@ -303,7 +312,10 @@
 /* Day toggle item */
 .dayToggle {
   display: flex;
-  align-items: center;
+  justify-content: left;
+  align-items:center;
+  padding-left: 1rem;
+  /* width: 100%; */
   gap: 0.5rem;
 }
 
@@ -322,7 +334,7 @@
 
 /* Delivery container */
 .deliveryContainer {
-  padding: 1rem;
+  padding: .5rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;
   width: 100%; 
@@ -334,14 +346,16 @@
   margin-top: 0.75rem;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 /* Buttons container for form actions */
 .buttonsContainer {
+  gap: 1rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 90%;
   margin-top: 1.5rem;
 }
 
@@ -442,7 +456,7 @@
 }
 
 .toggleContainer {
-  width: 100%;
+  /* width: 100%; */
 }
 
 .scheduleTypeCheckbox {
@@ -457,12 +471,27 @@
   color: #444;
 }
 
+.timeFieldGroup{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* gap: 0.5rem; */
+  /* width: 100%; */
+}
+
+.timeFieldLabel{
+  font-size: 0.8rem;
+  color: var(--dark-gradient-purple-start);
+  margin-right: 5px;
+}
+
+.timeIcon{
+  margin-right: .5rem;  
+}
+
 /* Responsive styles */
 @media screen and (max-width: 600px) {
-  .scheduleFields {
-    align-items: flex-start;
-    gap: 10px;
-  }
+
   
   .scheduleFields span {
     display: none;
@@ -504,31 +533,21 @@
   }
 }
 
-@media (min-width: 640px) {
-  .scheduleFields {
-    gap: 1rem;
-  }
-}
+
 
 @media (min-width: 768px) {
   .scheduleContainer {
     padding: 0 1rem;
   }
   
-  .scheduleFields {
-    justify-content: flex-start;
-  }
 }
 
 @media (min-width: 1024px) {
   .scheduleSimple {
     display: flex;
-    justify-content: flex-start; 
+    justify-content: center; 
   }
   
-  .scheduleFields {
-    gap: 2rem;
-  }
   
   /* 🚀 Added container max width control on large screens */
   .container {

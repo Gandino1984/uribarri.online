@@ -24,7 +24,7 @@ const ShopDaysSelection = ({ newShop, setNewShop }) => {
 
   return (
     <div className={styles.daysSelectionContainer}>
-      <h4 className={styles.scheduleTitle}>
+      <h4 className={styles.sectionTitle}>
         <Calendar size={16} className={styles.timeIcon} />
         Días de apertura
       </h4>
