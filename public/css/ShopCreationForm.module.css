@@ -2,29 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* overflow-x: hidden; */
   width: 100%;
   height: 100%;
   max-width: 450px;
   margin-top: 5.5rem; 
   padding: .5rem 1rem;
-  /* background-size: 200% 200%; */
   background: linear-gradient(to top, var(--gradient-purple-start), var(--gradient-purple-mid), rgba(255, 255, 255, 0.685));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
 }
-
-/* .container::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.291) 0%, rgba(0, 0, 0, 0.282) 20%, rgba(0, 0, 0, 0.108) 40%, rgba(0, 0, 0, 0.165) 70%);
-  pointer-events: none;
-  z-index: 0;
-} */
 
 .content {
   width: 100%;
@@ -35,9 +21,6 @@
   justify-content: center;
   align-items: center;  
   margin-bottom: .5rem;
-  /* gap: 1rem; */
-  /* padding-bottom: 12px; */
-  /* 🌈 UPDATE: Removed the border as we'll add it to the headerTitle */
   border-bottom: none;
   position: relative;
 }
@@ -51,11 +34,10 @@
   padding-top: .5rem;
   margin-bottom: .5rem;
   font-size: 1.8rem;
-  /* 🌈 UPDATE: Added position relative for the pseudo-element */
   position: relative;
 }
 
-/* 🌈 UPDATE: Added gradient border using pseudo-element */
+/* 🌈 Added gradient border using pseudo-element */
 .headerTitle::after {
   content: '';
   position: absolute;
@@ -90,51 +72,12 @@
   color: var(--dark-orange);
 }
 
-.stepTracker {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  right: 0;
-  top: -2.3rem;
-  /* margin: 15px 0 25px; */
-  position: absolute;
-  flex-shrink: 1;
-  min-width: min-content;
-}
-
-.stepDot {
-  user-select: none;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  margin: 0 .3rem;
-  z-index: 2;
-  transition: all 0.2s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #666;
-  font-size: 0.8rem;
-  font-weight: 600;
-  position: relative;
-}
-
-.stepDot.active {
-  margin-right: .5rem;
-  margin-left: .5rem;
-  border: 1px solid var(--saturated-blue);
-  background-color: var(--gradient-purple-mid);
-  color: white;
-  transform: scale(1.4);
-}
-
 .form {
   width: 100%;
 }
 
 .sectionTitle {
-  /* text-align: center; */
+  text-align: center;
   font-size: 1.1rem;
   font-weight: 7px;
   color: var(--dark-gradient-purple-start);
@@ -146,7 +89,7 @@
   text-align: center;
   max-width: 90%;
   font-size: 0.8rem;
-  color: var(--dark-gradient-purple-start);
+  color: white;
   font-weight: 500;
   margin-bottom: 12px;
 }
@@ -166,7 +109,7 @@
   align-items: center;
   flex-direction: column;
   gap: 5px;
-  width: 100%; /* 🚀 UPDATE: Ensure all form fields take full width */
+  width: 100%; /* 🚀 Ensure all form fields take full width */
 }
 
 .imageSection {
@@ -191,8 +134,6 @@
 
 .imageUploadContainer:hover {
   border: 2px solid white;
-  /* border-color: var(--saturated-blue); */
-  /* background-color: rgba(var(--saturated-blue-rgb), 0.1); */
   box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent);
 }
 
@@ -264,7 +205,6 @@
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  /* transition: all 0.2s ease; */
 }
 
 .uploadButtonOverlay button:hover,
@@ -293,10 +233,6 @@
   opacity: 1;
 }
 
-.scheduleContainer {
-  /* margin-bottom: 25px; */
-}
-
 .scheduleTypeToggle {
   margin-bottom: 15px;
 }
@@ -318,79 +254,13 @@
   gap: 10px;
 }
 
-.timeInput {
-  padding: 8px 10px;
-  /* border: 1px solid var(--light-gray); */
-  font-size: 0.9rem;
-}
-
 .buttonContainer {
   display: flex;
   justify-content: flex-end;
   margin-top: 25px;
 }
 
-/* Navigation buttons container */
-.navigationButtons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: .5rem;
-}
-
-/* Base navigation button styles */
-.navButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 15px;
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: var(--dark-orange);
-  transition: all 0.2s ease;
-}
-
-.navButton:hover {
-  color: white;
-  background-color: var(--saturated-blue);
-}
-
-
-.submitButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 15px;
-  background-color: var(--saturated-orange);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-} 
-
-.submitButton:hover {
-  background-color: var(--saturated-blue);
-} 
-
-.submitButton:disabled {
-  background-color: #9E9E9E;
-  cursor: not-allowed;
-}
-
-.submitIcon {
-  margin-left: 5px;
-}
-
-/* Hide button text on mobile */
-.buttonText {
-  display: none;
-}
-
+/* Button styles for active state */
 .active {
   color: black;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -402,128 +272,6 @@
   border: 1px solid white;
   background-color: rgba(255, 255, 255, 0.4) !important;
   box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
-
-}
-
-.inactive {
-  color: var(--gray);
-  cursor: not-allowed;
-  opacity: 0.3;
-}
-
-/* Show button text on larger screens */
-@media screen and (min-width: 768px) {
-  .buttonText {
-    display: inline;
-    margin: 0 5px;
-  }
-}
-
-/* Adjust button padding for mobile */
-@media screen and (max-width: 767px) {
-  .navButton, .submitButton {
-    padding: 8px 12px;
-    min-width: 40px;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  
-  .scheduleFields {
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .scheduleFields span {
-    display: none;
-  }
-
-  /* 📱 UPDATE: Enhanced mobile step indicator styles */
-  .stepDot {
-    width: 20px;
-    height: 20px;
-    margin: 0 0.15rem;
-    font-size: 0.7rem;
-  }
-  
-  /* 📱 UPDATE: Adjusted header alignment for very small screens */
-  .header {
-    gap: 0.2rem;
-  }
-  
-  /* 🌈 UPDATE: Adjusted gradient for smaller screens */
-  .headerTitle::after {
-    background: linear-gradient(to right, 
-      transparent 0%, 
-      rgba(221, 221, 221, 0.4) 10%, 
-      rgba(221, 221, 221, 1) 35%, 
-      rgba(221, 221, 221, 1) 65%, 
-      rgba(221, 221, 221, 0.4) 90%, 
-      transparent 100%
-    );
-  }
-}
-
-/* 📱 UPDATE: Added extremely small screen support */
-@media screen and (max-width: 350px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .stepTracker {
-    align-self: center;
-    margin-top: 0;
-  }
-  
-  /* 🌈 UPDATE: Further adjusted gradient for very small screens */
-  .headerTitle::after {
-    background: linear-gradient(to right, 
-      transparent 0%, 
-      rgba(221, 221, 221, 0.5) 15%, 
-      rgba(221, 221, 221, 1) 40%, 
-      rgba(221, 221, 221, 1) 60%, 
-      rgba(221, 221, 221, 0.5) 85%, 
-      transparent 100%
-    );
-  }
-}
-
-.scheduleTypeToggleContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 15px;
-  gap: .5rem;
-}
-
-.toggleContainer{
-  width: 100%;
-}
-
-.scheduleTypeCheckbox {
-  margin-right: 8px;
-}
-
-.scheduleTypeLabel {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.9rem;
-  color: #444;
-}
-
-.scheduleContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.scheduleSimple {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .timeFieldContainer {
@@ -541,14 +289,13 @@
   gap: .3rem;
 }
 
-/* Improved time input styling */
 .timeFieldContainer, .timeFieldGroup {
   display: flex;
   flex-direction: column;
   margin-bottom: 0.75rem;
   position: relative;
-  width: 100%; /* 🚀 UPDATE: Ensure time fields take full width */
-  max-width: 150px; /* 🚀 UPDATE: Set a max width for time inputs */
+  width: 100%; /* 🚀 Ensure time fields take full width */
+  max-width: 150px; /* 🚀 Set a max width for time inputs */
 }
 
 .timeFieldLabel {
@@ -569,7 +316,6 @@
   border: 1px solid #d1d5db;
   border-radius: 0.25rem;
   font-size: 0.875rem;
-  /* width: 100%; */
   transition: all 0.2s ease;
 }
 
@@ -599,7 +345,6 @@
   gap: 0.5rem;
   margin-bottom: 1rem;
   width: 100%; 
-  /* justify-content: flex-start; */
 }
 
 .timeSeparator {
@@ -615,17 +360,22 @@
 }
 
 .scheduleTypeToggleContainer {
-  margin: 1rem 0;
-  width: 100%; /* 🚀 UPDATE: Ensure toggle container takes full width */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: .5rem;
+  border-radius: 8px;
+  /* margin: 1rem 0; */
+  /* width: 100%;  */
 }
 
 /* Days selection container */
 .daysSelectionContainer {
-  /* margin-top: 1.5rem; */
   padding: 1rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;
-  width: 100%; /* 🚀 UPDATE: Ensure full width */
+  width: 100%; 
   box-sizing: border-box;
 }
 
@@ -659,11 +409,10 @@
 
 /* Delivery container */
 .deliveryContainer {
-  /* margin-top: 1.5rem; */
   padding: 1rem;
   background-color: #f8f9fa;
   border-radius: 0.5rem;
-  width: 100%; /* 🚀 UPDATE: Ensure full width */
+  width: 100%; 
   box-sizing: border-box;
 }
 
@@ -749,14 +498,96 @@
   background-color: rgb(220, 53, 69);
 }
 
-/* 🚀 UPDATE: Added wrapper class for ShopBasicInfo inputs */
 .basicInfoInputWrapper {
   width: 100%;
-  max-width: 450px; /* 🚀 UPDATE: Control max width of inputs */
+  max-width: 450px; 
   margin: 0 auto;
 }
 
+/* Schedule related classes */
+.scheduleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.scheduleSimple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scheduleTypeToggleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  gap: .5rem;
+}
+
+.toggleContainer{
+  width: 100%;
+}
+
+.scheduleTypeCheckbox {
+  margin-right: 8px;
+}
+
+.scheduleTypeLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
 /* Responsive styles */
+@media screen and (max-width: 600px) {
+  .scheduleFields {
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .scheduleFields span {
+    display: none;
+  }
+  
+  /* 📱 Adjusted header alignment for very small screens */
+  .header {
+    gap: 0.2rem;
+  }
+  
+  .headerTitle::after {
+    background: linear-gradient(to right, 
+      transparent 0%, 
+      rgba(221, 221, 221, 0.4) 10%, 
+      rgba(221, 221, 221, 1) 35%, 
+      rgba(221, 221, 221, 1) 65%, 
+      rgba(221, 221, 221, 0.4) 90%, 
+      transparent 100%
+    );
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .headerTitle::after {
+    background: linear-gradient(to right, 
+      transparent 0%, 
+      rgba(221, 221, 221, 0.5) 15%, 
+      rgba(221, 221, 221, 1) 40%, 
+      rgba(221, 221, 221, 1) 60%, 
+      rgba(221, 221, 221, 0.5) 85%, 
+      transparent 100%
+    );
+  }
+}
+
 @media (min-width: 640px) {
   .scheduleFields {
     gap: 1rem;
@@ -775,20 +606,19 @@
   .scheduleFields {
     justify-content: flex-start;
   }
-  
 }
 
 @media (min-width: 1024px) {
   .scheduleSimple {
     display: flex;
-    justify-content: flex-start; /* 🚀 UPDATE: Changed from center to flex-start */
+    justify-content: flex-start; 
   }
   
   .scheduleFields {
     gap: 2rem;
   }
   
-  /* 🚀 UPDATE: Added container max width control on large screens */
+  /* 🚀 Added container max width control on large screens */
   .container {
     max-width: 600px;
     padding: 30px;

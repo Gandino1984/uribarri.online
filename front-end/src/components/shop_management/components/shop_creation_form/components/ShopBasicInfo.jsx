@@ -8,7 +8,7 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
 
   return (
     <section className={styles.formFields}>
-      <h2 className={styles.sectionTitle}>Información básica</h2>
+      <h2 className={styles.sectionTitle}>Paso 2: Información básica</h2>
       <p className={styles.sectionDescription}>
         Proporciona los detalles principales de tu comercio. Esta información será visible para todos los usuarios.
       </p>
