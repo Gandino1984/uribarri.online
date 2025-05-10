@@ -40,7 +40,7 @@
     left: 3px;
     bottom: 3px;
     background-color: white;
-    /* transition: .4s; */
+    transition: .4s;
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
@@ -50,7 +50,7 @@
   }
   
   .toggleInput:focus + .toggleSlider {
-    box-shadow: 0 0 1px var(--saturated-orange);
+    box-shadow: 0 0 1px var(--saturated-blue);
   }
   
   .toggleInput:checked + .toggleSlider .toggleKnob {
