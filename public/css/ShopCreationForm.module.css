@@ -26,7 +26,7 @@
 }
 
 .headerTitle {
-  text-shadow: 1px 1px 0px white;
+  text-shadow: 2px 1px 0px white;
   width: 100%;
   text-align: center;
   color: black;
@@ -80,6 +80,7 @@
   text-align: center;
   font-size: 1.1rem;
   font-weight: 7px;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
   color: var(--dark-gradient-purple-start);
   padding-bottom: .5rem;
   padding-top: .5rem;
@@ -243,8 +244,9 @@
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-  font-size: 0.975rem;
+  font-size: 1rem;
   color: var(--dark-gradient-purple-start);
+  /* text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5); */
   font-weight: 600;
 }
 
@@ -252,7 +254,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
 .buttonContainer {
@@ -275,96 +279,8 @@
   box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
-.timeFieldContainer {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-
-.scheduleInfo{
+.scheduleInfo {
   gap: .3rem;
-}
-
-.timeFieldContainer, .timeFieldGroup {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.75rem;
-  position: relative;
-  width: 100%; /* 🚀 Ensure time fields take full width */
-  max-width: 150px; /* 🚀 Set a max width for time inputs */
-}
-
-.timeFieldLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-  font-size: 0.8rem;
-  color: white;
-}
-
-.timeIcon {
-  color: var(--dark-gradient-purple-start);
-}
-
-.timeInput {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-}
-
-.timeInput:focus {
-  border-color: var(--saturated-orange);
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(var(--saturated-orange-rgb), 0.2);
-}
-
-.timeInput.hasValue {
-  border-color: var(--saturated-orange);
-  background-color: rgba(var(--saturated-orange-rgb), 0.05);
-}
-
-.timeDisplay {
-  position: absolute;
-  right: 0.5rem;
-  top: 1.75rem;
-  font-size: 0.75rem;
-  color: #6b7280;
-  pointer-events: none;
-}
-
-.scheduleFields {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  width: 100%; 
-}
-
-.timeSeparator {
-  display: flex;
-  align-items: center;
-  margin: 0 0.5rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.timeIcon {
-  color: var(--dark-gradient-purple-start);
-}
-
-.scheduleTypeToggleContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  padding: .5rem;
-  border-radius: 8px;
-  /* margin: 1rem 0; */
-  /* width: 100%;  */
 }
 
 /* Days selection container */
@@ -518,11 +434,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
   margin-bottom: 15px;
+  border-radius: 8px;
+  padding: .5rem;
   gap: .5rem;
 }
 
-.toggleContainer{
+.toggleContainer {
   width: 100%;
 }
 
@@ -588,10 +507,6 @@
 @media (min-width: 640px) {
   .scheduleFields {
     gap: 1rem;
-  }
-  
-  .timeFieldGroup {
-    min-width: 120px;
   }
 }
 
