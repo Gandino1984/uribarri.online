@@ -49,40 +49,40 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
         <RatingStars rating={shop?.calification_shop} />
       </div>
       <p className={styles.shopType}>
-        <Store size={14} className={styles.scheduleIcon} />
+        <Store size={14} className={styles.timeIcon} />
         {formatShopType}
       </p>
       <p className={styles.location}>
-        <MapPinned size={14} className={styles.scheduleIcon} />
+        <MapPinned size={14} className={styles.timeIcon} />
         {shop?.location_shop}
       </p>
       <div className={styles.scheduleContainer}>
         <div className={styles.scheduleInfo}>
           {hasContinuousSchedule ? (
             <span className={styles.scheduleTime}>
-              <Clock size={14} className={styles.scheduleIcon} />
+              <Clock size={14} className={styles.timeIcon} />
               {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
             </span>
           ) : (
             <>
               <span className={styles.scheduleTime}>
-                <Clock size={14} className={styles.scheduleIcon} />
+                <Clock size={14} className={styles.timeIcon} />
                 Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
               </span>
               <span className={styles.scheduleTime}>
-                <Clock size={14} className={styles.scheduleIcon} />
+                <Clock size={14} className={styles.timeIcon} />
                 Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
               </span>
             </>
           )}
           
           <span className={styles.scheduleTime}>
-            <Calendar size={14} className={styles.scheduleIcon} />
+            <Calendar size={14} className={styles.timeIcon} />
             {formatOpenDays(shop)}
           </span>
           
           <span className={styles.scheduleTime}>
-            <Bike size={14} className={styles.scheduleIcon} />
+            <Bike size={14} className={styles.timeIcon} />
             Delivery {shop?.has_delivery ? 'disponible' : 'no disponible'}
           </span>
         </div>

@@ -83,7 +83,7 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
           <>
             <div>
               <h4 className={styles.scheduleTitle}>
-                <Clock size={16} className={styles.scheduleIcon} />
+                <Clock size={16} className={styles.timeIcon} />
                 Horario de la mañana
               </h4>
               <div className={styles.scheduleFields}>
@@ -120,7 +120,7 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
 
             <div>
               <h4 className={styles.scheduleTitle}>
-                <Clock size={16} className={styles.scheduleIcon} />
+                <Clock size={16} className={styles.timeIcon} />
                 Horario de la tarde
               </h4>
               <div className={styles.scheduleFields}>

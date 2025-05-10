@@ -131,7 +131,7 @@ header p{
   justify-content: flex-end;
 }
 
-.scheduleIcon{  
+.timeIcon{  
   color: var(--dark-orange);
   margin-right: .5rem;
 }

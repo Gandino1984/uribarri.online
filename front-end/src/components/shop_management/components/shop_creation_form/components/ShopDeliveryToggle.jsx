@@ -16,7 +16,7 @@ const ShopDeliveryToggle = ({ newShop, setNewShop }) => {
   return (
     <div className={styles.deliveryContainer}>
       <h4 className={styles.scheduleTitle}>
-        <Truck size={16} className={styles.scheduleIcon} />
+        <Truck size={16} className={styles.timeIcon} />
         Servicio de entrega
       </h4>
       <div className={styles.deliveryToggleWrapper}>
