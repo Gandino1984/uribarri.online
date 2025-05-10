@@ -117,7 +117,8 @@ const ShopsListBySeller = () => {
   }, [selectedShop]);
 
   return (
-    <div className={styles.container}>
+    // 🛡️ UPDATE: Add top padding to prevent overlap with TopBar
+    <div className={`${styles.container} ${selectedShop && shouldShowShopCard() ? styles.expandedContainer : ''}`}>
       {/* 📱 UPDATE: Fixed content wrapper to ensure proper containment on small screens */}
       <div className={styles.content}>
         {/* Header with title and add button - now with animation */}
@@ -165,14 +166,16 @@ const ShopsListBySeller = () => {
             )
           )}
 
-          {/* Shop card container with animation */}
+          {/* 🏪 UPDATE: Added wrapping div with fixed position to prevent pushing content up */}
           {selectedShop && shouldShowShopCard() && !showProductManagement && (
-            <animated.div style={cardAnimation} className={styles.shopCardContainer}>
-              <div className={styles.shopCardInstructions}>
-                <p>Haz click nuevamente en la tienda para administrar sus productos</p>
-              </div>
-              <ShopCard shop={selectedShop} />
-            </animated.div>
+            <div className={styles.shopCardWrapper}>
+              <animated.div style={cardAnimation} className={styles.shopCardContainer}>
+                <div className={styles.shopCardInstructions}>
+                  <p>Haz click de nuevo en la tienda seleccionada para administrar sus productos</p>
+                </div>
+                <ShopCard shop={selectedShop} />
+              </animated.div>
+            </div>
           )}
         </div>
       </div>
