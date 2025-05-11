@@ -134,7 +134,7 @@
 
 .selectedRow {
   color: white;
-  background-color: var(--gradient-purple-start) !important;
+  background-color: var(--dark-gradient-purple-start) !important; 
   font-weight: 600;
 }
 
@@ -155,10 +155,10 @@
 
 .updateButton, 
 .deleteButton {
-  background-color: rgba(255, 255, 255, 0.553);
+  background-color: rgba(255, 255, 255, 0.2);
   border: none;
   color: black;
-  padding: 0.25rem;
+  padding: 0.05rem 0.25rem;
   border-radius: 4px;
   transition: background-color 0.2s;
 }
@@ -166,13 +166,15 @@
 
 
 .updateButton:hover {
-  background-color: rgba(255, 255, 255, 0.7);
-  color: var(--saturated-blue);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+  border: 1px solid white;
 }
 
 .deleteButton:hover {
-  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.3);
   color: var(--gradient-red-mid);
   box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.393);
 }

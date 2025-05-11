@@ -6,6 +6,7 @@
 
   /* 🔄 UPDATE: Added new color variables for the gradient background */
   --dark-gradient-purple-start: #3e297d;
+  --semidark-gradient-purple-start: #582a90;
   --gradient-purple-start: #6d48dd;
   --light-gradient-purple-start: #6d48dd91;
   --superlight-gradient-purple-start: #6d48dd55;

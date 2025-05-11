@@ -1,30 +1,33 @@
 .userInfoCard {
   cursor: pointer;
   position: absolute;
-  top: 4rem; /* ⭐ UPDATE: Reduced top position */
-  left: -1.25rem; /* ⭐ UPDATE: Adjusted left position */
+  top: 4rem;
+  left: -1.25rem;
   z-index: 999;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: left;
   background-color: rgb(7, 7, 7);
-  font-size: 0.75rem; /* ⭐ UPDATE: Reduced font size */
+  font-size: 0.75rem;
   text-align: center;
-  gap: 0.4rem; /* ⭐ UPDATE: Reduced gap */
+  gap: 0.4rem;
   transition: all 0.3s ease;
   flex-direction: row;
   pointer-events: auto;
-  padding-right: 0.8rem; /* ⭐ UPDATE: Reduced padding */
-  padding-left: 1.8rem; /* ⭐ UPDATE: Reduced padding */
-  padding-top: .35rem; /* ⭐ UPDATE: Reduced padding */
-  padding-bottom: .25rem; /* ⭐ UPDATE: Reduced padding */
-  border-radius: 10px; /* ⭐ UPDATE: Reduced border radius */
-  /* border: 1px solid var(--gradient-purple-end); */
+  padding-right: 0.8rem;
+  padding-left: 1.8rem;
+  padding-top: .35rem;
+  padding-bottom: .25rem;
+  border-radius: 8px;
+}
+
+.userInfoCard:hover {
+  background-color: var(--dark-gradient-purple-start);
 }
 
 .welcomeMessage {
-  font-size: 0.75rem; /* ⭐ UPDATE: Reduced font size */
+  font-size: 0.75rem;
   max-width: 100%;
   line-height: 1.2;
   transition: all 0.2s ease;
@@ -37,25 +40,7 @@
   color: rgb(255, 165, 165) 2px 1px 0px;   
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .userInfoCard {
-    flex-direction: row;
-    gap: 0.25rem;
-    margin: 0.25rem 0;
-    /* ⭐ UPDATE: Added mobile-specific size adjustments */
-    padding-right: 0.6rem;
-    padding-left: 1.4rem;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-    left: -1rem;
-  }
-  
-  /* ⭐ UPDATE: Further reduced font size on small screens */
-  .welcomeMessage {
-    font-size: 0.7rem;
-  }
-}
+
 
 /* Profile section styling */
 .profileSection {
@@ -66,27 +51,19 @@
   pointer-events: auto;
 }
 
-/* ProfileImageContainer styles */
 .profileImageContainer {
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  width: 2.2rem; /* ⭐ UPDATE: Reduced size */
-  height: 2.2rem; /* ⭐ UPDATE: Reduced size */
-  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 6px; 
   transition: transform 0.2s ease;
   pointer-events: auto;
   background-color: var(--light-gradient-purple-mid);
-  
 }
 
-/* ⭐ UPDATE: Added media query for smaller screens */
-@media (max-width: 480px) {
-  .profileImageContainer {
-    width: 2rem;
-    height: 2rem;
-  }
-}
+
 
 .profileImageContainer:hover {
   border-color: white;
@@ -96,7 +73,6 @@
 .profileImage {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   object-fit: cover;
 }
 
@@ -107,8 +83,6 @@
   align-items: center;
   justify-content: center;
   background-color: var(--dark-gradient-purple-star);
-  border-radius: 50%;
-  /* border: 2px solid var(--gradient-purple-end); */
 }
 
 .placeholderIcon {
@@ -117,7 +91,7 @@
 }
 
 .profileImageContainer:hover {
-  border: 2px solid white;
+  border: 1px solid white;
 }
 
 .profileImageContainer:hover .placeholderIcon {
@@ -135,7 +109,7 @@
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 50%;
+  /* border-radius: 15px; */
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 5;
@@ -149,7 +123,6 @@
 
 .editIcon {
   color: white;
-  /* ⭐ UPDATE: Reduced icon size */
   width: 14px; 
   height: 14px;
 }
@@ -162,13 +135,13 @@
   transform: translateX(-50%);
   margin-top: 0.5rem;
   background-color: rgb(7, 7, 7);
-  padding: 0.4rem; /* ⭐ UPDATE: Reduced padding */
+  padding: 0.4rem;
   z-index: 2100;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 0.25rem;
-  min-width: 8.5rem; /* ⭐ UPDATE: Reduced min-width */
+  min-width: 8.5rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
@@ -191,7 +164,7 @@
   justify-content: flex-start;
   width: 100%;
   gap: 0.5rem;
-  padding: 0.4rem; /* ⭐ UPDATE: Reduced padding */
+  padding: 0.4rem;
   cursor: pointer;
   transition: background-color 0.2s;
   border-radius: 0.25rem;
@@ -208,7 +181,7 @@
 
 .actionText {
   color: white;
-  font-size: 0.75rem; /* ⭐ UPDATE: Reduced font size */
+  font-size: 0.75rem;
 }
 
 /* Loader styles */
@@ -223,14 +196,13 @@
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
+  /* border-radius: 15px; */
   z-index: 10;
 }
 
 .loaderIcon {
   animation: spin 1s linear infinite;
   color: white;
-  /* ⭐ UPDATE: Reduced size */
   width: 14px;
   height: 14px;
 }
@@ -258,4 +230,30 @@
   font-size: 0.563rem;
   color: white;
   margin-top: 0.125rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .userInfoCard {
+    flex-direction: row;
+    gap: 0.25rem;
+    margin: 0.25rem 0;
+    padding-right: 0.6rem;
+    padding-left: 1.4rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    left: -1rem;
+  }
+  
+  .welcomeMessage {
+    font-size: 0.7rem;
+  }
+}
+
+/* Media query for smaller screens */
+@media (max-width: 480px) {
+  .profileImageContainer {
+    width: 2rem;
+    height: 2rem;
+  }
 }
