@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Loader, Eye, User } from 'lucide-react';
+import { Camera, Loader, Eye, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
+import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 
@@ -15,7 +16,9 @@ const UserInfoCard = () => {
     uploading,
     setError,
     setInfo,
-    openImageModal
+    openImageModal,
+    isCardMinimized, 
+    setIsCardMinimized
   } = useUI();
 
   const {
@@ -32,10 +35,32 @@ const UserInfoCard = () => {
   
   // State for showing the action buttons
   const [showButtons, setShowButtons] = useState(false);
+  // State for showing the toggle icon on hover
+  const [showToggleIcon, setShowToggleIcon] = useState(false);
   
   // References for positioning
   const profileContainerRef = useRef(null);
   const popupRef = useRef(null);
+  const cardRef = useRef(null);
+
+  // 🔄 UPDATE: Animation for card minimizing/maximizing
+  const cardAnimation = useSpring({
+    width: isCardMinimized ? (isSmallScreen ? '3.2rem' : '3.5rem') : 'auto',
+    padding: isCardMinimized 
+      ? (isSmallScreen ? '0.25rem 0.4rem 0.25rem 0.6rem' : '0.35rem 0.5rem 0.25rem 0.8rem')
+      : (isSmallScreen ? '0.25rem 0.6rem 0.25rem 1.4rem' : '0.35rem 0.8rem 0.25rem 1.8rem'),
+    config: {
+      mass: 3,
+      tension: 100,
+      friction: 10
+    }
+  });
+
+  // 🔄 UPDATE: Toggle minimized state
+  const toggleMinimized = (e) => {
+    e.stopPropagation(); // Prevent other click handlers from firing
+    setIsCardMinimized(!isCardMinimized);
+  };
 
   // Toggle button visibility
   const toggleButtons = () => {
@@ -174,6 +199,15 @@ const UserInfoCard = () => {
     }
   }, [currentUser?.image_user, getImageUrl, setError]);
 
+  // 🔄 UPDATE: Add mouse enter/leave handlers for the card
+  const handleMouseEnter = () => {
+    setShowToggleIcon(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowToggleIcon(false);
+  };
+
   // ⭐ UPDATE: Simplified welcome message function
   const getWelcomeMessage = () => {
     if (!currentUser) return null;
@@ -194,10 +228,16 @@ const UserInfoCard = () => {
   }
 
   return (
-    <div className={styles.userInfoCard}>
+    <animated.div 
+      className={`${styles.userInfoCard} ${isCardMinimized ? styles.minimized : ''}`}
+      style={cardAnimation}
+      ref={cardRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className={styles.profileSection}>
         {/* Popup for profile actions */}
-        {showButtons && (
+        {showButtons && !isCardMinimized && (
           <div 
             id="profile-actions-popup" 
             className={styles.actionsPopup}
@@ -205,14 +245,14 @@ const UserInfoCard = () => {
           >
             {/* Upload button */}
             <div className={styles.actionButton} onClick={handleUploadClick}>
-              <Camera size={14} className={styles.actionIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
+              <Camera size={14} className={styles.actionIcon} />
               <span className={styles.actionText}>Subir Imagen</span>
             </div>
             
             {/* View button (only if there's an image) */}
             {hasValidImage && (
             <div className={styles.actionButton} onClick={handleViewClick}>
-              <Eye size={14} className={styles.actionIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
+              <Eye size={14} className={styles.actionIcon} />
               <span className={styles.actionText}>Ver Imagen</span>
             </div>
             )}
@@ -223,7 +263,7 @@ const UserInfoCard = () => {
         <div 
           ref={profileContainerRef}
           className={styles.profileImageContainer}
-          onClick={toggleButtons}
+          onClick={isCardMinimized ? toggleMinimized : toggleButtons}
         >
           {hasValidImage ? (
             <img
@@ -252,7 +292,7 @@ const UserInfoCard = () => {
             />
           ) : (
             <div className={styles.placeholderImage}>
-              <User size={18} className={styles.placeholderIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
+              <User size={18} className={styles.placeholderIcon} />
             </div>
           )}
           
@@ -268,16 +308,16 @@ const UserInfoCard = () => {
           />
           
           {/* Show the edit overlay with camera icon when hovering */}
-          {!uploading && (
+          {!uploading && !isCardMinimized && (
             <div className={styles.editOverlay}>
-              <Camera size={14} className={styles.editIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
+              <Camera size={14} className={styles.editIcon} />
             </div>
           )}
           
           {/* Loader and progress bar during upload */}
           {uploading && (
             <div className={styles.loader}>
-              <Loader size={14} className={styles.loaderIcon} /> {/* ⭐ UPDATE: Reduced icon size */}
+              <Loader size={14} className={styles.loaderIcon} />
               
               {uploadProgress > 0 && (
                 <div className={styles.progressContainer}>
@@ -296,11 +336,23 @@ const UserInfoCard = () => {
         </div>
       </div>
       
-      {/* Welcome message */}
-      <p className={styles.welcomeMessage}>
-        {getWelcomeMessage()}
-      </p>
-    </div>
+      {/* Welcome message - only show if not minimized */}
+      {!isCardMinimized && (
+        <p className={styles.welcomeMessage}>
+          {getWelcomeMessage()}
+        </p>
+      )}
+
+      {((!isCardMinimized) || (isCardMinimized && showToggleIcon)) && (
+        <div className={styles.toggleMinimizeButton} onClick={toggleMinimized}>
+          {isCardMinimized ? (
+            <ChevronRight size={16} className={styles.toggleIcon} />
+          ) : (
+            <ChevronLeft size={16} className={styles.toggleIcon} />
+          )}
+        </div>
+      )}
+    </animated.div>
   );
 };
 

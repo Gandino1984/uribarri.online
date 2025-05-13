@@ -46,6 +46,9 @@ export const UIProvider = ({ children }) => {
   const [isDeclined, setIsDeclined] = useState(false);
   // 🚀 UPDATE: Added modalConfirmCallback for better handling of modal actions
   const [modalConfirmCallback, setModalConfirmCallback] = useState(null);
+  
+  // 🔄 UPDATE: Added isCardMinimized state for UserInfoCard
+  const [isCardMinimized, setIsCardMinimized] = useState(false);
 
   // Confirmation modal helpers
   const openConfirmationModal = (message, onConfirm, onCancel) => {
@@ -168,7 +171,10 @@ export const UIProvider = ({ children }) => {
         isDeclined, setIsDeclined,
         // 🚀 UPDATE: Added modalConfirmCallback and openModal
         modalConfirmCallback, setModalConfirmCallback,
-        openModal
+        openModal,
+        
+        // 🔄 UPDATE: Added isCardMinimized state and setter for UserInfoCard
+        isCardMinimized, setIsCardMinimized
       }}
     >
       {children}

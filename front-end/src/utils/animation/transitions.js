@@ -84,6 +84,38 @@ export const userInfoCardAnimation = {
   },
 };
 
+// 🔄 UPDATE: Add UserInfoCard minimize/maximize animation
+export const userInfoCardMinimizeAnimation = {
+  minimized: {
+    width: '3.5rem',
+    paddingRight: '0.5rem',
+    paddingLeft: '0.8rem',
+  },
+  expanded: {
+    width: 'auto',
+    paddingRight: '0.8rem',
+    paddingLeft: '1.8rem',
+  },
+  config: {
+    mass: 1,
+    tension: 280,
+    friction: 26,
+  },
+  // Mobile config
+  mobileConfig: {
+    minimized: {
+      width: '3.2rem',
+      paddingRight: '0.4rem',
+      paddingLeft: '0.6rem',
+    },
+    expanded: {
+      width: 'auto',
+      paddingRight: '0.6rem',
+      paddingLeft: '1.4rem',
+    }
+  }
+};
+
 // ⚡ UPDATE: Significantly faster form animation
 export const formAnimation = {
   from: { 
@@ -353,7 +385,7 @@ export const pageTransition = {
   },
 };
 
-// ✨ UPDATE: Fixed right-to-left card animation
+
 export const cardAnimation = {
   from: { 
     opacity: 0,
@@ -368,8 +400,8 @@ export const cardAnimation = {
     transform: 'translateX(100%)', // Exit to right
   },
   config: {
-    mass: 0.8,
+    mass: 0.6,
     tension: 300,
-    friction: 25,
+    friction: 22,
   },
 };

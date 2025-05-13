@@ -15,11 +15,15 @@
   transition: all 0.3s ease;
   flex-direction: row;
   pointer-events: auto;
-  padding-right: 0.8rem;
-  padding-left: 1.8rem;
-  padding-top: .35rem;
-  padding-bottom: .25rem;
   border-radius: 8px;
+  
+  overflow: hidden; 
+  transition: all 1s ease;
+}
+
+/* 🔄 UPDATE: Minimized card styling */
+.userInfoCard.minimized {
+  width: auto;
 }
 
 .userInfoCard:hover {
@@ -33,6 +37,7 @@
   transition: all 0.2s ease;
   margin-left: 0.125rem;
   color: white;
+  white-space: nowrap; /* 🔄 UPDATE: Prevent text from wrapping during animation */
 }
 
 .userName {
@@ -40,7 +45,30 @@
   color: rgb(255, 165, 165) 2px 1px 0px;   
 }
 
+/* 🔄 UPDATE: Toggle minimize button styling */
+.toggleMinimizeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.15rem;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+  /* border-radius: 4px; */
+  transition: all 0.2s ease;
+}
 
+.toggleMinimizeButton:hover {
+  color: white;
+}
+
+.toggleIcon {
+  color: black;
+}
+
+.toggleIcon:hover{
+  color: white;
+}
 
 /* Profile section styling */
 .profileSection {
@@ -238,10 +266,6 @@
     flex-direction: row;
     gap: 0.25rem;
     margin: 0.25rem 0;
-    padding-right: 0.6rem;
-    padding-left: 1.4rem;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
     left: -1rem;
   }
   
