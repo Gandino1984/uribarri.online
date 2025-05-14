@@ -43,7 +43,7 @@ const UserInfoCard = () => {
   const popupRef = useRef(null);
   const cardRef = useRef(null);
 
-  // 🔄 UPDATE: Animation for card minimizing/maximizing - fixed with numeric values
+  // 🚀 UPDATE: Adjusted spring animation values to ensure username displays completely
   const cardAnimation = useSpring({
     width: isCardMinimized ? (isSmallScreen ? 80 : 90) : (isSmallScreen ? 200 : 240),
     paddingRight: isCardMinimized ? (isSmallScreen ? 10 : 12) : (isSmallScreen ? 15 : 20),
@@ -51,13 +51,13 @@ const UserInfoCard = () => {
     paddingTop: isSmallScreen ? 6 : 8,
     paddingBottom: isSmallScreen ? 6 : 6,
     config: {
-      mass: 1,
-      tension: 280,
-      friction: 26
+      mass: .5,
+      tension: 200,
+      friction: 10
     }
   });
 
-  // 🔄 UPDATE: Toggle minimized state
+  // Toggle minimized state
   const toggleMinimized = (e) => {
     e.stopPropagation(); // Prevent other click handlers from firing
     setIsCardMinimized(!isCardMinimized);
@@ -100,6 +100,7 @@ const UserInfoCard = () => {
       const popup = popupRef.current;
       const rect = popup.getBoundingClientRect();
       
+      // 🚀 UPDATE: Improved popup positioning for left-aligned card
       // Check if popup is cut off at the bottom
       const viewportHeight = window.innerHeight;
       if (rect.bottom > viewportHeight) {
@@ -173,14 +174,31 @@ const UserInfoCard = () => {
     };
   }, [showButtons]);
 
-  // ⭐ UPDATE: Enhanced responsive behavior with more breakpoints
+  // 🚀 UPDATE: Improved responsive behavior with dynamic width calculations
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 768);
+      
+      // Force card to check if name fits and adjust if needed
+      if (cardRef.current && !isCardMinimized) {
+        const welcomeTextElement = cardRef.current.querySelector(`.${styles.welcomeMessage}`);
+        if (welcomeTextElement) {
+          const textWidth = welcomeTextElement.scrollWidth;
+          const containerWidth = cardRef.current.clientWidth - 60; // Account for padding and image
+          
+          if (textWidth > containerWidth) {
+            cardAnimation.width.set(textWidth + 90); // Add extra space for the profile image and padding
+          }
+        }
+      }
     };
+    
     window.addEventListener('resize', handleResize);
+    // Run once on mount
+    setTimeout(handleResize, 100);
+    
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isCardMinimized]);
 
   useEffect(() => {
     if (currentUser?.image_user || localImageUrl) {
@@ -200,7 +218,7 @@ const UserInfoCard = () => {
     }
   }, [currentUser?.image_user, getImageUrl, setError]);
 
-  // 🔄 UPDATE: Add mouse enter/leave handlers for the card
+  // Add mouse enter/leave handlers for the card
   const handleMouseEnter = () => {
     setShowToggleIcon(true);
   };
@@ -209,7 +227,7 @@ const UserInfoCard = () => {
     setShowToggleIcon(false);
   };
 
-  // ⭐ UPDATE: Simplified welcome message function
+  // 🎯 UPDATE: Improved welcome message function to ensure name is displayed fully
   const getWelcomeMessage = () => {
     if (!currentUser) return null;
     

@@ -1,8 +1,8 @@
 .userInfoCard {
   cursor: pointer;
-  position: absolute;
+  position: fixed; 
   top: 4rem;
-  /* left: -10rem; */
+  left: -1rem;
   z-index: 999;
   user-select: none;
   display: flex;
@@ -12,7 +12,7 @@
   font-size: 0.8rem;
   text-align: left;
   transition: all 0.2s ease;
-  border-radius: 8px;
+  border-radius: 0 8px 8px 0;
   overflow: hidden; 
   padding-right: .2rem; 
 }
@@ -28,9 +28,9 @@
   transition: all 0.2s ease;
   margin-left: 0.125rem;
   color: white;
-  white-space: nowrap; /* 🔄 UPDATE: Prevent text from wrapping during animation */
-  overflow: hidden; /* 🔄 UPDATE: Hide text overflow during animation */
-  text-overflow: ellipsis; /* 🔄 UPDATE: Add ellipsis for any text that might overflow */
+  /* 🎯 UPDATE: Modified text handling to ensure username is fully visible */
+  white-space: nowrap; /* Keep text on a single line */
+  overflow: visible; /* Allow text to be fully visible when not minimized */
 }
 
 .userName {
@@ -266,7 +266,7 @@
     flex-direction: row;
     gap: 0.25rem;
     margin: 0.25rem 0;
-    left: -1rem;
+    /* 🚀 UPDATE: Removed left adjustment that was causing issues */
   }
   
   .welcomeMessage {
