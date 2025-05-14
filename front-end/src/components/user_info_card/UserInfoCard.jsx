@@ -43,16 +43,17 @@ const UserInfoCard = () => {
   const popupRef = useRef(null);
   const cardRef = useRef(null);
 
-  // 🔄 UPDATE: Animation for card minimizing/maximizing
+  // 🔄 UPDATE: Animation for card minimizing/maximizing - fixed with numeric values
   const cardAnimation = useSpring({
-    width: isCardMinimized ? (isSmallScreen ? '3.2rem' : '3.5rem') : 'auto',
-    padding: isCardMinimized 
-      ? (isSmallScreen ? '0.25rem 0.4rem 0.25rem 0.6rem' : '0.35rem 0.5rem 0.25rem 0.8rem')
-      : (isSmallScreen ? '0.25rem 0.6rem 0.25rem 1.4rem' : '0.35rem 0.8rem 0.25rem 1.8rem'),
+    width: isCardMinimized ? (isSmallScreen ? 80 : 90) : (isSmallScreen ? 200 : 240),
+    paddingRight: isCardMinimized ? (isSmallScreen ? 10 : 12) : (isSmallScreen ? 15 : 20),
+    paddingLeft: isCardMinimized ? (isSmallScreen ? 15 : 20) : (isSmallScreen ? 35 : 45),
+    paddingTop: isSmallScreen ? 6 : 8,
+    paddingBottom: isSmallScreen ? 6 : 6,
     config: {
-      mass: 3,
-      tension: 100,
-      friction: 10
+      mass: 1,
+      tension: 280,
+      friction: 26
     }
   });
 
@@ -336,19 +337,26 @@ const UserInfoCard = () => {
         </div>
       </div>
       
+      
       {/* Welcome message - only show if not minimized */}
       {!isCardMinimized && (
-        <p className={styles.welcomeMessage}>
+        <animated.p 
+          className={styles.welcomeMessage}
+          style={{ 
+            opacity: !isCardMinimized ? 1 : 0,
+            transform: !isCardMinimized ? 'translateX(0)' : 'translateX(-10px)'
+          }}
+        >
           {getWelcomeMessage()}
-        </p>
+        </animated.p>
       )}
 
       {((!isCardMinimized) || (isCardMinimized && showToggleIcon)) && (
         <div className={styles.toggleMinimizeButton} onClick={toggleMinimized}>
           {isCardMinimized ? (
-            <ChevronRight size={16} className={styles.toggleIcon} />
+            <ChevronRight size={14} className={styles.toggleIcon} />
           ) : (
-            <ChevronLeft size={16} className={styles.toggleIcon} />
+            <ChevronLeft size={14} className={styles.toggleIcon} />
           )}
         </div>
       )}
