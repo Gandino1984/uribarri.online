@@ -9,7 +9,7 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
   return (
     <div className={styles.headerControls}>
       <button 
-        className={styles.minimizeButton} 
+        className={styles.active} 
         onClick={toggleMinimized}
         title="Minimizar tarjeta"
         aria-label="Minimizar tarjeta"
@@ -19,22 +19,20 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
       
       {isSeller && (
         <button 
-          className={styles.minimizeButton} 
+          className={styles.active} 
           onClick={handleUpdateShop}
           title="Editar comercio"
           aria-label="Editar comercio"
-          style={{ marginLeft: '8px' }}
         >
           <Edit size={16} />
         </button>
       )}
       
       <button 
-        className={styles.minimizeButton}
+        className={styles.active}
         onClick={toggleMap}
         title="Mostrar ubicación en mapa"
         aria-label="Mostrar ubicación en mapa"
-        style={{ marginLeft: '8px' }}
       >
         <Map size={16} />
       </button>

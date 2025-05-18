@@ -5,7 +5,7 @@
     justify-content: center;
     flex-direction: column;
     padding: 0.4rem 1.5rem;
-    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.497) 10%, rgba(255, 255, 255, 0));
+    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.3) 10%, rgba(255, 255, 255, 0));
     z-index: 1000; 
     height: auto; 
     position: fixed; 

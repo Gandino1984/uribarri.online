@@ -131,7 +131,7 @@ header p{
   justify-content: flex-end;
 }
 
-.timeIcon{  
+.timeIcon{ 
   color: var(--dark-orange);
   margin-right: .5rem;
 }
@@ -361,6 +361,32 @@ header p{
 /* Optional hover effect for stars */
 .starsContainer:hover .starIcon {
   transform: scale(1.1);
+}
+
+.active {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: .3rem .4rem;
+  border-radius: 50%;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: .5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.active:hover {
+  color: white;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Small tablets (640px and up) */
