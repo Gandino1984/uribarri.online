@@ -25,9 +25,6 @@ const ShopCreationForm = () => {
     setUploading,
     setSuccess,
     setShowSuccessCard,
-    // setInfo,
-    // setShowInfoCard,
-    // 🔄 UPDATE: Added modal state and message setters for confirmation
     setIsModalOpen,
     setModalMessage,
     isAccepted,
@@ -69,22 +66,11 @@ const ShopCreationForm = () => {
   // Add debug flag
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   
-  // 🔄 UPDATE: Added state to track if form reset is pending
   const [isResetPending, setIsResetPending] = useState(false);
   
-  // ✨ UPDATE: Added state to handle animation when component exits - same as LoginRegisterForm
+  // state to handle animation when component exits - same as LoginRegisterForm
   const [isExiting, setIsExiting] = useState(false);
   
-  
-  // const handleCloseForm = () => {
-  //   setIsExiting(true);
-  //   setTimeout(() => {
-  //     setShowShopCreationForm(false);
-  //     setSelectedShop(null);
-  //   }, 500); 
-  // };
-
-  // 🧹 UPDATE: Default shop values for form reset
   const defaultShopValues = {
     name_shop: '',
     type_shop: '',
@@ -107,7 +93,6 @@ const ShopCreationForm = () => {
     open_sunday: false
   };
 
-  // Modified useEffect to properly handle user ID
   useEffect(() => {
     if (currentUser?.id_user) {
       setNewShop(prev => {
@@ -173,18 +158,9 @@ const ShopCreationForm = () => {
         }
       }
       
-      // Log the schedule data to ensure it's loaded correctly
-      console.log('Shop schedule data loaded:', {
-        morning_open: selectedShop.morning_open,
-        morning_close: selectedShop.morning_close,
-        afternoon_open: selectedShop.afternoon_open,
-        afternoon_close: selectedShop.afternoon_close,
-        hasContinuousSchedule: shopHasContinuousSchedule
-      });
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // 🔄 UPDATE: Added effect to handle modal confirmation for form reset
   useEffect(() => {
     if (isAccepted && isResetPending) {
       // Reset form if user confirmed
@@ -198,7 +174,6 @@ const ShopCreationForm = () => {
     }
   }, [isAccepted, isDeclined, isResetPending]);
 
-  // 🧹 UPDATE: Function to reset the form
   const resetForm = () => {
     // Reset form to initial step
     setCurrentStep(1);
@@ -232,7 +207,6 @@ const ShopCreationForm = () => {
     console.log('Form has been reset to default values');
   };
 
-  // 🔄 UPDATE: Updated confirmation method to use modal dialog
   const confirmResetForm = () => {
     // If form is empty, just reset without confirmation
     const isFormEmpty = !newShop.name_shop && 
@@ -521,7 +495,6 @@ const ShopCreationForm = () => {
     }
   };
 
-  // ✨ UPDATE: Setup form animation using unified formAnimation
   const formTransition = useTransition(!isExiting, {
     from: formAnimation.from,
     enter: formAnimation.enter,

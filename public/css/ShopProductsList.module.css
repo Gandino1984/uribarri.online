@@ -4,7 +4,7 @@
     width: 100%;
     height: 100%;
     gap: 1.5rem;
-    margin-top: calc(var(--header-height) + 2rem);
+    margin-top: 5.5rem; 
     overflow-x: hidden;
 }
 
@@ -120,9 +120,9 @@
 
 .listTitle {
     user-select: none;
-    color: var(--superdark-orange);
+    color: white;
     font-weight: 600;
-    text-shadow: var(--light-orange) 2px 1px 0px;   
+    text-shadow: black 2px 2px 0px;   
 }
 
 .productsCount {
@@ -462,6 +462,32 @@
     align-items: center;
     justify-content: center;
 }
+
+.active {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: .3rem .4rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: .5rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .active:hover {
+    color: white;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 12px var(--saturated-blue-transparent);
+  }
+  
+  .inactive {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
 .selectButton {
     color: #666;
