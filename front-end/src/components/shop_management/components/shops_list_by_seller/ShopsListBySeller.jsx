@@ -13,19 +13,15 @@ import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopsTable from './components/ShopsTable';
 
 const ShopsListBySeller = () => {
-  // State for animation control
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  
-  // 📱 UPDATE: Added state to track screen width for responsive layout decisions
+
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-  // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
 
-  // Get shop limits directly from environment variables
   const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
   const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
   
@@ -79,7 +75,6 @@ const ShopsListBySeller = () => {
     config: shopsListAnimations.shopCardAnimation.config
   });
 
-  // 📱 UPDATE: Added event listener for screen resize to update responsive layout
   useEffect(() => {
     const handleResize = () => {
       setScreenWidth(window.innerWidth);
@@ -117,11 +112,8 @@ const ShopsListBySeller = () => {
   }, [selectedShop]);
 
   return (
-    // 🛡️ UPDATE: Add top padding to prevent overlap with TopBar
     <div className={`${styles.container} ${selectedShop && shouldShowShopCard() ? styles.expandedContainer : ''}`}>
-      {/* 📱 UPDATE: Fixed content wrapper to ensure proper containment on small screens */}
       <div className={styles.content}>
-        {/* Header with title and add button - now with animation */}
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
             <h1 className={styles.title}>
@@ -149,9 +141,7 @@ const ShopsListBySeller = () => {
           </animated.div>
         </div>
 
-        {/* 📱 UPDATE: Improved shop management container with explicit width constraints */}
         <div className={styles.shopManagementContainer}>
-          {/* Table container with slide animation and better containment */}
           {tableTransition((style, show) => 
             show && (
               <animated.div style={{...style, width: '100%'}} className={styles.tableContainer}>
@@ -166,13 +156,12 @@ const ShopsListBySeller = () => {
             )
           )}
 
-          {/* 🏪 UPDATE: Added wrapping div with fixed position to prevent pushing content up */}
           {selectedShop && shouldShowShopCard() && !showProductManagement && (
             <div className={styles.shopCardWrapper}>
               <animated.div style={cardAnimation} className={styles.shopCardContainer}>
-                <div className={styles.shopCardInstructions}>
+                {/* <div className={styles.shopCardInstructions}>
                   <p>Haz click de nuevo en la tienda seleccionada para administrar sus productos</p>
-                </div>
+                </div> */}
                 <ShopCard shop={selectedShop} />
               </animated.div>
             </div>
