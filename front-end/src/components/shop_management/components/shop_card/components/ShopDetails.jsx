@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { Store, MapPinned, Clock, Calendar, Bike, Star } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
-// 🌟 UPDATE: Created new component for star rating display
+
 const RatingStars = ({ rating }) => {
   // Convert rating to number and handle if it's not available
   const numericRating = parseFloat(rating) || 0;
@@ -32,9 +32,6 @@ const RatingStars = ({ rating }) => {
   return (
     <div className={styles.starsContainer}>
       {stars}
-      {/* <span className={styles.ratingText}>
-        {rating || 'No disponible'}
-      </span> */}
     </div>
   );
 };
@@ -49,40 +46,40 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
         <RatingStars rating={shop?.calification_shop} />
       </div>
       <p className={styles.shopType}>
-        <Store size={14} className={styles.timeIcon} />
+        <Store size={14} className={styles.icon} />
         {formatShopType}
       </p>
       <p className={styles.location}>
-        <MapPinned size={14} className={styles.timeIcon} />
+        <MapPinned size={14} className={styles.icon} />
         {shop?.location_shop}
       </p>
       <div className={styles.scheduleContainer}>
         <div className={styles.scheduleInfo}>
           {hasContinuousSchedule ? (
             <span className={styles.scheduleTime}>
-              <Clock size={14} className={styles.timeIcon} />
+              <Clock size={14} className={styles.icon} />
               {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
             </span>
           ) : (
             <>
               <span className={styles.scheduleTime}>
-                <Clock size={14} className={styles.timeIcon} />
+                <Clock size={14} className={styles.icon} />
                 Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
               </span>
               <span className={styles.scheduleTime}>
-                <Clock size={14} className={styles.timeIcon} />
+                <Clock size={14} className={styles.icon} />
                 Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
               </span>
             </>
           )}
           
           <span className={styles.scheduleTime}>
-            <Calendar size={14} className={styles.timeIcon} />
+            <Calendar size={14} className={styles.icon} />
             {formatOpenDays(shop)}
           </span>
           
           <span className={styles.scheduleTime}>
-            <Bike size={14} className={styles.timeIcon} />
+            <Bike size={14} className={styles.icon} />
             Delivery {shop?.has_delivery ? 'disponible' : 'no disponible'}
           </span>
         </div>
