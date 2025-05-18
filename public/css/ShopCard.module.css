@@ -3,7 +3,7 @@
   width: 100%;
   height: 100%;
   max-width: 100%;
-  min-height: 300px;
+  /* min-height: 300px; */
   max-height: 300px;
   margin: 0 auto;
   position: relative;
@@ -15,13 +15,17 @@
 
 .container:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.01);
+  /* transform: scale(1.01); */
 }
 
 /* Added specific styles for minimized container to override min-height */
 .container.minimized {
   min-height: unset;
   height: auto;
+}
+
+.shopCardContainer{
+ width: 100%; 
 }
 
 /* Added responsive container class to control width based on device size */
@@ -45,7 +49,7 @@
   display: flex;
   /* flex-direction: column;   */
   gap: 0.5rem;
-  padding-bottom: 1rem;
+  padding-bottom: .5rem;
 }
 
 header p{
@@ -252,7 +256,7 @@ header p{
   width: 100%;
   position: relative;
   gap: 10px;
-  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
+  /* padding: 0 1rem; */
 }
 
 .responsiveContainerRow {

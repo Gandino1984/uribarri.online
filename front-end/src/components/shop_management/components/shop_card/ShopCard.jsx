@@ -56,10 +56,10 @@ const ShopCard = ({ shop }) => {
   const shopTypeFormatted = formatShopType(shop);
 
   return (
-    <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
+    // <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 
         className={`${styles.container} ${minimized ? styles.minimized : ''}`}
-        style={!isSmallScreen && !minimized && showMap ? { flex: '1 0 40%', maxWidth: '40%' } : {}}
+        // style={!isSmallScreen && !minimized && showMap ? { flex: '1 0 40%', maxWidth: '40%' } : {}}
       >
         {minimized ? (
           <MinimizedCard toggleMinimized={toggleMinimized} />
@@ -82,9 +82,8 @@ const ShopCard = ({ shop }) => {
             />
           </>
         )}
-      </div>
-      
-      {showMap && !minimized && (
+
+        {showMap && !minimized && (
         <div 
           className={styles.mapWrapper} 
         >
@@ -93,9 +92,12 @@ const ShopCard = ({ shop }) => {
             isSmallScreen={isSmallScreen} 
             onBack={() => setShowMap(false)}
           />
-        </div>
+        </div>    
       )}
-    </div>
+      </div>
+      
+      
+    // </div>
   );
 };
 
