@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../app_context/ProductContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
@@ -21,6 +22,9 @@ const ShopsListBySeller = () => {
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
+  
+  // 🔧 UPDATE: Added UI context to manage info messages for shop instructions
+  const { setInfo, setShowInfoCard } = useUI();
 
   const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
   const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
@@ -104,6 +108,17 @@ const ShopsListBySeller = () => {
     };
   }, []);
 
+  // 🔧 UPDATE: Show instruction message when component loads and there are shops
+  useEffect(() => {
+    if (shops && shops.length > 0 && isVisible) {
+      setInfo(prevInfo => ({
+        ...prevInfo,
+        shopInstructions: "Haz doble click en un comercio para administrar sus productos"
+      }));
+      setShowInfoCard(true);
+    }
+  }, [shops, isVisible, setInfo, setShowInfoCard]);
+
   // Log selected shop updates for debugging
   useEffect(() => {
     if (selectedShop) {
@@ -159,9 +174,6 @@ const ShopsListBySeller = () => {
           {selectedShop && shouldShowShopCard() && !showProductManagement && (
             <div className={styles.shopCardWrapper}>
               <animated.div style={cardAnimation} className={styles.shopCardContainer}>
-                {/* <div className={styles.shopCardInstructions}>
-                  <p>Haz click de nuevo en la tienda seleccionada para administrar sus productos</p>
-                </div> */}
                 <ShopCard shop={selectedShop} />
               </animated.div>
             </div>

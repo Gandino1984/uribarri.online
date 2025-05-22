@@ -3,11 +3,13 @@ import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import styles from '../../../../../../public/css/InfoCard.module.css';
 import OButton from '../../../Obutton/Obutton.jsx';
-import { MessageCircleWarning, KeyRound } from 'lucide-react';
+import { MessageCircleWarning, KeyRound, Store } from 'lucide-react';
 
 const InfoCard = () => {
   // State to track the most recent info message
   const [latestInfo, setLatestInfo] = useState('');
+  // 🔧 UPDATE: Added state to track the type of info message for different icons
+  const [infoType, setInfoType] = useState('general');
   
   const {
     isLoggingIn,
@@ -28,24 +30,41 @@ const InfoCard = () => {
     
     if (!hasInfo) {
       setLatestInfo('');
+      setInfoType('general');
     } else {
       // Find the latest info message
-      const mostRecentInfo = infoEntries[infoEntries.length - 1][1];
-      setLatestInfo(mostRecentInfo);
+      const mostRecentInfo = infoEntries[infoEntries.length - 1];
+      const [key, value] = mostRecentInfo;
+      setLatestInfo(value);
+      
+      // 🔧 UPDATE: Set info type based on the key to show appropriate icon
+      if (key === 'shopInstructions') {
+        setInfoType('shop');
+      } else {
+        setInfoType('general');
+      }
     }
   }, [info]);
-
-  // ✨ UPDATE: No longer managing visibility or animations here - it's handled by the parent using React Spring
 
   // Don't render anything if there's nothing to show
   if (!shouldShowPasswordMessage && !latestInfo) {
     return null;
   }
 
+  // 🔧 UPDATE: Function to get appropriate icon based on info type
+  const getInfoIcon = () => {
+    switch (infoType) {
+      case 'shop':
+        return <Store size={18} color="#F59925" />;
+      default:
+        return <MessageCircleWarning size={18} color="#F59925" />;
+    }
+  };
+
   return (
     <div className={styles.container}>
       {shouldShowPasswordMessage ? (
-        <div className={styles.passwordMessageContainer}>
+        <>
           <div className={styles.iconContainer}>
             <div className={styles.iconOverlay}>
               <KeyRound size={18} color="var(--saturated-orange)" />
@@ -58,17 +77,16 @@ const InfoCard = () => {
               onClick={() => {}}
             />
           </div>
-          <div className={styles.repeatPasswordMessage}>
-            Confirma la contraseña
+          <div className={styles.infoList}>
+            <div className={styles.infoItem}>
+              Confirma la contraseña
+            </div>
           </div>
-        </div>
+        </>
       ) : (
         latestInfo && (
           <>
             <div className={styles.iconContainer}>
-              <div className={styles.iconOverlay}>
-                <MessageCircleWarning size={18} color="#F59925" />
-              </div>
               <OButton 
                 size="extraSmall" 
                 text="O" 
