@@ -156,6 +156,7 @@ function TopBar() {
             >
               {(selectedShop || showShopCreationForm) && (
                 <button
+                className={styles.active}
                   onClick={() => {
                     handleBack();
                     setMobileMenuOpen(false);
@@ -168,6 +169,7 @@ function TopBar() {
 
               {currentUser && (
                 <button 
+                className={styles.active}
                   onClick={() => {
                     clearUserSession();
                     setMobileMenuOpen(false);

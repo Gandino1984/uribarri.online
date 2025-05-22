@@ -238,7 +238,7 @@
 }
 
 .statusRed {
-  color: var(--gradient-red-mid);
+  color: var(--light-gradient-purple-end);
 }
 
 .messageNoShops {

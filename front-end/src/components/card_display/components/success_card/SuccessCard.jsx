@@ -31,9 +31,6 @@ const SuccessCard = () => {
     latestSuccess && (
       <div className={styles.container}>
         <div className={styles.iconContainer}>
-          <div className={styles.iconOverlay}>
-            <MessageCircleHeart size={18} color="#52c41a" />
-          </div>
           <OButton 
             size="extraSmall" 
             text="O" 
