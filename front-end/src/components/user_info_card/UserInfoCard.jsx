@@ -94,31 +94,37 @@ const UserInfoCard = () => {
     }
   };
 
-  // Position popup to ensure it's visible
+  // 🔧 UPDATE: Improved popup positioning to ensure visibility
   useEffect(() => {
-    if (showButtons && popupRef.current) {
+    if (showButtons && popupRef.current && profileContainerRef.current) {
       const popup = popupRef.current;
-      const rect = popup.getBoundingClientRect();
+      const profileContainer = profileContainerRef.current;
+      const profileRect = profileContainer.getBoundingClientRect();
+      const popupRect = popup.getBoundingClientRect();
       
-      // 🚀 UPDATE: Improved popup positioning for left-aligned card
-      // Check if popup is cut off at the bottom
-      const viewportHeight = window.innerHeight;
-      if (rect.bottom > viewportHeight) {
+      // Reset any inline styles first
+      popup.style.top = '';
+      popup.style.bottom = '';
+      popup.style.left = '';
+      popup.style.right = '';
+      
+      // Check if popup would go off the bottom of the screen
+      const spaceBelow = window.innerHeight - profileRect.bottom;
+      const spaceAbove = profileRect.top;
+      
+      if (popupRect.height > spaceBelow && spaceAbove > spaceBelow) {
+        // Position above the profile image
+        popup.style.bottom = 'calc(100% + 0.5rem)';
         popup.style.top = 'auto';
-        popup.style.bottom = '100%';
-        popup.style.marginTop = '0';
-        popup.style.marginBottom = '0.5rem';
       }
       
-      // Make sure popup is fully visible within viewport
-      const viewportWidth = window.innerWidth;
-      if (rect.right > viewportWidth) {
+      // Check horizontal positioning
+      const spaceRight = window.innerWidth - profileRect.left;
+      
+      if (popupRect.width > spaceRight) {
+        // Align to right edge if not enough space
         popup.style.left = 'auto';
         popup.style.right = '0';
-        popup.style.transform = 'none';
-      } else if (rect.left < 0) {
-        popup.style.left = '0';
-        popup.style.transform = 'none';
       }
     }
   }, [showButtons]);
@@ -198,7 +204,7 @@ const UserInfoCard = () => {
     setTimeout(handleResize, 100);
     
     return () => window.removeEventListener('resize', handleResize);
-  }, [isCardMinimized]);
+  }, [isCardMinimized, cardAnimation.width]);
 
   useEffect(() => {
     if (currentUser?.image_user || localImageUrl) {

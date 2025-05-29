@@ -14,10 +14,9 @@ import { useUI } from "./app_context/UIContext.jsx";
 import LandingPage from "../src/components/landing_page/LandingPage.jsx";
 import UserInfoCard from "../src/components/user_info_card/UserInfoCard.jsx";
 import { useAuth } from "./app_context/AuthContext.jsx";
-// 🖼️ UPDATE: Import ImageModal component
 import ImageModal from "../src/components/image_modal/ImageModal.jsx";
 
-// AppContent component to use hooks within the component tree
+
 const AppContent = () => {
   const { showTopBar, showLandingPage } = useUI();
   const { currentUser } = useAuth();

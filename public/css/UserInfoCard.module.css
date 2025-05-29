@@ -13,7 +13,7 @@
   text-align: left;
   transition: all 0.2s ease;
   border-radius: 0 8px 8px 0;
-  overflow: hidden; 
+  overflow: visible; /* 🔧 UPDATE: Changed from hidden to visible to allow popup to show */
   padding-right: .2rem; 
 }
 
@@ -156,11 +156,11 @@
 /* Popup menu styling */
 .actionsPopup {
   position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0.5rem;
+  top: calc(100% + 0.5rem); /* 📍 UPDATE: Better positioning calculation */
+  left: 0; /* 📍 UPDATE: Align to left edge of profile section */
+  margin-top: 0;
   background-color: rgb(7, 7, 7);
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 🎨 UPDATE: Added border for better visibility */
   padding: 0.4rem;
   z-index: 2100;
   display: flex;
@@ -169,19 +169,32 @@
   gap: 0.25rem;
   min-width: 8.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1); /* 🎨 UPDATE: Enhanced shadow for visibility */
   pointer-events: auto;
 }
 
+/* 📍 UPDATE: Arrow pointing upward aligned to the left */
 .actionsPopup:before {
   content: "";
   position: absolute;
   top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 1rem; /* 📍 UPDATE: Position arrow on the left side */
+  transform: none; /* 📍 UPDATE: Remove centering transform */
   border-width: 0 8px 8px 8px;
   border-style: solid;
   border-color: transparent transparent rgb(7, 7, 7) transparent;
+}
+
+/* 📍 UPDATE: Border on the arrow for consistency */
+.actionsPopup:after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 1rem;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent rgba(255, 255, 255, 0.2) transparent;
+  z-index: -1;
 }
 
 .actionButton {
@@ -269,6 +282,11 @@
   
   .welcomeMessage {
     font-size: 0.7rem;
+  }
+  
+  /* 📱 UPDATE: Adjust popup position for mobile */
+  .actionsPopup {
+    left: -0.5rem; /* Slight adjustment for mobile */
   }
 }
 
