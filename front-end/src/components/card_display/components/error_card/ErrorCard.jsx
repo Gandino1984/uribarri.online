@@ -29,9 +29,6 @@ const ErrorCard = () => {
     latestError && (
       <div className={styles.container}>
         <div className={styles.iconContainer}>
-          <div className={styles.iconOverlay}>
-            <MessageCircleX size={18} color="#cf1322" />
-          </div>
           <OButton 
             size="extraSmall" 
             text="O" 

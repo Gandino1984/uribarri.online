@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  /* margin-top: 1rem; */
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end));
@@ -70,11 +71,9 @@
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.205);
   border-radius: 12px;
-  background-image: 
-    linear-gradient(to top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.335)),
-    linear-gradient(180deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--superlight-gradient-purple-end));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end));
+  /* background-origin: border-box;
+  background-clip: padding-box, border-box; */
   padding: .5rem .8rem .5rem .8rem;
   backdrop-filter: blur(1.9px);
   z-index: 0;
@@ -85,6 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-left: .5rem;
 }
 
 .formActions {
