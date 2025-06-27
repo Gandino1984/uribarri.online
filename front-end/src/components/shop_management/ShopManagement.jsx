@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -6,15 +6,13 @@ import ShopsListBySeller from './components/shops_list_by_seller/ShopsListBySell
 import ShopCreationForm from './components/shop_creation_form/ShopCreationForm.jsx';
 import ProductManagement from './components/product_management/ProductManagement.jsx';
 import { ShopManagementUtils } from './ShopManagementUtils.jsx';
-import styles from '../../../../public/css/ShopManagement.module.css'; // 🚀 UPDATE: Imported styles correctly
+import styles from '../../../../public/css/ShopManagement.module.css';
 
 const ShopManagement = () => {
-  // UPDATE: Using separate contexts instead of AppContext
   const { currentUser } = useAuth();
   
   const { 
     showShopCreationForm, 
-    shops,
     selectedShop
   } = useShop();
   
@@ -26,6 +24,14 @@ const ShopManagement = () => {
   const hasInitiallyFetchedShops = useRef(false);
   
   const shopManagementUtils = ShopManagementUtils ? ShopManagementUtils() : {};
+  
+  // ⚠️ FIXED: Moved user type check to useEffect to avoid state updates during render
+  useEffect(() => {
+    if (!currentUser || currentUser.type_user !== 'seller') {
+      console.log('Non-seller user in ShopManagement, redirecting to login 2');
+      setShowShopManagement(false);
+    }
+  }, [currentUser, setShowShopManagement]);
   
   useEffect(() => {
     if (
@@ -39,9 +45,8 @@ const ShopManagement = () => {
     }
   }, [currentUser?.id_user, shopManagementUtils]);
 
+  // ⚠️ FIXED: Early return with check but no state update during render
   if (!currentUser || currentUser.type_user !== 'seller') {
-    console.log('Non-seller user in ShopManagement, redirecting to login');
-    setShowShopManagement(false);
     return null;
   }
   
@@ -58,7 +63,6 @@ const ShopManagement = () => {
     componentToRender = <ShopsListBySeller />;
   }
   
-  // 🚀 UPDATE: Wrapped component with container div for proper spacing
   return (
     <div className={styles.container}>
       <div className={styles.contentWrapper}>

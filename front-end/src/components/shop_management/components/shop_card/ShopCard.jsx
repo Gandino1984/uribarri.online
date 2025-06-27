@@ -19,7 +19,7 @@ const ShopCard = ({ shop }) => {
   // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { setSelectedShop, setShowShopCreationForm } = useShop();
-  const { setShowProductManagement } = useUI(); // 🔄 UPDATE: Now importing from UIContext instead of ProductContext
+  const { setShowProductManagement } = useUI();
   
   const { formatTime, formatShopType, checkHasContinuousSchedule, formatOpenDays } = ShopCardUtils();
 
@@ -55,12 +55,11 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
-  // Enhanced layout handling for minimized state
   return (
-    <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
+    // <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
       <div 
         className={`${styles.container} ${minimized ? styles.minimized : ''}`}
-        style={!isSmallScreen && !minimized && showMap ? { flex: '1 0 40%', maxWidth: '40%' } : {}}
+        // style={!isSmallScreen && !minimized && showMap ? { flex: '1 0 40%', maxWidth: '40%' } : {}}
       >
         {minimized ? (
           <MinimizedCard toggleMinimized={toggleMinimized} />
@@ -83,22 +82,22 @@ const ShopCard = ({ shop }) => {
             />
           </>
         )}
-      </div>
-      
-      {/* Improved map container with fullscreen mobile support */}
-      {showMap && !minimized && (
+
+        {showMap && !minimized && (
         <div 
           className={styles.mapWrapper} 
-          // style={!isSmallScreen ? { flex: '1 0 60%', maxWidth: '60%' } : {}}
         >
           <ShopMap 
             shop={shop} 
             isSmallScreen={isSmallScreen} 
             onBack={() => setShowMap(false)}
           />
-        </div>
+        </div>    
       )}
-    </div>
+      </div>
+      
+      
+    // </div>
   );
 };
 

@@ -4,6 +4,27 @@
   --dark-orange: #965101;
   --superdark-orange: #3f2100;
 
+  /* 🔄 UPDATE: Added new color variables for the gradient background */
+  --dark-gradient-purple-start: #3e297d;
+  --semidark-gradient-purple-start: #582a90;
+  --gradient-purple-start: #6d48dd;
+  --light-gradient-purple-start: #6d48dd91;
+  --superlight-gradient-purple-start: #6d48dd55;
+  --gradient-purple-mid: #9c42dd;
+  --light-gradient-purple-mid: #9d42dd92;
+  --gradient-purple-end: #e9487e;
+  --light-gradient-purple-end: #e97ea1;
+  --superlight-gradient-purple-end: #e9487e23;
+  
+  /* 🔴 UPDATE: Added new color variables for the red gradient background */
+  --gradient-red-start: #e25379;
+  --light-gradient-red-start: #e2537991;
+  --gradient-red-mid: #b01f4d;
+  --light-gradient-red-mid: #b01f4d92;
+  --gradient-red-end: #4d0416;
+  --superlight-gradient-red-end: #4d041623;
+  
+
   --superlight-orange: #fff1df;
   --superlight-gray: #e9e9e9;
   --light-gray: #cacaca;
@@ -14,9 +35,10 @@
   --topbar-height: 5rem;
 
   --saturated-blue: #088DD0;
+  --saturated-blue-transparent: #088dd06b;
   --dark-blue: #036ea3;
   --light-blue: #40b8f5;
-  --superlight-blue: #edf9ff;
+  --superlight-blue: #1ab3ff1b;
 
   --light-green: rgb(126, 255, 115);
   --superlight-green: rgb(220, 255, 220);
@@ -31,6 +53,15 @@
   --spacing-md: .5rem;
   --spacing-lg: 1rem;
   --spacing-xl: 1.5rem;
+}
+
+/* 🌑 UPDATE: Set black background for both html and body to prevent any white showing */
+html, body {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+
+  min-height: 100vh;
 }
 
 * {
@@ -63,39 +94,106 @@
   width: 100%;
 }
 
-/* Text input with blue for entered text */
+
 input[type="text"] {
-  color: var(--saturated-blue); /* Blue color for entered text */
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
+  color: black;
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
   cursor: pointer;
   font-size: 0.9rem;
-  border-radius: 5px;
+  border-radius: 8px;
   min-height: 2.5rem;
   max-width: 20rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: .5rem;
   width: 100%;
   outline: none;
-  border: 2px solid var(--medium-gray);
-  transition: all 0.2s ease;
+  border: none;
+  background-color: rgb(220, 228, 255)
 }
 
-/* Styling for input placeholders */
 input[type="text"]::placeholder {
   color: var(--light-gray);
-  opacity: 1; /* Firefox needs this */
+  opacity: 1; 
 }
 
 input[type="text"]:focus {
-  color: var(--saturated-blue); /* Keep blue color when focused */
-  border: 2px solid var(--saturated-blue);
-  outline: none;
-  box-shadow: var(--focus-shadow);
-  background-color: var(--superlight-blue);
+  color: black; 
+  border: 2px solid WHITE;
+  background-color: white;
 }
 
 input[type="text"]:hover { 
-  border: 2px solid var(--saturated-blue);
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+}
+
+/* ⏰ UPDATE: Time inputs with consistent styling */
+input[type="time"] {
+  width: 100%;
+  max-width: 150px;
+  color: gray;
+  padding: 0.5rem;
+  border: 1px solid var(--medium-gray);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  min-height: 2.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background-color: rgb(238, 249, 255);
+}
+
+input[type="time"]:focus {
+  /* border-color: var(--saturated-orange); */
+  color: black;
+  background-color: white;
+  outline: none;
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+  /* box-shadow: 0 0 0 2px rgba(var(--saturated-orange-rgb), 0.2); */
+}
+
+input[type="time"]:hover {
+  background-color: white;
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+  /* border-color: var(--saturated-blue); */
+
+}
+
+input[type="time"].hasValue {
+  /* border-color: var(--saturated-orange); */
+  color: black;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* ⏰ UPDATE: Added time field related styles for consistent layouts */
+.timeFieldContainer, .timeFieldGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  position: relative;
+  width: 100%;
+}
+
+.timeFieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: white;
+}
+
+.timeIcon {
+  color: white;
+}
+
+.timeSeparator {
+  display: flex;
+  align-items: center;
+  margin: 0 0.5rem;
+  color: var(--dark-gray);
+  font-weight: 500;
 }
 
 /* Number inputs with blue for entered text */
@@ -172,18 +270,17 @@ textarea:hover {
   border: 2px solid var(--saturated-orange);
 }
 
-/* Button styling with new active state */
+
 button {
   display: flex;
   align-items: center;
   justify-content: center;
   outline: none;
   border: none;
-  background-color: white;
-  border: 1px solid var(--light-orange); 
+  background-color: transparent;
   border-radius: 5px;
-  color: var(--dark-orange);
-  padding: var(--spacing-sm) var(--spacing-md);
+  /* color: var(--superdark-gradient-purple-start); */
+  padding: 0.3rem 0.3rem;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -195,10 +292,8 @@ button {
 }
 
 button:hover {
-  border: none;
+  /* border: none; */
   color: white;
-  background-color: var(--saturated-blue);
-  /* border-top: 1px solid var(--light-blue); */
 }
 
 button:active {
@@ -217,13 +312,14 @@ select {
   min-height: 2.5rem;
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--light-gray) !important; /* Lighter gray for placeholder */
-  background-color: white;
-  border: 2px solid var(--medium-gray) !important;
-  border-radius: 5px;
+  background-color: rgb(220, 228, 255);
+  border-radius: 8px;
   margin-bottom: .5rem;
   cursor: pointer;
+  outline: none;
+  border: none;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
@@ -231,29 +327,30 @@ select {
   /* transition: all 0.2s ease-in-out; */
 }
 
-/* Hover state - color changes to orange */
 select:hover {
-  color: var(--saturated-blue) !important;
-  border-color: var(--saturated-blue) !important;
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 /* Clear any default selected styling */
 select:focus:not(.has-value) {
   color: var(--lighter-gray) !important;
-  border-color: var(--saturated-blue) !important;
+  border-color: none;
   background-color: var(--superlight-blue) !important;
   outline: none;
+  border: none;
 }
 
 /* Selected state with blue color */
 select.has-value {
-  color: var(--saturated-blue) !important;
+  color: black !important;
 }
 
 /* Ensure hovering a selected value keeps it blue */
 select.has-value:hover {
-  color: var(--saturated-blue) !important;
-  border-color: var(--saturated-blue);
+  color: black;
+  border: none;
 }
 
 /* Option styling */
@@ -263,12 +360,12 @@ select option {
 
 /* First option (placeholder) stays light gray */
 select option:first-child {
-  color: var(--lighter-gray);
+  color: black;
 }
 
 /* Real options are blue */
 select option:not(:first-child) {
-  color: var(--saturated-blue);
+  color: black;
 }
 
 select:invalid {
@@ -385,6 +482,18 @@ input[type="radio"] {
   
   .full-width-on-mobile {
     width: 100% !important;
+  }
+  
+  /* ⏰ UPDATE: Make time inputs more mobile-friendly */
+  input[type="time"] {
+    max-width: 120px;
+    font-size: 0.8rem;
+    padding: 0.4rem;
+    min-height: 2.2rem;
+  }
+  
+  .timeFieldLabel {
+    font-size: 0.8rem;
   }
 }
 

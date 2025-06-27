@@ -4,17 +4,27 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background-color: var(--superlight-orange);
     padding: 0.4rem 1.5rem;
+    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.3) 10%, rgba(255, 255, 255, 0));
     z-index: 1000; 
     height: auto; 
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-    background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
     position: fixed; 
     top: 0; 
     left: 0; 
     right: 0; 
     margin-bottom: 0; 
+}
+
+.title{
+    user-select: none;
+    font-size: 1.5rem;
+    letter-spacing: .1rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+    position: relative; /* 🔤 UPDATE: Added relative positioning */
+    display: flex; /* 🔤 UPDATE: Using flexbox for better letter alignment */
+    align-items: center;
 }
 
 .contentWrapper {
@@ -24,39 +34,149 @@
     width: 100%;
     gap: 1rem;
     padding: 0.25rem 0; 
-    transition: all 0.3s ease; /* Added transition for smoother state changes */
 }
 
-/* Added styles for collapsed and expanded states */
-.contentWrapper.collapsed {
-    height: 2.4rem;
-}
-
-.contentWrapper.expanded {
-    height: auto;
-}
-
-.messageWrapper {
-    width: 100%;
+/* 🍔 UPDATE: Added styles for the buttons container */
+.buttonsContainer {
     display: flex;
-    justify-content: center;
-    z-index: 500; 
+    align-items: center;
+    gap: 1rem;
 }
 
 .backButton {
-    /* border: none; */
-    margin-right: 0.5rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: black;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
-.logoutButton {
-    gap: 0.5rem;
-    white-space: nowrap; /* Prevent text wrapping */
+.backButton:hover {
+    color: white;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+}
+
+.active {
+    color: black;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+  
+.active:hover {
+    color: white;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.4);
+    /* text-shadow: 0px 0px 8px 1px var(--saturated-blue-transparent) !important; */
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+}
+
+/* 🔒 UPDATE: Fixed burger button to be hidden by default and only visible on mobile */
+.burgerButton {
+    display: none;
+    color: black;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 4px;
+}
+
+.burgerButton:hover {
+    color: white;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+}
+
+.mobileMenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: -4rem;
+    background-color: rgb(7, 7, 7);
+    border-radius: 8px;
+    flex-direction: column;
+    padding: 0.3rem;
+    width: auto;
+    min-width: 150px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+/* .mobileMenu:hover{
+    background-color: var(--light-gradient-purple-start);
+} */
+
+
+.mobileMenu:before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 16px;
+    transform: translateX(-100%);
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent rgb(7, 7, 7) transparent;
+}
+
+.mobileMenu:before:hover{
+border-color: transparent transparent var(--light-gradient-purple-start) transparent;
+}
+
+.mobileMenu.open {
+    display: flex;
+}
+
+/* 🔻 UPDATE: Updated button styles inside mobile menu to match UserInfoCard */
+.mobileMenu button {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 0.25rem;
+    pointer-events: auto;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.mobileMenu button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 🔻 UPDATE: Added button icon and text styles */
+.buttonIcon {
+    color: #aaa;
+}
+
+.buttonText {
+    color: rgb(255, 255, 255);
+    font-size: 0.8rem;
+}
+
+/* 🍔 UPDATE: Add responsive media query for mobile view */
+@media (max-width: 500px) {
+    .container {
+        padding: 0.4rem 1rem; 
+    }
+    
+    .contentWrapper {
+        padding: 0.5rem 0;
+    }
+
+    .buttonsContainer {
+        display: none;
+    }
+
+    .burgerButton {
+        display: flex;
+    }
 }
 
 @media (max-width: 768px) {
@@ -67,4 +187,4 @@
     .contentWrapper {
         padding: 0.5rem 0;
     }
-}    
+}

@@ -1,67 +1,81 @@
+/* 🔧 UPDATE: Restructured to match ErrorCard and SuccessCard layout */
 .container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  flex-direction: row;
   align-items: center;
-  background-color: rgba(255, 255, 255, 1); /* Solid background */
-  border: 2px solid var(--saturated-orange);
-  padding: 0.5rem 1rem;
-  z-index: 1000;
-  width: auto;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  max-width: 90%;
-  margin-top: 0.5rem;
+  background-color: white;
   border-radius: 8px;
+  padding: .2rem .4rem .2rem .2rem;
+  box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
+  /* 🔧 UPDATE: Added width constraints to prevent card from getting too wide */
+  max-width: 300px;
+  min-width: 200px;
+  width: auto;
 }
 
-.infoList {
-  display: flex;
-  flex-direction: column;
-  margin-left: 12px;
-}
-
-.infoItem {
-  font-size: 0.875rem;
-  color: var(--saturated-orange);
-  margin: 2px 0;
-  text-align: left;
-  /* white-space: normal;  */
-  line-height: 1.2;
-}
-
-/* Password message styles */
-.passwordMessageContainer {
+/* 🔧 UPDATE: Modified iconContainer to match other cards structure */
+.iconContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
+  margin-right: .5rem;
+  min-width: 44px; 
+  min-height: 44px;
+  position: relative;
+  flex-shrink: 0; 
 }
 
-.repeatPasswordMessage {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--saturated-orange);
-  margin-left: .5rem;
-  text-align: center;
+.iconOverlay {
+  position: absolute;
+  top: -4px;
+  right: -11px;
+  z-index: 2;
+  border-radius: 50%;
 }
-/* 
+
+/* 🔧 UPDATE: Renamed and restructured to match other cards */
+.infoList {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  /* 🔧 UPDATE: Allow the text area to grow and wrap */
+  flex: 1;
+  min-width: 0;
+}
+
+.infoItem {
+  color: var(--saturated-orange);
+  font-size: .7rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  text-align: left;
+  /* 🔧 UPDATE: Allow text to wrap instead of expanding card width */
+  margin-right: .5rem;
+  white-space: normal;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.infoItem:last-child {
+  margin-bottom: 0;
+}
+
+/* 🔧 UPDATE: Added responsive width adjustments */
 @media (max-width: 768px) {
   .container {
-      padding: 0.4rem 0.75rem;
-      max-width: 90%;
-  }
-  
-  .infoItem, .repeatPasswordMessage {
-      font-size: 0.8rem;
+    max-width: 280px;
+    min-width: 180px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-      padding: 0.3rem 0.5rem;
-      max-width: 95%;
+    max-width: 260px;
+    min-width: 160px;
   }
-} */
+  
+  .infoItem {
+    font-size: .65rem;
+  }
+}

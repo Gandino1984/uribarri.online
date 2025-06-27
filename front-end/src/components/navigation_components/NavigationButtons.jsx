@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Box } from 'lucide-react';
-import styles from '../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../public/css/NavigationButtons.module.css';
 
 const NavigationButtons = ({ 
   currentStep, 
@@ -33,7 +33,7 @@ const NavigationButtons = ({
       {currentStep > 1 && (
         <button 
           type="button" 
-          className={styles.navButton}
+          className={styles.active}
           onClick={handlePreviousClick}
         >
           <ChevronLeft size={16} />
@@ -44,7 +44,7 @@ const NavigationButtons = ({
       {currentStep < totalSteps ? (
         <button 
           type="button" 
-          className={styles.navButton}
+          className={styles.active}
           onClick={handleNextClick}
         >
           <span className={styles.buttonText}>{nextLabel}</span>
@@ -54,7 +54,7 @@ const NavigationButtons = ({
         showSubmitButton && (
           <button 
             type="submit" 
-            className={styles.submitButton}
+            className={styles.active}
             disabled={isSubmitting}
             style={{ 
               opacity: isSubmitting ? 0.6 : 1,
@@ -62,7 +62,7 @@ const NavigationButtons = ({
             }}
           >
             {isSubmitting ? processingLabel : submitLabel}
-            {!isSubmitting && <SubmitIcon size={17} style={{ marginLeft: '5px' }} />}
+            {!isSubmitting && <SubmitIcon size={17} style={{ marginLeft: '5px' }} className={styles.submitIcon} />}
           </button>
         )
       )}

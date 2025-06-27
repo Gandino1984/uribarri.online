@@ -1,0 +1,55 @@
+.stepTracker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 0;
+    top: -2.3rem;
+    position: absolute;
+    flex-shrink: 1;
+    min-width: min-content;
+  }
+  
+  .stepDot {
+    user-select: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    margin: 0 .3rem;
+    z-index: 2;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    font-size: 0.8rem;
+    font-weight: 600;
+    position: relative;
+  }
+  
+  .stepDot.active {
+    margin-right: .5rem;
+    margin-left: .5rem;
+    border: 1px solid var(--saturated-blue);
+    background-color: var(--gradient-purple-mid);
+    color: white;
+    transform: scale(1.4);
+  }
+  
+  /* Media queries for responsive design */
+  @media screen and (max-width: 600px) {
+    /* 📱 Enhanced mobile step indicator styles */
+    .stepDot {
+      width: 20px;
+      height: 20px;
+      margin: 0 0.15rem;
+      font-size: 0.7rem;
+    }
+  }
+  
+  @media screen and (max-width: 350px) {
+    .stepTracker {
+      align-self: center;
+      margin-top: 0;
+    }
+  }

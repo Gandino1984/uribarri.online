@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
-import { Box, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
@@ -25,9 +25,6 @@ const ShopCreationForm = () => {
     setUploading,
     setSuccess,
     setShowSuccessCard,
-    // setInfo,
-    // setShowInfoCard,
-    // 🔄 UPDATE: Added modal state and message setters for confirmation
     setIsModalOpen,
     setModalMessage,
     isAccepted,
@@ -45,7 +42,7 @@ const ShopCreationForm = () => {
     setSelectedShop,
     // ✨ UPDATE: Get notifyFormExit function from ShopContext if it exists
     // This will be implemented in ShopContext to allow controlled exit animations
-    notifyFormExit
+    // notifyFormExit
   } = useShop();
 
   const {
@@ -69,22 +66,11 @@ const ShopCreationForm = () => {
   // Add debug flag
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   
-  // 🔄 UPDATE: Added state to track if form reset is pending
   const [isResetPending, setIsResetPending] = useState(false);
   
-  // ✨ UPDATE: Added state to handle animation when component exits - same as LoginRegisterForm
+  // state to handle animation when component exits - same as LoginRegisterForm
   const [isExiting, setIsExiting] = useState(false);
   
-  // ✨ UPDATE: Function to handle closing the form with animation - same timing as LoginRegisterForm
-  const handleCloseForm = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setShowShopCreationForm(false);
-      setSelectedShop(null);
-    }, 500); // Match timing with animation duration and LoginRegisterForm
-  };
-
-  // 🧹 UPDATE: Default shop values for form reset
   const defaultShopValues = {
     name_shop: '',
     type_shop: '',
@@ -107,7 +93,6 @@ const ShopCreationForm = () => {
     open_sunday: false
   };
 
-  // Modified useEffect to properly handle user ID
   useEffect(() => {
     if (currentUser?.id_user) {
       setNewShop(prev => {
@@ -173,18 +158,9 @@ const ShopCreationForm = () => {
         }
       }
       
-      // Log the schedule data to ensure it's loaded correctly
-      console.log('Shop schedule data loaded:', {
-        morning_open: selectedShop.morning_open,
-        morning_close: selectedShop.morning_close,
-        afternoon_open: selectedShop.afternoon_open,
-        afternoon_close: selectedShop.afternoon_close,
-        hasContinuousSchedule: shopHasContinuousSchedule
-      });
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // 🔄 UPDATE: Added effect to handle modal confirmation for form reset
   useEffect(() => {
     if (isAccepted && isResetPending) {
       // Reset form if user confirmed
@@ -198,7 +174,6 @@ const ShopCreationForm = () => {
     }
   }, [isAccepted, isDeclined, isResetPending]);
 
-  // 🧹 UPDATE: Function to reset the form
   const resetForm = () => {
     // Reset form to initial step
     setCurrentStep(1);
@@ -225,14 +200,13 @@ const ShopCreationForm = () => {
     // Show info message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      shopSuccess: "Formulario limpiado ."
+      shopSuccess: "El formulario está limpio."
     }));
     setShowSuccessCard(true);
     
     console.log('Form has been reset to default values');
   };
 
-  // 🔄 UPDATE: Updated confirmation method to use modal dialog
   const confirmResetForm = () => {
     // If form is empty, just reset without confirmation
     const isFormEmpty = !newShop.name_shop && 
@@ -521,7 +495,6 @@ const ShopCreationForm = () => {
     }
   };
 
-  // ✨ UPDATE: Setup form animation using unified formAnimation
   const formTransition = useTransition(!isExiting, {
     from: formAnimation.from,
     enter: formAnimation.enter,
@@ -559,11 +532,10 @@ const ShopCreationForm = () => {
                 {renderStepContent()}
                   
                 <div className={styles.buttonsContainer}>
-                  {/* 🧹 UPDATE: Added reset form button */}
                   <button
                     type="button"
                     onClick={confirmResetForm}
-                    className={styles.resetButton}
+                    className={styles.active}
                     title="Limpiar formulario"
                     disabled={uploading || isFormSubmitting}
                   >
@@ -579,7 +551,7 @@ const ShopCreationForm = () => {
                     isSubmitting={uploading || isFormSubmitting}
                     submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
                     processingLabel="Procesando..."
-                    SubmitIcon={Box}
+                    SubmitIcon={Plus}
                     // Only show submit button on the last step
                     showSubmitButton={currentStep === totalSteps}
                   />

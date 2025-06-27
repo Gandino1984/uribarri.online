@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../app_context/ProductContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
-import { HousePlus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
 
@@ -13,19 +14,18 @@ import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopsTable from './components/ShopsTable';
 
 const ShopsListBySeller = () => {
-  // State for animation control
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  
-  // 📱 UPDATE: Added state to track screen width for responsive layout decisions
+
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-  // Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
+  
+  // 🔧 UPDATE: Added UI context to manage info messages for shop instructions
+  const { setInfo, setShowInfoCard } = useUI();
 
-  // Get shop limits directly from environment variables
   const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
   const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
   
@@ -79,7 +79,6 @@ const ShopsListBySeller = () => {
     config: shopsListAnimations.shopCardAnimation.config
   });
 
-  // 📱 UPDATE: Added event listener for screen resize to update responsive layout
   useEffect(() => {
     const handleResize = () => {
       setScreenWidth(window.innerWidth);
@@ -109,6 +108,17 @@ const ShopsListBySeller = () => {
     };
   }, []);
 
+  // 🔧 UPDATE: Show instruction message when component loads and there are shops
+  useEffect(() => {
+    if (shops && shops.length > 0 && isVisible) {
+      setInfo(prevInfo => ({
+        ...prevInfo,
+        shopInstructions: "Haz doble click en un comercio para administrar sus productos"
+      }));
+      setShowInfoCard(true);
+    }
+  }, [shops, isVisible, setInfo, setShowInfoCard]);
+
   // Log selected shop updates for debugging
   useEffect(() => {
     if (selectedShop) {
@@ -117,10 +127,8 @@ const ShopsListBySeller = () => {
   }, [selectedShop]);
 
   return (
-    <div className={styles.container}>
-      {/* 📱 UPDATE: Fixed content wrapper to ensure proper containment on small screens */}
+    <div className={`${styles.container} ${selectedShop && shouldShowShopCard() ? styles.expandedContainer : ''}`}>
       <div className={styles.content}>
-        {/* Header with title and add button - now with animation */}
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
             <h1 className={styles.title}>
@@ -129,12 +137,12 @@ const ShopsListBySeller = () => {
             
             <button 
               onClick={() => handleAddShop(shopLimit)}
-              className={`${styles.addButton} ${shopCount >= shopLimit ? styles.disabledButton : ''}`}
+              className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : ''}`}
               title="Crear nuevo comercio"
               disabled={shopCount >= shopLimit}
             >
               <span>Crear</span>
-              <HousePlus size={screenWidth > 480 ? 16 : 20} />
+              <Plus size={screenWidth > 480 ? 16 : 20} />
             </button>
           </animated.div>
         
@@ -148,9 +156,7 @@ const ShopsListBySeller = () => {
           </animated.div>
         </div>
 
-        {/* 📱 UPDATE: Improved shop management container with explicit width constraints */}
         <div className={styles.shopManagementContainer}>
-          {/* Table container with slide animation and better containment */}
           {tableTransition((style, show) => 
             show && (
               <animated.div style={{...style, width: '100%'}} className={styles.tableContainer}>
@@ -165,14 +171,12 @@ const ShopsListBySeller = () => {
             )
           )}
 
-          {/* Shop card container with animation */}
           {selectedShop && shouldShowShopCard() && !showProductManagement && (
-            <animated.div style={cardAnimation} className={styles.shopCardContainer}>
-              <div className={styles.shopCardInstructions}>
-                <p>Haz click nuevamente en la tienda para administrar sus productos</p>
-              </div>
-              <ShopCard shop={selectedShop} />
-            </animated.div>
+            <div className={styles.shopCardWrapper}>
+              <animated.div style={cardAnimation} className={styles.shopCardContainer}>
+                <ShopCard shop={selectedShop} />
+              </animated.div>
+            </div>
           )}
         </div>
       </div>

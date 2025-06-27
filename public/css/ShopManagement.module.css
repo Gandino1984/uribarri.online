@@ -1,10 +1,49 @@
 .container{
-    width: 100%;
+    width: 100vw;
     min-height: 100vh; 
     display: flex;
-    align-items:flex-start; 
+    align-items: center; 
     justify-content: center;
     overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%; /* 🎨 UPDATE: Removed width restriction to allow full-width display */
+    background-size: 200% 200%;
+    background: linear-gradient(135deg, var(--gradient-red-start), var(--gradient-red-mid), var(--gradient-red-end));
+    position: relative; /* 🎨 UPDATE: Uncommented position relative for proper positioning */
+    z-index: 1; /* 🎨 UPDATE: Added z-index for stacking context */
+}
+
+.container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 🎨 UPDATE: Added grid overlay pattern from ShopsListBySeller */
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .contentWrapper {
@@ -12,4 +51,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 95%; /* 🎨 UPDATE: Added width for consistent sizing */
+    position: relative; /* 🎨 UPDATE: Added position for proper stacking */
+    z-index: 2; /* 🎨 UPDATE: Added z-index to place content above backgrounds */
+    max-width: 1200px; /* 🎨 UPDATE: Added max-width for better layout on large screens */
+    padding: 0 1rem; /* 🎨 UPDATE: Added padding for edge spacing */
+}
+
+/* 🎨 UPDATE: Added responsive styles */
+@media (max-width: 768px) {
+    .contentWrapper {
+        padding: 0 5px;
+    }
 }

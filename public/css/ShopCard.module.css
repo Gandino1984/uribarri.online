@@ -3,27 +3,24 @@
   width: 100%;
   height: 100%;
   max-width: 100%;
-  min-height: 300px;
+  max-height: 300px;
   margin: 0 auto;
   position: relative;
   transition: all 0.3s ease;
   overflow: hidden;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
   border-radius: 8px; 
 }
-
-.container:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.01);
-}
-
 /* Added specific styles for minimized container to override min-height */
 .container.minimized {
+
   min-height: unset;
   height: auto;
 }
 
-/* Added responsive container class to control width based on device size */
+.shopCardContainer{
+ width: 100%; 
+}
+
 .responsiveContainer {
   width: 100%;
   height: 100%;
@@ -32,18 +29,14 @@
 
 .infoContainer {
   width: 100%;
-  /* background-color: white; */
-  /* border-radius: 0 0 0.5rem 0.5rem; */
-  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+  background-color: white;
   padding: .5rem;
-  transition: all 0.3s ease;
 }
 
 .header {
   display: flex;
-  flex-direction: column;  
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-bottom: .5rem;
 }
 
 header p{
@@ -55,9 +48,8 @@ header p{
 
 
 .title {
-  /* font-size: 1.25rem; */
   font-weight: 700;
-  color: var(--superdark-orange);
+  color: black;
   word-break: break-word;
 }
 
@@ -107,6 +99,7 @@ header p{
   display: flex;
   flex-direction: column;
   gap: .5rem;
+  /* margin-bottom: 5rem; */
 }
 
 .scheduleTime {
@@ -128,8 +121,8 @@ header p{
   justify-content: flex-end;
 }
 
-.scheduleIcon{  
-  color: var(--dark-orange);
+.icon{ 
+  color: var(--dark-gradient-purple-start);
   margin-right: .5rem;
 }
 
@@ -249,7 +242,7 @@ header p{
   width: 100%;
   position: relative;
   gap: 10px;
-  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
+  /* padding: 0 1rem; */
 }
 
 .responsiveContainerRow {
@@ -259,13 +252,13 @@ header p{
   position: relative;
   gap: 10px;
   min-height: min-content;
-  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
+  padding: 0 1rem; /* 🧩 UPDATE: Added side padding of 2rem */
 }
 
 /* Adjusted to allow minimized cards to take natural height */
 .responsiveContainerColumn:has(.minimized),
 .responsiveContainerRow:has(.minimized) {
-  min-height: auto;
+  /* min-height: auto; */
 }
 
 /* Added map wrapper to control map dimensions better */
@@ -292,7 +285,8 @@ header p{
 .mapCanvas {
   width: 100%;
   height: 100%;
-  min-height: 300px;
+  min-height: 200px;
+  min-width: 50vw;
 
 }
 
@@ -357,6 +351,32 @@ header p{
 /* Optional hover effect for stars */
 .starsContainer:hover .starIcon {
   transform: scale(1.1);
+}
+
+.active {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: .3rem .4rem;
+  border-radius: 50%;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: .5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.active:hover {
+  color: white;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Small tablets (640px and up) */
@@ -466,7 +486,7 @@ header p{
   }
   
   .scheduleInfo {
-    flex-direction: row;
+    /* flex-direction: row; */
     gap: 1.5rem;
   }
   
@@ -490,7 +510,7 @@ header p{
   /* 🧩 UPDATE: Increased side padding for larger screens */
   .responsiveContainerColumn,
   .responsiveContainerRow {
-    padding: 0 3rem;
+    padding: 0 2rem;
   }
 }
 

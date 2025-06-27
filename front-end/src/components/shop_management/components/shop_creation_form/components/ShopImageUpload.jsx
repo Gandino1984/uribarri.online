@@ -14,9 +14,7 @@ const ShopImageUpload = ({
   setError,
   setShowErrorCard
 }) => {
-  // 🔄 UPDATE: Removed showImageUploadButton state as we'll trigger the input directly
 
-  // 🔄 UPDATE: Simplified to trigger file input directly
   const handleImageContainerClick = () => {
     if (!uploading && fileInputRef.current) {
       fileInputRef.current.click();
@@ -71,9 +69,9 @@ const ShopImageUpload = ({
 
   return (
     <section className={styles.imageSection}>  
-      <h2 className={styles.sectionTitle}>Imagen del comercio</h2>
+      <h2 className={styles.sectionTitle}>Paso 1: sube una imagen</h2>
       <p className={styles.sectionDescription}>
-        Sube una portada para tu tarjeta de comercio
+        Esta será la portada de la tarjeta de tu comercio que será visible para todos los usuarios.
       </p>
       
       <div 
@@ -127,7 +125,7 @@ const ShopImageUpload = ({
           {/* Edit overlay hint */}
           {!uploading && (
             <div className={styles.editOverlay}>
-              <Camera size={18} />
+              {/* <Camera size={18} /> */}
               <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
             </div>
           )}
