@@ -41,6 +41,18 @@ const validateUserData = (userData) => {
     if (userData.category_user !== undefined && typeof userData.category_user !== 'boolean') {
         errors.push('La categoría de usuario debe ser un valor booleano');
     }
+    //update: Added age_user validation
+    if (userData.age_user !== undefined) {
+        if (!Number.isInteger(userData.age_user) || userData.age_user < 0) {
+            errors.push('La edad debe ser un número entero positivo');
+        }
+        if (userData.age_user < 18) {
+            errors.push('La edad mínima es 18 años');
+        }
+        if (userData.age_user > 120) {
+            errors.push('La edad no puede ser mayor a 120 años');
+        }
+    }
 
     return {
         isValid: errors.length === 0,
@@ -197,7 +209,9 @@ async function login(userData) {
             type_user: user.type_user,
             location_user: user.location_user,
             image_user: user.image_user,
-            category_user: user.category_user
+            category_user: user.category_user,
+            //update: Added age_user to login response
+            age_user: user.age_user
         };
 
         console.log('-> login() - User response:', userResponse); 
@@ -248,6 +262,10 @@ async function register(userData) {
             //by default all users are not sponsors
             userData.category_user = false;
         }
+        //update: Added default age_user if not provided
+        if (userData.age_user === undefined) {
+            userData.age_user = 18;
+        }
 
         const user = await user_model.create(userData);
 
@@ -258,7 +276,9 @@ async function register(userData) {
             type_user: user.type_user,
             location_user: user.location_user,
             calification_user: user.calification_user,
-            category_user: user.category_user
+            category_user: user.category_user,
+            //update: Added age_user to register response
+            age_user: user.age_user
         };
 
         return { 
@@ -304,6 +324,8 @@ async function update(id, userData) {
         if (userData.type_user) fieldsToUpdate.type_user = userData.type_user;
         if (userData.calification_user !== undefined) fieldsToUpdate.calification_user = userData.calification_user;
         if (userData.category_user !== undefined) fieldsToUpdate.category_user = userData.category_user;
+        //update: Added age_user to updatable fields
+        if (userData.age_user !== undefined) fieldsToUpdate.age_user = userData.age_user;
 
         const validation = validateUserData(fieldsToUpdate);
         if (!validation.isValid) {
