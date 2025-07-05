@@ -1,7 +1,9 @@
 import shop_model from "../../models/shop_model.js";
 import user_model from "../../models/user_model.js";
+import type_model from "../../models/type_model.js";
+import subtype_model from "../../models/subtype_model.js";
 import productController from "../product/product_controller.js";
-import packageController from "../package/package_controller.js"; // ✨ UPDATE: Added import for package controller
+import packageController from "../package/package_controller.js";
 import product_model from "../../models/product_model.js";
 import { Op } from 'sequelize';
 import path from 'path';
@@ -156,6 +158,23 @@ async function removeShopFolders(shopName) {
     }
 }
 
+// Helper function to get type and subtype for a shop
+async function getShopWithTypeAndSubtype(shop) {
+    const type = await type_model.findByPk(shop.id_type);
+    const subtype = await subtype_model.findByPk(shop.id_subtype);
+    
+    return {
+        ...shop.toJSON(),
+        type: type ? {
+            id_type: type.id_type,
+            name_type: type.name_type
+        } : null,
+        subtype: subtype ? {
+            id_subtype: subtype.id_subtype,
+            name_subtype: subtype.name_subtype
+        } : null
+    };
+}
 
 // **********
 
@@ -167,9 +186,16 @@ async function getAll() {
             return { error: "No hay comercios registrados", data: [] };
         }
 
-        console.log("-> shop_controller.js - getAll() - comercios encontrados = ", shops);
+        // Manually fetch type and subtype for each shop
+        const shopsWithRelations = [];
+        for (const shop of shops) {
+            const shopWithRelations = await getShopWithTypeAndSubtype(shop);
+            shopsWithRelations.push(shopWithRelations);
+        }
 
-        return { data: shops };
+        console.log("-> shop_controller.js - getAll() - comercios encontrados = ", shopsWithRelations.length);
+
+        return { data: shopsWithRelations };
     } catch (err) {
         console.error("-> shop_controller.js - getAll() -Error = ", err);
         return { error: "Error al obtener todos los comercios" };
@@ -192,6 +218,29 @@ async function create(shopData) {
             };
         }
 
+        // Verify that type exists
+        const type = await type_model.findByPk(shopData.id_type);
+        if (!type) {
+            return { error: "El tipo especificado no existe" };
+        }
+
+        // Verify that subtype exists and belongs to the specified type
+        const subtype = await subtype_model.findOne({
+            where: { 
+                id_subtype: shopData.id_subtype,
+                id_type: shopData.id_type
+            }
+        });
+        if (!subtype) {
+            return { error: "El subtipo especificado no existe o no corresponde al tipo seleccionado" };
+        }
+
+        // Verify that user exists
+        const user = await user_model.findByPk(shopData.id_user);
+        if (!user) {
+            return { error: "El usuario especificado no existe" };
+        }
+
         // Format time fields and include new fields with defaults if not provided
         const formattedData = {
             ...shopData,
@@ -199,9 +248,7 @@ async function create(shopData) {
             morning_close: shopData.morning_close || null,
             afternoon_open: shopData.afternoon_open || null,
             afternoon_close: shopData.afternoon_close || null,
-            // UPDATE: Added delivery service field with default if not provided
             has_delivery: shopData.has_delivery !== undefined ? shopData.has_delivery : false,
-            // UPDATE: Added days of week fields with defaults if not provided
             open_monday: shopData.open_monday !== undefined ? shopData.open_monday : true,
             open_tuesday: shopData.open_tuesday !== undefined ? shopData.open_tuesday : true,
             open_wednesday: shopData.open_wednesday !== undefined ? shopData.open_wednesday : true,
@@ -214,10 +261,12 @@ async function create(shopData) {
         // If no existing shop, proceed with creation
         const shop = await shop_model.create(formattedData);
         
+        // Fetch the created shop with type and subtype relations
+        const createdShop = await getShopWithTypeAndSubtype(shop);
+        
         return { 
             success: "¡Comercio creado!",
-            data: shop
-           
+            data: createdShop
         };
     } catch (err) {
         console.error("-> shop_controller.js - create() - Error al crear el comercio =", err);
@@ -225,22 +274,72 @@ async function create(shopData) {
     }
 }
 
-async function getByType(shopType) {
+async function getByType(id_type) {
     try {
         const shops = await shop_model.findAll({ 
-            where: { type_shop: shopType }
+            where: { id_type: id_type }
         });
 
         if (shops.length === 0) {
-            console.warn(`No hay comercios registrados de tipo =  ${shopType}`);
+            console.warn(`No hay comercios registrados de tipo ID =  ${id_type}`);
             return { error: "No hay comercios registrados de este tipo" }
-             }
+        }
 
-        return { data: shops };
+        // Manually fetch type and subtype for each shop
+        const shopsWithRelations = [];
+        for (const shop of shops) {
+            const shopWithRelations = await getShopWithTypeAndSubtype(shop);
+            shopsWithRelations.push(shopWithRelations);
+        }
+
+        return { data: shopsWithRelations };
     
     } catch (err) {
         console.error("-> shop_controller.js - getByType() - Error = ", err);
         return { error: "Error al obtener los comercios por tipo" };
+    }
+}
+
+async function getBySubtype(id_subtype) {
+    try {
+        const shops = await shop_model.findAll({ 
+            where: { id_subtype: id_subtype }
+        });
+
+        if (shops.length === 0) {
+            console.warn(`No hay comercios registrados de subtipo ID =  ${id_subtype}`);
+            return { error: "No hay comercios registrados de este subtipo", data: [] }
+        }
+
+        // Manually fetch type and subtype for each shop
+        const shopsWithRelations = [];
+        for (const shop of shops) {
+            const shopWithRelations = await getShopWithTypeAndSubtype(shop);
+            shopsWithRelations.push(shopWithRelations);
+        }
+
+        return { data: shopsWithRelations };
+    
+    } catch (err) {
+        console.error("-> shop_controller.js - getBySubtype() - Error = ", err);
+        return { error: "Error al obtener los comercios por subtipo" };
+    }
+}
+
+async function getById(id_shop) {
+    try {
+        const shop = await shop_model.findByPk(id_shop);
+
+        if (!shop) {
+            return { error: "Comercio no encontrado" };
+        }
+
+        const shopWithRelations = await getShopWithTypeAndSubtype(shop);
+
+        return { data: shopWithRelations };
+    } catch (err) {
+        console.error("-> shop_controller.js - getById() - Error = ", err);
+        return { error: "Error al obtener el comercio" };
     }
 }
 
@@ -255,14 +354,35 @@ async function update(id, shopData) {
             return { error: "shop not found" };
         }
 
+        // Verify type exists if being changed
+        if (shopData.id_type) {
+            const type = await type_model.findByPk(shopData.id_type);
+            if (!type) {
+                return { error: "El tipo especificado no existe" };
+            }
+        }
+
+        // Verify subtype exists and matches type if being changed
+        if (shopData.id_subtype) {
+            const subtype = await subtype_model.findOne({
+                where: { 
+                    id_subtype: shopData.id_subtype,
+                    id_type: shopData.id_type || shop.id_type
+                }
+            });
+            if (!subtype) {
+                return { error: "El subtipo especificado no existe o no corresponde al tipo" };
+            }
+        }
+
         console.log('Current shop data:', shop.toJSON());
 
         // Create update data object including new fields
         const updateData = {
             name_shop: shopData.name_shop,
             location_shop: shopData.location_shop,
-            type_shop: shopData.type_shop,
-            subtype_shop: shopData.subtype_shop,
+            id_type: shopData.id_type,
+            id_subtype: shopData.id_subtype,
             calification_shop: shopData.calification_shop,
             image_shop: shopData.image_shop,
             id_user: shopData.id_user,
@@ -270,9 +390,7 @@ async function update(id, shopData) {
             morning_close: shopData.morning_close,
             afternoon_open: shopData.afternoon_open,
             afternoon_close: shopData.afternoon_close,
-            // UPDATE: Added delivery field
             has_delivery: shopData.has_delivery !== undefined ? shopData.has_delivery : shop.has_delivery,
-            // UPDATE: Added days of week fields
             open_monday: shopData.open_monday !== undefined ? shopData.open_monday : shop.open_monday,
             open_tuesday: shopData.open_tuesday !== undefined ? shopData.open_tuesday : shop.open_tuesday,
             open_wednesday: shopData.open_wednesday !== undefined ? shopData.open_wednesday : shop.open_wednesday,
@@ -287,11 +405,13 @@ async function update(id, shopData) {
         // Use the update method
         await shop.update(updateData);
         
-        // Fetch fresh instance
+        // Fetch fresh instance with relations
         const updatedShop = await shop_model.findByPk(id);
-        console.log('Shop after update:', updatedShop.toJSON());
+        const shopWithRelations = await getShopWithTypeAndSubtype(updatedShop);
         
-        return { data: updatedShop };
+        console.log('Shop after update:', shopWithRelations);
+        
+        return { data: shopWithRelations };
     } catch (err) {
         console.error("Error al actualizar el comercio =", err);
         console.error("Error details:", err.stack);
@@ -299,7 +419,6 @@ async function update(id, shopData) {
     }
 }
 
-// UPDATE: Reimplemented updateWithFolder function to properly handle folder renaming and image paths
 async function updateWithFolder(id, shopData) {
     const transaction = await shop_model.sequelize.transaction();
     
@@ -311,6 +430,30 @@ async function updateWithFolder(id, shopData) {
         if (!shop) {
             await transaction.rollback();
             return { error: "Shop not found" };
+        }
+
+        // Verify type exists if being changed
+        if (shopData.id_type) {
+            const type = await type_model.findByPk(shopData.id_type, { transaction });
+            if (!type) {
+                await transaction.rollback();
+                return { error: "El tipo especificado no existe" };
+            }
+        }
+
+        // Verify subtype exists and matches type if being changed
+        if (shopData.id_subtype) {
+            const subtype = await subtype_model.findOne({
+                where: { 
+                    id_subtype: shopData.id_subtype,
+                    id_type: shopData.id_type || shop.id_type
+                },
+                transaction
+            });
+            if (!subtype) {
+                await transaction.rollback();
+                return { error: "El subtipo especificado no existe o no corresponde al tipo" };
+            }
         }
 
         const oldShopName = shopData.old_name_shop;
@@ -378,9 +521,7 @@ async function updateWithFolder(id, shopData) {
             morning_close: shopData.morning_close || shop.morning_close,
             afternoon_open: shopData.afternoon_open || shop.afternoon_open,
             afternoon_close: shopData.afternoon_close || shop.afternoon_close,
-            // UPDATE: Added delivery field
             has_delivery: shopData.has_delivery !== undefined ? shopData.has_delivery : shop.has_delivery,
-            // UPDATE: Added days of week fields
             open_monday: shopData.open_monday !== undefined ? shopData.open_monday : shop.open_monday,
             open_tuesday: shopData.open_tuesday !== undefined ? shopData.open_tuesday : shop.open_tuesday,
             open_wednesday: shopData.open_wednesday !== undefined ? shopData.open_wednesday : shop.open_wednesday,
@@ -396,8 +537,12 @@ async function updateWithFolder(id, shopData) {
         await transaction.commit();
         console.log('Transaction committed successfully');
         
+        // Fetch updated shop with relations
+        const updatedShop = await shop_model.findByPk(id);
+        const shopWithRelations = await getShopWithTypeAndSubtype(updatedShop);
+        
         return { 
-            data: shop,
+            data: shopWithRelations,
             message: "Shop updated successfully with folder structure and image paths" 
         };
     } catch (err) {
@@ -425,7 +570,15 @@ async function getByUserId(id) {
             console.log(`-> shop_controller.js - getByUserId() - No shops found for user ID: ${id}`);
             return { error: "No tienes comercios registrados" };
         }
-        return { data: shops };
+
+        // Manually fetch type and subtype for each shop
+        const shopsWithRelations = [];
+        for (const shop of shops) {
+            const shopWithRelations = await getShopWithTypeAndSubtype(shop);
+            shopsWithRelations.push(shopWithRelations);
+        }
+
+        return { data: shopsWithRelations };
     } catch (err) {
         console.error("-> shop_controller.js - getByUserId() - Error = ", err);
         return { error: "Error al obtener los comercios" };
@@ -476,7 +629,7 @@ async function removeByIdWithProducts(id_shop) {
         const transaction = await shop_model.sequelize.transaction();
 
         try {
-            // ✨ UPDATE: First remove all packages using the package controller
+            // First remove all packages using the package controller
             const packageResult = await packageController.removeByShopId(id_shop, transaction);
             
             if (packageResult.error) {
@@ -503,9 +656,9 @@ async function removeByIdWithProducts(id_shop) {
 
             return { 
                 data: id_shop,
-                message: "El comercio, sus productos, paquetes y archivos se han borrado .", // ✨ UPDATE: Added packages to success message
+                message: "El comercio, sus productos, paquetes y archivos se han borrado .",
                 productsRemoved: productResult.count,
-                packagesRemoved: packageResult.count // ✨ UPDATE: Added packages count to response
+                packagesRemoved: packageResult.count
             };
 
         } catch (err) {
@@ -524,11 +677,13 @@ async function removeByIdWithProducts(id_shop) {
 
 async function getTypesOfShops() {
     try {
-      const shopTypes = await shop_model.findAll({
-        attributes: ['type_shop'],
-        group: ['type_shop'],
+      const types = await type_model.findAll({
+        where: { active_type: true },
+        attributes: ['id_type', 'name_type'],
+        order: [['order_type', 'ASC'], ['name_type', 'ASC']]
       });
-      return { data: shopTypes.map((type) => type.type_shop) };
+      
+      return { data: types };
     } catch (err) {
       console.error('Error al obtener todos los tipos de comercios', err);
       return { error: 'Error al obtener todos los tipos de comercios' };
@@ -541,7 +696,9 @@ export {
     update, 
     removeById, 
     removeByIdWithProducts,
-    getByType, 
+    getByType,
+    getBySubtype, 
+    getById,
     getByUserId, 
     getTypesOfShops,
     updateWithFolder 
@@ -553,7 +710,9 @@ export default {
     update, 
     removeById,
     removeByIdWithProducts, 
-    getByType, 
+    getByType,
+    getBySubtype,
+    getById, 
     getByUserId, 
     getTypesOfShops,
     updateWithFolder 

@@ -12,7 +12,6 @@ import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import { optimizeImage } from '../../../../utils/image/imageOptimizer.js';
 
 export const ShopCreationFormUtils = () => {
-  // UPDATE: Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   
   const {
@@ -31,7 +30,6 @@ export const ShopCreationFormUtils = () => {
     setSelectedShop,
     selectedShop,
     shops,
-    // ✨ UPDATE: Added animation control function from shop context
     startFormExitAnimation
   } = useShop();
 
@@ -44,19 +42,17 @@ export const ShopCreationFormUtils = () => {
       }
 
       console.log('Refrescando lista de tiendas para el usuario:', currentUser.id_user);
-      const response = await axiosInstance.get(`/shop/by-user-id/${currentUser.id_user}`);
+      
+      //update: Use POST endpoint as per original code
+      const response = await axiosInstance.post('/shop/by-user-id', {
+        id_user: currentUser.id_user
+      });
       
       if (response?.data?.data) {
         const fetchedShops = response.data.data;
         console.log(`Se encontraron ${fetchedShops.length} tiendas para el usuario:`, fetchedShops);
         
-        // Actualizar directamente el estado de tiendas (sin usar la función de estado anterior)
-        // Esto asegura que reemplazamos completamente el array de tiendas con los datos frescos
         setShops(fetchedShops);
-        
-        // Forzar un re-render del componente ShopsListBySeller
-        // Podríamos añadir un estado adicional en el contexto para este propósito
-        // setShopListRefreshKey(Date.now()); // Si tuvieras este estado en el contexto
         
         return fetchedShops;
       } else {
@@ -270,20 +266,29 @@ export const ShopCreationFormUtils = () => {
         setShowErrorCard(true);
         return false;
       }
+      
+      //update: Validate that type and subtype IDs are provided
+      if (!formData.id_type || !formData.id_subtype) {
+        setError(prevError => ({
+          ...prevError,
+          shopError: 'Debe seleccionar una categoría y subcategoría'
+        }));
+        setShowErrorCard(true);
+        return false;
+      }
   
       // Ensure the user ID matches the current user
       const shopData = {
         ...formData,
         id_user: currentUser.id_user,
-          // UPDATE: Ensure delivery and days of week fields are included with defaults if not present
-          has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
-          open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
-          open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
-          open_wednesday: formData.open_wednesday !== undefined ? formData.open_wednesday : true,
-          open_thursday: formData.open_thursday !== undefined ? formData.open_thursday : true,
-          open_friday: formData.open_friday !== undefined ? formData.open_friday : true,
-          open_saturday: formData.open_saturday !== undefined ? formData.open_saturday : true,
-          open_sunday: formData.open_sunday !== undefined ? formData.open_sunday : false
+        has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
+        open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
+        open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
+        open_wednesday: formData.open_wednesday !== undefined ? formData.open_wednesday : true,
+        open_thursday: formData.open_thursday !== undefined ? formData.open_thursday : true,
+        open_friday: formData.open_friday !== undefined ? formData.open_friday : true,
+        open_saturday: formData.open_saturday !== undefined ? formData.open_saturday : true,
+        open_sunday: formData.open_sunday !== undefined ? formData.open_sunday : false
       };
   
       console.log('Creating shop with data:', shopData);
@@ -292,7 +297,6 @@ export const ShopCreationFormUtils = () => {
       const userShops = Array.isArray(shops) ? shops.filter(shop => shop.id_user === currentUser.id_user) : [];
       const shopCount = userShops.length;
       
-      // UPDATE: Get shop limits from environment variables instead of hardcoded values
       const isSponsor = currentUser?.category_user === true;
       const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
       const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
@@ -339,7 +343,6 @@ export const ShopCreationFormUtils = () => {
       }
       
       // Actualizar la lista de tiendas inmediatamente para que aparezca en la lista
-      // DEBUG: Mostrar la lista de tiendas antes de la actualización
       console.log('Estado actual de las tiendas antes de agregar:', shops);
       
       const updatedShops = Array.isArray(shops) ? [...shops, newShop] : [newShop];
@@ -388,16 +391,25 @@ export const ShopCreationFormUtils = () => {
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
         afternoon_close: formData.afternoon_close,
-         // UPDATE: Log new fields
-         has_delivery: formData.has_delivery,
-         open_monday: formData.open_monday,
-         open_tuesday: formData.open_tuesday,
-         open_wednesday: formData.open_wednesday,
-         open_thursday: formData.open_thursday,
-         open_friday: formData.open_friday,
-         open_saturday: formData.open_saturday,
-         open_sunday: formData.open_sunday
+        has_delivery: formData.has_delivery,
+        open_monday: formData.open_monday,
+        open_tuesday: formData.open_tuesday,
+        open_wednesday: formData.open_wednesday,
+        open_thursday: formData.open_thursday,
+        open_friday: formData.open_friday,
+        open_saturday: formData.open_saturday,
+        open_sunday: formData.open_sunday
       });
+      
+      //update: Validate that type and subtype IDs are provided
+      if (!formData.id_type || !formData.id_subtype) {
+        setError(prevError => ({
+          ...prevError,
+          shopError: 'Debe seleccionar una categoría y subcategoría'
+        }));
+        setShowErrorCard(true);
+        return false;
+      }
   
       const isNameChanged = selectedShop && selectedShop.name_shop !== formData.name_shop;
       const endpoint = isNameChanged ? '/shop/update-with-folder' : '/shop/update';
@@ -405,8 +417,9 @@ export const ShopCreationFormUtils = () => {
       const updateData = {
         id_shop,
         name_shop: formData.name_shop,
-        type_shop: formData.type_shop,
-        subtype_shop: formData.subtype_shop,
+        //update: Use id_type and id_subtype instead of strings
+        id_type: formData.id_type,
+        id_subtype: formData.id_subtype,
         location_shop: formData.location_shop,
         id_user: currentUser.id_user,
         calification_shop: formData.calification_shop || 0,
@@ -415,7 +428,6 @@ export const ShopCreationFormUtils = () => {
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
         afternoon_close: formData.afternoon_close,
-        // UPDATE: Include new fields in update data
         has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
         open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
         open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
