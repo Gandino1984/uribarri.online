@@ -6,8 +6,10 @@ import { Op } from 'sequelize';
 async function getAll() {
     try {
         const types = await type_model.findAll({
-            where: { active_type: true },
-            order: [['order_type', 'ASC'], ['name_type', 'ASC']]
+            //update: changed from active_type to verified_type
+            where: { verified_type: true },
+            //update: removed order by order_type since field was removed
+            order: [['name_type', 'ASC']]
         });
 
         if (!types || types.length === 0) {
@@ -26,8 +28,10 @@ async function getAll() {
 async function getAllWithSubtypes() {
     try {
         const types = await type_model.findAll({
-            where: { active_type: true },
-            order: [['order_type', 'ASC'], ['name_type', 'ASC']]
+            //update: changed from active_type to verified_type
+            where: { verified_type: true },
+            //update: removed order by order_type since field was removed
+            order: [['name_type', 'ASC']]
         });
 
         if (!types || types.length === 0) {
@@ -41,9 +45,11 @@ async function getAllWithSubtypes() {
             const subtypes = await subtype_model.findAll({
                 where: { 
                     id_type: type.id_type,
-                    active_subtype: true 
+                    //update: changed from active_subtype to verified_subtype
+                    verified_subtype: true 
                 },
-                order: [['order_subtype', 'ASC'], ['name_subtype', 'ASC']]
+                //update: removed order by order_subtype since field was removed
+                order: [['name_subtype', 'ASC']]
             });
             
             typesAndSubtypes[type.name_type] = subtypes.map(subtype => subtype.name_subtype);
@@ -134,7 +140,8 @@ async function update(id, typeData) {
     }
 }
 
-async function removeById(id_type) {
+//update: Enhanced removeById with cascade deactivation option
+async function removeById(id_type, cascadeDeactivate = false) {
     try {
         if (!id_type) {
             return { error: "Tipo no encontrado" };
@@ -165,21 +172,63 @@ async function removeById(id_type) {
         });
         
         if (subtypes && subtypes.length > 0) {
-            return { 
-                error: "No se puede eliminar el tipo porque tiene subtipos asociados"
-            };
+            if (cascadeDeactivate) {
+                // Deactivate all subtypes associated with this type
+                console.log(`Desactivando ${subtypes.length} subtipos asociados al tipo ${id_type}`);
+                
+                for (const subtype of subtypes) {
+                    // Check if any shops are using this subtype
+                    const shopsUsingSubtype = await shop_model.findAll({
+                        where: { id_subtype: subtype.id_subtype }
+                    });
+                    
+                    if (shopsUsingSubtype && shopsUsingSubtype.length > 0) {
+                        return { 
+                            error: `No se puede eliminar el tipo porque el subtipo "${subtype.name_subtype}" está siendo usado por ${shopsUsingSubtype.length} comercio(s)`
+                        };
+                    }
+                    
+                    // Deactivate the subtype
+                    await subtype.update({ verified_subtype: false });
+                }
+            } else {
+                return { 
+                    error: "No se puede eliminar el tipo porque tiene subtipos asociados. Use cascadeDeactivate=true para desactivar también los subtipos."
+                };
+            }
         }
 
         // Instead of deleting, we'll deactivate it
-        await type.update({ active_type: false });
+        //update: changed from active_type to verified_type
+        await type.update({ verified_type: false });
 
         return { 
             data: id_type,
-            message: "El tipo se ha desactivado." 
+            message: cascadeDeactivate && subtypes.length > 0 
+                ? `El tipo y sus ${subtypes.length} subtipos han sido desactivados.`
+                : "El tipo se ha desactivado.",
+            deactivatedSubtypes: cascadeDeactivate ? subtypes.length : 0
         };
     } catch (err) {
         console.error("-> type_controller.js - removeById() - Error = ", err);
         return { error: "Error al eliminar el tipo" };
+    }
+}
+
+//update: Added function to check if a type is valid and active
+async function isTypeValid(id_type) {
+    try {
+        const type = await type_model.findOne({
+            where: {
+                id_type: id_type,
+                verified_type: true
+            }
+        });
+        
+        return !!type;
+    } catch (err) {
+        console.error("-> type_controller.js - isTypeValid() - Error = ", err);
+        return false;
     }
 }
 
@@ -189,7 +238,8 @@ export {
     getById,
     create, 
     update, 
-    removeById
+    removeById,
+    isTypeValid
 }
 
 export default { 
@@ -198,5 +248,6 @@ export default {
     getById,
     create, 
     update, 
-    removeById
+    removeById,
+    isTypeValid
 }

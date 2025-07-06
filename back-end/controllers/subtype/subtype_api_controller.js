@@ -57,8 +57,9 @@ async function create(req, res) {
         const { 
             name_subtype,
             id_type,
-            order_subtype,
-            created_by
+            //update: removed order_subtype since field was removed
+            //update: changed from created_by to createdby_subtype
+            createdby_subtype
         } = req.body;
         
         // Validate required fields
@@ -71,9 +72,11 @@ async function create(req, res) {
         const subtypeData = {
             name_subtype,
             id_type,
-            order_subtype: order_subtype || 0,
-            created_by: created_by || null,
-            active_subtype: true
+            //update: removed order_subtype assignment
+            //update: changed from created_by to createdby_subtype
+            createdby_subtype: createdby_subtype || null,
+            //update: changed from active_subtype to verified_subtype
+            verified_subtype: true
         };
         
         const { error, data, success } = await subtypeController.create(subtypeData);
@@ -94,8 +97,9 @@ async function update(req, res) {
         const {
             name_subtype,
             id_type,
-            order_subtype,
-            active_subtype
+            //update: removed order_subtype since field was removed
+            //update: changed from active_subtype to verified_subtype
+            verified_subtype
         } = req.body;
         
         if (!id_subtype) {
@@ -107,8 +111,9 @@ async function update(req, res) {
         const updateData = {};
         if (name_subtype !== undefined) updateData.name_subtype = name_subtype;
         if (id_type !== undefined) updateData.id_type = id_type;
-        if (order_subtype !== undefined) updateData.order_subtype = order_subtype;
-        if (active_subtype !== undefined) updateData.active_subtype = active_subtype;
+        //update: removed order_subtype assignment
+        //update: changed from active_subtype to verified_subtype
+        if (verified_subtype !== undefined) updateData.verified_subtype = verified_subtype;
         
         const { error, data } = await subtypeController.update(id_subtype, updateData);
         

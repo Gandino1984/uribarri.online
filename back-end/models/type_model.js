@@ -13,24 +13,16 @@ const type_model = sequelize.define("type", {
         allowNull: false,
         unique: true
     },
-    order_type: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    },
-    active_type: {
+    //update: renamed from active_type to verified_type
+    verified_type: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
     },
-    created_by: {
-        type: DataTypes.INTEGER.UNSIGNED,
+    //update: renamed from created_by to createdby_type and changed type to VARCHAR(20)
+    createdby_type: {
+        type: DataTypes.STRING(20),
         allowNull: true
-    },
-    creation_date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
     }
 }, {
     timestamps: false,

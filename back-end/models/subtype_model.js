@@ -16,24 +16,16 @@ const subtype_model = sequelize.define("subtype", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    order_subtype: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    },
-    active_subtype: {
+    //update: renamed from active_subtype to verified_subtype
+    verified_subtype: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
     },
-    created_by: {
-        type: DataTypes.INTEGER.UNSIGNED,
+    //update: renamed from created_by to createdby_subtype and changed type to VARCHAR(20)
+    createdby_subtype: {
+        type: DataTypes.STRING(20),
         allowNull: true
-    },
-    creation_date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
     }
 }, {
     timestamps: false,

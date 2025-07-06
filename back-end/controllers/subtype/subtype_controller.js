@@ -6,8 +6,10 @@ import { Op } from 'sequelize';
 async function getAll() {
     try {
         const subtypes = await subtype_model.findAll({
-            where: { active_subtype: true },
-            order: [['order_subtype', 'ASC'], ['name_subtype', 'ASC']]
+            //update: changed from active_subtype to verified_subtype
+            where: { verified_subtype: true },
+            //update: removed order by order_subtype since field was removed
+            order: [['name_subtype', 'ASC']]
         });
 
         if (!subtypes || subtypes.length === 0) {
@@ -41,9 +43,11 @@ async function getByTypeId(id_type) {
         const subtypes = await subtype_model.findAll({
             where: { 
                 id_type: id_type,
-                active_subtype: true 
+                //update: changed from active_subtype to verified_subtype
+                verified_subtype: true 
             },
-            order: [['order_subtype', 'ASC'], ['name_subtype', 'ASC']]
+            //update: removed order by order_subtype since field was removed
+            order: [['name_subtype', 'ASC']]
         });
 
         if (!subtypes || subtypes.length === 0) {
@@ -201,7 +205,8 @@ async function removeById(id_subtype) {
         }
 
         // Instead of deleting, we'll deactivate it
-        await subtype.update({ active_subtype: false });
+        //update: changed from active_subtype to verified_subtype
+        await subtype.update({ verified_subtype: false });
 
         return { 
             data: id_subtype,

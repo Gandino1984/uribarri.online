@@ -115,14 +115,18 @@ const ShopCardUtils = () => {
     });
   }, []);
 
+  //update: Modified to work with type and subtype names from the shop object
   const formatShopType = useCallback((shop) => {
-    if (!shop?.type_shop) return 'No especificado';
+    // Check if shop has type and subtype information
+    if (!shop?.type || !shop?.type?.name_type) return 'No especificado';
     
-    if (shop?.subtype_shop) {
-      return `${shop.type_shop} - ${shop.subtype_shop}`;
+    // If shop has subtype information, combine them
+    if (shop?.subtype?.name_subtype) {
+      return `${shop.type.name_type} - ${shop.subtype.name_subtype}`;
     }
     
-    return shop.type_shop;
+    // Otherwise just return the type name
+    return shop.type.name_type;
   }, []);
 
   const checkHasContinuousSchedule = useCallback((shop) => {

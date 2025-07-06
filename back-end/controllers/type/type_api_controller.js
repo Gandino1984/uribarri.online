@@ -48,8 +48,9 @@ async function create(req, res) {
     try {
         const { 
             name_type,
-            order_type,
-            created_by
+            //update: removed order_type since field was removed
+            //update: changed from created_by to createdby_type
+            createdby_type
         } = req.body;
         
         // Validate required fields
@@ -61,9 +62,11 @@ async function create(req, res) {
         
         const typeData = {
             name_type,
-            order_type: order_type || 0,
-            created_by: created_by || null,
-            active_type: true
+            //update: removed order_type assignment
+            //update: changed from created_by to createdby_type
+            createdby_type: createdby_type || null,
+            //update: changed from active_type to verified_type
+            verified_type: true
         };
         
         const { error, data, success } = await typeController.create(typeData);
@@ -83,8 +86,9 @@ async function update(req, res) {
         const { id_type } = req.params;
         const {
             name_type,
-            order_type,
-            active_type
+            //update: removed order_type since field was removed
+            //update: changed from active_type to verified_type
+            verified_type
         } = req.body;
         
         if (!id_type) {
@@ -95,8 +99,9 @@ async function update(req, res) {
         
         const updateData = {};
         if (name_type !== undefined) updateData.name_type = name_type;
-        if (order_type !== undefined) updateData.order_type = order_type;
-        if (active_type !== undefined) updateData.active_type = active_type;
+        //update: removed order_type assignment
+        //update: changed from active_type to verified_type
+        if (verified_type !== undefined) updateData.verified_type = verified_type;
         
         const { error, data } = await typeController.update(id_type, updateData);
         
