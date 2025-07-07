@@ -286,6 +286,61 @@ async function removeById(id_subtype) {
     }
 }
 
+//update: New function to remove all subtypes by type ID
+async function removeByTypeId(id_type) {
+    try {
+        if (!id_type) {
+            return { error: "El ID del tipo es obligatorio" };
+        }
+
+        // Verify that the type exists
+        const type = await type_model.findByPk(id_type);
+        if (!type) {
+            return { error: "El tipo especificado no existe" };
+        }
+
+        // Find all subtypes for this type
+        const subtypes = await subtype_model.findAll({
+            where: { id_type: id_type }
+        });
+
+        if (!subtypes || subtypes.length === 0) {
+            return { 
+                error: "No hay subtipos para eliminar en este tipo",
+                data: { count: 0 }
+            };
+        }
+
+        // Check if any of the subtypes are being used by shops
+        const subtypeIds = subtypes.map(subtype => subtype.id_subtype);
+        const shops = await shop_model.findAll({
+            where: { id_subtype: subtypeIds }
+        });
+
+        if (shops && shops.length > 0) {
+            return { 
+                error: "No se pueden eliminar los subtipos porque hay comercios que los utilizan"
+            };
+        }
+
+        // Delete all subtypes for this type
+        const deletedCount = await subtype_model.destroy({
+            where: { id_type: id_type }
+        });
+
+        return { 
+            data: { 
+                count: deletedCount,
+                id_type: id_type
+            },
+            message: `Se han eliminado ${deletedCount} subtipo(s) del tipo especificado.` 
+        };
+    } catch (err) {
+        console.error("-> subtype_controller.js - removeByTypeId() - Error = ", err);
+        return { error: "Error al eliminar los subtipos del tipo" };
+    }
+}
+
 export { 
     getAll, 
     getVerified,
@@ -294,7 +349,8 @@ export {
     getById,
     create, 
     update, 
-    removeById
+    removeById,
+    removeByTypeId
 }
 
 export default { 
@@ -305,5 +361,6 @@ export default {
     getById,
     create, 
     update, 
-    removeById
+    removeById,
+    removeByTypeId
 }

@@ -16,13 +16,11 @@ const subtype_model = sequelize.define("subtype", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    //update: renamed from active_subtype to verified_subtype
     verified_subtype: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
     },
-    //update: renamed from created_by to createdby_subtype and changed type to VARCHAR(20)
     createdby_subtype: {
         type: DataTypes.STRING(20),
         allowNull: true

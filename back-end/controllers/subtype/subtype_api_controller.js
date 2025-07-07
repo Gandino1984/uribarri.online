@@ -174,6 +174,33 @@ async function removeById(req, res) {
     }
 }
 
+//update: New function to remove all subtypes by type ID
+async function removeByTypeId(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({ 
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+        
+        const { error, data, message } = await subtypeController.removeByTypeId(id_type);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ data, message });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - removeByTypeId() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al eliminar los subtipos del tipo",
+            details: err.message 
+        });
+    }
+}
+
 export {
     getAll,
     getVerified,
@@ -182,7 +209,8 @@ export {
     getById,
     create,
     update,
-    removeById
+    removeById,
+    removeByTypeId
 }
 
 export default {
@@ -193,5 +221,6 @@ export default {
     getById,
     create,
     update,
-    removeById
+    removeById,
+    removeByTypeId
 }

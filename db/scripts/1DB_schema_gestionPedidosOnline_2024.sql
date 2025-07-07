@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`type` (
   `id_type` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name_type` VARCHAR(100) NOT NULL,
-  `verified_type` TINYINT(1) NOT NULL DEFAULT 1,
+  `verified_type` TINYINT(1) NOT NULL DEFAULT 0,
   `createdby_type` VARCHAR(20) NULL,
   PRIMARY KEY (`id_type`),
   UNIQUE INDEX `name_type_UNIQUE` (`name_type` ASC) VISIBLE
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`subtype` (
   `id_subtype` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name_subtype` VARCHAR(100) NOT NULL,
   `id_type` INT UNSIGNED NOT NULL,
-  `verified_subtype` TINYINT(1) NOT NULL DEFAULT 1,
+  `verified_subtype` TINYINT(1) NOT NULL DEFAULT 0,
   `createdby_subtype` VARCHAR(20) NULL,
   PRIMARY KEY (`id_subtype`),
   UNIQUE INDEX `name_type_unique` (`name_subtype` ASC, `id_type` ASC) VISIBLE
