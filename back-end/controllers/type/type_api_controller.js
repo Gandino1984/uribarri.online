@@ -68,6 +68,27 @@ async function getById(req, res) {
     }
 }
 
+//update: New function to get all subtypes for a specific type
+async function getSubtypesByTypeId(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({ 
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+        
+        const { error, data, type } = await typeController.getSubtypesByTypeId(id_type);
+        res.json({ error, data, type });
+    } catch (err) {
+        console.error("-> type_api_controller.js - getSubtypesByTypeId() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener subtipos del tipo"
+        });
+    }
+}
+
 //update: Modified to remove verified_type from request body since it's always false on creation
 async function create(req, res) {
     try {
@@ -166,6 +187,7 @@ export {
     getUnverified,
     getAllWithSubtypes,
     getById,
+    getSubtypesByTypeId,
     create,
     update,
     removeById
@@ -177,6 +199,7 @@ export default {
     getUnverified,
     getAllWithSubtypes,
     getById,
+    getSubtypesByTypeId,
     create,
     update,
     removeById

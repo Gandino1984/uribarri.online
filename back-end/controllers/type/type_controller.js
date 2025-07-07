@@ -112,6 +112,50 @@ async function getById(id_type) {
     }
 }
 
+//update: New function to get all subtypes for a specific type
+async function getSubtypesByTypeId(id_type) {
+    try {
+        // Verify that the type exists
+        const type = await type_model.findByPk(id_type);
+        
+        if (!type) {
+            return { error: "El tipo especificado no existe" };
+        }
+
+        // Get all subtypes for this type (both verified and unverified)
+        const subtypes = await subtype_model.findAll({
+            where: { 
+                id_type: id_type
+            },
+            order: [['name_subtype', 'ASC']]
+        });
+
+        if (!subtypes || subtypes.length === 0) {
+            return { 
+                error: "No hay subtipos registrados para este tipo", 
+                data: [],
+                type: {
+                    id_type: type.id_type,
+                    name_type: type.name_type
+                }
+            };
+        }
+
+        console.log(`-> type_controller.js - getSubtypesByTypeId() - ${subtypes.length} subtipos encontrados para el tipo ${id_type}`);
+
+        return { 
+            data: subtypes,
+            type: {
+                id_type: type.id_type,
+                name_type: type.name_type
+            }
+        };
+    } catch (err) {
+        console.error("-> type_controller.js - getSubtypesByTypeId() - Error = ", err);
+        return { error: "Error al obtener subtipos del tipo" };
+    }
+}
+
 //update: Modified to create types with verified_type: false by default
 async function create(typeData) {
     try {
@@ -275,6 +319,7 @@ export {
     getUnverified,
     getAllWithSubtypes,
     getById,
+    getSubtypesByTypeId,
     create, 
     update, 
     removeById,
@@ -287,6 +332,7 @@ export default {
     getUnverified,
     getAllWithSubtypes,
     getById,
+    getSubtypesByTypeId,
     create, 
     update, 
     removeById,

@@ -18,6 +18,10 @@ router.get("/unverified", typeApiController.getUnverified);
 // Get all types with their subtypes
 router.get("/with-subtypes", typeApiController.getAllWithSubtypes);
 
+//update: New endpoint to get all subtypes for a specific type
+// Get subtypes by type ID
+router.get("/:id_type/subtypes", typeApiController.getSubtypesByTypeId);
+
 // Get type by ID
 router.get("/:id_type", typeApiController.getById);
 
