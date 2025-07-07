@@ -3,8 +3,17 @@ import subtypeApiController from "../controllers/subtype/subtype_api_controller.
 
 const router = Router();
 
+//update: Modified to get ALL subtypes (verified and unverified)
 // Get all subtypes
 router.get("/", subtypeApiController.getAll);
+
+//update: New endpoint to get only verified subtypes
+// Get verified subtypes
+router.get("/verified", subtypeApiController.getVerified);
+
+//update: New endpoint to get only unverified subtypes
+// Get unverified subtypes
+router.get("/unverified", subtypeApiController.getUnverified);
 
 // Get subtypes by type ID
 router.get("/by-type/:id_type", subtypeApiController.getByTypeId);

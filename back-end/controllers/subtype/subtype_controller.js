@@ -3,12 +3,10 @@ import type_model from "../../models/type_model.js";
 import shop_model from "../../models/shop_model.js";
 import { Op } from 'sequelize';
 
+//update: Modified to return ALL subtypes (verified and unverified)
 async function getAll() {
     try {
         const subtypes = await subtype_model.findAll({
-            //update: changed from active_subtype to verified_subtype
-            where: { verified_subtype: true },
-            //update: removed order by order_subtype since field was removed
             order: [['name_subtype', 'ASC']]
         });
 
@@ -38,15 +36,81 @@ async function getAll() {
     }
 }
 
+//update: New function to get only verified subtypes
+async function getVerified() {
+    try {
+        const subtypes = await subtype_model.findAll({
+            where: { verified_subtype: true },
+            order: [['name_subtype', 'ASC']]
+        });
+
+        if (!subtypes || subtypes.length === 0) {
+            return { error: "No hay subtipos verificados registrados", data: [] };
+        }
+
+        // Manually fetch type information for each subtype
+        const subtypesWithType = [];
+        for (const subtype of subtypes) {
+            const type = await type_model.findByPk(subtype.id_type);
+            subtypesWithType.push({
+                ...subtype.toJSON(),
+                type: type ? {
+                    id_type: type.id_type,
+                    name_type: type.name_type
+                } : null
+            });
+        }
+
+        console.log("-> subtype_controller.js - getVerified() - subtipos verificados encontrados = ", subtypesWithType.length);
+
+        return { data: subtypesWithType };
+    } catch (err) {
+        console.error("-> subtype_controller.js - getVerified() - Error = ", err);
+        return { error: "Error al obtener subtipos verificados" };
+    }
+}
+
+//update: New function to get only unverified subtypes
+async function getUnverified() {
+    try {
+        const subtypes = await subtype_model.findAll({
+            where: { verified_subtype: false },
+            order: [['name_subtype', 'ASC']]
+        });
+
+        if (!subtypes || subtypes.length === 0) {
+            return { error: "No hay subtipos no verificados registrados", data: [] };
+        }
+
+        // Manually fetch type information for each subtype
+        const subtypesWithType = [];
+        for (const subtype of subtypes) {
+            const type = await type_model.findByPk(subtype.id_type);
+            subtypesWithType.push({
+                ...subtype.toJSON(),
+                type: type ? {
+                    id_type: type.id_type,
+                    name_type: type.name_type
+                } : null
+            });
+        }
+
+        console.log("-> subtype_controller.js - getUnverified() - subtipos no verificados encontrados = ", subtypesWithType.length);
+
+        return { data: subtypesWithType };
+    } catch (err) {
+        console.error("-> subtype_controller.js - getUnverified() - Error = ", err);
+        return { error: "Error al obtener subtipos no verificados" };
+    }
+}
+
 async function getByTypeId(id_type) {
     try {
         const subtypes = await subtype_model.findAll({
             where: { 
                 id_type: id_type,
-                //update: changed from active_subtype to verified_subtype
                 verified_subtype: true 
             },
-            //update: removed order by order_subtype since field was removed
             order: [['name_subtype', 'ASC']]
         });
 
@@ -87,6 +151,7 @@ async function getById(id_subtype) {
     }
 }
 
+//update: Modified to create subtypes with verified_subtype: false by default
 async function create(subtypeData) {
     try {
         // Check if subtype already exists for this type
@@ -110,8 +175,11 @@ async function create(subtypeData) {
             return { error: "El tipo especificado no existe" };
         }
 
-        // Create the subtype
-        const subtype = await subtype_model.create(subtypeData);
+        // Create the subtype with verified_subtype: false by default
+        const subtype = await subtype_model.create({
+            ...subtypeData,
+            verified_subtype: false
+        });
         
         return { 
             success: "¡Subtipo creado!",
@@ -179,6 +247,7 @@ async function update(id, subtypeData) {
     }
 }
 
+//update: Modified to actually DELETE the subtype instead of just unverifying it
 async function removeById(id_subtype) {
     try {
         if (!id_subtype) {
@@ -204,13 +273,12 @@ async function removeById(id_subtype) {
             };
         }
 
-        // Instead of deleting, we'll deactivate it
-        //update: changed from active_subtype to verified_subtype
-        await subtype.update({ verified_subtype: false });
+        // Delete the subtype
+        await subtype.destroy();
 
         return { 
             data: id_subtype,
-            message: "El subtipo se ha desactivado." 
+            message: "El subtipo se ha eliminado." 
         };
     } catch (err) {
         console.error("-> subtype_controller.js - removeById() - Error = ", err);
@@ -220,6 +288,8 @@ async function removeById(id_subtype) {
 
 export { 
     getAll, 
+    getVerified,
+    getUnverified,
     getByTypeId,
     getById,
     create, 
@@ -229,6 +299,8 @@ export {
 
 export default { 
     getAll, 
+    getVerified,
+    getUnverified,
     getByTypeId,
     getById,
     create, 

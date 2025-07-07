@@ -12,6 +12,32 @@ async function getAll(req, res) {
     }
 }
 
+//update: New function to get only verified subtypes
+async function getVerified(req, res) {
+    try {
+        const { error, data } = await subtypeController.getVerified();
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - getVerified() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener subtipos verificados"
+        });
+    }
+}
+
+//update: New function to get only unverified subtypes
+async function getUnverified(req, res) {
+    try {
+        const { error, data } = await subtypeController.getUnverified();
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - getUnverified() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener subtipos no verificados"
+        });
+    }
+}
+
 async function getByTypeId(req, res) {
     try {
         const { id_type } = req.params;
@@ -52,13 +78,12 @@ async function getById(req, res) {
     }
 }
 
+//update: Modified to remove verified_subtype from request body since it's always false on creation
 async function create(req, res) {
     try {
         const { 
             name_subtype,
             id_type,
-            //update: removed order_subtype since field was removed
-            //update: changed from created_by to createdby_subtype
             createdby_subtype
         } = req.body;
         
@@ -72,11 +97,7 @@ async function create(req, res) {
         const subtypeData = {
             name_subtype,
             id_type,
-            //update: removed order_subtype assignment
-            //update: changed from created_by to createdby_subtype
-            createdby_subtype: createdby_subtype || null,
-            //update: changed from active_subtype to verified_subtype
-            verified_subtype: true
+            createdby_subtype: createdby_subtype || null
         };
         
         const { error, data, success } = await subtypeController.create(subtypeData);
@@ -97,8 +118,6 @@ async function update(req, res) {
         const {
             name_subtype,
             id_type,
-            //update: removed order_subtype since field was removed
-            //update: changed from active_subtype to verified_subtype
             verified_subtype
         } = req.body;
         
@@ -111,8 +130,6 @@ async function update(req, res) {
         const updateData = {};
         if (name_subtype !== undefined) updateData.name_subtype = name_subtype;
         if (id_type !== undefined) updateData.id_type = id_type;
-        //update: removed order_subtype assignment
-        //update: changed from active_subtype to verified_subtype
         if (verified_subtype !== undefined) updateData.verified_subtype = verified_subtype;
         
         const { error, data } = await subtypeController.update(id_subtype, updateData);
@@ -159,6 +176,8 @@ async function removeById(req, res) {
 
 export {
     getAll,
+    getVerified,
+    getUnverified,
     getByTypeId,
     getById,
     create,
@@ -168,6 +187,8 @@ export {
 
 export default {
     getAll,
+    getVerified,
+    getUnverified,
     getByTypeId,
     getById,
     create,
