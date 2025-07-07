@@ -3,8 +3,17 @@ import typeApiController from "../controllers/type/type_api_controller.js";
 
 const router = Router();
 
+//update: Modified to get ALL types (verified and unverified)
 // Get all types
 router.get("/", typeApiController.getAll);
+
+//update: New endpoint to get only verified types
+// Get verified types
+router.get("/verified", typeApiController.getVerified);
+
+//update: New endpoint to get only unverified types
+// Get unverified types
+router.get("/unverified", typeApiController.getUnverified);
 
 // Get all types with their subtypes
 router.get("/with-subtypes", typeApiController.getAllWithSubtypes);

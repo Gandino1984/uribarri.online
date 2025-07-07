@@ -12,6 +12,30 @@ async function getAll(req, res) {
     }
 }
 
+async function getVerified(req, res) {
+    try {
+        const { error, data } = await typeController.getVerified();
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> type_api_controller.js - getVerified() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener tipos verificados"
+        });
+    }
+}
+
+async function getUnverified(req, res) {
+    try {
+        const { error, data } = await typeController.getUnverified();
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> type_api_controller.js - getUnverified() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener tipos no verificados"
+        });
+    }
+}
+
 async function getAllWithSubtypes(req, res) {
     try {
         const { error, data } = await typeController.getAllWithSubtypes();
@@ -44,12 +68,11 @@ async function getById(req, res) {
     }
 }
 
+//update: Modified to remove verified_type from request body since it's always false on creation
 async function create(req, res) {
     try {
         const { 
             name_type,
-            //update: removed order_type since field was removed
-            //update: changed from created_by to createdby_type
             createdby_type
         } = req.body;
         
@@ -62,11 +85,7 @@ async function create(req, res) {
         
         const typeData = {
             name_type,
-            //update: removed order_type assignment
-            //update: changed from created_by to createdby_type
-            createdby_type: createdby_type || null,
-            //update: changed from active_type to verified_type
-            verified_type: true
+            createdby_type: createdby_type || null
         };
         
         const { error, data, success } = await typeController.create(typeData);
@@ -86,8 +105,6 @@ async function update(req, res) {
         const { id_type } = req.params;
         const {
             name_type,
-            //update: removed order_type since field was removed
-            //update: changed from active_type to verified_type
             verified_type
         } = req.body;
         
@@ -99,8 +116,6 @@ async function update(req, res) {
         
         const updateData = {};
         if (name_type !== undefined) updateData.name_type = name_type;
-        //update: removed order_type assignment
-        //update: changed from active_type to verified_type
         if (verified_type !== undefined) updateData.verified_type = verified_type;
         
         const { error, data } = await typeController.update(id_type, updateData);
@@ -147,6 +162,8 @@ async function removeById(req, res) {
 
 export {
     getAll,
+    getVerified,
+    getUnverified,
     getAllWithSubtypes,
     getById,
     create,
@@ -156,6 +173,8 @@ export {
 
 export default {
     getAll,
+    getVerified,
+    getUnverified,
     getAllWithSubtypes,
     getById,
     create,

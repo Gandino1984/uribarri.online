@@ -6,9 +6,6 @@ import { Op } from 'sequelize';
 async function getAll() {
     try {
         const types = await type_model.findAll({
-            //update: changed from active_type to verified_type
-            where: { verified_type: true },
-            //update: removed order by order_type since field was removed
             order: [['name_type', 'ASC']]
         });
 
@@ -25,12 +22,50 @@ async function getAll() {
     }
 }
 
+async function getVerified() {
+    try {
+        const types = await type_model.findAll({
+            where: { verified_type: true },
+            order: [['name_type', 'ASC']]
+        });
+
+        if (!types || types.length === 0) {
+            return { error: "No hay tipos verificados registrados", data: [] };
+        }
+
+        console.log("-> type_controller.js - getVerified() - tipos verificados encontrados = ", types.length);
+
+        return { data: types };
+    } catch (err) {
+        console.error("-> type_controller.js - getVerified() - Error = ", err);
+        return { error: "Error al obtener tipos verificados" };
+    }
+}
+
+async function getUnverified() {
+    try {
+        const types = await type_model.findAll({
+            where: { verified_type: false },
+            order: [['name_type', 'ASC']]
+        });
+
+        if (!types || types.length === 0) {
+            return { error: "No hay tipos no verificados registrados", data: [] };
+        }
+
+        console.log("-> type_controller.js - getUnverified() - tipos no verificados encontrados = ", types.length);
+
+        return { data: types };
+    } catch (err) {
+        console.error("-> type_controller.js - getUnverified() - Error = ", err);
+        return { error: "Error al obtener tipos no verificados" };
+    }
+}
+
 async function getAllWithSubtypes() {
     try {
         const types = await type_model.findAll({
-            //update: changed from active_type to verified_type
             where: { verified_type: true },
-            //update: removed order by order_type since field was removed
             order: [['name_type', 'ASC']]
         });
 
@@ -45,10 +80,8 @@ async function getAllWithSubtypes() {
             const subtypes = await subtype_model.findAll({
                 where: { 
                     id_type: type.id_type,
-                    //update: changed from active_subtype to verified_subtype
                     verified_subtype: true 
                 },
-                //update: removed order by order_subtype since field was removed
                 order: [['name_subtype', 'ASC']]
             });
             
@@ -79,11 +112,14 @@ async function getById(id_type) {
     }
 }
 
+//update: Modified to create types with verified_type: false by default
 async function create(typeData) {
     try {
-        // Check if type already exists by name
+        //update: Check if type already exists (regardless of verified status)
         const existingType = await type_model.findOne({ 
-            where: { name_type: typeData.name_type } 
+            where: { 
+                name_type: typeData.name_type
+            } 
         });
 
         if (existingType) {
@@ -93,8 +129,11 @@ async function create(typeData) {
             };
         }
 
-        // Create the type
-        const type = await type_model.create(typeData);
+        // Create the type with verified_type: false by default
+        const type = await type_model.create({
+            ...typeData,
+            verified_type: false
+        });
         
         return { 
             success: "¡Tipo creado!",
@@ -120,7 +159,8 @@ async function update(id, typeData) {
             const existingType = await type_model.findOne({ 
                 where: { 
                     name_type: typeData.name_type,
-                    id_type: { [Op.ne]: id }
+                    id_type: { [Op.ne]: id },
+                    verified_type: true
                 } 
             });
 
@@ -140,8 +180,7 @@ async function update(id, typeData) {
     }
 }
 
-//update: Enhanced removeById with cascade deactivation option
-async function removeById(id_type, cascadeDeactivate = false) {
+async function removeById(id_type, cascadeDelete = false) {
     try {
         if (!id_type) {
             return { error: "Tipo no encontrado" };
@@ -172,9 +211,9 @@ async function removeById(id_type, cascadeDeactivate = false) {
         });
         
         if (subtypes && subtypes.length > 0) {
-            if (cascadeDeactivate) {
-                // Deactivate all subtypes associated with this type
-                console.log(`Desactivando ${subtypes.length} subtipos asociados al tipo ${id_type}`);
+            if (cascadeDelete) {
+                // Delete all subtypes associated with this type
+                console.log(`Eliminando ${subtypes.length} subtipos asociados al tipo ${id_type}`);
                 
                 for (const subtype of subtypes) {
                     // Check if any shops are using this subtype
@@ -188,26 +227,25 @@ async function removeById(id_type, cascadeDeactivate = false) {
                         };
                     }
                     
-                    // Deactivate the subtype
-                    await subtype.update({ verified_subtype: false });
+                    // Delete the subtype
+                    await subtype.destroy();
                 }
             } else {
                 return { 
-                    error: "No se puede eliminar el tipo porque tiene subtipos asociados. Use cascadeDeactivate=true para desactivar también los subtipos."
+                    error: "No se puede eliminar el tipo porque tiene subtipos asociados. Use cascadeDelete=true para eliminar también los subtipos."
                 };
             }
         }
 
-        // Instead of deleting, we'll deactivate it
-        //update: changed from active_type to verified_type
-        await type.update({ verified_type: false });
+        // Delete the type
+        await type.destroy();
 
         return { 
             data: id_type,
-            message: cascadeDeactivate && subtypes.length > 0 
-                ? `El tipo y sus ${subtypes.length} subtipos han sido desactivados.`
-                : "El tipo se ha desactivado.",
-            deactivatedSubtypes: cascadeDeactivate ? subtypes.length : 0
+            message: cascadeDelete && subtypes.length > 0 
+                ? `El tipo y sus ${subtypes.length} subtipos han sido eliminados.`
+                : "El tipo se ha eliminado.",
+            deletedSubtypes: cascadeDelete ? subtypes.length : 0
         };
     } catch (err) {
         console.error("-> type_controller.js - removeById() - Error = ", err);
@@ -215,7 +253,6 @@ async function removeById(id_type, cascadeDeactivate = false) {
     }
 }
 
-//update: Added function to check if a type is valid and active
 async function isTypeValid(id_type) {
     try {
         const type = await type_model.findOne({
@@ -234,6 +271,8 @@ async function isTypeValid(id_type) {
 
 export { 
     getAll, 
+    getVerified,
+    getUnverified,
     getAllWithSubtypes,
     getById,
     create, 
@@ -244,6 +283,8 @@ export {
 
 export default { 
     getAll, 
+    getVerified,
+    getUnverified,
     getAllWithSubtypes,
     getById,
     create, 

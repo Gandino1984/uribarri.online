@@ -21,7 +21,6 @@ router.use("/provider", providerApiRouter);
 
 router.use("/package", packageApiRouter); 
 
-//update: Added type and subtype routes
 router.use("/type", typeApiRouter);
 
 router.use("/subtype", subtypeApiRouter);
