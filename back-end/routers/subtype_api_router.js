@@ -18,7 +18,6 @@ router.get("/by-type/:id_type", subtypeApiController.getByTypeId);
 // Create new subtype
 router.post("/create", subtypeApiController.create);
 
-//update: Moved remove-by-type route before the dynamic :id_subtype routes to prevent route conflicts
 // Remove all subtypes by type ID
 router.delete("/remove-by-type/:id_type", subtypeApiController.removeByTypeId);
 
