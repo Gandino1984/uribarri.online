@@ -34,13 +34,17 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
     }
   };
   
-  //update: Function to fetch subtypes for a specific type
+  //update: Function to fetch subtypes for a specific type - Fixed API endpoint
   const fetchSubtypesForType = async (typeId) => {
     try {
       setLoadingSubtypes(true);
-      const response = await axiosInstance.get(`/subtype/by-type/${typeId}`);
+      // Fixed: Use the correct API endpoint that matches the router
+      const response = await axiosInstance.get(`/type/${typeId}/subtypes`);
       if (response.data && !response.data.error) {
         setSubtypesForSelectedType(response.data.data);
+      } else {
+        console.error('Error in response:', response.data.error);
+        setSubtypesForSelectedType([]);
       }
     } catch (error) {
       console.error('Error fetching subtypes:', error);
@@ -140,4 +144,4 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
   );
 };
 
-export default ShopBasicInfo;
+export default ShopBasicInfo; 
