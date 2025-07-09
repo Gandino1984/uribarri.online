@@ -151,28 +151,48 @@ export const ShopCreationFormUtils = () => {
       // Primero validamos la imagen
       await validateImageFile(file);
       
-      // Siempre optimizamos y convertimos a WebP
+      //update: Always optimize and convert to WebP, enforcing 1MB limit
       let optimizedFile = file;
       try {
-        // Optimizar imagen usando la función de imageOptimizer.js
+        // Show initial info message
+        setInfo(prevInfo => ({
+          ...prevInfo,
+          imageInfo: "Optimizando imagen..."
+        }));
+        setShowInfoCard(true);
+        
+        //update: Optimize image with strict 1MB limit
         optimizedFile = await optimizeImage(file, {
           maxWidth: 1200,
           maxHeight: 1200,
           quality: 0.8,
           format: 'image/webp',
-          maxSizeKB: 1024 // Límite de 1MB
-          });
+          maxSizeKB: 1024 // Strict 1MB limit
+        });
+        
         console.log('Imagen optimizada:', {
           originalSize: Math.round(file.size / 1024) + 'KB',
-          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB',
+          originalFormat: file.type,
+          optimizedFormat: optimizedFile.type
         });
+        
+        //update: Verify the optimized file is under 1MB
+        if (optimizedFile.size > 1024 * 1024) {
+          console.warn('La imagen optimizada aún excede 1MB, pero procederemos con el mejor resultado posible');
+        }
       } catch (optimizeError) {
-        console.warn('Falló la optimización de imagen, usando archivo original:', optimizeError);
+        console.error('Error al optimizar imagen:', optimizeError);
+        setError(prevError => ({
+          ...prevError,
+          imageError: "Error al optimizar la imagen. Por favor, intente con otra imagen."
+        }));
+        setShowErrorCard(true);
+        return false;
       }
 
       setUploading(true);
       
-      // Usamos la función uploadShopCover de las utilidades existentes
       // Creamos FormData directamente para asegurarnos de que el campo tenga el nombre correcto
       const formData = new FormData();
       formData.append('shopCover', optimizedFile); // Este nombre debe coincidir con lo esperado en el backend
@@ -230,7 +250,7 @@ export const ShopCreationFormUtils = () => {
         
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          imageSuccess: "Imagen actualizada"
+          imageSuccess: "Imagen subida correctamente (formato WebP)"
         }));
         setShowSuccessCard(true);
         

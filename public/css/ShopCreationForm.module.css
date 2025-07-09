@@ -82,7 +82,8 @@
   font-size: 1.1rem;
   font-weight: 7px;
   /* text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5); */
-  color: var(--dark-gradient-purple-start);
+  color: black;
+  /* color: var(--dark-gradient-purple-start); */
   padding-bottom: .5rem;
   /* padding-top: .5rem; */
 }
@@ -93,7 +94,18 @@
   font-size: 0.8rem;
   color: white;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+.sectionDescription2 {
+  font-style: italic;
+  text-align: center;
+  max-width: 90%;
+  font-size: 0.75rem;
+  color: rgb(235, 235, 235);
+  font-weight: 500;
+  margin-top: 7px;
+  margin-bottom: 10px;
 }
 
 .formFields {

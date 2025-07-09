@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+//update: Define __filename and __dirname at module level
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -397,6 +398,9 @@ async function update(id, shopData) {
 
 async function updateWithFolder(id, shopData, oldName) {
     try {
+        //update: Ensure __dirname is defined
+        console.log('__dirname value:', __dirname);
+        
         const shop = await shop_model.findByPk(id);
         
         if (!shop) {
@@ -429,8 +433,11 @@ async function updateWithFolder(id, shopData, oldName) {
 
         // Handle folder renaming if shop name is changing
         if (shopData.name_shop && shopData.name_shop !== oldName) {
+            //update: Fix the path construction issue
             const oldPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'shops', oldName);
             const newPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'shops', shopData.name_shop);
+            
+            console.log('Attempting to rename folder from:', oldPath, 'to:', newPath);
             
             if (fs.existsSync(oldPath)) {
                 try {

@@ -14,8 +14,6 @@ export const ShopProvider = ({ children }) => {
   const [selectedShop, setSelectedShop] = useState(null);
   const [isAddingShop, setIsAddingShop] = useState(false);
   const [showShopCreationForm, setShowShopCreationForm] = useState(false);
-  
-  //update: Removed static shopTypes and now will store from database
   const [shopTypes, setShopTypes] = useState([]);
   const [shopType, setShopType] = useState('');
   const [selectedShopType, setSelectedShopType] = useState(null);
@@ -24,7 +22,6 @@ export const ShopProvider = ({ children }) => {
   
   const [newShop, setNewShop] = useState({
     name_shop: '',
-    //update: Changed to use id_type and id_subtype instead of strings
     id_type: '',
     id_subtype: '',
     location_shop: '',
@@ -45,10 +42,7 @@ export const ShopProvider = ({ children }) => {
     open_sunday: false
   });
   
-  //update: Now will be populated from database
   const [shopTypesAndSubtypes, setShopTypesAndSubtypes] = useState({});
-  
-  //update: Add loading state for types
   const [typesLoading, setTypesLoading] = useState(false);
   const [typesError, setTypesError] = useState(null);
 
@@ -57,7 +51,6 @@ export const ShopProvider = ({ children }) => {
     fetchTypesAndSubtypes();
   }, []);
 
-  //update: Function to fetch types and subtypes from API
   const fetchTypesAndSubtypes = async () => {
     try {
       setTypesLoading(true);

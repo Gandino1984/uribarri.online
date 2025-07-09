@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import shop_model from "../../models/shop_model.js";
 
 const __filename = fileURLToPath(import.meta.url);
-
 const __dirname = path.dirname(__filename);
 
 async function getAll(req, res) {
@@ -140,7 +139,6 @@ async function create(req, res) {
     }
 }
 
-
 async function update(req, res) {
     try {
         console.log('Received update request body:', req.body);
@@ -266,7 +264,6 @@ async function updateWithFolder(req, res) {
             id_user,
             calification_shop,
             image_shop,
-            old_name_shop, // Make sure to pass this through
             morning_open,
             morning_close,
             afternoon_open,
@@ -281,7 +278,8 @@ async function updateWithFolder(req, res) {
             open_sunday
         };
 
-        const { error, data } = await shopController.updateWithFolder(id_shop, updateData);
+        //update: Pass old_name_shop as third parameter
+        const { error, data } = await shopController.updateWithFolder(id_shop, updateData, old_name_shop);
         
         if (error) {
             return res.status(400).json({ error });
@@ -321,7 +319,7 @@ async function removeById(req, res) {
         details: err.message 
       });
     }
-  }
+}
 
 async function removeByIdWithProducts(req, res) {
     try {
@@ -347,7 +345,7 @@ async function removeByIdWithProducts(req, res) {
             productsRemoved,
             packagesRemoved
         });
-      } catch (err) {
+    } catch (err) {
         console.error("-> shop_api_controller.js - removeByIdWithProducts() - Error =", err);
         res.status(500).json({ 
             error: "Error al eliminar el comercio, sus productos y paquetes",
@@ -369,7 +367,6 @@ const getByUserId = async (req, res) => {
 
         const {error, data} = await shopController.getByUserId(id_user);
         
-   
         res.json({error, data});
     } catch (err) {
         console.error('-> Error al obtener los comercios del usuario = ', err);
