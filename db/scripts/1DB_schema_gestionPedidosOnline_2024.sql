@@ -121,6 +121,40 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`product_category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_category` (
+  `id_category` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name_category` VARCHAR(100) NOT NULL,
+  `verified_category` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdby_category` VARCHAR(20) NULL,
+  PRIMARY KEY (`id_category`),
+  UNIQUE INDEX `name_category_UNIQUE` (`name_category` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`product_subcategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_subcategory` (
+  `id_subcategory` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name_subcategory` VARCHAR(100) NOT NULL,
+  `id_category` INT UNSIGNED NOT NULL,
+  `verified_subcategory` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdby_subcategory` VARCHAR(20) NULL,
+  PRIMARY KEY (`id_subcategory`),
+  UNIQUE INDEX `name_category_unique` (`name_subcategory` ASC, `id_category` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Modify product table to use category and subcategory IDs
+-- -----------------------------------------------------
+ALTER TABLE `DB_gestionPedidosOnline_2024`.`product`
+  ADD COLUMN `id_category` INT UNSIGNED NULL AFTER `type_product`,
+  ADD COLUMN `id_subcategory` INT UNSIGNED NULL AFTER `id_category`,
+  ADD INDEX `fk_product_category_idx` (`id_category` ASC) VISIBLE,
+  ADD INDEX `fk_product_subcategory_idx` (`id_subcategory` ASC) VISIBLE;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`package`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
