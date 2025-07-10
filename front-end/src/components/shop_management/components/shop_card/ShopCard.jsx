@@ -3,7 +3,7 @@ import styles from '../../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from './components/shop_cover_image/ShopCoverImage.jsx';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
-import { useUI } from '../../../../app_context/UIContext.jsx'; // 🔄 UPDATE: Added import for UIContext
+import { useUI } from '../../../../app_context/UIContext.jsx';
 import ShopMap from './components/shop_map/ShopMap.jsx';
 import ShopHeader from './components/ShopHeader.jsx';
 import MinimizedCard from './components/MinimizedCard.jsx';
@@ -55,11 +55,11 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
+  //update: Create wrapper div with conditional class for layout
   return (
-    // <div className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
+    <div className={`${styles.shopCardWrapper} ${showMap && !minimized && !isSmallScreen ? styles.withMap : ''}`}>
       <div 
         className={`${styles.container} ${minimized ? styles.minimized : ''}`}
-        // style={!isSmallScreen && !minimized && showMap ? { flex: '1 0 40%', maxWidth: '40%' } : {}}
       >
         {minimized ? (
           <MinimizedCard toggleMinimized={toggleMinimized} />
@@ -82,8 +82,9 @@ const ShopCard = ({ shop }) => {
             />
           </>
         )}
+      </div>
 
-        {showMap && !minimized && (
+      {showMap && !minimized && (
         <div 
           className={styles.mapWrapper} 
         >
@@ -94,10 +95,7 @@ const ShopCard = ({ shop }) => {
           />
         </div>    
       )}
-      </div>
-      
-      
-    // </div>
+    </div>
   );
 };
 
