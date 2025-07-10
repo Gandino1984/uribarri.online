@@ -18,14 +18,14 @@ const ShopManagement = () => {
   
   const { setShowShopManagement } = useUI();
   
-  // UPDATE: Get showProductManagement from UI context where it's defined
+  
   const { showProductManagement } = useUI();
   
   const hasInitiallyFetchedShops = useRef(false);
   
   const shopManagementUtils = ShopManagementUtils ? ShopManagementUtils() : {};
   
-  // ⚠️ FIXED: Moved user type check to useEffect to avoid state updates during render
+  
   useEffect(() => {
     if (!currentUser || currentUser.type_user !== 'seller') {
       console.log('Non-seller user in ShopManagement, redirecting to login 2');
@@ -45,7 +45,7 @@ const ShopManagement = () => {
     }
   }, [currentUser?.id_user, shopManagementUtils]);
 
-  // ⚠️ FIXED: Early return with check but no state update during render
+
   if (!currentUser || currentUser.type_user !== 'seller') {
     return null;
   }
