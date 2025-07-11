@@ -106,6 +106,9 @@ async function getAll() {
             
             shopsWithTypeInfo.push({
                 ...shop.toJSON(),
+                //update: Add type_shop and subtype_shop as direct properties
+                type_shop: type ? type.name_type : null,
+                subtype_shop: subtype ? subtype.name_subtype : null,
                 type: type ? {
                     id_type: type.id_type,
                     name_type: type.name_type
@@ -183,6 +186,9 @@ async function getByType(id_type, id_subtype) {
             
             shopsWithTypeInfo.push({
                 ...shop.toJSON(),
+                //update: Add type_shop and subtype_shop as direct properties
+                type_shop: type ? type.name_type : null,
+                subtype_shop: subtype ? subtype.name_subtype : null,
                 type: type ? {
                     id_type: type.id_type,
                     name_type: type.name_type
@@ -217,6 +223,9 @@ async function getById(id_shop) {
         
         const shopWithTypeInfo = {
             ...shop.toJSON(),
+            //update: Add type_shop and subtype_shop as direct properties
+            type_shop: type ? type.name_type : null,
+            subtype_shop: subtype ? subtype.name_subtype : null,
             type: type ? {
                 id_type: type.id_type,
                 name_type: type.name_type
@@ -262,6 +271,9 @@ async function getByUserId(id_user) {
             
             shopsWithTypeInfo.push({
                 ...shop.toJSON(),
+                //update: Add type_shop and subtype_shop as direct properties
+                type_shop: type ? type.name_type : null,
+                subtype_shop: subtype ? subtype.name_subtype : null,
                 type: type ? {
                     id_type: type.id_type,
                     name_type: type.name_type
@@ -318,6 +330,9 @@ async function create(shopData) {
         //update: Return shop with type and subtype information
         const shopWithTypeInfo = {
             ...shop.toJSON(),
+            //update: Add type_shop and subtype_shop as direct properties
+            type_shop: typeSubtypeValidation.type.name_type,
+            subtype_shop: typeSubtypeValidation.subtype.name_subtype,
             type: {
                 id_type: typeSubtypeValidation.type.id_type,
                 name_type: typeSubtypeValidation.type.name_type
@@ -379,6 +394,9 @@ async function update(id, shopData) {
         
         const shopWithTypeInfo = {
             ...updatedShop.toJSON(),
+            //update: Add type_shop and subtype_shop as direct properties
+            type_shop: type ? type.name_type : null,
+            subtype_shop: subtype ? subtype.name_subtype : null,
             type: type ? {
                 id_type: type.id_type,
                 name_type: type.name_type
@@ -468,6 +486,9 @@ async function updateWithFolder(id, shopData, oldName) {
         
         const shopWithTypeInfo = {
             ...updatedShop.toJSON(),
+            //update: Add type_shop and subtype_shop as direct properties
+            type_shop: type ? type.name_type : null,
+            subtype_shop: subtype ? subtype.name_subtype : null,
             type: type ? {
                 id_type: type.id_type,
                 name_type: type.name_type

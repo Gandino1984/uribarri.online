@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   `discount_product` INT NULL DEFAULT 0,
   `season_product` VARCHAR(45) NOT NULL,
   `calification_product` INT NOT NULL DEFAULT 0,
-  `type_product` VARCHAR(45) NOT NULL,
-  `subtype_product` VARCHAR(45) NOT NULL,
+  `id_category` INT UNSIGNED NULL AFTER `type_product`,
+  `id_subcategory` INT UNSIGNED NULL AFTER `id_category`,
   `sold_product` INT NOT NULL DEFAULT 0,
   `info_product` TEXT, 
   `id_shop` INT UNSIGNED NOT NULL,
@@ -145,14 +145,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_subcategory` 
   UNIQUE INDEX `name_category_unique` (`name_subcategory` ASC, `id_category` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Modify product table to use category and subcategory IDs
--- -----------------------------------------------------
-ALTER TABLE `DB_gestionPedidosOnline_2024`.`product`
-  ADD COLUMN `id_category` INT UNSIGNED NULL AFTER `type_product`,
-  ADD COLUMN `id_subcategory` INT UNSIGNED NULL AFTER `id_category`,
-  ADD INDEX `fk_product_category_idx` (`id_category` ASC) VISIBLE,
-  ADD INDEX `fk_product_subcategory_idx` (`id_subcategory` ASC) VISIBLE;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`package`

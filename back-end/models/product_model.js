@@ -31,23 +31,13 @@ const product_model = db.define('product', {
         allowNull: false,
         defaultValue: 0
     },
-    type_product: {
-        type: DataTypes.STRING(45),
-        allowNull: false
-    },
-    //update: Added id_category field
     id_category: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true
     },
-    //update: Added id_subcategory field
     id_subcategory: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true
-    },
-    subtype_product: {
-        type: DataTypes.STRING(45),
-        allowNull: false
     },
     sold_product: {
         type: DataTypes.INTEGER,
