@@ -324,7 +324,6 @@ async function update(id, userData) {
         if (userData.type_user) fieldsToUpdate.type_user = userData.type_user;
         if (userData.calification_user !== undefined) fieldsToUpdate.calification_user = userData.calification_user;
         if (userData.category_user !== undefined) fieldsToUpdate.category_user = userData.category_user;
-        //update: Added age_user to updatable fields
         if (userData.age_user !== undefined) fieldsToUpdate.age_user = userData.age_user;
 
         const validation = validateUserData(fieldsToUpdate);

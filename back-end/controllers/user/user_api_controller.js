@@ -95,7 +95,6 @@ async function update(req, res) {
         image_user, 
         calification_user,
         category_user,
-        //update: Added age_user to destructured fields
         age_user 
     } = req.body;
     
@@ -113,7 +112,6 @@ async function update(req, res) {
         image_user,
         calification_user,
         category_user,
-        //update: Added age_user to update call
         age_user 
     });
     

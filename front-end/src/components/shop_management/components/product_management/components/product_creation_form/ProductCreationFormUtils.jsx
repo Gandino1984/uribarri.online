@@ -42,7 +42,8 @@ const ProductCreationFormUtils = () => {
     setIsUpdatingProduct,
     setSelectedProductToUpdate,
     shopToProductTypesMap,
-    refreshProductList
+    refreshProductList,
+    categories //update: Add categories to get the actual category name
   } = useProduct();
 
 
@@ -259,27 +260,17 @@ const ProductCreationFormUtils = () => {
         throw new Error("El nombre de producto es requerido");
       }
       //update: Check for category and subcategory IDs instead of type/subtype
-    if (!productData.id_category) {
-      setError(prevError => ({ ...prevError, productError: "La categoría es requerida"}));
-      throw new Error("La categoría es requerida");
-    }
-    if (!productData.id_subcategory) {
-      setError(prevError => ({ ...prevError, productError: "La subcategoría es requerida"}));
-      throw new Error("La subcategoría es requerida");
-    }
-      if (!productData.type_product) {
-        setError(prevError => ({ ...prevError, productError: "El tipo de producto es requerido"}));
-        throw new Error("El tipo de producto es requerido");
+      if (!productData.id_category) {
+        setError(prevError => ({ ...prevError, productError: "La categoría es requerida"}));
+        throw new Error("La categoría es requerida");
+      }
+      if (!productData.id_subcategory) {
+        setError(prevError => ({ ...prevError, productError: "La subcategoría es requerida"}));
+        throw new Error("La subcategoría es requerida");
       }
       
-      // Validate that product type is compatible with shop type
-      if (selectedShop && !isValidProductTypeForShop(productData.type_product, selectedShop.type_shop)) {
-        setError(prevError => ({ 
-          ...prevError, 
-          productError: `El tipo de producto "${productData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`
-        }));
-        throw new Error(`El tipo de producto "${productData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`);
-      }
+      //update: Remove the type_product validation since we're using categories now
+      // The backend will handle the type_product based on the selected category
       
       if (productData.discount_product < 0 || productData.discount_product > 100) {
         setError(prevError => ({ ...prevError, productError: "Valor de descuento fuera del rango permitido"}));
@@ -293,11 +284,6 @@ const ProductCreationFormUtils = () => {
       if (productData.price_product.toString().split('.')[1]?.length > 2) {
         setError(prevError => ({ ...prevError, productError: "El precio debe tener máximo 2 decimales"}));
         throw new Error("El precio debe tener máximo 2 decimales");
-      }
-
-      if (!productData.subtype_product) {
-        setError(prevError => ({ ...prevError, productError: "El subtipo de producto es requerido"}));
-        throw new Error("El subtipo de producto es requerido");
       }
 
       if (productData.surplus_product < 0) {
@@ -327,7 +313,7 @@ const ProductCreationFormUtils = () => {
       setError(prevError => ({ ...prevError, productError: err.message || "Error al validar los datos del producto" }));
       return false;
     }
-  }, [selectedShop, selectedProductToUpdate, productCount, productLimit, currentUser, isValidProductTypeForShop, setError]);
+  }, [selectedShop, selectedProductToUpdate, productCount, productLimit, currentUser, setError]);
 
   const resetNewProductData = useCallback(() => {
     setNewProductData({
@@ -346,7 +332,9 @@ const ProductCreationFormUtils = () => {
       expiration_product: null,
       country_product: '',
       locality_product: '',
-      active_product: true  // Ensure new product has active_product set to true by default
+      active_product: true,  // Ensure new product has active_product set to true by default
+      id_category: '',
+      id_subcategory: ''
     });
     
     setError(prevError => ({
@@ -482,11 +470,15 @@ const ProductCreationFormUtils = () => {
         return false;
       }
 
+      //update: Ensure type_product is set from the selected category
+      const selectedCategory = categories.find(cat => cat.id_category === parseInt(newProductData.id_category));
+      
       // Ensure price has exactly 2 decimal places before submitting
       const formattedData = {
         ...newProductData,
         price_product: Number(newProductData.price_product).toFixed(2),
-        active_product: true  // Explicitly set active_product to true for new products
+        active_product: true,  // Explicitly set active_product to true for new products
+        type_product: selectedCategory ? selectedCategory.name_category : newProductData.type_product // Use actual category name
       };
 
       console.log('Creating product with data:', formattedData);
@@ -561,7 +553,7 @@ const ProductCreationFormUtils = () => {
       });
       return false;
     }
-  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setProducts]);
+  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setProducts, categories]);
 
   // Updated handleSubmit with operation tracking
   const handleSubmit = useCallback(async (e, imageFile = null) => {
@@ -675,8 +667,16 @@ const ProductCreationFormUtils = () => {
   // UPDATE: Improved updateProductInDB with better state management
   const updateProductInDB = useCallback(async (updateData) => {
     try {
-      console.log('Starting product update with data:', updateData);
-      const response = await axiosInstance.patch('/product/update', updateData);
+      //update: Ensure type_product is set from the selected category
+      const selectedCategory = categories.find(cat => cat.id_category === parseInt(updateData.id_category));
+      
+      const dataWithType = {
+        ...updateData,
+        type_product: selectedCategory ? selectedCategory.name_category : updateData.type_product
+      };
+      
+      console.log('Starting product update with data:', dataWithType);
+      const response = await axiosInstance.patch('/product/update', dataWithType);
     
       if (!response.data) {
         throw new Error('No response data received');
@@ -699,7 +699,7 @@ const ProductCreationFormUtils = () => {
         setProducts(prevProducts => {
           return prevProducts.map(product => {
             if (product.id_product === updateData.id_product) {
-              return { ...product, ...updateData };
+              return { ...product, ...dataWithType };
             }
             return product;
           });
@@ -736,7 +736,7 @@ const ProductCreationFormUtils = () => {
       console.error('Error updating product:', err);
       throw err;
     }
-  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setProducts]);
+  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setProducts, categories]);
 
   // Function to get available product types for the selected shop
   const getAvailableProductTypesForShop = useCallback(() => {
@@ -833,4 +833,4 @@ const ProductCreationFormUtils = () => {
   };
 };
 
-export default ProductCreationFormUtils;  
+export default ProductCreationFormUtils;
