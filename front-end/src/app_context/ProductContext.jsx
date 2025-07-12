@@ -1,5 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+// front-end/src/app_context/ProductContext.jsx
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useShop } from './ShopContext';
+import axiosInstance from '../utils/app/axiosConfig';
 
 const ProductContext = createContext();
 
@@ -21,16 +23,22 @@ export const ProductProvider = ({ children }) => {
     name_product: '',
     price_product: '',
     discount_product: 0,
-    season_product: '',
+    season_product: 'Todo el Año',
     calification_product: 0,
-    type_product: '',
-    subtype_product: '',
+    //update: Added category and subcategory IDs
+    id_category: '',
+    id_subcategory: '',
+    type_product: '', // Keep for backward compatibility
+    subtype_product: '', // Keep for backward compatibility
     sold_product: 0,
     info_product: '',
     id_shop: '',
-    second_hand: false,
+    second_hand: 0,
     surplus_product: 0,
-    expiration_product: null
+    expiration_product: null,
+    country_product: '',
+    locality_product: '',
+    active_product: true
   });
   
   // Refresh control
@@ -52,7 +60,7 @@ export const ProductProvider = ({ children }) => {
     },
     tipo: {
       label: 'Tipo',
-      options: ['Ropa', 'Comida', 'Bebida', 'Electrónica', 'Accesorio', 'Joyería', 'Muebles', 'Salud', 'Belleza', 'Complemento', 'Servicio', 'No Clasificado', 'Regular', 'Vegetariano', 'Vegano', 'Sin gluten', 'Kosher', 'Sin lactosa', 'Varios'],
+      options: [], // Will be populated from database
     },
     oferta: {
       label: 'Descuento',
@@ -64,23 +72,15 @@ export const ProductProvider = ({ children }) => {
     },
   });
   
-  const [productTypesAndSubtypes, setProductTypesAndSubtypes] = useState({
-    'Accesorios': ['Bolso', 'Gafas', 'Joyería', 'Reloj', 'Cinturón', 'Varios'],
-    'Artesanía': ['Anillo', 'Collar', 'Pendientes', 'Pulsera', 'Varios'],
-    'Belleza': ['Productos de Belleza', 'Productos para Cabello', 'Maquillaje', 'Perfume', 'Productos para Piel', 'Skincare'],
-    'Bebida': ['Alcohol', 'Café', 'Refresco', 'Té', 'Zumo', 'Agua', 'Varios'],
-    'Calzado': ['Bailarinas', 'Botas', 'Deportivas', 'Zapatillas', 'Sandalias',  'Varios'],
-    'Comida': ['Bebida', 'Entrante', 'Plato Principal', 'Postre', 'Snack', 'Panadería', 'Varios'],
-    'Educativo': ['Asesoría', 'Charla', "Clases privadas", 'Clases de música', 'Clases de pintura', 'Curso', 'Investigación', 'Librería', 'Presentación', 'Varios'],
-    'Electrónica': ['Accesorios', 'Audio', 'Móvil', 'Ordenador', 'Tablet', 'Varios'],
-    'Joyería': ['Anillo', 'Collar', 'Pendientes', 'Pulsera', 'Varios'],
-    'Muebles': ['Baño', 'Cocina', 'Dormitorio', 'Jardín', 'Salón', 'Varios'],
-    'Sesión': ['Escape room', 'Hall game', 'Juegos pórtatiles', 'Escape de ciudad', 'Varios'],
-    'Ropa': ['Abrigo', 'Accesorios', 'Calcetines', 'Calzado', 'Camiseta', 'Chaqueta', 'Falda', 'Lencería', 'Pantalón', 'Pantaloneta', 'Pijama', 'Ropa de deporte', 'Ropa de maternidad', 'Ropa de trabajo', 'Vestido', 'Varios'],
-    'Salud': ['Cuidado Personal', 'Higiene', 'Medicina', 'Suplementos'],
-    'Servicio': ['Asesoría', 'Informático', 'Instalación', 'Limpieza', 'Mantenimiento', 'Reparación'],
-    'Varios': ['General', 'Otros']
-  });
+  //update: Remove hardcoded categories and add dynamic ones
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [categoriesWithSubcategories, setCategoriesWithSubcategories] = useState({});
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [categoriesError, setCategoriesError] = useState(null);
+  
+  // Remove hardcoded productTypesAndSubtypes
+  const [productTypesAndSubtypes, setProductTypesAndSubtypes] = useState({});
   
   const [shopToProductTypesMap, setShopToProductTypesMap] = useState({
     'Artesanía': ['Artesanía', 'Accesorios', 'Joyería'],
@@ -96,21 +96,107 @@ export const ProductProvider = ({ children }) => {
     'Técnico': ['Servicio', 'Electrónica', 'Muebles']
   });
   
+  //update: Fetch categories and subcategories from database
+  useEffect(() => {
+    const fetchCategoriesAndSubcategories = async () => {
+      console.log('Starting to fetch categories...'); // Debug log
+      setLoadingCategories(true);
+      setCategoriesError(null);
+      
+      try {
+        //update: Fetch verified categories
+        console.log('Fetching from /product-category/verified...'); // Debug log
+        const categoriesResponse = await axiosInstance.get('/product-category/verified');
+        console.log('Categories response:', categoriesResponse.data); // Debug log
+        
+        if (categoriesResponse.data && categoriesResponse.data.data) {
+          setCategories(categoriesResponse.data.data);
+          console.log('Categories set in state:', categoriesResponse.data.data); // Debug log
+        } else {
+          console.error('No categories data in response'); // Debug log
+          setCategories([]);
+        }
+        
+        //update: Then fetch categories with their subcategories
+        try {
+          const response = await axiosInstance.get('/product-category/with-subcategories');
+          console.log('Categories with subcategories response:', response.data); // Debug log
+          
+          if (response.data && response.data.data) {
+            setCategoriesWithSubcategories(response.data.data);
+            setProductTypesAndSubtypes(response.data.data); // For backward compatibility
+            
+            // Extract category names for filter options
+            const categoryNames = Object.keys(response.data.data);
+            setFilterOptions(prev => ({
+              ...prev,
+              tipo: {
+                ...prev.tipo,
+                options: categoryNames
+              }
+            }));
+          }
+        } catch (subError) {
+          console.error('Error fetching categories with subcategories:', subError);
+          // This is not critical, continue without it
+        }
+        
+      } catch (error) {
+        console.error('Error fetching categories:', error); // Debug log
+        console.error('Error details:', error.response || error); // More detailed error
+        setCategoriesError('Error al cargar las categorías');
+        setCategories([]); // Set empty array on error
+      } finally {
+        setLoadingCategories(false);
+        console.log('Loading categories finished'); // Debug log
+      }
+    };
+    
+    fetchCategoriesAndSubcategories();
+  }, []);
+  
+  //update: Fetch subcategories when a category is selected
+  const fetchSubcategoriesByCategory = async (categoryId) => {
+    try {
+      console.log('Fetching subcategories for category:', categoryId); // Debug log
+      const response = await axiosInstance.get(`/product-subcategory/by-category/${categoryId}`);
+      console.log('Subcategories response:', response.data); // Debug log
+      
+      if (response.data && response.data.data) {
+        setSubcategories(response.data.data);
+        return response.data.data;
+      }
+      setSubcategories([]);
+      return [];
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+      setSubcategories([]);
+      return [];
+    }
+  };
+  
   // Helper functions
   const refreshProductList = () => {
     setProductListKey(prevKey => prevKey + 1);
   };
   
   const getAvailableProductTypesForShop = (shopType) => {
-    return shopToProductTypesMap[shopType] || [];
+    // Get the category names allowed for this shop type
+    const allowedCategoryNames = shopToProductTypesMap[shopType] || [];
+    
+    // Filter categories based on the allowed names
+    return categories.filter(cat => allowedCategoryNames.includes(cat.name_category));
   };
   
   const resetProductTypeFields = () => {
     setNewProductData(prev => ({
       ...prev,
+      id_category: '',
+      id_subcategory: '',
       type_product: '',
       subtype_product: ''
     }));
+    setSubcategories([]);
   };
 
   const value = {
@@ -130,6 +216,13 @@ export const ProductProvider = ({ children }) => {
     shopToProductTypesMap, setShopToProductTypesMap,
     getAvailableProductTypesForShop,
     resetProductTypeFields,
+    //update: Add new category-related state and functions
+    categories,
+    subcategories,
+    categoriesWithSubcategories,
+    loadingCategories,
+    categoriesError,
+    fetchSubcategoriesByCategory,
   };
 
   return (

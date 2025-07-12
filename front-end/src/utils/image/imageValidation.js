@@ -11,25 +11,23 @@
 export const validateImageFile = (file, options = {}) => {
   return new Promise((resolve, reject) => {
     const {
-      maxSize = 1 * 1024 * 1024, // UPDATE: 1MB default max size
+      maxSize = 1 * 1024 * 1024, //update: 1MB default max size
       allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
     } = options;
 
     // Check if file exists
     if (!file) {
-      reject(new Error("No file provided"));
+      reject(new Error("No se ha proporcionado ningún archivo"));
       return;
     }
 
-    // Check file size
-    if (file.size > maxSize) {
-      reject(new Error(`File size must be less than ${Math.round(maxSize / (1024 * 1024))}MB`));
-      return;
-    }
+    //update: Don't check file size here since we'll compress it if needed
+    // We'll validate the final size after optimization
+    console.log(`Validating image: ${file.name}, Type: ${file.type}, Size: ${Math.round(file.size / 1024)}KB`);
 
     // Check file type
     if (!allowedTypes.includes(file.type)) {
-      reject(new Error(`Invalid file type. Only ${allowedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ')} are allowed.`));
+      reject(new Error(`Formato no válido. Solo se permiten: ${allowedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ')}.`));
       return;
     }
 
@@ -38,12 +36,15 @@ export const validateImageFile = (file, options = {}) => {
     
     reader.onload = () => {
       const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => reject(new Error("File is not a valid image"));
+      img.onload = () => {
+        console.log(`Image validated successfully: ${file.name}`);
+        resolve(true);
+      };
+      img.onerror = () => reject(new Error("El archivo no es una imagen válida"));
       img.src = reader.result;
     };
     
-    reader.onerror = () => reject(new Error("Error reading file"));
+    reader.onerror = () => reject(new Error("Error al leer el archivo"));
     reader.readAsDataURL(file);
   });
 };

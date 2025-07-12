@@ -9,8 +9,9 @@ async function getAll(req, res) {
 }
 
 async function create(req, res) {
-    const {name_user, pass_user, location_user, type_user, image_user } = req.body;
-    const {error, data} = await userController.create({name_user, pass_user, location_user, type_user, image_user});
+    //update: Added age_user to destructured fields
+    const {name_user, pass_user, location_user, type_user, image_user, age_user } = req.body;
+    const {error, data} = await userController.create({name_user, pass_user, location_user, type_user, image_user, age_user});
     res.json({error, data});
 }
 
@@ -46,7 +47,8 @@ async function login(req, res) {
 }
 
 async function register(req, res) {
-    let {name_user, pass_user, location_user, type_user, image_user, calification_user } = req.body;
+    //update: Added age_user to destructured fields
+    let {name_user, pass_user, location_user, type_user, image_user, calification_user, age_user } = req.body;
     try{
         if(!name_user || !pass_user || !location_user || !type_user){
             res.status(400).json({ 
@@ -71,7 +73,9 @@ async function register(req, res) {
             location_user, 
             type_user, 
             image_user, 
-            calification_user
+            calification_user,
+            //update: Added age_user to register call
+            age_user
         });
 
         res.json({error, data});
@@ -90,7 +94,8 @@ async function update(req, res) {
         type_user, 
         image_user, 
         calification_user,
-        category_user 
+        category_user,
+        age_user 
     } = req.body;
     
     if (calification_user !== undefined && calification_user < 0) {
@@ -106,7 +111,8 @@ async function update(req, res) {
         type_user, 
         image_user,
         calification_user,
-        category_user 
+        category_user,
+        age_user 
     });
     
     res.json({error, data});

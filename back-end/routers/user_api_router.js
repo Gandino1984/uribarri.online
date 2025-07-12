@@ -2,11 +2,9 @@ import { Router } from "express";
 import userApiController from "../controllers/user/user_api_controller.js";
 import IpRegistry from '../../back-end/models/ip_registry_model.js'; 
 import dotenv from 'dotenv';
-
-import multer from 'multer';
+// import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
-
+// import fs from 'fs';
 import { handleProfileImageUpload } from '../middleware/ProfileUploadMiddleware.js';
 
 

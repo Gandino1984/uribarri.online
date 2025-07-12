@@ -1,4 +1,7 @@
+// back-end/controllers/product/product_controller.js
 import product_model from "../../models/product_model.js";
+import product_category_model from "../../models/product_category_model.js";
+import product_subcategory_model from "../../models/product_subcategory_model.js";
 import { Op } from "sequelize";
 import fs from 'fs';
 import path from 'path';
@@ -35,8 +38,11 @@ async function create(productData) {
             discount_product, 
             season_product, 
             calification_product, 
-            type_product, 
-            subtype_product, 
+            //update: Accept both old and new field names
+            type_product,
+            subtype_product,
+            id_category,
+            id_subcategory,
             sold_product, 
             info_product, 
             id_shop,
@@ -45,9 +51,36 @@ async function create(productData) {
             expiration_product,
             country_product,
             locality_product,
-            // UPDATE: Added active_product to the parameters (optional)
             active_product
         } = productData;
+
+        //update: Handle backward compatibility - if id_category/id_subcategory not provided, try to find them
+        let finalCategoryId = id_category;
+        let finalSubcategoryId = id_subcategory;
+        
+        if (!id_category && type_product) {
+            // Try to find category by name
+            const category = await product_category_model.findOne({
+                where: { name_category: type_product, verified_category: true }
+            });
+            if (category) {
+                finalCategoryId = category.id_category;
+            }
+        }
+        
+        if (!id_subcategory && subtype_product && finalCategoryId) {
+            // Try to find subcategory by name and category
+            const subcategory = await product_subcategory_model.findOne({
+                where: { 
+                    name_subcategory: subtype_product, 
+                    id_category: finalCategoryId,
+                    verified_subcategory: true 
+                }
+            });
+            if (subcategory) {
+                finalSubcategoryId = subcategory.id_subcategory;
+            }
+        }
 
         const product = await product_model.create({
             name_product,
@@ -55,8 +88,11 @@ async function create(productData) {
             discount_product,
             season_product,
             calification_product,
-            type_product,
-            subtype_product,
+            //update: Store both for backward compatibility
+            type_product: type_product || '',
+            subtype_product: subtype_product || '',
+            id_category: finalCategoryId,
+            id_subcategory: finalSubcategoryId,
             sold_product,
             info_product,
             id_shop,
@@ -65,9 +101,7 @@ async function create(productData) {
             expiration_product,
             country_product,
             locality_product,
-            // UPDATE: Set active_product if provided, otherwise use model default (true)
             active_product: active_product !== undefined ? active_product : true
-            // Note: creation_product will be automatically set to current timestamp by model default
         });
         
         return { 
@@ -88,8 +122,11 @@ async function update(id, productData) {
             discount_product, 
             season_product, 
             calification_product, 
-            type_product, 
-            subtype_product, 
+            //update: Accept both old and new field names
+            type_product,
+            subtype_product,
+            id_category,
+            id_subcategory,
             sold_product, 
             info_product, 
             id_shop,
@@ -98,7 +135,6 @@ async function update(id, productData) {
             expiration_product,
             country_product,
             locality_product,
-            // UPDATE: Added active_product to the parameters
             active_product
         } = productData;
 
@@ -108,13 +144,41 @@ async function update(id, productData) {
             return { error: "Producto no encontrado" };
         }
 
+        //update: Handle backward compatibility
+        let finalCategoryId = id_category || product.id_category;
+        let finalSubcategoryId = id_subcategory || product.id_subcategory;
+        
+        if (!id_category && type_product && type_product !== product.type_product) {
+            const category = await product_category_model.findOne({
+                where: { name_category: type_product, verified_category: true }
+            });
+            if (category) {
+                finalCategoryId = category.id_category;
+            }
+        }
+        
+        if (!id_subcategory && subtype_product && subtype_product !== product.subtype_product && finalCategoryId) {
+            const subcategory = await product_subcategory_model.findOne({
+                where: { 
+                    name_subcategory: subtype_product, 
+                    id_category: finalCategoryId,
+                    verified_subcategory: true 
+                }
+            });
+            if (subcategory) {
+                finalSubcategoryId = subcategory.id_subcategory;
+            }
+        }
+
         if (name_product) product.name_product = name_product;
         if (price_product >= 0) product.price_product = price_product;
         if (discount_product >= 0) product.discount_product = discount_product;
         if (season_product) product.season_product = season_product;
         if (calification_product >= 0) product.calification_product = calification_product;
-        if (type_product) product.type_product = type_product;
-        if (subtype_product) product.subtype_product = subtype_product;
+        if (type_product !== undefined) product.type_product = type_product;
+        if (subtype_product !== undefined) product.subtype_product = subtype_product;
+        if (finalCategoryId) product.id_category = finalCategoryId;
+        if (finalSubcategoryId) product.id_subcategory = finalSubcategoryId;
         if (sold_product >= 0) product.sold_product = sold_product;
         if (info_product) product.info_product = info_product;
         if (id_shop) product.id_shop = id_shop;
@@ -123,7 +187,6 @@ async function update(id, productData) {
         if (expiration_product) product.expiration_product = expiration_product;
         if (country_product) product.country_product = country_product;
         if (locality_product) product.locality_product = locality_product;
-        // UPDATE: Update active_product if provided
         if (active_product !== undefined) product.active_product = active_product;
         
         await product.save();
@@ -138,7 +201,7 @@ async function update(id, productData) {
     }
 }
 
-
+// Keep all other functions as they are...
 async function getById(id) {
     try {
         const product = await product_model.findByPk(id);
@@ -185,7 +248,6 @@ async function removeByShopId(id_shop, transaction) {
     }
 }
 
-// UPDATE: Modified to add an active parameter for filtering
 async function getByShopId(id_shop, activeStatus = null) {
     try {
         // Create the where clause with id_shop
@@ -225,17 +287,14 @@ async function getByShopId(id_shop, activeStatus = null) {
     }
 }
 
-// UPDATE: Added function to get only active products by shop ID
 async function getActiveByShopId(id_shop) {
     return getByShopId(id_shop, true);
 }
 
-// UPDATE: Added function to get only inactive products by shop ID
 async function getInactiveByShopId(id_shop) {
     return getByShopId(id_shop, false);
 }
 
-// UPDATE: Added function to toggle product active status
 async function toggleActiveStatus(id_product) {
     try {
         const product = await product_model.findByPk(id_product);
@@ -260,13 +319,28 @@ async function toggleActiveStatus(id_product) {
     }
 }
 
+//update: Modified to search by category name (type_product) or id_category
 async function getByType(type_product) {
     try {
-        const products = await product_model.findAll({
+        // First try to find by type_product field (backward compatibility)
+        let products = await product_model.findAll({
             where: { type_product: type_product }
         });
 
-        return { data: products,
+        // If no products found, try to find by category name
+        if (!products || products.length === 0) {
+            const category = await product_category_model.findOne({
+                where: { name_category: type_product, verified_category: true }
+            });
+            
+            if (category) {
+                products = await product_model.findAll({
+                    where: { id_category: category.id_category }
+                });
+            }
+        }
+
+        return { data: products || [],
             success: "Productos por tipo encontrados"
          };
     } catch (err) {
@@ -369,6 +443,7 @@ async function deleteImage(id_product, imagePath, folderPath) {
         const fullFolderPath = path.join(publicDir, cleanFolderPath);
 
         console.log('Starting image deletion process');
+        
         console.log('Paths to process:', {
             projectRoot: PROJECT_ROOT,
             publicDir,
@@ -416,17 +491,17 @@ async function deleteImage(id_product, imagePath, folderPath) {
             product.image_product = null;
             await product.save();
             console.log('✓ Product image reference cleared in database');
-        }
-
-        return {
+            return {
             success: true,
             message: 'Image deletion process completed successfully',
             details: {
                 imagePath: fullImagePath,
                 folderPath: fullFolderPath
-            }
-        };
-    } catch (err) {
+                }
+            };
+        }
+    }
+    catch (err) {
         console.error('× Error in deleteImage function:', err);
         throw err;
     }
@@ -499,7 +574,6 @@ export {
     verifyProductName,
     getByCountry,
     getByLocality,
-    // UPDATE: Export new functions
     toggleActiveStatus,
     getActiveByShopId,
     getInactiveByShopId
@@ -520,7 +594,6 @@ export default {
     verifyProductName,
     getByCountry,
     getByLocality,
-    // UPDATE: Export new functions
     toggleActiveStatus,
     getActiveByShopId,
     getInactiveByShopId

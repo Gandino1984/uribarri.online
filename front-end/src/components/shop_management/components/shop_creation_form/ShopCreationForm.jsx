@@ -6,7 +6,7 @@ import { Plus, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
-import { formAnimation } from '../../../../utils/animation/transitions.js'; // ✨ UPDATE: Using the unified formAnimation
+import { formAnimation } from '../../../../utils/animation/transitions.js';
 
 import ShopImageUpload from './components/ShopImageUpload.jsx';
 import ShopBasicInfo from './components/ShopBasicInfo.jsx';
@@ -40,9 +40,8 @@ const ShopCreationForm = () => {
     selectedShop,
     setShowShopCreationForm,
     setSelectedShop,
-    // ✨ UPDATE: Get notifyFormExit function from ShopContext if it exists
-    // This will be implemented in ShopContext to allow controlled exit animations
-    // notifyFormExit
+    //update: Add typesLoading state
+    typesLoading
   } = useShop();
 
   const {
@@ -68,13 +67,14 @@ const ShopCreationForm = () => {
   
   const [isResetPending, setIsResetPending] = useState(false);
   
-  // state to handle animation when component exits - same as LoginRegisterForm
+  // state to handle animation when component exits
   const [isExiting, setIsExiting] = useState(false);
   
   const defaultShopValues = {
     name_shop: '',
-    type_shop: '',
-    subtype_shop: '',
+    //update: Use id_type and id_subtype instead of strings
+    id_type: '',
+    id_subtype: '',
     location_shop: '',
     id_user: currentUser?.id_user || '',
     calification_shop: 0,
@@ -117,8 +117,9 @@ const ShopCreationForm = () => {
       
       setNewShop({
         name_shop: selectedShop.name_shop,
-        type_shop: selectedShop.type_shop,
-        subtype_shop: selectedShop.subtype_shop,
+        //update: Use id_type and id_subtype from selected shop
+        id_type: selectedShop.id_type,
+        id_subtype: selectedShop.id_subtype,
         location_shop: selectedShop.location_shop,
         id_user: currentUser.id_user, // Ensure we always set the current user ID
         calification_shop: selectedShop.calification_shop,
@@ -210,7 +211,7 @@ const ShopCreationForm = () => {
   const confirmResetForm = () => {
     // If form is empty, just reset without confirmation
     const isFormEmpty = !newShop.name_shop && 
-                        !newShop.type_shop && 
+                        !newShop.id_type && 
                         !newShop.location_shop && 
                         !selectedImage;
     
@@ -248,7 +249,8 @@ const ShopCreationForm = () => {
       case 1: // Image upload - optional, so always valid
         return true;
       case 2: // Basic info
-        if (!newShop.name_shop || !newShop.type_shop || !newShop.subtype_shop || !newShop.location_shop) {
+        //update: Check for id_type and id_subtype instead of strings
+        if (!newShop.name_shop || !newShop.id_type || !newShop.id_subtype || !newShop.location_shop) {
           setError(prevError => ({
             ...prevError,
             shopError: "Completa todos los campos."
@@ -363,7 +365,6 @@ const ShopCreationForm = () => {
 
       let success = false;
       let shopId = null;
-      // let createdOrUpdatedShop = null;
 
       if (selectedShop) {
         // Updating existing shop
@@ -373,7 +374,6 @@ const ShopCreationForm = () => {
         
         if (success) {
           console.log('Shop updated successfully:', result);
-          // createdOrUpdatedShop = result;
           
           // Show success notification
           setSuccess(prevSuccess => ({
@@ -390,7 +390,6 @@ const ShopCreationForm = () => {
         if (success) {
           console.log('New shop created successfully:', result);
           shopId = result.id_shop;
-          // createdOrUpdatedShop = result;
           
           // Show success notification
           setSuccess(prevSuccess => ({
@@ -433,7 +432,6 @@ const ShopCreationForm = () => {
       
       // If successful, start exit animation then close the form
       if (success) {
-        // ✨ UPDATE: Trigger exit animation first, then close form after animation completes
         setIsExiting(true);
         setTimeout(() => {
           setShowShopCreationForm(false);
@@ -508,6 +506,19 @@ const ShopCreationForm = () => {
       }
     }
   });
+
+  //update: Show loading state if types are being loaded
+  if (typesLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.loadingMessage}>
+            Cargando tipos de comercio...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

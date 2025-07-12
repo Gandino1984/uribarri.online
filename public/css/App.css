@@ -55,12 +55,11 @@
   --spacing-xl: 1.5rem;
 }
 
-/* 🌑 UPDATE: Set black background for both html and body to prevent any white showing */
 html, body {
+  font-family: 'Montserrat';
   background-color: black;
   margin: 0;
   padding: 0;
-
   min-height: 100vh;
 }
 
@@ -68,7 +67,7 @@ html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', 'Roboto', sans-serif;
+  font-family: 'Montserrat';
   -webkit-tap-highlight-color: transparent;
 }
 

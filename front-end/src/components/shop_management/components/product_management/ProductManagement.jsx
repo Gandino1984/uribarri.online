@@ -20,7 +20,7 @@ const ProductManagement = () => {
     setSelectedProductToUpdate
   } = useProduct();
   
-  // ✨ UPDATE: Added Package context
+  
   const {
     isAddingPackage,
     showPackageCreationForm
@@ -49,8 +49,8 @@ const ProductManagement = () => {
   console.log('ProductManagement rendering with state:', {
     isUpdatingProduct,
     selectedProductToUpdate: selectedProductToUpdate?.id_product || null,
-    isAddingPackage, // ✨ UPDATE: Log package state
-    showPackageCreationForm // ✨ UPDATE: Log package form visibility
+    isAddingPackage, 
+    showPackageCreationForm 
   });
 
   // If no shop is selected, we can't manage products
@@ -59,7 +59,7 @@ const ProductManagement = () => {
     return null;
   }
 
-  // ✨ UPDATE: Enhanced conditional rendering to include package creation
+  
   if (isUpdatingProduct === true) {
     console.log('ProductManagement - Showing ProductCreationForm');
     return <ProductCreationForm />;

@@ -1,12 +1,12 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useUI } from './UIContext';
+import axiosInstance from '../utils/app/axiosConfig.js';
 
 const ShopContext = createContext();
 
 export const ShopProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  // UPDATE: Using the standardized setter name
   const { setShowShopManagement } = useUI();
   
   // Shop state
@@ -18,13 +18,12 @@ export const ShopProvider = ({ children }) => {
   const [shopType, setShopType] = useState('');
   const [selectedShopType, setSelectedShopType] = useState(null);
   
-  // ✨ UPDATE: Added state to control the exit animation of ShopCreationForm
   const [shouldExitShopForm, setShouldExitShopForm] = useState(false);
   
   const [newShop, setNewShop] = useState({
     name_shop: '',
-    type_shop: '',
-    subtype_shop: '',
+    id_type: '',
+    id_subtype: '',
     location_shop: '',
     id_user: '',
     calification_shop: 0, 
@@ -43,43 +42,46 @@ export const ShopProvider = ({ children }) => {
     open_sunday: false
   });
   
-  const [shopTypesAndSubtypes, setShopTypesAndSubtypes] = useState({
-    'Artesanía': ['Accesorios','Cuero', 'Decoración', 'Madera', 'Cerámica', 'Textil', 'Varios'],
-    'Alimentación': [
-        'Asador', 'Carnicería', 'Charcutería', 'Ecológica','Frutas, verduras y conservas', 'Local', 'Panadería', 'Pescadería', 'Peruana', 'China', 'Japonesa', 
-        'Italiana', 'Turca', 'Ultra marinos', 'Kebab', 'Restaurante', 'Varios'
-    ],
-    'Consultoría': [
-         'Digital', 'Formativa', 'Gestión Cultural', 'Inmobiliaria', 'Jurídica', 'Seguros', 'Técnica', 'Varios'
-    ],
-    'Educativa': ['Asesoría', 'Charla', 'Clases de cocina', 'Clases de fotografía', 'Clases de música', 'Clases de pintura', 'Clases de yoga', 'Conferencias', 'Curso', 'Investigación', 'Librería', 'Presentación', 'Talleres', 'Varios', 'Clases de baile', 'Clases de idiomas', 'Clases de teatro', 'Clases de deportes', 'Clases de arte', 'Clases de manualidades', 'Clases de cocina infantiles', 'Clases de música infantiles', 'Clases de teatro', 'Clases de teatro infantiles', 'Clases de deportes', 'Clases de deportes infantiles', 'Clases de arte infantiles', 'Clases de manualidades para adultos', 'Clases de manualidades infantiles', 'Clases de manualidades', 'Varios'
-    ],
-    'Entretenimiento': ['Baile', 'Danza', 'Escape Room', 'Infantil', 'Juvenil', 'Tercera edad', 'Txiki park', 'Juguetería', 'Música', 'Teatro', 'Viajes', 'Varios'
-    ],
-    'Especializado': [
-        'Arte', 'Autoescuela', 'Bodega', 'Concept Store', 'Desarrollo web', 'Dietética y nutrición', 'Diseño gráfico', 'Electrodoméstico', 
-        'Estanco', 'Estudio de arte', 'Golosinas', 'Ilustración', 'Joyería', 'Locutorio', 'Peluquería canina', 
-        'Prensa', 'Programación', 'Tattoo shop', 'Vinoteca', 'Zapatería', 'Varios'
-    ],
-    'Ropa': [
-        'Abrigo', 'Accesorio', 'Calcetine', 'Calzado', 'Chaqueta', 'Camiseta', 'Chaqueta', 'Falda', 'Infantil', 'Lencería', 
-        'Pantaloneta', 'Pantalón', 'Pijama', 'Ropa de deporte', 'Ropa interior', 'Ropa de maternidad', 'Ropa de trabajo', 'Segunda mano',  'Vestido', 'Vintage', 'Varios'
-    ],
-    'Salud y Bienestar': [
-        'Baile', 'Dietética', 'Imagen personal', 'Fisioterapia', 'Gimnasio', 'Manicura y pedicura', 'Odontología', 'Osteopatía', 'Parafarmacia', 
-        'Peluquería', 'Surf', 'Txoko', 'Varios', 'Yoga'
-    ],
-    'Servicios': [
-        'Arte', 'Catering', 'Construcción', 'Dibujo', 'Electricidad', 'Fotografía', 
-        'Fontanería', 'Interiorismo', 'Limpieza', 'Pintura', 'Cuidado geriátrico', 'Paseo de mascotas', 
-        'Limpieza de coches', 'Voluntariado', 'Varios'
-    ],
-    'Taller': ['Diseño', 'Escultura', 'Ilustración', 'Mecánico', 'Pintura', 'Varios'],
-    'Técnico': [
-        'Albañilería', 'Reparación de vehículo', 'Accesorios de coche', 'Accesorios de moto', 'Carpintería', 'Calefacción', 
-        'Cerrajería', 'Electricidad', 'Electrónica', 'Fontanería', 'Repuestos', 'Repuestos de coche', 'Repuestos de moto', 'Varios'
-    ],
-  });
+  const [shopTypesAndSubtypes, setShopTypesAndSubtypes] = useState({});
+  const [typesLoading, setTypesLoading] = useState(false);
+  const [typesError, setTypesError] = useState(null);
+
+  //update: Fetch types and subtypes from API when component mounts
+  useEffect(() => {
+    fetchTypesAndSubtypes();
+  }, []);
+
+  const fetchTypesAndSubtypes = async () => {
+    try {
+      setTypesLoading(true);
+      setTypesError(null);
+      
+      // Fetch types with their subtypes
+      const response = await axiosInstance.get('/type/with-subtypes');
+      
+      if (response.data && !response.data.error) {
+        const typesData = response.data.data;
+        
+        // Transform the data into the format expected by the frontend
+        // The API returns an object like: { "Artesanía": ["Accesorios", "Cuero", ...], ... }
+        setShopTypesAndSubtypes(typesData);
+        
+        // Extract just the type names for the shopTypes array
+        const typeNames = Object.keys(typesData);
+        setShopTypes(typeNames);
+        
+        console.log('Types and subtypes loaded:', typesData);
+      } else {
+        console.error('Error loading types:', response.data.error);
+        setTypesError(response.data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching types and subtypes:', error);
+      setTypesError('Error al cargar los tipos de comercio');
+    } finally {
+      setTypesLoading(false);
+    }
+  };
 
   // Update shop management visibility based on user type
   const updateShopManagementVisibility = () => {
@@ -92,7 +94,7 @@ export const ShopProvider = ({ children }) => {
     }
   };
 
-  // ✨ UPDATE: Add animation control functions
+  // Add animation control functions
   const startFormExitAnimation = () => {
     // Set the flag to start exit animation
     setShouldExitShopForm(true);
@@ -107,7 +109,7 @@ export const ShopProvider = ({ children }) => {
     });
   };
   
-  // ✨ UPDATE: Function to close shop form with animation
+  // Function to close shop form with animation
   const closeShopFormWithAnimation = async () => {
     await startFormExitAnimation();
     setShowShopCreationForm(false);
@@ -125,10 +127,13 @@ export const ShopProvider = ({ children }) => {
     newShop, setNewShop,
     shopTypesAndSubtypes, setShopTypesAndSubtypes,
     updateShopManagementVisibility,
-    // ✨ UPDATE: Add new animation-related properties
     shouldExitShopForm,
     startFormExitAnimation,
-    closeShopFormWithAnimation
+    closeShopFormWithAnimation,
+    //update: Add new properties for types loading state
+    typesLoading,
+    typesError,
+    fetchTypesAndSubtypes
   };
 
   return (

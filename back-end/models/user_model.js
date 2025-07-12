@@ -37,6 +37,12 @@ const user_model = sequelize.define("user", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    //update: Added age_user field with default value of 18
+    age_user: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 18
     }
 }, {
     timestamps: false,

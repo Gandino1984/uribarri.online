@@ -37,14 +37,11 @@ const ShopImageUpload = ({
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError(prevError => ({
-        ...prevError,
-        imageError: "La imagen es demasiado grande. Máximo 5MB."
-      }));
-      setShowErrorCard(true);
-      return;
+    //update: Remove file size validation here since we'll handle compression
+    // Just inform the user if the file is large
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > 1) {
+      console.log(`Imagen grande detectada (${fileSizeInMB.toFixed(2)}MB). Se comprimirá automáticamente a 1MB.`);
     }
 
     setSelectedImage(file);
@@ -109,8 +106,6 @@ const ShopImageUpload = ({
             </div>
           )}
           
-          {/* 🔄 UPDATE: Removed uploadButtonOverlay in favor of direct input triggering */}
-          
           {/* File input (hidden) */}
           <input
             type="file"
@@ -125,12 +120,11 @@ const ShopImageUpload = ({
           {/* Edit overlay hint */}
           {!uploading && (
             <div className={styles.editOverlay}>
-              {/* <Camera size={18} /> */}
               <span>{imagePreview ? 'Cambiar imagen' : 'Subir imagen'}</span>
             </div>
           )}
           
-          {/* 🔄 UPDATE: Added overlay with remove button when image exists */}
+          {/* Overlay with remove button when image exists */}
           {imagePreview && !uploading && (
             <div className={styles.removeButtonOverlay}>
               <button
@@ -146,6 +140,16 @@ const ShopImageUpload = ({
           )}
         </div>
       </div>
+      
+       <p className={styles.sectionDescription2}>
+        La imagen se convertirá automáticamente a formato WebP y se comprimirá a 1MB si es necesario.
+      </p>
+      
+      {selectedImage && (
+        <div style={{ marginTop: '10px', fontSize: '0.85em', color: 'black', textAlign: 'center' }}>
+          Archivo seleccionado: {selectedImage.name} ({(selectedImage.size / (1024 * 1024)).toFixed(2)}MB)
+        </div>
+      )}
     </section>
   );
 };

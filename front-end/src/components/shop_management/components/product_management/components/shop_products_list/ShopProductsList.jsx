@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
-import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx'; // ✨ UPDATE: Import Package context
+import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx';
 import ShopPackagesList from './components/shop_packages_list/ShopPackagesList.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
@@ -480,26 +480,51 @@ const ShopProductsList = () => {
                 <h1 className={styles.listTitle}>Lista de Productos</h1>
               </div>
               
-              {/* 🌟 UPDATE: Removed extra container divs to eliminate any potential width constraints */}
-              <SearchBar 
-                searchTerm={searchTerm}
-                handleSearchChange={handleSearchChange}
-              />
-              
-              <div className={styles.buttonGroupContainer}>
-                {/* 🔄 UPDATE: ActionButtons container with navigateToPackages prop */}
-                <ActionButtons 
-                  handleAddProduct={handleAddProduct}
-                  handleBulkUpdate={handleBulkUpdate}
-                  handleBulkDelete={handleBulkDelete}
-                  handleCreatePackage={handleCreatePackage}
-                  toggleFilters={toggleFilters}
-                  showFilters={showFilters}
-                  selectedProducts={selectedProducts}
-                  activeFiltersCount={activeFiltersCount}
-                  navigateToPackages={() => setShowPackages(true)}
-                />
-              </div>
+              {/*update: Mobile layout with search bar and burger menu */}
+              {isSmallScreen ? (
+                <div className={styles.searchAndMenuContainer}>
+                  <SearchBar 
+                    searchTerm={searchTerm}
+                    handleSearchChange={handleSearchChange}
+                  />
+                  
+                  <ActionButtons 
+                    handleAddProduct={handleAddProduct}
+                    handleBulkUpdate={handleBulkUpdate}
+                    handleBulkDelete={handleBulkDelete}
+                    handleCreatePackage={handleCreatePackage}
+                    toggleFilters={toggleFilters}
+                    showFilters={showFilters}
+                    selectedProducts={selectedProducts}
+                    activeFiltersCount={activeFiltersCount}
+                    navigateToPackages={() => setShowPackages(true)}
+                    isMobile={true}
+                  />
+                </div>
+              ) : (
+                <>
+                  {/*update: Desktop layout */}
+                  <SearchBar 
+                    searchTerm={searchTerm}
+                    handleSearchChange={handleSearchChange}
+                  />
+                  
+                  <div className={styles.buttonGroupContainer}>
+                    <ActionButtons 
+                      handleAddProduct={handleAddProduct}
+                      handleBulkUpdate={handleBulkUpdate}
+                      handleBulkDelete={handleBulkDelete}
+                      handleCreatePackage={handleCreatePackage}
+                      toggleFilters={toggleFilters}
+                      showFilters={showFilters}
+                      selectedProducts={selectedProducts}
+                      activeFiltersCount={activeFiltersCount}
+                      navigateToPackages={() => setShowPackages(true)}
+                      isMobile={false}
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
@@ -535,8 +560,6 @@ const ShopProductsList = () => {
                 />
               </div>
             )}
-          
-
           </animated.div>
         )
       )}
