@@ -28,7 +28,6 @@ router.use("/type", typeApiRouter);
 
 router.use("/subtype", subtypeApiRouter);
 
-//update: Added product category and subcategory routes
 router.use("/product-category", productCategoryApiRouter);
 
 router.use("/product-subcategory", productSubcategoryApiRouter);

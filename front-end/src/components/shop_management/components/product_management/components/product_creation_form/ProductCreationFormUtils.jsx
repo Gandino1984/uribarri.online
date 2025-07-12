@@ -258,6 +258,15 @@ const ProductCreationFormUtils = () => {
         setError(prevError => ({ ...prevError, productError: "El nombre de producto es requerido"}));
         throw new Error("El nombre de producto es requerido");
       }
+      //update: Check for category and subcategory IDs instead of type/subtype
+    if (!productData.id_category) {
+      setError(prevError => ({ ...prevError, productError: "La categoría es requerida"}));
+      throw new Error("La categoría es requerida");
+    }
+    if (!productData.id_subcategory) {
+      setError(prevError => ({ ...prevError, productError: "La subcategoría es requerida"}));
+      throw new Error("La subcategoría es requerida");
+    }
       if (!productData.type_product) {
         setError(prevError => ({ ...prevError, productError: "El tipo de producto es requerido"}));
         throw new Error("El tipo de producto es requerido");
