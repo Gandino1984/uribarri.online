@@ -155,7 +155,7 @@ async function getSubcategoriesByCategoryId(id_category) {
     }
 }
 
-async function create(categoryData) {
+async function create(categoryData, shopTypeIds = []) {
     try {
         // Check if category already exists (regardless of verified status)
         const existingCategory = await product_category_model.findOne({ 
@@ -176,6 +176,29 @@ async function create(categoryData) {
             ...categoryData,
             verified_category: false
         });
+        
+        //update: If shop type IDs are provided, create associations
+        if (shopTypeIds && shopTypeIds.length > 0) {
+            const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+            const type_model = (await import("../../models/type_model.js")).default;
+            
+            for (const id_type of shopTypeIds) {
+                // Verify that the type exists and is verified
+                const type = await type_model.findOne({
+                    where: {
+                        id_type: id_type,
+                        verified_type: true
+                    }
+                });
+                
+                if (type) {
+                    await shop_type_category_model.create({
+                        id_type: id_type,
+                        id_category: category.id_category
+                    });
+                }
+            }
+        }
         
         return { 
             success: "¡Categoría creada!",
@@ -279,6 +302,12 @@ async function removeById(id_category, cascadeDelete = false) {
             }
         }
 
+        //update: Delete shop type associations for this category
+        const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+        await shop_type_category_model.destroy({
+            where: { id_category: id_category }
+        });
+
         // Delete the category
         await category.destroy();
 
@@ -311,6 +340,46 @@ async function isCategoryValid(id_category) {
     }
 }
 
+//update: Add function to get categories available for a shop
+async function getCategoriesForShop(id_shop) {
+    try {
+        const shop_model = (await import("../../models/shop_model.js")).default;
+        const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+        
+        // Get the shop
+        const shop = await shop_model.findByPk(id_shop);
+        
+        if (!shop) {
+            return { error: "El comercio no existe", data: [] };
+        }
+        
+        // Get all category IDs associated with this shop's type
+        const associations = await shop_type_category_model.findAll({
+            where: { id_type: shop.id_type }
+        });
+        
+        if (!associations || associations.length === 0) {
+            // If no specific associations, return all verified categories (backward compatibility)
+            return await getVerified();
+        }
+        
+        // Get the category details for each associated category
+        const categoryIds = associations.map(assoc => assoc.id_category);
+        const categories = await product_category_model.findAll({
+            where: { 
+                id_category: categoryIds,
+                verified_category: true 
+            },
+            order: [['name_category', 'ASC']]
+        });
+        
+        return { data: categories };
+    } catch (err) {
+        console.error("-> product_category_controller.js - getCategoriesForShop() - Error = ", err);
+        return { error: "Error al obtener categorías para el comercio" };
+    }
+}
+
 export { 
     getAll, 
     getVerified,
@@ -321,7 +390,8 @@ export {
     create, 
     update, 
     removeById,
-    isCategoryValid
+    isCategoryValid,
+    getCategoriesForShop
 }
 
 export default { 
@@ -334,5 +404,6 @@ export default {
     create, 
     update, 
     removeById,
-    isCategoryValid
+    isCategoryValid,
+    getCategoriesForShop
 }

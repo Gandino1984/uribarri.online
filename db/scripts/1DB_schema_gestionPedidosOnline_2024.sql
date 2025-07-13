@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   UNIQUE INDEX `id_product_UNIQUE` (`id_product` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
+
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`product_category`
 -- -----------------------------------------------------
@@ -145,6 +146,12 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_subcategory` 
   UNIQUE INDEX `name_category_unique` (`name_subcategory` ASC, `id_category` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `shop_type_category` (
+  `id_shop_type_category` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_type` INT UNSIGNED NOT NULL,
+  `id_category` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_shop_type_category`)
+) ENGINE=InnoDB;  
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`package`

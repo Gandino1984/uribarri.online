@@ -15,6 +15,9 @@ router.get("/unverified", productCategoryApiController.getUnverified);
 // Get all categories with their subcategories
 router.get("/with-subcategories", productCategoryApiController.getAllWithSubcategories);
 
+// Get categories for a specific shop
+router.get("/shop/:id_shop", productCategoryApiController.getCategoriesForShop);
+
 // Get subcategories by category ID
 router.get("/:id_category/subcategories", productCategoryApiController.getSubcategoriesByCategoryId);
 

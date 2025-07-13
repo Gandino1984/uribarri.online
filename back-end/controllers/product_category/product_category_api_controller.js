@@ -92,7 +92,8 @@ async function create(req, res) {
     try {
         const { 
             name_category,
-            createdby_category
+            createdby_category,
+            shop_type_ids
         } = req.body;
         
         // Validate required fields
@@ -107,7 +108,8 @@ async function create(req, res) {
             createdby_category: createdby_category || null
         };
         
-        const { error, data, success } = await productCategoryController.create(categoryData);
+        //update: Pass shop_type_ids to the controller
+        const { error, data, success } = await productCategoryController.create(categoryData, shop_type_ids);
         
         res.json({ error, data, success });
     } catch (err) {
@@ -179,6 +181,27 @@ async function removeById(req, res) {
     }
 }
 
+//update: Add function to get categories for a specific shop
+async function getCategoriesForShop(req, res) {
+    try {
+        const { id_shop } = req.params;
+        
+        if (!id_shop) {
+            return res.status(400).json({ 
+                error: 'El ID del comercio es obligatorio'
+            });
+        }
+        
+        const { error, data } = await productCategoryController.getCategoriesForShop(id_shop);
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> product_category_api_controller.js - getCategoriesForShop() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener categorías para el comercio"
+        });
+    }
+}
+
 export {
     getAll,
     getVerified,
@@ -188,7 +211,8 @@ export {
     getSubcategoriesByCategoryId,
     create,
     update,
-    removeById
+    removeById,
+    getCategoriesForShop
 }
 
 export default {
@@ -200,5 +224,6 @@ export default {
     getSubcategoriesByCategoryId,
     create,
     update,
-    removeById
+    removeById,
+    getCategoriesForShop
 }
