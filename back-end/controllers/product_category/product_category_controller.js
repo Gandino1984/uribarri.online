@@ -1,5 +1,7 @@
 import product_category_model from "../../models/product_category_model.js";
 import product_subcategory_model from "../../models/product_subcategory_model.js";
+import shop_type_category_model from "../../models/shop_type_category_model.js";
+import shop_model from "../../models/shop_model.js"
 import product_model from "../../models/product_model.js";
 import { Op } from 'sequelize';
 
@@ -179,8 +181,8 @@ async function create(categoryData, shopTypeIds = []) {
         
         //update: If shop type IDs are provided, create associations
         if (shopTypeIds && shopTypeIds.length > 0) {
-            const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
-            const type_model = (await import("../../models/type_model.js")).default;
+            // const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+            // const type_model = (await import("../../models/type_model.js")).default;
             
             for (const id_type of shopTypeIds) {
                 // Verify that the type exists and is verified
@@ -303,7 +305,7 @@ async function removeById(id_category, cascadeDelete = false) {
         }
 
         //update: Delete shop type associations for this category
-        const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+        // const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
         await shop_type_category_model.destroy({
             where: { id_category: id_category }
         });
@@ -343,8 +345,8 @@ async function isCategoryValid(id_category) {
 //update: Add function to get categories available for a shop
 async function getCategoriesForShop(id_shop) {
     try {
-        const shop_model = (await import("../../models/shop_model.js")).default;
-        const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+        // const shop_model = (await import("../../models/shop_model.js")).default;
+        // const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
         
         // Get the shop
         const shop = await shop_model.findByPk(id_shop);

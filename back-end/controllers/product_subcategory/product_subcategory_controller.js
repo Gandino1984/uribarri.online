@@ -335,6 +335,57 @@ async function removeByCategoryId(id_category) {
     }
 }
 
+//update: Add function to get subcategories available for a shop and category
+async function getSubcategoriesForShopAndCategory(id_shop, id_category) {
+    try {
+        const shop_model = (await import("../../models/shop_model.js")).default;
+        const shop_type_category_model = (await import("../../models/shop_type_category_model.js")).default;
+        
+        // Get the shop
+        const shop = await shop_model.findByPk(id_shop);
+        
+        if (!shop) {
+            return { error: "El comercio no existe", data: [] };
+        }
+        
+        // First check if this category is available for this shop type
+        const categoryAssociation = await shop_type_category_model.findOne({
+            where: { 
+                id_type: shop.id_type,
+                id_category: id_category
+            }
+        });
+        
+        // If no association exists, check if there are any associations at all for this shop type
+        const hasAnyAssociations = await shop_type_category_model.findOne({
+            where: { id_type: shop.id_type }
+        });
+        
+        // If there are no associations at all (backward compatibility) or the category is associated
+        if (!hasAnyAssociations || categoryAssociation) {
+            // Get all verified subcategories for this category
+            const subcategories = await product_subcategory_model.findAll({
+                where: { 
+                    id_category: id_category,
+                    verified_subcategory: true 
+                },
+                order: [['name_subcategory', 'ASC']]
+            });
+            
+            return { data: subcategories };
+        } else {
+            // This category is not available for this shop type
+            return { 
+                error: "Esta categoría no está disponible para este tipo de comercio", 
+                data: [] 
+            };
+        }
+    } catch (err) {
+        console.error("-> product_subcategory_controller.js - getSubcategoriesForShopAndCategory() - Error = ", err);
+        return { error: "Error al obtener subcategorías para el comercio y categoría" };
+    }
+}
+
 export { 
     getAll, 
     getVerified,
@@ -344,7 +395,8 @@ export {
     create, 
     update, 
     removeById,
-    removeByCategoryId
+    removeByCategoryId,
+    getSubcategoriesForShopAndCategory
 }
 
 export default { 
@@ -356,5 +408,6 @@ export default {
     create, 
     update, 
     removeById,
-    removeByCategoryId
+    removeByCategoryId,
+    getSubcategoriesForShopAndCategory
 }

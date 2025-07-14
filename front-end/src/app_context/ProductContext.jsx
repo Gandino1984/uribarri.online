@@ -155,25 +155,45 @@ export const ProductProvider = ({ children }) => {
     fetchCategoriesAndSubcategories();
   }, []);
   
-  //update: Fetch subcategories when a category is selected
-  const fetchSubcategoriesByCategory = async (categoryId) => {
-    try {
-      console.log('Fetching subcategories for category:', categoryId); // Debug log
-      const response = await axiosInstance.get(`/product-subcategory/by-category/${categoryId}`);
-      console.log('Subcategories response:', response.data); // Debug log
-      
-      if (response.data && response.data.data) {
-        setSubcategories(response.data.data);
-        return response.data.data;
-      }
-      setSubcategories([]);
-      return [];
-    } catch (error) {
-      console.error('Error fetching subcategories:', error);
-      setSubcategories([]);
-      return [];
+  
+//update: Modified to fetch subcategories filtered by shop type
+const fetchSubcategoriesByCategory = async (categoryId) => {
+    if (!categoryId) {
+        setSubcategories([]);
+        return;
     }
-  };
+    
+    try {
+        setLoadingSubcategories(true);
+        
+        // If we have a selected shop, use the filtered endpoint
+        if (selectedShop?.id_shop) {
+            const response = await axiosInstance.get(`/product-subcategory/shop/${selectedShop.id_shop}/category/${categoryId}`);
+            
+            if (response.data.error) {
+                console.error('Error fetching subcategories:', response.data.error);
+                setSubcategories([]);
+            } else {
+                setSubcategories(response.data.data || []);
+            }
+        } else {
+            // Fallback to regular endpoint if no shop is selected
+            const response = await axiosInstance.get(`/product-subcategory/by-category/${categoryId}`);
+            
+            if (response.data.error) {
+                console.error('Error fetching subcategories:', response.data.error);
+                setSubcategories([]);
+            } else {
+                setSubcategories(response.data.data || []);
+            }
+        }
+    } catch (error) {
+        console.error('Error in fetchSubcategoriesByCategory:', error);
+        setSubcategories([]);
+    } finally {
+        setLoadingSubcategories(false);
+    }
+};
   
   // Helper functions
   const refreshProductList = () => {

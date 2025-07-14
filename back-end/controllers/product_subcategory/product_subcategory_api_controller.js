@@ -197,6 +197,27 @@ async function removeByCategoryId(req, res) {
     }
 }
 
+//update: Add function to get subcategories for a specific shop and category
+async function getSubcategoriesForShopAndCategory(req, res) {
+    try {
+        const { id_shop, id_category } = req.params;
+        
+        if (!id_shop || !id_category) {
+            return res.status(400).json({ 
+                error: 'El ID del comercio y de la categoría son obligatorios'
+            });
+        }
+        
+        const { error, data } = await productSubcategoryController.getSubcategoriesForShopAndCategory(id_shop, id_category);
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> product_subcategory_api_controller.js - getSubcategoriesForShopAndCategory() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener subcategorías para el comercio y categoría"
+        });
+    }
+}
+
 export {
     getAll,
     getVerified,
@@ -206,7 +227,8 @@ export {
     create,
     update,
     removeById,
-    removeByCategoryId
+    removeByCategoryId,
+    getSubcategoriesForShopAndCategory
 }
 
 export default {
@@ -218,5 +240,6 @@ export default {
     create,
     update,
     removeById,
-    removeByCategoryId
+    removeByCategoryId,
+    getSubcategoriesForShopAndCategory
 }
