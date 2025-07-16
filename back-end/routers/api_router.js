@@ -11,6 +11,8 @@ import subtypeApiRouter from "./subtype_api_router.js";
 //update: Added product category and subcategory routers
 import productCategoryApiRouter from "./product_category_api_router.js";
 import productSubcategoryApiRouter from "./product_subcategory_api_router.js";
+//update: Added type-category association router
+import typeCategoryApiRouter from "./type_category_api_router.js";
 
 const router = Router();
 
@@ -31,5 +33,7 @@ router.use("/subtype", subtypeApiRouter);
 router.use("/product-category", productCategoryApiRouter);
 
 router.use("/product-subcategory", productSubcategoryApiRouter);
+
+router.use("/type-category", typeCategoryApiRouter);
 
 export default router;

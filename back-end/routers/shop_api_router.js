@@ -10,6 +10,9 @@ router.get("/", shopApiController.getAll);
 
 router.get('/types-of-shops', shopApiController.getTypesOfShops);
 
+//update: New endpoint to get subtypes for a specific type
+router.get('/subtypes-for-type/:id_type', shopApiController.getSubtypesForType);
+
 router.post("/by-type", shopApiController.getByType);
 
 router.post("/by-id", shopApiController.getById);

@@ -17,6 +17,10 @@ export const ProductProvider = ({ children }) => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [selectedProductDetails, setSelectedProductDetails] = useState(null);
   const [selectedProductForImageUpload, setSelectedProductForImageUpload] = useState(null);
+
+  const [loadingSubcategories, setLoadingSubcategories] = useState(false);
+  
+
   
   // Product creation/editing
   const [newProductData, setNewProductData] = useState({
@@ -96,68 +100,75 @@ export const ProductProvider = ({ children }) => {
     'Técnico': ['Servicio', 'Electrónica', 'Muebles']
   });
   
-  //update: Fetch categories and subcategories from database
+  //update: Fetch categories based on selected shop
   useEffect(() => {
-    const fetchCategoriesAndSubcategories = async () => {
-      console.log('Starting to fetch categories...'); // Debug log
+    const fetchCategoriesForShop = async () => {
+      if (!selectedShop?.id_shop) {
+        console.log('No shop selected, skipping category fetch');
+        setCategories([]);
+        return;
+      }
+      
+      console.log(`Fetching categories for shop ${selectedShop.id_shop} (${selectedShop.name_shop})`);
       setLoadingCategories(true);
       setCategoriesError(null);
       
       try {
-        //update: Fetch verified categories
-        console.log('Fetching from /product-category/verified...'); // Debug log
-        const categoriesResponse = await axiosInstance.get('/product-category/verified');
-        console.log('Categories response:', categoriesResponse.data); // Debug log
+        //update: Use the new endpoint to get categories filtered by shop
+        const response = await axiosInstance.get(`/product-category/shop/${selectedShop.id_shop}`);
+        console.log('Categories response for shop:', response.data);
         
-        if (categoriesResponse.data && categoriesResponse.data.data) {
-          setCategories(categoriesResponse.data.data);
-          console.log('Categories set in state:', categoriesResponse.data.data); // Debug log
+        if (response.data && response.data.data) {
+          setCategories(response.data.data);
+          console.log(`Set ${response.data.data.length} categories for shop ${selectedShop.id_shop}`);
+          
+          // Build categoriesWithSubcategories for the filtered categories
+          const filteredCategoriesWithSubs = {};
+          for (const category of response.data.data) {
+            try {
+              const subResponse = await axiosInstance.get(`/product-subcategory/shop/${selectedShop.id_shop}/category/${category.id_category}`);
+              if (subResponse.data && subResponse.data.data) {
+                filteredCategoriesWithSubs[category.name_category] = subResponse.data.data.map(sub => sub.name_subcategory);
+              }
+            } catch (subError) {
+              console.error(`Error fetching subcategories for category ${category.id_category}:`, subError);
+              filteredCategoriesWithSubs[category.name_category] = [];
+            }
+          }
+          
+          setCategoriesWithSubcategories(filteredCategoriesWithSubs);
+          setProductTypesAndSubtypes(filteredCategoriesWithSubs); // For backward compatibility
+          
+          // Extract category names for filter options
+          const categoryNames = Object.keys(filteredCategoriesWithSubs);
+          setFilterOptions(prev => ({
+            ...prev,
+            tipo: {
+              ...prev.tipo,
+              options: categoryNames
+            }
+          }));
         } else {
-          console.error('No categories data in response'); // Debug log
+          console.error('No categories data in response');
           setCategories([]);
         }
         
-        //update: Then fetch categories with their subcategories
-        try {
-          const response = await axiosInstance.get('/product-category/with-subcategories');
-          console.log('Categories with subcategories response:', response.data); // Debug log
-          
-          if (response.data && response.data.data) {
-            setCategoriesWithSubcategories(response.data.data);
-            setProductTypesAndSubtypes(response.data.data); // For backward compatibility
-            
-            // Extract category names for filter options
-            const categoryNames = Object.keys(response.data.data);
-            setFilterOptions(prev => ({
-              ...prev,
-              tipo: {
-                ...prev.tipo,
-                options: categoryNames
-              }
-            }));
-          }
-        } catch (subError) {
-          console.error('Error fetching categories with subcategories:', subError);
-          // This is not critical, continue without it
-        }
-        
       } catch (error) {
-        console.error('Error fetching categories:', error); // Debug log
-        console.error('Error details:', error.response || error); // More detailed error
-        setCategoriesError('Error al cargar las categorías');
-        setCategories([]); // Set empty array on error
+        console.error('Error fetching categories for shop:', error);
+        console.error('Error details:', error.response || error);
+        setCategoriesError('Error al cargar las categorías para este comercio');
+        setCategories([]);
       } finally {
         setLoadingCategories(false);
-        console.log('Loading categories finished'); // Debug log
       }
     };
     
-    fetchCategoriesAndSubcategories();
-  }, []);
+    fetchCategoriesForShop();
+  }, [selectedShop]); // Re-fetch when selected shop changes
   
   
-//update: Modified to fetch subcategories filtered by shop type
-const fetchSubcategoriesByCategory = async (categoryId) => {
+  //update: Modified to fetch subcategories filtered by shop type with enhanced logging
+  const fetchSubcategoriesByCategory = async (categoryId) => {
     if (!categoryId) {
         setSubcategories([]);
         return;
@@ -168,16 +179,24 @@ const fetchSubcategoriesByCategory = async (categoryId) => {
         
         // If we have a selected shop, use the filtered endpoint
         if (selectedShop?.id_shop) {
+            console.log(`Fetching subcategories for shop ${selectedShop.id_shop} and category ${categoryId}`);
+            console.log(`Shop type: ${selectedShop.type_shop} (ID: ${selectedShop.id_type})`);
+            
             const response = await axiosInstance.get(`/product-subcategory/shop/${selectedShop.id_shop}/category/${categoryId}`);
+            
+            console.log('Subcategories response:', response.data);
             
             if (response.data.error) {
                 console.error('Error fetching subcategories:', response.data.error);
                 setSubcategories([]);
             } else {
-                setSubcategories(response.data.data || []);
+                const subcategoriesData = response.data.data || [];
+                console.log(`Received ${subcategoriesData.length} subcategories:`, subcategoriesData.map(s => s.name_subcategory));
+                setSubcategories(subcategoriesData);
             }
         } else {
             // Fallback to regular endpoint if no shop is selected
+            console.log(`No shop selected, fetching all subcategories for category ${categoryId}`);
             const response = await axiosInstance.get(`/product-subcategory/by-category/${categoryId}`);
             
             if (response.data.error) {
@@ -193,7 +212,7 @@ const fetchSubcategoriesByCategory = async (categoryId) => {
     } finally {
         setLoadingSubcategories(false);
     }
-};
+  };
   
   // Helper functions
   const refreshProductList = () => {
@@ -243,6 +262,7 @@ const fetchSubcategoriesByCategory = async (categoryId) => {
     loadingCategories,
     categoriesError,
     fetchSubcategoriesByCategory,
+    loadingSubcategories,
   };
 
   return (

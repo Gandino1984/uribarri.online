@@ -31,8 +31,8 @@ const ShopsListBySeller = () => {
   
   // Calculate appropriate limit based on user's category
   const shopLimit = useMemo(() => {
-    return currentUser?.category_user ? maxSponsorShops : maxRegularShops;
-  }, [currentUser?.category_user, maxSponsorShops, maxRegularShops]);
+    return currentUser?.contributor_user ? maxSponsorShops : maxRegularShops;
+  }, [currentUser?.contributor_user, maxSponsorShops, maxRegularShops]);
 
   const { 
     fetchUserShops,
@@ -151,7 +151,7 @@ const ShopsListBySeller = () => {
             <ShopLimitIndicator 
               shopCount={shopCount} 
               shopLimit={shopLimit} 
-              isUserSponsor={!!currentUser?.category_user} 
+              isUserSponsor={!!currentUser?.contributor_user} 
             />
           </animated.div>
         </div>

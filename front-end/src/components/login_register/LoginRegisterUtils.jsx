@@ -164,7 +164,7 @@ export const LoginRegisterUtils = () => {
         type_user: userData.type_user,
         location_user: userData.location_user,
         image_user: userData.image_user,
-        category_user: userData.category_user       
+        contributor_user: userData.contributor_user       
       };
   
       // Call login to setup user data
@@ -291,7 +291,7 @@ export const LoginRegisterUtils = () => {
         name_user: userData.name_user,
         type_user: userData.type_user,
         location_user: userData.location_user,
-        category_user: userData.category_user
+        contributor_user: userData.contributor_user
       };
   
       // Login the user - ensure we await this to complete before proceeding

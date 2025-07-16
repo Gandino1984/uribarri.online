@@ -103,7 +103,7 @@ const ProductCreationFormUtils = () => {
 
   // Determinar el límite de productos basado en la categoría del usuario
   useEffect(() => {
-    if (currentUser?.category_user) {
+    if (currentUser?.contributor_user) {
       setProductLimit(200); // Límite para usuarios sponsor
     } else {
       setProductLimit(7); // Límite para usuarios no sponsor
@@ -302,7 +302,7 @@ const ProductCreationFormUtils = () => {
       if (!selectedProductToUpdate && productCount >= productLimit) {
         setError(prevError => ({ 
           ...prevError, 
-          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
         }));
         throw new Error(`Has alcanzado el límite de ${productLimit} productos`);
       }
@@ -464,7 +464,7 @@ const ProductCreationFormUtils = () => {
       if (productCount >= productLimit) {
         setError(prevError => ({
           ...prevError,
-          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
         }));
         setShowErrorCard(true);
         return false;

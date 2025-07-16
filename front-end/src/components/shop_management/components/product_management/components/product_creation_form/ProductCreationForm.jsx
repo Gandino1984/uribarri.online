@@ -320,7 +320,7 @@ const ProductCreationForm = () => {
               <AlertCircle size={20} color={statusColor} className={styles.alertIcon}/>
               <span>Límite de productos: {productCount} / {productLimit}</span>
           </div>
-          {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
+          {!currentUser?.contributor_user && productCount >= productLimit * 0.7 && (
             <p className={styles.upgradeMessage}>
               Conviértete en sponsor para aumentar tu límite a 100 productos.
             </p>

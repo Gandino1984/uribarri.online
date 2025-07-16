@@ -33,7 +33,7 @@ const user_model = sequelize.define("user", {
         allowNull: false,
         defaultValue: 5
     },
-    category_user: {
+    contributor_user: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

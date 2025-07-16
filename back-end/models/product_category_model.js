@@ -1,26 +1,24 @@
 import { DataTypes } from 'sequelize';
-import db from '../config/sequelize.js';
+import sequelize from '../config/sequelize.js';
 
-const product_category_model = db.define('product_category', {
+const product_category_model = sequelize.define('product_category', {
     id_category: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true,
-        allowNull: false
+        autoIncrement: true
     },
     name_category: {
         type: DataTypes.STRING(100),
         allowNull: false,
         unique: true
     },
+    createdby_category: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
     verified_category: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
         defaultValue: false
-    },
-    createdby_category: {
-        type: DataTypes.STRING(20),
-        allowNull: true
     }
 }, {
     tableName: 'product_category',

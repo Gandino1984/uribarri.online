@@ -2,9 +2,9 @@
    display: flex;
    flex-direction: column;
    width: 100%;
-   height: 100%;
+   height: 100vh;
    gap: 1.5rem;
-   margin-top: 5.5rem; 
+   margin-top: 11rem; 
    overflow-x: hidden;
 }
 

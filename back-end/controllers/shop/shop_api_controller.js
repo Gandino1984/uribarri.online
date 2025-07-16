@@ -69,9 +69,8 @@ async function create(req, res) {
         const { 
             name_shop, 
             location_shop, 
-            //update: Now expects id_type and id_subtype instead of strings
+            //update: Now expects id_type instead of type_shop string
             id_type, 
-            id_subtype, 
             id_user,
             morning_open,
             morning_close,
@@ -91,8 +90,8 @@ async function create(req, res) {
         const calification_shop = req.body.calification_shop || 5;
         const image_shop = req.body.image_shop || '';
     
-        // Validate required fields
-        if (!name_shop || !location_shop || !id_type || !id_subtype || !id_user) {
+        // Validate required fields (removed id_subtype from required)
+        if (!name_shop || !location_shop || !id_type || !id_user) {
             console.error('-> shop_api_controller.js - create() - Error = Campos obligatorios faltantes');
             console.log(req.body);
             return res.status(400).json({
@@ -101,7 +100,6 @@ async function create(req, res) {
                     name_shop: !name_shop,
                     location_shop: !location_shop,
                     id_type: !id_type,
-                    id_subtype: !id_subtype,
                     id_user: !id_user
                 }
             });
@@ -111,7 +109,6 @@ async function create(req, res) {
             name_shop, 
             location_shop, 
             id_type, 
-            id_subtype, 
             id_user, 
             calification_shop, 
             image_shop,
@@ -147,9 +144,8 @@ async function update(req, res) {
             id_shop,
             name_shop,
             location_shop,
-            //update: Now expects id_type and id_subtype instead of strings
+            //update: Now expects id_type only
             id_type,
-            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -185,7 +181,6 @@ async function update(req, res) {
             name_shop,
             location_shop,
             id_type,
-            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -229,9 +224,8 @@ async function updateWithFolder(req, res) {
             id_shop,
             name_shop,
             location_shop,
-            //update: Now expects id_type and id_subtype instead of strings
+            //update: Now expects id_type only
             id_type,
-            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -260,7 +254,6 @@ async function updateWithFolder(req, res) {
             name_shop,
             location_shop,
             id_type,
-            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -453,6 +446,33 @@ async function uploadCoverImage(req, res) {
     });
   }
 }
+
+//update: New function to get subtypes for a specific type
+async function getSubtypesForType(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+
+        const { error, data } = await shopController.getSubtypesForType(id_type);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+
+        res.json({ error, data });
+    } catch (err) {
+        console.error('Error getting subtypes for type:', err);
+        res.status(500).json({
+            error: 'Error al obtener subtipos',
+            details: err.message
+        });
+    }
+}
   
 export {
     getAll,
@@ -465,7 +485,8 @@ export {
     getByUserId,
     getTypesOfShops,
     updateWithFolder,
-    uploadCoverImage
+    uploadCoverImage,
+    getSubtypesForType
 }
 
 export default {
@@ -479,5 +500,6 @@ export default {
     getByUserId,
     getTypesOfShops,
     updateWithFolder,
-    uploadCoverImage
+    uploadCoverImage,
+    getSubtypesForType
 }

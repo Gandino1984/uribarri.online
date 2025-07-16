@@ -36,12 +36,12 @@ async function getUnverified(req, res) {
     }
 }
 
-async function getAllWithSubcategories(req, res) {
+async function getWithSubcategories(req, res) {
     try {
-        const { error, data } = await productCategoryController.getAllWithSubcategories();
+        const { error, data } = await productCategoryController.getWithSubcategories();
         res.json({ error, data });
     } catch (err) {
-        console.error("-> product_category_api_controller.js - getAllWithSubcategories() - Error =", err);
+        console.error("-> product_category_api_controller.js - getWithSubcategories() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener categorías con subcategorías"
         });
@@ -68,26 +68,6 @@ async function getById(req, res) {
     }
 }
 
-async function getSubcategoriesByCategoryId(req, res) {
-    try {
-        const { id_category } = req.params;
-        
-        if (!id_category) {
-            return res.status(400).json({ 
-                error: 'El ID de la categoría es obligatorio'
-            });
-        }
-        
-        const { error, data, category } = await productCategoryController.getSubcategoriesByCategoryId(id_category);
-        res.json({ error, data, category });
-    } catch (err) {
-        console.error("-> product_category_api_controller.js - getSubcategoriesByCategoryId() - Error =", err);
-        res.status(500).json({ 
-            error: "Error al obtener subcategorías de la categoría"
-        });
-    }
-}
-
 async function create(req, res) {
     try {
         const { 
@@ -105,11 +85,11 @@ async function create(req, res) {
         
         const categoryData = {
             name_category,
-            createdby_category: createdby_category || null
+            createdby_category: createdby_category || null,
+            shop_type_ids: shop_type_ids || []
         };
         
-        //update: Pass shop_type_ids to the controller
-        const { error, data, success } = await productCategoryController.create(categoryData, shop_type_ids);
+        const { error, data, success } = await productCategoryController.create(categoryData);
         
         res.json({ error, data, success });
     } catch (err) {
@@ -181,7 +161,7 @@ async function removeById(req, res) {
     }
 }
 
-//update: Add function to get categories for a specific shop
+//update: Get categories for a specific shop
 async function getCategoriesForShop(req, res) {
     try {
         const { id_shop } = req.params;
@@ -206,9 +186,8 @@ export {
     getAll,
     getVerified,
     getUnverified,
-    getAllWithSubcategories,
+    getWithSubcategories,
     getById,
-    getSubcategoriesByCategoryId,
     create,
     update,
     removeById,
@@ -219,9 +198,8 @@ export default {
     getAll,
     getVerified,
     getUnverified,
-    getAllWithSubcategories,
+    getWithSubcategories,
     getById,
-    getSubcategoriesByCategoryId,
     create,
     update,
     removeById,

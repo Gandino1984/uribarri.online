@@ -1,30 +1,33 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/sequelize.js";
 
-const type_model = sequelize.define("type", {
-    id_type: {
+const shop_subtype_model = sequelize.define("subtype", {
+    id_subtype: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
-    name_type: {
+    name_subtype: {
         type: DataTypes.STRING(100),
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
-    verified_type: {
+    id_type: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false
+    },
+    verified_subtype: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
     },
-    createdby_type: {
+    createdby_subtype: {
         type: DataTypes.STRING(20),
         allowNull: true
     }
 }, {
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
 });
 
-export default type_model;
+export default shop_subtype_model;

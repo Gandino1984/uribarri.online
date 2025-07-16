@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `type_user` VARCHAR(45) NOT NULL,
   `image_user` VARCHAR(255) NULL,
   `calification_user` INT NOT NULL DEFAULT 5,
-  `category_user` TINYINT(1) NOT NULL DEFAULT 0,
+  `contributor_user` TINYINT(1) NOT NULL DEFAULT 0,
   `age_user` INT NOT NULL DEFAULT 18,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE
@@ -147,15 +147,13 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_subcategory` 
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`shop_type_category`
+-- Table `DB_gestionPedidosOnline_2024`.`type_category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop_type_category` (
-  `id_shop_type_category` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`type_category` (
+  `id_type_category` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_type` INT UNSIGNED NOT NULL,
   `id_category` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id_shop_type_category`),
-  INDEX `idx_type` (`id_type` ASC) VISIBLE,
-  INDEX `idx_category` (`id_category` ASC) VISIBLE
+  PRIMARY KEY (`id_type_category`)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------

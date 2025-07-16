@@ -1,24 +1,23 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/sequelize.js';
 
-const shop_type_category_model = sequelize.define('shop_type_category', {
-    id_shop_type_category: {
+const category_subcategory_model = sequelize.define('category_subcategory', {
+    id_category_subcategory: {
         type: DataTypes.INTEGER.UNSIGNED,
         primaryKey: true,
-        autoIncrement: true,
-        allowNull: false
-    },
-    id_type: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false
+        autoIncrement: true
     },
     id_category: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
+    },
+    id_subcategory: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false
     }
 }, {
-    tableName: 'shop_type_category',
+    tableName: 'category_subcategory',
     timestamps: false
 });
 
-export default shop_type_category_model;
+export default category_subcategory_model;

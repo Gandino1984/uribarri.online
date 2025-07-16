@@ -36,26 +36,6 @@ async function getUnverified(req, res) {
     }
 }
 
-async function getByCategoryId(req, res) {
-    try {
-        const { id_category } = req.params;
-        
-        if (!id_category) {
-            return res.status(400).json({ 
-                error: 'El ID de la categoría es obligatorio'
-            });
-        }
-        
-        const { error, data } = await productSubcategoryController.getByCategoryId(id_category);
-        res.json({ error, data });
-    } catch (err) {
-        console.error("-> product_subcategory_api_controller.js - getByCategoryId() - Error =", err);
-        res.status(500).json({ 
-            error: "Error al obtener subcategorías por categoría"
-        });
-    }
-}
-
 async function getById(req, res) {
     try {
         const { id_subcategory } = req.params;
@@ -72,6 +52,26 @@ async function getById(req, res) {
         console.error("-> product_subcategory_api_controller.js - getById() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener la subcategoría"
+        });
+    }
+}
+
+async function getByCategoryId(req, res) {
+    try {
+        const { id_category } = req.params;
+        
+        if (!id_category) {
+            return res.status(400).json({ 
+                error: 'El ID de la categoría es obligatorio'
+            });
+        }
+        
+        const { error, data } = await productSubcategoryController.getByCategoryId(id_category);
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> product_subcategory_api_controller.js - getByCategoryId() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener subcategorías por categoría"
         });
     }
 }
@@ -114,7 +114,6 @@ async function update(req, res) {
         const { id_subcategory } = req.params;
         const {
             name_subcategory,
-            id_category,
             verified_subcategory
         } = req.body;
         
@@ -126,7 +125,6 @@ async function update(req, res) {
         
         const updateData = {};
         if (name_subcategory !== undefined) updateData.name_subcategory = name_subcategory;
-        if (id_category !== undefined) updateData.id_category = id_category;
         if (verified_subcategory !== undefined) updateData.verified_subcategory = verified_subcategory;
         
         const { error, data } = await productSubcategoryController.update(id_subcategory, updateData);
@@ -191,20 +189,20 @@ async function removeByCategoryId(req, res) {
     } catch (err) {
         console.error("-> product_subcategory_api_controller.js - removeByCategoryId() - Error =", err);
         res.status(500).json({ 
-            error: "Error al eliminar las subcategorías de la categoría",
+            error: "Error al eliminar las subcategorías",
             details: err.message 
         });
     }
 }
 
-//update: Add function to get subcategories for a specific shop and category
+//update: Get subcategories for a specific shop and category
 async function getSubcategoriesForShopAndCategory(req, res) {
     try {
         const { id_shop, id_category } = req.params;
         
         if (!id_shop || !id_category) {
             return res.status(400).json({ 
-                error: 'El ID del comercio y de la categoría son obligatorios'
+                error: 'El ID del comercio y el ID de la categoría son obligatorios'
             });
         }
         
@@ -222,8 +220,8 @@ export {
     getAll,
     getVerified,
     getUnverified,
-    getByCategoryId,
     getById,
+    getByCategoryId,
     create,
     update,
     removeById,
@@ -235,8 +233,8 @@ export default {
     getAll,
     getVerified,
     getUnverified,
-    getByCategoryId,
     getById,
+    getByCategoryId,
     create,
     update,
     removeById,

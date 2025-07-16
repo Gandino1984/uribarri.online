@@ -12,6 +12,7 @@ const product_subcategory_model = db.define('product_subcategory', {
         type: DataTypes.STRING(100),
         allowNull: false
     },
+    // not needed here becvause there's a categoty_subcategory table
     id_category: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
@@ -28,12 +29,6 @@ const product_subcategory_model = db.define('product_subcategory', {
 }, {
     tableName: 'product_subcategory',
     timestamps: false,
-    indexes: [
-        {
-            unique: true,
-            fields: ['name_subcategory', 'id_category']
-        }
-    ]
 });
 
 export default product_subcategory_model;

@@ -21,11 +21,7 @@ const shop_model = sequelize.define("shop", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    //update: Changed from subtype_shop string to id_subtype foreign key
-    id_subtype: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false
-    },
+    //update: Removed id_subtype as shop now has N:1 relationship with type only
     morning_open: {
         type: DataTypes.TIME,
         allowNull: true,
