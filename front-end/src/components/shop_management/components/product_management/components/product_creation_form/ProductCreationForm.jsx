@@ -63,7 +63,8 @@ const ProductCreationForm = () => {
     shopToProductTypesMap,
     //update: Get loading state for categories
     loadingCategories,
-    categoriesError
+    categoriesError,
+    fetchSubcategoriesByCategory
   } = useProduct();
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -122,6 +123,11 @@ const ProductCreationForm = () => {
           });
         }
       });
+      
+      //update: Fetch subcategories for the selected category when updating
+      if (selectedProductToUpdate.id_category) {
+        fetchSubcategoriesByCategory(selectedProductToUpdate.id_category);
+      }
     }
   }, [isUpdatingProduct, selectedProductToUpdate]);
 

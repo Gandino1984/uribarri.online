@@ -1,5 +1,5 @@
 // front-end/src/app_context/ProductContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useShop } from './ShopContext';
 import axiosInstance from '../utils/app/axiosConfig';
 
@@ -168,14 +168,16 @@ export const ProductProvider = ({ children }) => {
   
   
   //update: Modified to fetch subcategories filtered by shop type with enhanced logging
-  const fetchSubcategoriesByCategory = async (categoryId) => {
+  const fetchSubcategoriesByCategory = useCallback(async (categoryId) => {
     if (!categoryId) {
+        console.log('No category ID provided, clearing subcategories');
         setSubcategories([]);
         return;
     }
     
     try {
         setLoadingSubcategories(true);
+        setSubcategories([]); // Clear existing subcategories while loading
         
         // If we have a selected shop, use the filtered endpoint
         if (selectedShop?.id_shop) {
@@ -212,7 +214,7 @@ export const ProductProvider = ({ children }) => {
     } finally {
         setLoadingSubcategories(false);
     }
-  };
+  }, [selectedShop]);
   
   // Helper functions
   const refreshProductList = () => {

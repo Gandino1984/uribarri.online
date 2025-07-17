@@ -73,7 +73,7 @@ async function create(req, res) {
         const { 
             name_category,
             createdby_category,
-            shop_type_ids
+            id_type
         } = req.body;
         
         // Validate required fields
@@ -83,10 +83,17 @@ async function create(req, res) {
             });
         }
         
+        //update: Validate id_type is provided
+        if (!id_type) {
+            return res.status(400).json({
+                error: 'El tipo de comercio es obligatorio'
+            });
+        }
+        
         const categoryData = {
             name_category,
             createdby_category: createdby_category || null,
-            shop_type_ids: shop_type_ids || []
+            id_type: id_type
         };
         
         const { error, data, success } = await productCategoryController.create(categoryData);
@@ -161,7 +168,6 @@ async function removeById(req, res) {
     }
 }
 
-//update: Get categories for a specific shop
 async function getCategoriesForShop(req, res) {
     try {
         const { id_shop } = req.params;

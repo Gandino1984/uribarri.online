@@ -127,6 +127,14 @@ async function create(categoryData) {
             };
         }
 
+        //update: Validate that id_type is provided
+        if (!categoryData.id_type) {
+            await t.rollback();
+            return { 
+                error: "El tipo de comercio es obligatorio"
+            };
+        }
+
         // Create the category with verified_category: false by default
         const category = await product_category_model.create({
             name_category: categoryData.name_category,
@@ -134,27 +142,13 @@ async function create(categoryData) {
             verified_category: false
         }, { transaction: t });
         
-        // If shop_type_ids are provided, create associations
-        if (categoryData.shop_type_ids && Array.isArray(categoryData.shop_type_ids) && categoryData.shop_type_ids.length > 0) {
-            for (const typeId of categoryData.shop_type_ids) {
-                // Check if association already exists
-                const existingAssoc = await type_category_model.findOne({
-                    where: {
-                        id_type: typeId,
-                        id_category: category.id_category
-                    }
-                });
-                
-                if (!existingAssoc) {
-                    await type_category_model.create({
-                        id_type: typeId,
-                        id_category: category.id_category
-                    }, { transaction: t });
-                }
-            }
-            
-            console.log(`Created associations for category ${category.id_category} with shop types:`, categoryData.shop_type_ids);
-        }
+        //update: Create association with the shop type
+        await type_category_model.create({
+            id_type: categoryData.id_type,
+            id_category: category.id_category
+        }, { transaction: t });
+        
+        console.log(`Created association for category ${category.id_category} with shop type: ${categoryData.id_type}`);
         
         await t.commit();
         
@@ -250,7 +244,6 @@ async function removeById(id_category) {
     }
 }
 
-//update: Get categories available for a specific shop based on its type
 async function getCategoriesForShop(id_shop) {
     try {
         const shop_model = (await import("../../models/shop_model.js")).default;

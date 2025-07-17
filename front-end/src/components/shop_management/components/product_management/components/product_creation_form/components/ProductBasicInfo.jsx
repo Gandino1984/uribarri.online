@@ -31,14 +31,15 @@ const ProductBasicInfo = ({
   console.log('ProductBasicInfo - productData.id_category:', productData.id_category);
   console.log('ProductBasicInfo - loadingSubcategories:', loadingSubcategories);
 
-  //update: Fetch subcategories when category changes
+  //update: Fetch subcategories when category changes or component mounts with a category
   useEffect(() => {
-    console.log('Category changed, fetching subcategories for:', productData.id_category);
+    console.log('Category effect triggered, id_category:', productData.id_category);
     if (productData.id_category) {
+      console.log('Fetching subcategories for category:', productData.id_category);
       fetchSubcategoriesByCategory(productData.id_category);
     } else {
       // Clear subcategories if no category is selected
-      console.log('No category selected, clearing subcategories');
+      console.log('No category selected, subcategories should be cleared');
     }
   }, [productData.id_category, fetchSubcategoriesByCategory]);
 
@@ -99,6 +100,7 @@ const ProductBasicInfo = ({
   // Since categories are already filtered in ProductContext based on shop type,
   // we can use them directly
   console.log('Available categories for rendering:', categories);
+  console.log('Available subcategories for rendering:', subcategories);
 
   return (
     <section className={styles.basicInfoSection}>
@@ -112,7 +114,7 @@ const ProductBasicInfo = ({
         <select
           id="id_category"
           name="id_category"
-          value={productData.id_category}
+          value={productData.id_category || ''}
           onChange={handleCategoryChange}
           required
           disabled={loadingCategories || categories.length === 0}
@@ -136,10 +138,10 @@ const ProductBasicInfo = ({
           <select
             id="id_subcategory"
             name="id_subcategory"
-            value={productData.id_subcategory}
+            value={productData.id_subcategory || ''}
             onChange={handleSubcategoryChange}
             required
-            disabled={loadingSubcategories || subcategories.length === 0}
+            disabled={loadingSubcategories}
           >
             <option value="" disabled>
               {loadingSubcategories ? 'Cargando subcategorías...' : 
