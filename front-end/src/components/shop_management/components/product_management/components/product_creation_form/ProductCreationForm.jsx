@@ -211,8 +211,7 @@ const ProductCreationForm = () => {
     setIsModalOpen(true);
   };
 
-  // Add navigation Utils
-  const goToNextStep = () => {
+const goToNextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
@@ -402,6 +401,9 @@ const ProductCreationForm = () => {
     }
   };
 
+  //update: Debug log to check selectedShop structure
+  console.log('Selected shop data:', selectedShop);
+
   return (
     <>
     {renderProductLimitInfo()}
@@ -416,7 +418,8 @@ const ProductCreationForm = () => {
       {/* Shop type and subtype guidance */}
       {selectedShop && !selectedProductToUpdate && (
         <div className={styles.shopTypeGuidance}>
-          <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
+          <p>Tienda de tipo: <strong>{selectedShop.type_shop || 'No especificado'}</strong></p>
+          {/* //update: Now using the subtype_shop field that comes from the backend */}
           <p>Subtipo: <strong>{selectedShop.subtype_shop || 'No especificado'}</strong></p>
         </div>
       )}

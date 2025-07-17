@@ -42,6 +42,37 @@ async function validateType(id_type) {
     }
 }
 
+//update: Function to validate subtype exists and belongs to the type
+async function validateSubtype(id_subtype, id_type) {
+    try {
+        const subtype = await shop_subtype_model.findOne({
+            where: {
+                id_subtype: id_subtype,
+                id_type: id_type,
+                verified_subtype: true
+            }
+        });
+        
+        if (!subtype) {
+            return {
+                isValid: false,
+                error: "El subtipo seleccionado no existe o no pertenece al tipo seleccionado"
+            };
+        }
+        
+        return {
+            isValid: true,
+            subtype: subtype
+        };
+    } catch (err) {
+        console.error("Error validating subtype:", err);
+        return {
+            isValid: false,
+            error: "Error al validar el subtipo"
+        };
+    }
+}
+
 //update: Function to validate user exists and is a seller
 async function validateUser(id_user) {
     try {
@@ -100,10 +131,11 @@ async function getAll() {
             return { error: "No hay comercios registrados" };
         }
 
-        //update: Fetch type information for each shop
+        //update: Fetch type and subtype information for each shop
         const shopsWithTypeInfo = [];
         for (const shop of shops) {
             const type = await shop_type_model.findByPk(shop.id_type);
+            const subtype = shop.id_subtype ? await shop_subtype_model.findByPk(shop.id_subtype) : null;
             
             shopsWithTypeInfo.push({
                 ...shop.toJSON(),
@@ -112,6 +144,12 @@ async function getAll() {
                 type: type ? {
                     id_type: type.id_type,
                     name_type: type.name_type
+                } : null,
+                //update: Add subtype information
+                subtype_shop: subtype ? subtype.name_subtype : null,
+                subtype: subtype ? {
+                    id_subtype: subtype.id_subtype,
+                    name_subtype: subtype.name_subtype
                 } : null
             });
         }
@@ -148,10 +186,11 @@ async function getByType(id_type) {
             };
         }
 
-        //update: Include type information
+        //update: Include type and subtype information
         const shopsWithTypeInfo = [];
         for (const shop of shops) {
             const type = await shop_type_model.findByPk(shop.id_type);
+            const subtype = shop.id_subtype ? await shop_subtype_model.findByPk(shop.id_subtype) : null;
             
             shopsWithTypeInfo.push({
                 ...shop.toJSON(),
@@ -160,6 +199,12 @@ async function getByType(id_type) {
                 type: type ? {
                     id_type: type.id_type,
                     name_type: type.name_type
+                } : null,
+                //update: Add subtype information
+                subtype_shop: subtype ? subtype.name_subtype : null,
+                subtype: subtype ? {
+                    id_subtype: subtype.id_subtype,
+                    name_subtype: subtype.name_subtype
                 } : null
             });
         }
@@ -181,8 +226,9 @@ async function getById(id_shop) {
             return { error: "Comercio no encontrado" };
         }
 
-        //update: Include type information
+        //update: Include type and subtype information
         const type = await shop_type_model.findByPk(shop.id_type);
+        const subtype = shop.id_subtype ? await shop_subtype_model.findByPk(shop.id_subtype) : null;
         
         const shopWithTypeInfo = {
             ...shop.toJSON(),
@@ -191,6 +237,12 @@ async function getById(id_shop) {
             type: type ? {
                 id_type: type.id_type,
                 name_type: type.name_type
+            } : null,
+            //update: Add subtype information
+            subtype_shop: subtype ? subtype.name_subtype : null,
+            subtype: subtype ? {
+                id_subtype: subtype.id_subtype,
+                name_subtype: subtype.name_subtype
             } : null
         };
 
@@ -221,10 +273,11 @@ async function getByUserId(id_user) {
             return { error: "No hay comercios registrados para este usuario", data: [] };
         }
 
-        //update: Include type information for each shop
+        //update: Include type and subtype information for each shop
         const shopsWithTypeInfo = [];
         for (const shop of shops) {
             const type = await shop_type_model.findByPk(shop.id_type);
+            const subtype = shop.id_subtype ? await shop_subtype_model.findByPk(shop.id_subtype) : null;
             
             shopsWithTypeInfo.push({
                 ...shop.toJSON(),
@@ -233,6 +286,12 @@ async function getByUserId(id_user) {
                 type: type ? {
                     id_type: type.id_type,
                     name_type: type.name_type
+                } : null,
+                //update: Add subtype information
+                subtype_shop: subtype ? subtype.name_subtype : null,
+                subtype: subtype ? {
+                    id_subtype: subtype.id_subtype,
+                    name_subtype: subtype.name_subtype
                 } : null
             });
         }
@@ -273,10 +332,19 @@ async function create(shopData) {
             return { error: typeValidation.error };
         }
 
+        //update: Validate subtype if provided
+        let subtypeValidation = null;
+        if (shopData.id_subtype) {
+            subtypeValidation = await validateSubtype(shopData.id_subtype, shopData.id_type);
+            if (!subtypeValidation.isValid) {
+                return { error: subtypeValidation.error };
+            }
+        }
+
         // Create the shop with the validated data
         const shop = await shop_model.create(shopData);
         
-        //update: Return shop with type information
+        //update: Return shop with type and subtype information
         const shopWithTypeInfo = {
             ...shop.toJSON(),
             //update: Add type_shop as direct property
@@ -284,7 +352,13 @@ async function create(shopData) {
             type: {
                 id_type: typeValidation.type.id_type,
                 name_type: typeValidation.type.name_type
-            }
+            },
+            //update: Add subtype information if available
+            subtype_shop: subtypeValidation ? subtypeValidation.subtype.name_subtype : null,
+            subtype: subtypeValidation ? {
+                id_subtype: subtypeValidation.subtype.id_subtype,
+                name_subtype: subtypeValidation.subtype.name_subtype
+            } : null
         };
         
         return { 
@@ -323,11 +397,22 @@ async function update(id, shopData) {
             }
         }
 
+        //update: If subtype is being changed, validate it
+        if (shopData.id_subtype !== undefined && shopData.id_subtype !== shop.id_subtype) {
+            if (shopData.id_subtype) {
+                const subtypeValidation = await validateSubtype(shopData.id_subtype, shopData.id_type || shop.id_type);
+                if (!subtypeValidation.isValid) {
+                    return { error: subtypeValidation.error };
+                }
+            }
+        }
+
         await shop.update(shopData);
         
-        // Fetch updated shop with type information
+        // Fetch updated shop with type and subtype information
         const updatedShop = await shop_model.findByPk(id);
         const type = await shop_type_model.findByPk(updatedShop.id_type);
+        const subtype = updatedShop.id_subtype ? await shop_subtype_model.findByPk(updatedShop.id_subtype) : null;
         
         const shopWithTypeInfo = {
             ...updatedShop.toJSON(),
@@ -336,6 +421,12 @@ async function update(id, shopData) {
             type: type ? {
                 id_type: type.id_type,
                 name_type: type.name_type
+            } : null,
+            //update: Add subtype information
+            subtype_shop: subtype ? subtype.name_subtype : null,
+            subtype: subtype ? {
+                id_subtype: subtype.id_subtype,
+                name_subtype: subtype.name_subtype
             } : null
         };
         
@@ -375,6 +466,16 @@ async function updateWithFolder(id, shopData, oldName) {
             }
         }
 
+        //update: If subtype is being changed, validate it
+        if (shopData.id_subtype !== undefined && shopData.id_subtype !== shop.id_subtype) {
+            if (shopData.id_subtype) {
+                const subtypeValidation = await validateSubtype(shopData.id_subtype, shopData.id_type || shop.id_type);
+                if (!subtypeValidation.isValid) {
+                    return { error: subtypeValidation.error };
+                }
+            }
+        }
+
         // Handle folder renaming if shop name is changing
         if (shopData.name_shop && shopData.name_shop !== oldName) {
             //update: Fix the path construction issue
@@ -405,9 +506,10 @@ async function updateWithFolder(id, shopData, oldName) {
 
         await shop.update(shopData);
         
-        // Fetch updated shop with type information
+        // Fetch updated shop with type and subtype information
         const updatedShop = await shop_model.findByPk(id);
         const type = await shop_type_model.findByPk(updatedShop.id_type);
+        const subtype = updatedShop.id_subtype ? await shop_subtype_model.findByPk(updatedShop.id_subtype) : null;
         
         const shopWithTypeInfo = {
             ...updatedShop.toJSON(),
@@ -416,6 +518,12 @@ async function updateWithFolder(id, shopData, oldName) {
             type: type ? {
                 id_type: type.id_type,
                 name_type: type.name_type
+            } : null,
+            //update: Add subtype information
+            subtype_shop: subtype ? subtype.name_subtype : null,
+            subtype: subtype ? {
+                id_subtype: subtype.id_subtype,
+                name_subtype: subtype.name_subtype
             } : null
         };
         
