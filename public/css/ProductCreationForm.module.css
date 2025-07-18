@@ -1,47 +1,71 @@
 .container{
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  background-color: white;
-  border-radius: 12px;
-  font-size: .8rem;
-  padding: .5rem 1rem;
-  margin-top: .5rem;
-  margin-left: auto;
-  margin-right: auto;
   width: 100%;
-  max-width: 600px; 
+  max-width: 450px;
+  margin-top: 1rem; 
+  padding: 1rem 1rem;
+  background: linear-gradient(190deg, rgba(255, 255, 255, 0.116), rgba(255, 255, 255, 0.56));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
 }   
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
+  margin-bottom: .5rem;
+  padding-bottom: .5rem;
   width: 100%;
 }
 
 .formTitle{
-  color: #333;
+  width: 100%;
+  text-align: center;
+  color: white;
   line-height: 1.85rem;
-  margin: 0;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  margin-bottom: .5rem;
+  font-size: 1.8rem;
+  position: relative;
 }
 
-/* UPDATE: Added styles for section titles and descriptions */
+.formTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent 0%, 
+    rgba(221, 221, 221, 0.3) 5%, 
+    rgba(221, 221, 221, 0.8) 15%, 
+    rgba(221, 221, 221, 1) 30%, 
+    rgba(221, 221, 221, 1) 70%, 
+    rgba(221, 221, 221, 0.8) 85%, 
+    rgba(221, 221, 221, 0.3) 95%, 
+    transparent 100%
+  );
+}
+
 .sectionTitle {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--dark-orange);
+  color: black;
   margin-bottom: 5px;
+  text-align: center;
 }
 
 .sectionDescription {
-  font-size: 0.85rem;
-  color: #666;
+  text-align: center;
+  /* max-width: 90%; */
+  font-size: 0.8rem;
+  color: white;
+  font-weight: 600;
   margin-bottom: 15px;
 }
 
@@ -97,10 +121,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
+
+
 
 .dateInput {
   width: 100%;
@@ -117,9 +142,10 @@
 
 .formField label {
   display: block;
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
+  font-size: .9rem;
   font-weight: 500;
-  color: #666;
+  color: white;
 }
 
 .productLimitInfo {

@@ -401,7 +401,6 @@ const goToNextStep = () => {
     }
   };
 
-  //update: Debug log to check selectedShop structure
   console.log('Selected shop data:', selectedShop);
 
   return (

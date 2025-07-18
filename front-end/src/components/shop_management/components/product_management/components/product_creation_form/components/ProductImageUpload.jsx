@@ -182,7 +182,7 @@ const ProductImageUpload = ({
       
       {/* Product Price */}
       <div className={styles.formField}>
-        <label htmlFor="price_product">Precio</label>
+        <label className={styles.inputLabel} htmlFor="price_product">Precio</label>
         <input
           type="number"
           id="price_product"
