@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
   `open_friday` TINYINT(1) NOT NULL DEFAULT 1,
   `open_saturday` TINYINT(1) NOT NULL DEFAULT 1,
   `open_sunday` TINYINT(1) NOT NULL DEFAULT 0,
+  `verified_shop` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_shop`),
   UNIQUE INDEX `id_shop_UNIQUE` (`id_shop` ASC) VISIBLE
 ) ENGINE = InnoDB;

@@ -15,6 +15,7 @@ uribarri.online es un proyecto en desarrollo que a mediano plazo pretende ser de
 
 ### Interfaz de usuario responsive
 ![Interfaz principal](docs/screenshots/1.png)
+![Interfaz principal](docs/screenshots/2.png)
 ![Interfaz principal](docs/screenshots/3.png)
 
 ### Panel de administración y autenticación de usuarios

@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import { Minimize2, Edit, Map } from 'lucide-react';
+import { Minimize2, Edit, Map, AlertTriangle } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
 
-const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleMap, isSeller }) => {
+const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleMap, handleReport, isSeller }) => {
   if (minimized) return null;
   
   return (
@@ -35,6 +35,16 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
         aria-label="Mostrar ubicación en mapa"
       >
         <Map size={16} />
+      </button>
+      
+      {/*update: Added report button*/}
+      <button 
+        className={styles.active}
+        onClick={handleReport}
+        title="Reportar actividad inusual"
+        aria-label="Reportar actividad inusual"
+      >
+        <AlertTriangle size={16} />
       </button>
     </div>
   );

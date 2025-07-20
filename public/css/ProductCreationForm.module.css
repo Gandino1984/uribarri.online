@@ -117,12 +117,14 @@
 }
 
 .formField{
-  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  align-items: center;
+  /* flex-direction: column; */
+  gap: .5rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
+  width: 100%; /* 🚀 Ensure all form fields take full width */
 }
 
 

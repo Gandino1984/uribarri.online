@@ -16,12 +16,10 @@ const shop_model = sequelize.define("shop", {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    //update: Changed from type_shop string to id_type foreign key
     id_type: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    //update: Added id_subtype field for shop's subtype
     id_subtype: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true
@@ -91,6 +89,12 @@ const shop_model = sequelize.define("shop", {
         defaultValue: true
     },
     open_sunday: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    //update: Added verified_shop field
+    verified_shop: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

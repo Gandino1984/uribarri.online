@@ -107,7 +107,7 @@ input[type="text"] {
   width: 100%;
   outline: none;
   border: none;
-  background-color: rgb(220, 228, 255)
+  /* background-color: rgb(220, 228, 255) */
 }
 
 input[type="text"]::placeholder {
@@ -162,7 +162,7 @@ input[type="time"]:hover {
 input[type="time"].hasValue {
   /* border-color: var(--saturated-orange); */
   color: black;
-  background-color: rgba(255, 255, 255, 0.95);
+  /* background-color: rgba(255, 255, 255, 0.95); */
 }
 
 /* ⏰ UPDATE: Added time field related styles for consistent layouts */
@@ -199,10 +199,10 @@ input[type="time"].hasValue {
 input[type="number"] {
   width: auto;
   min-width: 3rem;
-  border: 2px solid var(--medium-gray);
+    border-radius: 8px;
+  /* border: 2px solid var(--medium-gray); */
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
   font-size: 0.9rem;
-  border-radius: 5px;
   min-height: 2.5rem;
   font-weight: 500;
   color: var(--saturated-blue); 
@@ -217,16 +217,22 @@ input[type="number"]::placeholder {
 }
 
 input[type="number"]:hover {
-  border: 2px solid var(--saturated-blue);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 input[type="number"]:focus {
-  color: var(--saturated-blue); /* Keep blue color when focused */
-  border: 2px solid var(--saturated-blue);
-  background-color: var(--superlight-blue);
+  color: black; 
+  background-color: white;
   outline: none;
-  box-shadow: var(--focus-shadow);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
+
+input[type="number"].hasValue {
+  /* border-color: var(--saturated-orange); */
+  color: black;
+  /* background-color: rgba(255, 255, 255, 0.95); */
+}
+
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -248,7 +254,6 @@ textarea {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--saturated-blue); /* Blue color for entered text */
-  /* transition: border-color 0.2s ease, box-shadow 0.2s ease; */
   resize: vertical;
 }
 
@@ -300,7 +305,6 @@ button:active {
   color: white;
 }
 
-/* Fixed select element styling with lighter gray for placeholder */
 select {
   appearance: none !important;
   -webkit-appearance: none !important;
@@ -312,8 +316,8 @@ select {
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--light-gray) !important; /* Lighter gray for placeholder */
-  background-color: rgb(220, 228, 255);
+  color: var(--light-gray) !important; 
+  background-color: white;
   border-radius: 8px;
   margin-bottom: .5rem;
   cursor: pointer;
@@ -323,7 +327,6 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
   background-size: 1em;
-  /* transition: all 0.2s ease-in-out; */
 }
 
 select:hover {
