@@ -172,6 +172,7 @@ const ProductCreationFormUtils = () => {
     handleModalResponse();
   }, [isAccepted, isDeclined, currentOperation, selectedProductToUpdate, newProductData, setError, setShowErrorCard, setIsAccepted, setIsDeclined]);
 
+  //update: Modified handleChange to handle price_unit
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     if (name === 'info_product') {
@@ -334,7 +335,8 @@ const ProductCreationFormUtils = () => {
       locality_product: '',
       active_product: true,  // Ensure new product has active_product set to true by default
       id_category: '',
-      id_subcategory: ''
+      id_subcategory: '',
+      price_unit: 'Euros/unidad' //update: Add default price unit
     });
     
     setError(prevError => ({
@@ -455,7 +457,7 @@ const ProductCreationFormUtils = () => {
     }
   }, [selectedShop, products, setUploading, setError, setProducts, refreshProductList, setSuccess, setShowSuccessCard, setShowErrorCard]);
 
-  // UPDATE: Enhanced createProduct function with better error handling, logging, and state management
+  //update: Modified createProduct to handle price unit in info_product
   const createProduct = useCallback(async () => {
     try {
       console.log('Starting product creation process...');
@@ -473,12 +475,18 @@ const ProductCreationFormUtils = () => {
       //update: Ensure type_product is set from the selected category
       const selectedCategory = categories.find(cat => cat.id_category === parseInt(newProductData.id_category));
       
+      //update: Combine existing info_product with price_unit
+      const priceUnit = newProductData.price_unit || 'Euros/unidad';
+      const existingInfo = newProductData.info_product ? newProductData.info_product.trim() : '';
+      const combinedInfo = existingInfo ? `${priceUnit} - ${existingInfo}` : priceUnit;
+      
       // Ensure price has exactly 2 decimal places before submitting
       const formattedData = {
         ...newProductData,
         price_product: Number(newProductData.price_product).toFixed(2),
         active_product: true,  // Explicitly set active_product to true for new products
-        type_product: selectedCategory ? selectedCategory.name_category : newProductData.type_product // Use actual category name
+        type_product: selectedCategory ? selectedCategory.name_category : newProductData.type_product, // Use actual category name
+        info_product: combinedInfo //update: Include price unit in info_product
       };
 
       console.log('Creating product with data:', formattedData);
@@ -607,7 +615,7 @@ const ProductCreationFormUtils = () => {
     }
   }, [newProductData, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, createProduct, handleImageUpload, setError, setShowErrorCard]);
 
-  // Updated handleUpdate with operation tracking
+  //update: Modified handleUpdate to handle price unit
   const handleUpdate = useCallback(async (e, imageFile = null) => {
     e.preventDefault();
     try {
@@ -636,11 +644,20 @@ const ProductCreationFormUtils = () => {
         }
       }
       
+      //update: Combine price unit with existing info_product
+      const priceUnit = newProductData.price_unit || 'Euros/unidad';
+      const existingInfo = newProductData.info_product ? newProductData.info_product.trim() : '';
+      
+      // Remove existing price unit prefix if present
+      const cleanedInfo = existingInfo.replace(/^(Euros\/\w+)(\s*-\s*)?/, '').trim();
+      const combinedInfo = cleanedInfo ? `${priceUnit} - ${cleanedInfo}` : priceUnit;
+      
       // If name is unique or unchanged, proceed with update
       const updateData = {
         ...newProductData,
         id_product,
-        price_product: Number(newProductData.price_product).toFixed(2)
+        price_product: Number(newProductData.price_product).toFixed(2),
+        info_product: combinedInfo
       };
       
       const result = await updateProductInDB(updateData);
@@ -664,7 +681,7 @@ const ProductCreationFormUtils = () => {
     }
   }, [newProductData, selectedProductToUpdate, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, handleImageUpload, setError, setShowErrorCard]);
   
-  // UPDATE: Improved updateProductInDB with better state management
+  //update: Updated to properly handle updateProductInDB the processed info_product field
   const updateProductInDB = useCallback(async (updateData) => {
     try {
       //update: Ensure type_product is set from the selected category

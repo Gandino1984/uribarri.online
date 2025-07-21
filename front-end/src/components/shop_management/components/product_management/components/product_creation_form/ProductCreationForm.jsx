@@ -103,13 +103,28 @@ const ProductCreationForm = () => {
   // Load data for editing if in update mode
   useEffect(() => {
     if (isUpdatingProduct && selectedProductToUpdate) {
+      //update: Extract price unit from info_product if present
+      let priceUnit = 'Euros/unidad';
+      let cleanedInfo = selectedProductToUpdate.info_product || '';
+      
+      // Check if info_product starts with a price unit pattern
+      const priceUnitPattern = /^(Euros\/\w+)(\s*-\s*)?(.*)$/;
+      const match = cleanedInfo.match(priceUnitPattern);
+      
+      if (match) {
+        priceUnit = match[1];
+        cleanedInfo = match[3] || '';
+      }
+      
       // Map the product data to form fields
       const mappedData = {
         ...productData,
         ...selectedProductToUpdate,
         //update: Ensure category and subcategory IDs are set
         id_category: selectedProductToUpdate.id_category || '',
-        id_subcategory: selectedProductToUpdate.id_subcategory || ''
+        id_subcategory: selectedProductToUpdate.id_subcategory || '',
+        price_unit: priceUnit,
+        info_product: cleanedInfo
       };
       
       // Update form data

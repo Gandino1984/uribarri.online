@@ -42,7 +42,8 @@ export const ProductProvider = ({ children }) => {
     expiration_product: null,
     country_product: '',
     locality_product: '',
-    active_product: true
+    active_product: true,
+    price_unit: 'Euros/unidad' //update: Added price_unit field
   });
   
   // Refresh control
@@ -235,7 +236,8 @@ export const ProductProvider = ({ children }) => {
       id_category: '',
       id_subcategory: '',
       type_product: '',
-      subtype_product: ''
+      subtype_product: '',
+      price_unit: 'Euros/unidad' //update: Reset price unit to default
     }));
     setSubcategories([]);
   };

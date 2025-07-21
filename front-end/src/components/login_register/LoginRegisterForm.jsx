@@ -10,8 +10,15 @@ import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 // Memoize form content
 const FormContent = React.memo(() => {
+  //update: Import isLoggingIn from AuthContext to determine which title to show
+  const { isLoggingIn } = useAuth();
+  
   return (
     <div className={styles.formContentWrapper}>
+      {/*update: Add title that changes based on isLoggingIn state*/}
+      <h1 className={styles.formTitle}>
+        {isLoggingIn ? '¡Maneja tus comercios!' : '¡Crea tu usuari@!'}
+      </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
         <FormFields />
