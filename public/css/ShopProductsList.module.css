@@ -976,3 +976,174 @@
        font-size: 0.75rem;
    }
 }
+
+
+
+/* Update: New mobile actions container with two burger menus */
+.mobileActionsContainer {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+}
+
+.productMenuContainer,
+.packageMenuContainer {
+   position: relative;
+}
+
+.burgerMenuButton {
+   display: flex;
+   align-items: center;
+   gap: 0.4rem;
+   background: white;
+   border: 1px solid var(--light-orange);
+   border-radius: 8px;
+   padding: 0.5rem 0.8rem;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   font-size: 0.875rem;
+   font-weight: 500;
+   color: var(--dark-orange);
+}
+
+.burgerMenuButton:hover {
+   background-color: var(--saturated-blue);
+   color: white;
+   border-color: var(--saturated-blue);
+}
+
+.burgerMenuButton.active {
+   background: var(--saturated-blue);
+   color: white;
+   border-color: var(--saturated-blue);
+}
+
+.burgerButtonText {
+   display: inline-block;
+   font-size: 0.875rem;
+}
+
+.menuDropdown {
+   position: absolute;
+   top: calc(100% + 0.5rem);
+   right: 0;
+   background: white;
+   border: 1px solid var(--light-orange);
+   border-radius: 8px;
+   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+   z-index: 100;
+   min-width: 250px;
+   opacity: 0;
+   transform: translateY(-10px);
+   transition: all 0.3s ease;
+   pointer-events: none;
+   visibility: hidden;
+}
+
+.menuDropdown.open {
+   opacity: 1;
+   transform: translateY(0);
+   pointer-events: all;
+   visibility: visible;
+}
+
+.menuContent {
+   padding: 0.5rem;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.menuItem {
+   width: 100%;
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   justify-content: flex-start;
+   padding: 0.75rem 1rem;
+   background-color: white;
+   color: var(--dark-orange);
+   border: 1px solid var(--light-orange);
+   border-radius: 6px;
+   cursor: pointer;
+   transition: all 0.2s ease;
+   font-size: 0.875rem;
+   font-weight: 500;
+}
+
+.menuItem:hover:not(:disabled) {
+   background-color: var(--saturated-blue);
+   color: white;
+   border-color: var(--saturated-blue);
+}
+
+.menuItem:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+}
+
+.menuItem.createButton {
+   background: var(--saturated-blue);
+   color: white;
+   border-color: var(--saturated-blue);
+}
+
+.menuItem.createButton:hover {
+   background: var(--dark-gradient-purple-start);
+   border-color: var(--dark-gradient-purple-start);
+}
+
+.menuItem.filterActive {
+   background-color: var(--light-blue);
+   border-color: var(--saturated-blue);
+}
+
+/* Hide the old mobile menu button when using new layout */
+.mobileActionsContainer + .mobileMenuButton {
+   display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+   .burgerMenuButton {
+       padding: 0.4rem 0.6rem;
+       font-size: 0.8rem;
+   }
+   
+   .burgerButtonText {
+       font-size: 0.8rem;
+   }
+   
+   .menuDropdown {
+       min-width: 220px;
+   }
+   
+   .menuItem {
+       padding: 0.6rem 0.8rem;
+       font-size: 0.8rem;
+   }
+}
+
+@media (max-width: 374px) {
+   .mobileActionsContainer {
+       gap: 0.3rem;
+   }
+   
+   .burgerMenuButton {
+       padding: 0.35rem 0.5rem;
+       font-size: 0.75rem;
+   }
+   
+   .burgerButtonText {
+       font-size: 0.75rem;
+   }
+   
+   .menuDropdown {
+       min-width: 200px;
+   }
+   
+   .menuItem {
+       padding: 0.5rem 0.6rem;
+       font-size: 0.75rem;
+   }
+}

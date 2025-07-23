@@ -2,16 +2,23 @@ import { Router } from "express";
 import productApiController from "../controllers/product/product_api_controller.js";
 import productController from '../controllers/product/product_controller.js';
 import { handleProductImageUpload } from '../middleware/ProductUploadMiddleware.js';
-// import path from 'path';
+//update: Added necessary imports for image handling
+import shop_model from '../models/shop_model.js';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = Router();
 
 router.get("/", productApiController.getAll);
 
-// UPDATE: Added route to get active products from a shop
+//update: Added route to get active products from a shop
 router.get("/active-by-shop-id/:id_shop", productApiController.getActiveByShopId);
 
-// UPDATE: Added route to get inactive products from a shop
+//update: Added route to get inactive products from a shop
 router.get("/inactive-by-shop-id/:id_shop", productApiController.getInactiveByShopId);
 
 // Original route to get all products (active and inactive) from a shop
@@ -27,7 +34,7 @@ router.get("/by-country/:country_product", productApiController.getByCountry);
 
 router.get("/by-locality/:locality_product", productApiController.getByLocality);
 
-// UPDATE: Added route to toggle product active status
+//update: Added route to toggle product active status
 router.post("/toggle-active", productApiController.toggleActiveStatus);
 
 router.post("/create", productApiController.create);
@@ -48,12 +55,26 @@ router.post('/upload-image', handleProductImageUpload, async (req, res) => {
       });
     }
 
+    //update: Get the shop to construct the proper relative path
+    const shopId = req.headers['x-shop-id'];
+    const shop = await shop_model.findByPk(shopId);
+    
+    if (!shop) {
+      return res.status(404).json({
+        error: 'Shop not found'
+      });
+    }
+
     // Construct the relative path for storing in the database
-    // IMPORTANT: We're ensuring this path is relative to the public directory
-    // and doesn't include 'public/' in the path itself
-    const relativePath = req.file.path
-      .split('public')[1]
-      .replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
+    //update: Build path explicitly to ensure consistency
+    const relativePath = path.join(
+      'images', 
+      'uploads', 
+      'shops', 
+      shop.name_shop, 
+      'product_images', 
+      req.file.filename
+    ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
 
     console.log(`Saving product image path to database: ${relativePath}`);
 
@@ -61,6 +82,14 @@ router.post('/upload-image', handleProductImageUpload, async (req, res) => {
     const result = await productController.updateProductImage(productId, relativePath);
 
     if (result.error) {
+      //update: Clean up the uploaded file if database update fails
+      const filePath = path.join(__dirname, '..', '..', 'public', relativePath);
+      try {
+        await fs.unlink(filePath);
+      } catch (unlinkError) {
+        console.error('Error deleting uploaded file:', unlinkError);
+      }
+      
       return res.status(500).json({
         error: 'Failed to update product with new image',
         details: result.error

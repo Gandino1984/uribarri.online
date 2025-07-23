@@ -184,7 +184,6 @@ async function update(req, res) {
     }
 }
 
-// Keep all other functions as they are...
 async function toggleActiveStatus(req, res) {
     try {
         const { id_product } = req.body;
@@ -342,7 +341,6 @@ async function getByType(req, res) {
     }
 }
 
-// Nueva función para obtener productos por país
 async function getByCountry(req, res) {
     try {
         const { country_product } = req.params;
@@ -365,7 +363,6 @@ async function getByCountry(req, res) {
     }
 }
 
-// Nueva función para obtener productos por localidad
 async function getByLocality(req, res) {
     try {
         const { locality_product } = req.params;
