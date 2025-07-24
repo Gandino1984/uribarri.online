@@ -158,6 +158,32 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`type_category` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`calification_product`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`calification_product` (
+  `id_calification` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_product` INT UNSIGNED NOT NULL,
+  `id_user` INT UNSIGNED NOT NULL,
+  `calification_product` INT NOT NULL,
+  `comment_calification` VARCHAR(200) NULL,
+  PRIMARY KEY (`id_calification`),
+  UNIQUE INDEX `unique_user_product` (`id_user`, `id_product`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`calification_shop`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`calification_shop` (
+  `id_calification` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_shop` INT UNSIGNED NOT NULL,
+  `id_user` INT UNSIGNED NOT NULL,
+  `calification_shop` INT NOT NULL,
+  `comment_calification` VARCHAR(200) NULL,
+  PRIMARY KEY (`id_calification`),
+  UNIQUE INDEX `unique_user_shop` (`id_user`, `id_shop`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`package`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
