@@ -30,7 +30,8 @@ async function create(packageData) {
             id_product3, 
             id_product4, 
             id_product5, 
-            name_package
+            name_package,
+            discount_package
         } = packageData;
 
         // Validate required field
@@ -42,6 +43,14 @@ async function create(packageData) {
         const shopExists = await shop_model.findByPk(id_shop);
         if (!shopExists) {
             return { error: "El comercio especificado no existe" };
+        }
+
+        //update: Validate discount_package if provided
+        if (discount_package !== undefined && discount_package !== null) {
+            const discount = parseInt(discount_package);
+            if (isNaN(discount) || discount < 0 || discount > 100) {
+                return { error: "El descuento del paquete debe ser un número entre 0 y 100" };
+            }
         }
 
         // Verify that products exist and belong to the shop
@@ -69,6 +78,7 @@ async function create(packageData) {
             id_product4: id_product4 || null,
             id_product5: id_product5 || null,
             name_package: name_package || null,
+            discount_package: discount_package || 0, //update: Include discount_package with default of 0
             active_package: true,
             // creation_package will be set automatically by the model default
         });
@@ -94,6 +104,14 @@ async function update(id_package, packageData) {
         // If id_product1 is being updated, ensure it's not null
         if (packageData.hasOwnProperty('id_product1') && !packageData.id_product1) {
             return { error: "Se requiere al menos un producto para el paquete" };
+        }
+
+        //update: Validate discount_package if provided
+        if (packageData.hasOwnProperty('discount_package') && packageData.discount_package !== null) {
+            const discount = parseInt(packageData.discount_package);
+            if (isNaN(discount) || discount < 0 || discount > 100) {
+                return { error: "El descuento del paquete debe ser un número entre 0 y 100" };
+            }
         }
 
         // Verify that products exist and belong to the shop
@@ -127,6 +145,7 @@ async function update(id_package, packageData) {
         if (packageData.hasOwnProperty('id_product5')) updateData.id_product5 = packageData.id_product5;
         if (packageData.hasOwnProperty('name_package')) updateData.name_package = packageData.name_package;
         if (packageData.hasOwnProperty('active_package')) updateData.active_package = packageData.active_package;
+        if (packageData.hasOwnProperty('discount_package')) updateData.discount_package = packageData.discount_package; //update: Include discount_package in updates
 
         // Update the package
         await packageToUpdate.update(updateData);
@@ -180,6 +199,15 @@ async function getById(id_package) {
             if (packageData.id_product3) packageData.product3 = productsMap[packageData.id_product3];
             if (packageData.id_product4) packageData.product4 = productsMap[packageData.id_product4];
             if (packageData.id_product5) packageData.product5 = productsMap[packageData.id_product5];
+
+            //update: Calculate total price and discounted price for the package
+            let totalPrice = 0;
+            products.forEach(product => {
+                totalPrice += parseFloat(product.price_product) || 0;
+            });
+            
+            packageData.total_price = totalPrice;
+            packageData.discounted_price = totalPrice * (1 - (packageData.discount_package || 0) / 100);
         }
         
         return {
@@ -247,6 +275,15 @@ async function getByShopId(id_shop, activeStatus = null) {
                 if (pkg.id_product3 && productsMap[pkg.id_product3]) pkgData.product3 = productsMap[pkg.id_product3];
                 if (pkg.id_product4 && productsMap[pkg.id_product4]) pkgData.product4 = productsMap[pkg.id_product4];
                 if (pkg.id_product5 && productsMap[pkg.id_product5]) pkgData.product5 = productsMap[pkg.id_product5];
+
+                //update: Calculate total price and discounted price for each package
+                let totalPrice = 0;
+                products.forEach(product => {
+                    totalPrice += parseFloat(product.price_product) || 0;
+                });
+                
+                pkgData.total_price = totalPrice;
+                pkgData.discounted_price = totalPrice * (1 - (pkgData.discount_package || 0) / 100);
             }
             
             return pkgData;

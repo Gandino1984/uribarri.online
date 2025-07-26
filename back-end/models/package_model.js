@@ -36,6 +36,17 @@ const package_model = sequelize.define("package", {
         type: DataTypes.STRING(100),
         allowNull: true
     },
+    //update: Added discount_package field for package-level discounts
+    discount_package: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0,
+        validate: {
+            min: 0,
+            max: 100
+        },
+        comment: 'Percentage discount applied to the total package price (0-100)'
+    },
     creation_package: {
         type: DataTypes.DATE,
         allowNull: false,

@@ -46,6 +46,9 @@ const PackageCreationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
+  //update: State for calculated prices
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
 
   // Get utilities
   const { 
@@ -80,6 +83,15 @@ const PackageCreationForm = () => {
         // Fetch details for selected products
         const details = await getProductDetails(productIds);
         setSelectedProductDetails(details);
+        
+        //update: Calculate total price
+        const total = details.reduce((sum, product) => sum + (parseFloat(product.price_product) || 0), 0);
+        setTotalPrice(total);
+        
+        //update: Calculate discounted price
+        const discount = parseInt(newPackageData.discount_package) || 0;
+        const discounted = total * (1 - discount / 100);
+        setDiscountedPrice(discounted);
         
         // Set visibility for animation
         setIsVisible(true);
@@ -121,6 +133,13 @@ const PackageCreationForm = () => {
       ...prev,
       [name]: inputValue
     }));
+    
+    //update: Recalculate discounted price when discount changes
+    if (name === 'discount_package') {
+      const discount = parseInt(value) || 0;
+      const discounted = totalPrice * (1 - discount / 100);
+      setDiscountedPrice(discounted);
+    }
     
     // Clear error for this field if present
     if (formErrors[name]) {
@@ -239,6 +258,50 @@ const PackageCreationForm = () => {
                   <AlertTriangle size={14} />
                   {formErrors.name_package}
                 </span>
+              )}
+            </div>
+            
+            <div className={styles.formField}>
+              <label htmlFor="discount_package" className={styles.label}>
+                Descuento del Paquete (%)
+              </label>
+              <input
+                type="number"
+                id="discount_package"
+                name="discount_package"
+                value={newPackageData.discount_package || ''}
+                onChange={handleInputChange}
+                className={`${styles.input} ${formErrors.discount_package ? styles.inputError : ''}`}
+                placeholder="0-100"
+                min="0"
+                max="100"
+                step="1"
+              />
+              {formErrors.discount_package && (
+                <span className={styles.errorText}>
+                  <AlertTriangle size={14} />
+                  {formErrors.discount_package}
+                </span>
+              )}
+            </div>
+            
+            {/* Price summary */}
+            <div className={styles.priceSummary}>
+              <div className={styles.priceRow}>
+                <span className={styles.priceLabel}>Precio total:</span>
+                <span className={styles.priceValue}>€{totalPrice.toFixed(2)}</span>
+              </div>
+              {newPackageData.discount_package > 0 && (
+                <>
+                  <div className={styles.priceRow}>
+                    <span className={styles.priceLabel}>Descuento ({newPackageData.discount_package}%):</span>
+                    <span className={styles.discountValue}>-€{(totalPrice - discountedPrice).toFixed(2)}</span>
+                  </div>
+                  <div className={styles.priceRow}>
+                    <span className={styles.priceLabel}><strong>Precio final:</strong></span>
+                    <span className={styles.finalPriceValue}><strong>€{discountedPrice.toFixed(2)}</strong></span>
+                  </div>
+                </>
               )}
             </div>
             

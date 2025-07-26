@@ -34,6 +34,14 @@ const PackageCreationFormUtils = () => {
       errors.id_shop = "Se requiere un comercio para crear un paquete";
     }
 
+    //update: Validate discount_package if provided
+    if (packageData.discount_package !== undefined && packageData.discount_package !== '') {
+      const discount = parseInt(packageData.discount_package);
+      if (isNaN(discount) || discount < 0 || discount > 100) {
+        errors.discount_package = "El descuento debe ser un número entre 0 y 100";
+      }
+    }
+
     return errors;
   }, []);
 
@@ -105,6 +113,7 @@ const PackageCreationFormUtils = () => {
         id_product4: packageData.id_product4,
         id_product5: packageData.id_product5,
         name_package: packageData.name_package,
+        discount_package: packageData.discount_package || 0, //update: Include discount_package
         active_package: packageData.active_package
       });
       

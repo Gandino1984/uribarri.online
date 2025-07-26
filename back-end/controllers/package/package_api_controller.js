@@ -23,7 +23,8 @@ async function create(req, res) {
             id_product3,
             id_product4,
             id_product5,
-            name_package
+            name_package,
+            discount_package //update: Added discount_package to destructuring
         } = req.body;
 
         // Validate required fields
@@ -40,7 +41,8 @@ async function create(req, res) {
             id_product3,
             id_product4,
             id_product5,
-            name_package
+            name_package,
+            discount_package //update: Pass discount_package to controller
         });
 
         if (error) {
@@ -72,7 +74,8 @@ async function update(req, res) {
             id_product4,
             id_product5,
             name_package,
-            active_package
+            active_package,
+            discount_package //update: Added discount_package to destructuring
         } = req.body;
 
         if (!id_package) {
@@ -90,7 +93,8 @@ async function update(req, res) {
                 id_product4,
                 id_product5,
                 name_package,
-                active_package
+                active_package,
+                discount_package //update: Pass discount_package to controller
             }
         );   
 

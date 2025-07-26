@@ -183,6 +183,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`calification_shop` (
   UNIQUE INDEX `unique_user_shop` (`id_user`, `id_shop`)
 ) ENGINE = InnoDB;
 
+
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`package`
 -- -----------------------------------------------------
@@ -195,6 +196,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
   `id_product4` INT UNSIGNED NULL,
   `id_product5` INT UNSIGNED NULL,
   `name_package` VARCHAR(100) NULL,
+  `discount_package` INT NULL DEFAULT 0 COMMENT 'Percentage discount applied to the total package price (0-100)',
   `creation_package` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `active_package` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_package`),
