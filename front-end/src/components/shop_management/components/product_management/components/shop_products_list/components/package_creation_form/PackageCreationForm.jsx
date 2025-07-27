@@ -28,7 +28,9 @@ const PackageCreationForm = () => {
     shouldExitPackageForm,
     closePackageFormWithAnimation,
     resetPackageData,
-    refreshPackageList
+    refreshPackageList,
+    selectedPackage,
+    setSelectedPackage
   } = usePackage();
   const { 
     setError, 
@@ -49,11 +51,15 @@ const PackageCreationForm = () => {
   //update: State for calculated prices
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
+  
+  //update: Check if we're in edit mode
+  const isEditMode = selectedPackage !== null;
 
   // Get utilities
   const { 
     validatePackageForm,
     handleCreatePackage,
+    handleUpdatePackage,
     getProductDetails
   } = PackageCreationFormUtils();
   
@@ -71,6 +77,21 @@ const PackageCreationForm = () => {
   useEffect(() => {
     const initForm = async () => {
       try {
+        //update: If in edit mode, populate form with existing package data
+        if (isEditMode && selectedPackage) {
+          setNewPackageData({
+            id_shop: selectedPackage.id_shop,
+            id_product1: selectedPackage.id_product1,
+            id_product2: selectedPackage.id_product2,
+            id_product3: selectedPackage.id_product3,
+            id_product4: selectedPackage.id_product4,
+            id_product5: selectedPackage.id_product5,
+            name_package: selectedPackage.name_package || '',
+            discount_package: selectedPackage.discount_package || 0,
+            active_package: selectedPackage.active_package
+          });
+        }
+        
         // Get array of selected product IDs
         const productIds = [
           newPackageData.id_product1,
@@ -107,7 +128,38 @@ const PackageCreationForm = () => {
     };
     
     initForm();
-  }, []);
+  }, [isEditMode, selectedPackage]);
+  
+  // Update product details when newPackageData changes
+  useEffect(() => {
+    const updateProductDetails = async () => {
+      // Get array of selected product IDs
+      const productIds = [
+        newPackageData.id_product1,
+        newPackageData.id_product2,
+        newPackageData.id_product3,
+        newPackageData.id_product4,
+        newPackageData.id_product5
+      ].filter(id => id !== null && id !== '');
+      
+      if (productIds.length > 0) {
+        // Fetch details for selected products
+        const details = await getProductDetails(productIds);
+        setSelectedProductDetails(details);
+        
+        // Calculate total price
+        const total = details.reduce((sum, product) => sum + (parseFloat(product.price_product) || 0), 0);
+        setTotalPrice(total);
+        
+        // Calculate discounted price
+        const discount = parseInt(newPackageData.discount_package) || 0;
+        const discounted = total * (1 - discount / 100);
+        setDiscountedPrice(discounted);
+      }
+    };
+    
+    updateProductDetails();
+  }, [newPackageData, getProductDetails]);
   
   // Handle back button click
   const handleBackClick = async () => {
@@ -118,6 +170,7 @@ const PackageCreationForm = () => {
         setIsAddingPackage(false);
         resetPackageData();
         setSelectedProducts(new Set());
+        setSelectedPackage(null); //update: Clear selected package
       }, 500);
     } catch (error) {
       console.error('Error navigating back from package form:', error);
@@ -165,12 +218,21 @@ const PackageCreationForm = () => {
         return;
       }
       
-      // Create package
-      const result = await handleCreatePackage(newPackageData);
+      // Create or update package based on mode
+      let result;
+      if (isEditMode) {
+        //update: Include package ID for update
+        result = await handleUpdatePackage({
+          ...newPackageData,
+          id_package: selectedPackage.id_package
+        });
+      } else {
+        result = await handleCreatePackage(newPackageData);
+      }
       
       if (result.success) {
         // Show success message
-        setSingleSuccess('productSuccess', "Paquete creado exitosamente");
+        setSingleSuccess('productSuccess', isEditMode ? "Paquete actualizado exitosamente" : "Paquete creado exitosamente");
         
         // Refresh lists
         refreshPackageList();
@@ -181,14 +243,15 @@ const PackageCreationForm = () => {
           setIsAddingPackage(false);
           resetPackageData();
           setSelectedProducts(new Set());
+          setSelectedPackage(null);
         }, 1500);
       } else {
         // Show error message
-        setSingleError('productError', result.message || "Error al crear el paquete");
+        setSingleError('productError', result.message || (isEditMode ? "Error al actualizar el paquete" : "Error al crear el paquete"));
       }
     } catch (error) {
       console.error('Error submitting package form:', error);
-      setSingleError('productError', "Error al crear el paquete");
+      setSingleError('productError', isEditMode ? "Error al actualizar el paquete" : "Error al crear el paquete");
     } finally {
       setIsSubmitting(false);
     }
@@ -219,7 +282,7 @@ const PackageCreationForm = () => {
           </button>
           <h2 className={styles.formTitle}>
             <PackagePlus size={24} className={styles.formTitleIcon} />
-            Crear Paquete
+            {isEditMode ? 'Editar Paquete' : 'Crear Paquete'}
           </h2>
         </div>
         
@@ -337,7 +400,7 @@ const PackageCreationForm = () => {
               disabled={isSubmitting}
             >
               <Save size={18} />
-              {isSubmitting ? 'Creando...' : 'Crear Paquete'}
+              {isSubmitting ? (isEditMode ? 'Actualizando...' : 'Creando...') : (isEditMode ? 'Actualizar Paquete' : 'Crear Paquete')}
             </button>
           </div>
         </form>
