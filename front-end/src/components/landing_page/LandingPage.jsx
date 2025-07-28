@@ -14,7 +14,6 @@ const LandingPage = () => {
   const { setShowTopBar, setShowLandingPage } = useUI();
   const buttonRef = useRef(null);
   
-  // 🚀 UPDATE: Using the refactored utility hooks for cleaner component logic
   // Step 1: Manage component states
   const {
     isHovering,

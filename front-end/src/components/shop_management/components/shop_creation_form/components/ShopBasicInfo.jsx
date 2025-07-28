@@ -5,22 +5,11 @@ import axiosInstance from '../../../../../utils/app/axiosConfig.js';
 const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
   //update: Add state to store types with their IDs
   const [typesWithIds, setTypesWithIds] = useState([]);
-  const [subtypesForSelectedType, setSubtypesForSelectedType] = useState([]);
-  const [loadingSubtypes, setLoadingSubtypes] = useState(false);
   
   //update: Fetch types with IDs when component mounts
   useEffect(() => {
     fetchTypesWithIds();
   }, []);
-  
-  //update: Fetch subtypes when type changes
-  useEffect(() => {
-    if (newShop.id_type) {
-      fetchSubtypesForType(newShop.id_type);
-    } else {
-      setSubtypesForSelectedType([]);
-    }
-  }, [newShop.id_type]);
   
   //update: Function to fetch types with their IDs
   const fetchTypesWithIds = async () => {
@@ -33,43 +22,13 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
       console.error('Error fetching types:', error);
     }
   };
-  
-  //update: Function to fetch subtypes for a specific type - Fixed API endpoint
-  const fetchSubtypesForType = async (typeId) => {
-    try {
-      setLoadingSubtypes(true);
-      // Fixed: Use the correct API endpoint that matches the router
-      const response = await axiosInstance.get(`/type/${typeId}/subtypes`);
-      if (response.data && !response.data.error) {
-        setSubtypesForSelectedType(response.data.data);
-      } else {
-        console.error('Error in response:', response.data.error);
-        setSubtypesForSelectedType([]);
-      }
-    } catch (error) {
-      console.error('Error fetching subtypes:', error);
-      setSubtypesForSelectedType([]);
-    } finally {
-      setLoadingSubtypes(false);
-    }
-  };
 
-  //update: Handle type change - now sets id_type instead of type_shop
+  //update: Handle type change - now sets id_type
   const handleTypeChange = (e) => {
     const selectedTypeId = e.target.value;
     setNewShop({
       ...newShop, 
-      id_type: selectedTypeId,
-      id_subtype: '' // Reset subtype when type changes
-    });
-  };
-  
-  //update: Handle subtype change - now sets id_subtype
-  const handleSubtypeChange = (e) => {
-    const selectedSubtypeId = e.target.value;
-    setNewShop({
-      ...newShop, 
-      id_subtype: selectedSubtypeId
+      id_type: selectedTypeId
     });
   };
 
@@ -107,27 +66,6 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
             ))}
           </select>
         </div>
-
-        {newShop.id_type && (
-          <div className={styles.formField}>
-            <select
-              value={newShop.id_subtype || ""}
-              onChange={handleSubtypeChange}
-              className={`${styles.input} ${newShop.id_subtype ? 'has-value' : ''}`}
-              required
-              disabled={loadingSubtypes}
-            >
-              <option value="" disabled>
-                {loadingSubtypes ? 'Cargando subcategorías...' : 'Subcategoría'}
-              </option>
-              {subtypesForSelectedType.map(subtype => (
-                <option key={subtype.id_subtype} value={subtype.id_subtype}>
-                  {subtype.name_subtype}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
         
         <div className={styles.formField}>
           <input
@@ -144,4 +82,4 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
   );
 };
 
-export default ShopBasicInfo; 
+export default ShopBasicInfo;
