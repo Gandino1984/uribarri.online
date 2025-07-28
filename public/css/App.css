@@ -283,13 +283,12 @@ button {
   background-color: transparent;
   border-radius: 5px;
   padding: 0.3rem 0.3rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 1rem;
+
+  font-weight: 600;
   cursor: pointer;
   gap: var(--spacing-sm);
-  letter-spacing: 0.01rem;
-  height: 2rem;
-  /* transition: all 0.15s ease; */
+  letter-spacing: 0.03rem;
   touch-action: manipulation;
 }
 

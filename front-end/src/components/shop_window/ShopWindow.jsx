@@ -71,7 +71,7 @@ const ShopWindow = () => {
             //   size="large"
             //   className={styles.registerButton}
             //   ariaLabel="Registrarse para hacer pedidos"
-            >Registrarse</button>
+            >Registrarse o iniciar</button>
           </div>
         )}
       </div>

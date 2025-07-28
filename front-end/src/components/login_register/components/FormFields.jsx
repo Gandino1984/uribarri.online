@@ -44,11 +44,11 @@ export const FormFields = () => {
               required
             >
               <option value="" disabled>Tipo:</option>
-              <option value="user">Usuario</option>
-              <option value="seller">Vendedor</option>
-              <option value="rider" disabled>Repartidor</option>
-              <option value="rider" disabled>Gestor de tienda</option>
-              <option value="provider" disabled>Productor</option>
+              <option value="user">Usuaria/o</option>
+              <option value="seller">Vendedor/a</option>
+              <option value="rider" disabled>Repartidor/a</option>
+              <option value="rider" disabled>Gestor/a de tienda</option>
+              <option value="provider" disabled>Productor/a</option>
             </select>
           
             <input

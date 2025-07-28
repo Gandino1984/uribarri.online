@@ -30,7 +30,7 @@ export const FormActions = () => {
         title="Crea una cuenta"
       >
         <ChevronLeft size={16} />
-        {isLoggingIn ? 'Registrarme' : 'Inicio'}
+        {isLoggingIn ? 'Registrarme' : 'Volver'}
       </button>
     </div>
   );
