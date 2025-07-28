@@ -54,20 +54,23 @@ export const useLandingPageStates = () => {
  * 🚀 UPDATE: Custom hook to manage the navigation after animation completes
  * @param {Function} setShowTopBar - Function to set top bar visibility
  * @param {Function} setShowLandingPage - Function to set landing page visibility
+ * @param {Function} setShowShopWindow - Function to set shop window visibility
  * @param {String} animationPhase - Current phase of animation
  */
-export const useNavigationEffect = (setShowTopBar, setShowLandingPage, animationPhase) => {
+export const useNavigationEffect = (setShowTopBar, setShowLandingPage, setShowShopWindow, animationPhase) => {
   useEffect(() => {
     if (animationPhase === 'completed') {
-      // Switch to login form with minimal delay
+      // Switch to ShopWindow instead of login form
       const timer = setTimeout(() => {
         setShowTopBar(true);
         setShowLandingPage(false);
+        //update: Navigate to ShopWindow instead of LoginRegisterForm
+        setShowShopWindow(true);
       }, 10); // Minimum possible delay for smooth transition
       
       return () => clearTimeout(timer);
     }
-  }, [animationPhase, setShowTopBar, setShowLandingPage]);
+  }, [animationPhase, setShowTopBar, setShowLandingPage, setShowShopWindow]);
 };
 
 /**

@@ -22,23 +22,20 @@ export const UIProvider = ({ children }) => {
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   
   // Navigation and UI display states
-  const [showTopBar, setShowTopBar] = useState(false); // ⚙️ UPDATE: Hidden by default for landing page
-  const [showLandingPage, setShowLandingPage] = useState(true); // ⚙️ UPDATE: Show landing page by default
+  const [showTopBar, setShowTopBar] = useState(false); 
+  const [showLandingPage, setShowLandingPage] = useState(true); 
   const [showShopManagement, setShowShopManagement] = useState(false);
-  
-  // ⚠️ FIXED: Added showProductManagement state
   const [showProductManagement, setShowProductManagement] = useState(false);
-  
+  const [showShopWindow, setShowShopWindow] = useState(false);
+
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
   
-  // ⚠️ FIXED: Added missing uploading state
   const [uploading, setUploading] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImageForModal, setSelectedImageForModal] = useState('');
   
-  // ⚠️ FIXED: Added missing modal states for shop operations
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isAccepted, setIsAccepted] = useState(false);
@@ -129,7 +126,6 @@ export const UIProvider = ({ children }) => {
         error, setError,
         success, setSuccess,
         clearNotifications,
-        // ⚠️ FIXED: Added clear functions
         clearError,
         clearInfo, 
         clearSuccess,
@@ -149,31 +145,25 @@ export const UIProvider = ({ children }) => {
         showTopBar, setShowTopBar,
         showLandingPage, setShowLandingPage,
         showShopManagement, setShowShopManagement,
+        showShopWindow, setShowShopWindow,
         
-        // ⚠️ FIXED: Added showProductManagement state
         showProductManagement, setShowProductManagement,
         
         // Image modal handlers
         showImageModal, setShowImageModal,
         modalImageSrc, setModalImageSrc,
         openImageModal, closeImageModal,
-        
-        // ⚠️ FIXED: Added missing uploading state and image modal states
+    
         uploading, setUploading,
         isImageModalOpen, setIsImageModalOpen,
         selectedImageForModal, setSelectedImageForModal,
         
-        // ⚠️ FIXED: Added missing modal states for shop operations
         isModalOpen, setIsModalOpen,
         modalMessage, setModalMessage,
         isAccepted, setIsAccepted,
-        // 🚀 UPDATE: Added isDeclined state
         isDeclined, setIsDeclined,
-        // 🚀 UPDATE: Added modalConfirmCallback and openModal
         modalConfirmCallback, setModalConfirmCallback,
         openModal,
-        
-        // 🔄 UPDATE: Added isCardMinimized state and setter for UserInfoCard
         isCardMinimized, setIsCardMinimized
       }}
     >

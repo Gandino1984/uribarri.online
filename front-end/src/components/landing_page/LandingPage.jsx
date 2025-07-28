@@ -11,9 +11,11 @@ import {
 import OButton from '../Obutton/Obutton.jsx';
 
 const LandingPage = () => {
-  const { setShowTopBar, setShowLandingPage } = useUI();
+  //update: Add setShowShopWindow to the destructured values
+  const { setShowTopBar, setShowLandingPage, setShowShopWindow } = useUI();
   const buttonRef = useRef(null);
   
+  // 🚀 UPDATE: Using the refactored utility hooks for cleaner component logic
   // Step 1: Manage component states
   const {
     isHovering,
@@ -40,7 +42,8 @@ const LandingPage = () => {
   );
   
   // Step 3: Handle navigation after animation completes
-  useNavigationEffect(setShowTopBar, setShowLandingPage, animationPhase);
+  //update: Pass setShowShopWindow to the navigation effect
+  useNavigationEffect(setShowTopBar, setShowLandingPage, setShowShopWindow, animationPhase);
 
   return (
     <animated.div 

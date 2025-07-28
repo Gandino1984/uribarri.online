@@ -15,10 +15,12 @@ import LandingPage from "../src/components/landing_page/LandingPage.jsx";
 import UserInfoCard from "../src/components/user_info_card/UserInfoCard.jsx";
 import { useAuth } from "./app_context/AuthContext.jsx";
 import ImageModal from "../src/components/image_modal/ImageModal.jsx";
-
+//update: Import ShopWindow component
+import ShopWindow from "../src/components/shop_window/ShopWindow.jsx";
 
 const AppContent = () => {
-  const { showTopBar, showLandingPage } = useUI();
+  //update: Add showShopWindow from UIContext
+  const { showTopBar, showLandingPage, showShopWindow } = useUI();
   const { currentUser } = useAuth();
   
   return (
@@ -28,7 +30,14 @@ const AppContent = () => {
       {showTopBar && <TopBar />} 
       {currentUser && <UserInfoCard />}
       <CardDisplay />
-      {showLandingPage ? <LandingPage /> : <LoginRegisterForm />} 
+      {/*update: Add conditional rendering for ShopWindow*/}
+      {showLandingPage ? (
+        <LandingPage />
+      ) : showShopWindow ? (
+        <ShopWindow />
+      ) : (
+        <LoginRegisterForm />
+      )}
     </div>
   );
 };
