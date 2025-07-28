@@ -1,7 +1,35 @@
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: .5px solid rgba(255, 255, 255, 0.305);
+  background-color: rgba(255, 255, 255, 0.13);
+  border-radius: 5px;
+  padding: 0.5rem 0.5rem 0.7rem 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  gap: .3rem;
+  letter-spacing: 0.02rem;
+  /* margin-bottom: 1rem; */
+  /* touch-action: manipulation; */
+}
+
+button:hover {
+  border-color: white;
+  box-shadow: 0 0 10px rgba(61, 61, 255, 0.443);
+}
+
+button:active {
+  background-color: var(--saturated-blue);
+  color: white;
+}
+
 .container {
   width: 100%;
   min-height: 100vh;
-  padding: 2rem 1rem;
+  /* margin-top: 3rem; */
+  padding: 5rem 2rem;
   background: linear-gradient(135deg, var(--dark-gradient-purple-start) 0%, var(--gradient-purple-mid) 50%, var(--gradient-purple-end) 100%);
   display: flex;
   flex-direction: column;
@@ -10,7 +38,11 @@
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  gap: 1rem;
   max-width: 800px;
   width: 100%;
   margin-bottom: 2rem;
@@ -31,7 +63,7 @@
 }
 
 .registerSection {
-  background: rgba(255, 255, 255, 0.1);
+  /* background: rgba(255, 255, 255, 0.1); */
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 2rem;

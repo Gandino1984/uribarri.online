@@ -282,7 +282,6 @@ button {
   border: none;
   background-color: transparent;
   border-radius: 5px;
-  /* color: var(--superdark-gradient-purple-start); */
   padding: 0.3rem 0.3rem;
   font-size: 0.85rem;
   font-weight: 500;
@@ -290,7 +289,7 @@ button {
   gap: var(--spacing-sm);
   letter-spacing: 0.01rem;
   height: 2rem;
-  transition: all 0.15s ease;
+  /* transition: all 0.15s ease; */
   touch-action: manipulation;
 }
 

@@ -15,9 +15,8 @@ const FormContent = React.memo(() => {
   
   return (
     <div className={styles.formContentWrapper}>
-      {/*update: Add title that changes based on isLoggingIn state*/}
       <h1 className={styles.formTitle}>
-        {isLoggingIn ? '¡Maneja tus comercios!' : '¡Crea tu usuari@!'}
+        {isLoggingIn ? '¡Transforma el barrio!' : '¡Crea tu usuari@!'}
       </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>

@@ -58,20 +58,20 @@ const ShopWindow = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
-        <p className={styles.subtitle}>Descubre todos los comercios de tu barrio</p>
+        {/* <p className={styles.subtitle}>Descubre todos los comercios de tu barrio</p> */}
         
         {!currentUser && (
-          <div className={styles.registerSection}>
-            <p className={styles.registerText}>
+          <div>
+            {/* <p className={styles.registerText}>
               ¿Quieres hacer pedidos? ¡Regístrate gratis!
-            </p>
-            <OButton 
+            </p> */}
+            <button 
               onClick={handleRegisterClick}
-              text="Registrarse"
-              size="large"
-              className={styles.registerButton}
-              ariaLabel="Registrarse para hacer pedidos"
-            />
+            //   text="Registrarse"
+            //   size="large"
+            //   className={styles.registerButton}
+            //   ariaLabel="Registrarse para hacer pedidos"
+            >Registrarse</button>
           </div>
         )}
       </div>
