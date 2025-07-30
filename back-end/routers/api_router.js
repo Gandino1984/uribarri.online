@@ -12,6 +12,10 @@ import productSubcategoryApiRouter from "./product_subcategory_api_router.js";
 import typeCategoryApiRouter from "./type_category_api_router.js";
 import calificationApiRouter from "./calification_api_router.js";
 import calificationShopApiRouter from "./calification_shop_api_router.js";
+//update: Import order routers
+import orderApiRouter from "./order_api_router.js";
+import orderProductApiRouter from "./order_product_api_router.js";
+import orderPackageApiRouter from "./order_package_api_router.js";
 
 const router = Router();
 
@@ -38,5 +42,12 @@ router.use("/type-category", typeCategoryApiRouter);
 router.use("/calification", calificationApiRouter);
 
 router.use("/calification-shop", calificationShopApiRouter);
+
+//update: Add order routes
+router.use("/order", orderApiRouter);
+
+router.use("/order-product", orderProductApiRouter);
+
+router.use("/order-package", orderPackageApiRouter);
 
 export default router;

@@ -203,19 +203,58 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
   UNIQUE INDEX `id_package_UNIQUE` (`id_package` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
+
 -- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`orders`
+-- Table `DB_gestionPedidosOnline_2024`.`order_product`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`orders` (
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order_product` (
+  `id_order_product` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_product` INT UNSIGNED NOT NULL,
+  `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  `unit_price` DECIMAL(10,2) NOT NULL,
+  `total_price` DECIMAL(10,2) NOT NULL,
+  `product_notes` TEXT NULL,
+  PRIMARY KEY (`id_order_product`),
+  INDEX `idx_product` (`id_product` ASC)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`order_package`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order_package` (
+  `id_order_package` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_package` INT UNSIGNED NOT NULL,
+  `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  `unit_price` DECIMAL(10,2) NOT NULL,
+  `total_price` DECIMAL(10,2) NOT NULL,
+  `package_notes` TEXT NULL,
+  PRIMARY KEY (`id_order_package`),
+  INDEX `idx_package` (`id_package` ASC)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`order`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
   `id_order` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` INT UNSIGNED NOT NULL,
-  `id_product` INT UNSIGNED NOT NULL,
   `id_shop` INT UNSIGNED NOT NULL,
-  `delivery_date` DATETIME NOT NULL,
-  `order_date` DATETIME NOT NULL,
-  `finished` TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id_order`)
+  `id_order_products` JSON DEFAULT NULL,
+  `id_order_packages` JSON DEFAULT NULL,
+  `total_price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `order_status` ENUM('pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled') NOT NULL DEFAULT 'pending',
+  `delivery_type` ENUM('pickup', 'delivery') NOT NULL DEFAULT 'pickup',
+  `delivery_address` VARCHAR(255) NULL,
+  `order_notes` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_order`),
+  INDEX `idx_user` (`id_user` ASC),
+  INDEX `idx_shop` (`id_shop` ASC),
+  INDEX `idx_status` (`order_status` ASC),
+  INDEX `idx_created` (`created_at` ASC)
 ) ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`provider`
