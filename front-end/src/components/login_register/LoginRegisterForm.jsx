@@ -3,6 +3,7 @@ import { useTransition, animated } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import ShopManagement from "../shop_management/ShopManagement.jsx";
+import ShopStore from "../shop_store/ShopStore.jsx";
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
@@ -16,7 +17,7 @@ const FormContent = React.memo(() => {
   return (
     <div className={styles.formContentWrapper}>
       <h1 className={styles.formTitle}>
-        {isLoggingIn ? 'Inicia sesión y transforma el barrio' : 'Crea tu usuari@'}
+        {isLoggingIn ? 'Inicia sesión, por favor.' : 'Crea tu usuari@ aquí.'}
       </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
@@ -34,14 +35,16 @@ const LoginRegisterForm = () => {
   const { 
     showShopManagement, 
     showLandingPage,
-    setShowTopBar  
+    setShowTopBar,
+    showShopStore,
+    showShopWindow
   } = useUI();
   
   // Track if mounted, not animation state
   const [isMounted, setIsMounted] = useState(false);
   
   // Simple state to track if we should show content
-  const shouldShow = !showLandingPage && !showShopManagement && !currentUser;
+  const shouldShow = !showLandingPage && !showShopManagement && !currentUser && !showShopStore && !showShopWindow;
   
   // Show TopBar when form is visible
   useEffect(() => {
@@ -63,7 +66,11 @@ const LoginRegisterForm = () => {
   
   const transitions = useTransition(shouldShow, getTransition());
   
-  // Return ShopManagement if we should show it instead
+  // Return appropriate component based on state
+  if (showShopStore) {
+    return <ShopStore />;
+  }
+  
   if (showShopManagement || currentUser) {
     return <ShopManagement />;
   }

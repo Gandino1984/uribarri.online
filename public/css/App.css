@@ -4,7 +4,6 @@
   --dark-orange: #965101;
   --superdark-orange: #3f2100;
 
-  /* 🔄 UPDATE: Added new color variables for the gradient background */
   --dark-gradient-purple-start: #3e297d;
   --semidark-gradient-purple-start: #582a90;
   --gradient-purple-start: #6d48dd;
@@ -16,14 +15,12 @@
   --light-gradient-purple-end: #e97ea1;
   --superlight-gradient-purple-end: #e9487e23;
   
-  /* 🔴 UPDATE: Added new color variables for the red gradient background */
   --gradient-red-start: #e25379;
   --light-gradient-red-start: #e2537991;
   --gradient-red-mid: #b01f4d;
   --light-gradient-red-mid: #b01f4d92;
   --gradient-red-end: #4d0416;
   --superlight-gradient-red-end: #4d041623;
-  
 
   --superlight-orange: #fff1df;
   --superlight-gray: #e9e9e9;
@@ -105,8 +102,9 @@ input[type="text"] {
   font-weight: 600;
   margin-bottom: .5rem;
   width: 100%;
-  outline: none;
-  border: none;
+  /* outline: none; */
+  border: 2px solid lightgray;
+  /* border: none; */
   /* background-color: rgb(220, 228, 255) */
 }
 
@@ -117,14 +115,17 @@ input[type="text"]::placeholder {
 
 input[type="text"]:focus {
   color: black; 
-  border: 2px solid WHITE;
+  outline: 2px solid black;
+  border: none;
   background-color: white;
 }
 
-input[type="text"]:hover { 
-  border: 2px solid white;
+input[type="text"]:hover {
+  border: 2px solid blue;    
+  outline: none;
+  /* border: 2px solid white; */
   background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+  box-shadow: 0 0 13px 1px lightblue;
 }
 
 /* ⏰ UPDATE: Time inputs with consistent styling */

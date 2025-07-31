@@ -26,7 +26,11 @@ export const LoginRegisterUtils = () => {
     setSuccess,
     setShowInfoCard,
     // UPDATE: Using the standardized setter name
-    setShowShopManagement, 
+    setShowShopManagement,
+    //update: Add shop store related setters
+    setShowShopStore,
+    selectedShopForStore,
+    setShowShopWindow
   } = useUI();
 
   // Shop-related state and functions from ShopContext
@@ -199,9 +203,26 @@ export const LoginRegisterUtils = () => {
           setIsAddingShop(false);
           setShowShopCreationForm(false);
         }
+      } else if (userType === 'user') {
+        //update: Handle regular user login
+        console.log('User is regular user type');
+        
+        // Check if there was a selected shop before login
+        if (selectedShopForStore) {
+          console.log('Redirecting to selected shop store:', selectedShopForStore.name_shop);
+          setShowShopStore(true);
+          setShowShopWindow(false);
+          setShowShopManagement(false);
+        } else {
+          console.log('Showing shop window for user to browse shops');
+          setShowShopWindow(true);
+          setShowShopManagement(false);
+        }
+        
+        setShowShopCreationForm(false);
       } else {
         console.log('User is not a seller, showing UserManagement');
-        // For other user types (user, provider), show UserManagement
+        // For other user types (provider), show UserManagement
         setShowShopManagement(true);
         setShowShopCreationForm(false); // Ensure creation form is not shown
       }
@@ -309,8 +330,18 @@ export const LoginRegisterUtils = () => {
         setShowShopCreationForm(false); // Explicitly hide the shop creation form
       } else if (userType === 'user') {
         console.log('User registered as regular user, setting up user view');
-        // For regular users, show UserManagement for shop type selection
-        setShowShopManagement(true);
+        //update: Handle user registration redirect
+        // Check if there was a selected shop before registration
+        if (selectedShopForStore) {
+          console.log('Redirecting to selected shop store after registration:', selectedShopForStore.name_shop);
+          setShowShopStore(true);
+          setShowShopWindow(false);
+          setShowShopManagement(false);
+        } else {
+          console.log('Showing shop window for newly registered user');
+          setShowShopWindow(true);
+          setShowShopManagement(false);
+        }
         setSelectedShopType(null);
         setShowShopCreationForm(false); // Ensure form is not shown
       } else {

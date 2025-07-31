@@ -2,7 +2,8 @@
   width: 100%;
   min-height: 100vh;
   padding: 5rem 2rem;
-  background: linear-gradient(135deg, var(--dark-gradient-purple-start) 0%, var(--gradient-purple-mid) 50%, var(--gradient-purple-end) 100%);
+  background-color: lightgray;
+  /* background: linear-gradient(135deg, var(--dark-gradient-purple-start) 0%, var(--gradient-purple-mid) 50%, var(--gradient-purple-end) 100%); */
   display: flex;
   flex-direction: column;
   align-items: center;

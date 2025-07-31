@@ -10,7 +10,13 @@ import styles from '../../../../public/css/ShopWindow.module.css';
 
 const ShopWindow = () => {
   const { currentUser } = useAuth();
-  const { setShowShopWindow, setShowShopManagement } = useUI();
+  const { 
+    setShowShopWindow, 
+    setShowShopManagement,
+    setShowShopStore,
+    setSelectedShopForStore,
+    setShowLandingPage
+  } = useUI();
   const { shops, setShops } = useShop();
   
   const [loading, setLoading] = useState(true);
@@ -25,7 +31,7 @@ const ShopWindow = () => {
     try {
       setLoading(true);
       setError(null);
-        const response = await axiosInstance.get('/shop');
+      const response = await axiosInstance.get('/shop');
       
       if (response.data && !response.data.error) {
         setShops(response.data.data || []);
@@ -43,7 +49,25 @@ const ShopWindow = () => {
   const handleRegisterClick = () => {
     // Hide ShopWindow and show LoginRegisterForm
     setShowShopWindow(false);
+    setShowLandingPage(false);
     // This will trigger the LoginRegisterForm to show
+  };
+  
+  //update: Handle shop card click
+  const handleShopClick = (shop) => {
+    if (!currentUser) {
+      // If user is not logged in, redirect to login/register
+      setShowShopWindow(false);
+      setShowLandingPage(false);
+      // Store the selected shop for after login
+      setSelectedShopForStore(shop);
+    } else if (currentUser.type_user === 'user') {
+      // If user is logged in as 'user', show the shop store
+      setSelectedShopForStore(shop);
+      setShowShopWindow(false);
+      setShowShopStore(true);
+    }
+    // If user is seller or other type, do nothing on click
   };
 
   const transitions = useTransition(shops, {
@@ -58,22 +82,17 @@ const ShopWindow = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
-        {/* <p className={styles.subtitle}>Descubre todos los comercios de tu barrio</p> */}
         
-        {!currentUser && (
+        {/* {!currentUser && (
           <div>
-            {/* <p className={styles.registerText}>
-              ¿Quieres hacer pedidos? ¡Regístrate gratis!
-            </p> */}
             <button 
               onClick={handleRegisterClick}
-            //   text="Registrarse"
-            //   size="large"
-            //   className={styles.registerButton}
-            //   ariaLabel="Registrarse para hacer pedidos"
-            >Registrarse o iniciar</button>
+              className={styles.registerButton}
+            >
+              Registrarse o iniciar
+            </button>
           </div>
-        )}
+        )} */}
       </div>
 
       {loading && (
@@ -102,8 +121,29 @@ const ShopWindow = () => {
         <div className={styles.shopsGrid}>
           {transitions((style, shop) => 
             shop && (
-              <animated.div key={shop.id_shop} style={style} className={styles.shopCardWrapper}>
-                <ShopCard shop={shop} />
+              <animated.div 
+                key={shop.id_shop} 
+                style={style} 
+                className={styles.shopCardWrapper}
+              >
+                {/* update: Wrap ShopCard in a clickable div */}
+                <div 
+                  onClick={() => handleShopClick(shop)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleShopClick(shop);
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <ShopCard 
+                    shop={shop} 
+                    isClickable={false} // Disable internal card functionality
+                    hideActions={true} // Hide action buttons
+                  />
+                </div>
               </animated.div>
             )
           )}

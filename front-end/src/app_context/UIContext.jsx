@@ -27,6 +27,9 @@ export const UIProvider = ({ children }) => {
   const [showShopManagement, setShowShopManagement] = useState(false);
   const [showProductManagement, setShowProductManagement] = useState(false);
   const [showShopWindow, setShowShopWindow] = useState(false);
+  //update: Added showShopStore state for displaying individual shop stores
+  const [showShopStore, setShowShopStore] = useState(false);
+  const [selectedShopForStore, setSelectedShopForStore] = useState(null);
 
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
@@ -146,6 +149,8 @@ export const UIProvider = ({ children }) => {
         showLandingPage, setShowLandingPage,
         showShopManagement, setShowShopManagement,
         showShopWindow, setShowShopWindow,
+        showShopStore, setShowShopStore,
+        selectedShopForStore, setSelectedShopForStore,
         
         showProductManagement, setShowProductManagement,
         

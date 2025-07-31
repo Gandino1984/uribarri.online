@@ -5,7 +5,8 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end));
+  background-color: lightgray;
+  /* background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end)); */
   background-size: 200% 200%;
   position: relative;
   z-index: 100;
@@ -18,7 +19,7 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%);
+  /* background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%); */
   pointer-events: none;
   z-index: 0;
 }
@@ -64,7 +65,7 @@
 .formTitle {
   font-size: 2rem;
   font-weight: bold;
-  color: white;
+  color: black;
   text-align: center;
   margin-bottom: 1.5rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
@@ -80,7 +81,8 @@
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.205);
   border-radius: 12px;
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end));
+background-color: white;
+  /* background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end)); */
   padding: .7rem .5rem .7rem .5rem;
   backdrop-filter: blur(1.9px);
   z-index: 0;
