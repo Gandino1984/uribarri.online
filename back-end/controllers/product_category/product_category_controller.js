@@ -163,12 +163,13 @@ async function create(categoryData) {
     }
 }
 
-async function update(id, categoryData) {
+//update: Fixed parameter name from 'id' to 'id_category'
+async function update(id_category, categoryData) {
     try {
-        const category = await product_category_model.findByPk(id);
+        const category = await product_category_model.findByPk(id_category);
         
         if (!category) {
-            console.log("Categoría no encontrada con id:", id);
+            console.log("Categoría no encontrada con id:", id_category);
             return { error: "Categoría no encontrada" };
         }
 
@@ -185,7 +186,9 @@ async function update(id, categoryData) {
 
         await category.update(categoryData);
         
-        return { data: category };
+        const updatedCategory = await product_category_model.findByPk(id_category);
+        
+        return { data: updatedCategory };
     } catch (err) {
         console.error("Error al actualizar la categoría =", err);
         return { error: "Error al actualizar la categoría" };

@@ -287,11 +287,11 @@ export const ShopCreationFormUtils = () => {
         return false;
       }
       
-      //update: Validate that type ID is provided (removed subtype validation)
-      if (!formData.id_type) {
+      //update: Validate that both type ID and subtype ID are provided
+      if (!formData.id_type || !formData.id_subtype) {
         setError(prevError => ({
           ...prevError,
-          shopError: 'Debe seleccionar un tipo de comercio'
+          shopError: 'Debe seleccionar un tipo y subtipo de comercio'
         }));
         setShowErrorCard(true);
         return false;
@@ -301,6 +301,7 @@ export const ShopCreationFormUtils = () => {
       const shopData = {
         ...formData,
         id_user: currentUser.id_user,
+        id_subtype: formData.id_subtype, //update: id_subtype is required
         has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
         open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
         open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
@@ -421,11 +422,11 @@ export const ShopCreationFormUtils = () => {
         open_sunday: formData.open_sunday
       });
       
-      //update: Validate that type ID is provided (removed subtype validation)
-      if (!formData.id_type) {
+      //update: Validate that both type ID and subtype ID are provided
+      if (!formData.id_type || !formData.id_subtype) {
         setError(prevError => ({
           ...prevError,
-          shopError: 'Debe seleccionar un tipo de comercio'
+          shopError: 'Debe seleccionar un tipo y subtipo de comercio'
         }));
         setShowErrorCard(true);
         return false;
@@ -437,8 +438,8 @@ export const ShopCreationFormUtils = () => {
       const updateData = {
         id_shop,
         name_shop: formData.name_shop,
-        //update: Use id_type only (removed id_subtype)
         id_type: formData.id_type,
+        id_subtype: formData.id_subtype, //update: id_subtype is required
         location_shop: formData.location_shop,
         id_user: currentUser.id_user,
         calification_shop: formData.calification_shop || 0,

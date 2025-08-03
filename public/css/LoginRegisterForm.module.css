@@ -5,7 +5,7 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  background-color: lightgray;
+  background-color: var(--light-gray);
   /* background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end)); */
   background-size: 200% 200%;
   position: relative;

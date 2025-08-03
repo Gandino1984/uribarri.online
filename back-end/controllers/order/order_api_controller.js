@@ -74,11 +74,33 @@ async function getByShopId(req, res) {
     }
 }
 
+//update: Add getByRiderId function
+async function getByRiderId(req, res) {
+    try {
+        const { id_rider } = req.body;
+        
+        if (!id_rider) {
+            return res.status(400).json({
+                error: 'El ID del repartidor es obligatorio'
+            });
+        }
+
+        const { error, data } = await orderController.getByRiderId(id_rider);
+        res.json({ error, data });
+    } catch (err) {
+        console.error('-> order_api_controller.js - getByRiderId() - Error = ', err);
+        res.status(500).json({
+            error: 'Error al obtener los pedidos del repartidor'
+        });
+    }
+}
+
 async function create(req, res) {
     try {
         const { 
             id_user,
             id_shop,
+            id_rider,
             products,
             packages,
             delivery_type,
@@ -108,6 +130,7 @@ async function create(req, res) {
         const { error, data, success } = await orderController.create({
             id_user,
             id_shop,
+            id_rider,
             products,
             packages,
             delivery_type,
@@ -185,14 +208,91 @@ async function cancel(req, res) {
     }
 }
 
+//update: Add assignRider function
+async function assignRider(req, res) {
+    try {
+        const { id_order } = req.params;
+        const { id_rider } = req.body;
+
+        if (!id_order) {
+            return res.status(400).json({
+                error: 'El ID del pedido es obligatorio'
+            });
+        }
+
+        if (!id_rider) {
+            return res.status(400).json({
+                error: 'El ID del repartidor es obligatorio'
+            });
+        }
+
+        const { error, data, message } = await orderController.assignRider(id_order, id_rider);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+
+        res.json({ error, data, message });
+    } catch (err) {
+        console.error("-> order_api_controller.js - assignRider() - Error =", err);
+        res.status(500).json({
+            error: "Error al asignar el repartidor",
+            details: err.message
+        });
+    }
+}
+
+//update: Add riderResponse function
+async function riderResponse(req, res) {
+    try {
+        const { id_order } = req.params;
+        const { id_rider, accepted } = req.body;
+
+        if (!id_order) {
+            return res.status(400).json({
+                error: 'El ID del pedido es obligatorio'
+            });
+        }
+
+        if (!id_rider) {
+            return res.status(400).json({
+                error: 'El ID del repartidor es obligatorio'
+            });
+        }
+
+        if (accepted === undefined || accepted === null) {
+            return res.status(400).json({
+                error: 'La respuesta del repartidor es obligatoria'
+            });
+        }
+
+        const { error, data, message } = await orderController.riderResponse(id_order, id_rider, accepted);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+
+        res.json({ error, data, message });
+    } catch (err) {
+        console.error("-> order_api_controller.js - riderResponse() - Error =", err);
+        res.status(500).json({
+            error: "Error al procesar la respuesta del repartidor",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
     getByUserId,
     getByShopId,
+    getByRiderId,
     create,
     updateStatus,
-    cancel
+    cancel,
+    assignRider,
+    riderResponse
 }
 
 export default {
@@ -200,7 +300,10 @@ export default {
     getById,
     getByUserId,
     getByShopId,
+    getByRiderId,
     create,
     updateStatus,
-    cancel
+    cancel,
+    assignRider,
+    riderResponse
 }

@@ -76,8 +76,8 @@ const ShopCreationForm = () => {
   
   const defaultShopValues = {
     name_shop: '',
-    //update: Use id_type only, removed id_subtype
     id_type: '',
+    id_subtype: '', //update: Added back id_subtype
     location_shop: '',
     id_user: currentUser?.id_user || '',
     calification_shop: 0,
@@ -124,8 +124,8 @@ const ShopCreationForm = () => {
       
       setNewShop({
         name_shop: selectedShop.name_shop,
-        //update: Use id_type only from selected shop
         id_type: selectedShop.id_type,
+        id_subtype: selectedShop.id_subtype || '', //update: Include id_subtype
         location_shop: selectedShop.location_shop,
         id_user: currentUser.id_user, // Ensure we always set the current user ID
         calification_shop: selectedShop.calification_shop,
@@ -264,11 +264,11 @@ const ShopCreationForm = () => {
       case 1: // Image upload - optional, so always valid
         return true;
       case 2: // Basic info
-        //update: Check for id_type only, removed id_subtype check
-        if (!newShop.name_shop || !newShop.id_type || !newShop.location_shop) {
+        //update: Check for all required fields including id_subtype
+        if (!newShop.name_shop || !newShop.id_type || !newShop.id_subtype || !newShop.location_shop) {
           setError(prevError => ({
             ...prevError,
-            shopError: "Completa todos los campos."
+            shopError: "Completa todos los campos obligatorios."
           }));
           setShowErrorCard(true);
           return false;

@@ -1,20 +1,30 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/sequelize.js";
+import sequelize from "../../back-end/config/sequelize.js";
 
 const order_model = sequelize.define("order", {
     id_order: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
     id_user: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false
+        allowNull: false,
     },
     id_shop: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false
+        allowNull: false,
+    },
+    //update: Add id_rider field with UNSIGNED
+    id_rider: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
+    },
+    //update: Add rider_accepted field
+    rider_accepted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: null
     },
     id_order_products: {
         type: DataTypes.JSON,
@@ -28,8 +38,7 @@ const order_model = sequelize.define("order", {
     },
     total_price: {
         type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-        defaultValue: 0.00
+        allowNull: false
     },
     order_status: {
         type: DataTypes.ENUM('pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'),
@@ -42,7 +51,7 @@ const order_model = sequelize.define("order", {
         defaultValue: 'pickup'
     },
     delivery_address: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: true
     },
     order_notes: {
@@ -60,10 +69,10 @@ const order_model = sequelize.define("order", {
         defaultValue: DataTypes.NOW
     }
 }, {
+    tableName: "order",
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    freezeTableName: true
+    updatedAt: 'updated_at'
 });
 
 export default order_model;

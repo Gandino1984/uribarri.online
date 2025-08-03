@@ -1,5 +1,6 @@
 :root {
-  --saturated-orange: #efa345;
+  --light-gray: rgb(252, 252, 252);
+  --saturated-orange: #efa345;  
   --light-orange: #ffe1bc;
   --dark-orange: #965101;
   --superdark-orange: #3f2100;
@@ -54,7 +55,7 @@
 
 html, body {
   font-family: 'Montserrat';
-  background-color: black;
+  background-color: var(--light-gray);
   margin: 0;
   padding: 0;
   min-height: 100vh;

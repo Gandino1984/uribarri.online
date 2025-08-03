@@ -73,17 +73,33 @@ async function getById(id_subcategory) {
     }
 }
 
+//update: Fixed to use category_subcategory junction table
 async function getByCategoryId(id_category) {
     try {
+        // Get all subcategory IDs associated with this category from the junction table
+        const categorySubcategoryRelations = await category_subcategory_model.findAll({
+            where: { id_category: id_category }
+        });
+
+        if (!categorySubcategoryRelations || categorySubcategoryRelations.length === 0) {
+            console.log(`No subcategories found for category ${id_category}`);
+            return { data: [] };
+        }
+
+        // Extract subcategory IDs
+        const subcategoryIds = categorySubcategoryRelations.map(rel => rel.id_subcategory);
+        console.log(`Found ${subcategoryIds.length} subcategory IDs for category ${id_category}:`, subcategoryIds);
+
+        // Get the actual subcategory data
         const subcategories = await product_subcategory_model.findAll({
-            where: { id_category: id_category },
+            where: { 
+                id_subcategory: subcategoryIds,
+                verified_subcategory: true 
+            },
             order: [['name_subcategory', 'ASC']]
         });
 
-        if (!subcategories || subcategories.length === 0) {
-            return { error: "No hay subcategorías para esta categoría", data: [] };
-        }
-
+        console.log(`Returning ${subcategories.length} verified subcategories for category ${id_category}`);
         return { data: subcategories };
     } catch (err) {
         console.error("-> product_subcategory_controller.js - getByCategoryId() - Error = ", err);
@@ -97,25 +113,23 @@ async function create(subcategoryData) {
     try {
         const { name_subcategory, id_category, createdby_subcategory } = subcategoryData;
 
-        // Check if subcategory already exists for this category
+        //update: Check if subcategory with same name already exists
         const existingSubcategory = await product_subcategory_model.findOne({ 
             where: { 
-                name_subcategory: name_subcategory,
-                id_category: id_category 
+                name_subcategory: name_subcategory
             } 
         });
 
         if (existingSubcategory) {
             await t.rollback();
             return { 
-                error: "Ya existe una subcategoría con ese nombre para esta categoría"
+                error: "Ya existe una subcategoría con ese nombre"
             };
         }
 
         // Create the subcategory
         const subcategory = await product_subcategory_model.create({
             name_subcategory,
-            id_category,
             createdby_subcategory: createdby_subcategory || null,
             verified_subcategory: false
         }, { transaction: t });
@@ -149,17 +163,16 @@ async function update(id, subcategoryData) {
             return { error: "Subcategoría no encontrada" };
         }
 
-        // Check if new name already exists for this category (if name is being changed)
+        //update: Check if new name already exists (if name is being changed)
         if (subcategoryData.name_subcategory && subcategoryData.name_subcategory !== subcategory.name_subcategory) {
             const existingSubcategory = await product_subcategory_model.findOne({ 
                 where: { 
-                    name_subcategory: subcategoryData.name_subcategory,
-                    id_category: subcategory.id_category 
+                    name_subcategory: subcategoryData.name_subcategory
                 } 
             });
 
             if (existingSubcategory) {
-                return { error: "Ya existe una subcategoría con ese nombre para esta categoría" };
+                return { error: "Ya existe una subcategoría con ese nombre" };
             }
         }
 
@@ -207,45 +220,41 @@ async function removeById(id_subcategory) {
     }
 }
 
+//update: Fixed to handle many-to-many relationship
 async function removeByCategoryId(id_category) {
     const t = await sequelize.transaction();
     
     try {
-        // Get all subcategories for this category
-        const subcategories = await product_subcategory_model.findAll({
+        // Get all subcategory IDs associated with this category
+        const categorySubcategoryRelations = await category_subcategory_model.findAll({
             where: { id_category: id_category }
         });
         
-        if (subcategories.length > 0) {
-            // Delete all category-subcategory associations
-            for (const subcategory of subcategories) {
-                await category_subcategory_model.destroy({
-                    where: { id_subcategory: subcategory.id_subcategory },
-                    transaction: t
-                });
-            }
-            
-            // Delete all subcategories
-            await product_subcategory_model.destroy({
+        if (categorySubcategoryRelations.length > 0) {
+            // Delete all category-subcategory associations for this category
+            await category_subcategory_model.destroy({
                 where: { id_category: id_category },
                 transaction: t
             });
+            
+            // Note: We don't delete the subcategories themselves since they might be
+            // associated with other categories in the many-to-many relationship
         }
 
         await t.commit();
 
         return { 
-            data: subcategories.length,
-            message: `Se eliminaron ${subcategories.length} subcategorías.` 
+            data: categorySubcategoryRelations.length,
+            message: `Se eliminaron ${categorySubcategoryRelations.length} asociaciones de subcategorías.` 
         };
     } catch (err) {
         await t.rollback();
         console.error("-> product_subcategory_controller.js - removeByCategoryId() - Error = ", err);
-        return { error: "Error al eliminar las subcategorías" };
+        return { error: "Error al eliminar las asociaciones de subcategorías" };
     }
 }
 
-//update: Get subcategories available for a specific shop and category
+//update: Fixed to use category_subcategory junction table
 async function getSubcategoriesForShopAndCategory(id_shop, id_category) {
     try {
         const shop_model = (await import("../../models/shop_model.js")).default;

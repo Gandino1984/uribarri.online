@@ -46,8 +46,8 @@ export const FormFields = () => {
               <option value="" disabled>Tipo:</option>
               <option value="user">Usuaria/o</option>
               <option value="seller">Vendedor/a</option>
-              <option value="rider" disabled>Repartidor/a</option>
-              <option value="rider" disabled>Gestor/a de tienda</option>
+              <option value="rider">Repartidor/a</option>
+              <option value="handler" disabled>Gestor/a de tienda</option>
               <option value="provider" disabled>Productor/a</option>
             </select>
           

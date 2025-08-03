@@ -23,7 +23,7 @@ export const ShopProvider = ({ children }) => {
   const [newShop, setNewShop] = useState({
     name_shop: '',
     id_type: '',
-    //update: Removed id_subtype as shops now only relate to types
+    id_subtype: '', //update: Added back id_subtype
     location_shop: '',
     id_user: '',
     calification_shop: 0, 

@@ -3,7 +3,8 @@ import sequelize from '../config/sequelize.js';
 
 const product_category_model = sequelize.define('product_category', {
     id_category: {
-        type: DataTypes.INTEGER,
+        //update: Changed from INTEGER to INTEGER.UNSIGNED to match database schema
+        type: DataTypes.INTEGER.UNSIGNED,
         primaryKey: true,
         autoIncrement: true
     },

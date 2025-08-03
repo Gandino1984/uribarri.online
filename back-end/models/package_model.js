@@ -36,7 +36,6 @@ const package_model = sequelize.define("package", {
         type: DataTypes.STRING(100),
         allowNull: true
     },
-    //update: Added discount_package field for package-level discounts
     discount_package: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -53,9 +52,9 @@ const package_model = sequelize.define("package", {
         defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     },
     active_package: {
-        type: DataTypes.TINYINT(1),
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 1
+        defaultValue: true
     }
 }, {
     timestamps: false,

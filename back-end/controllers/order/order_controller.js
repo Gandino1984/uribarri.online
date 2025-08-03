@@ -62,6 +62,36 @@ async function validateShop(id_shop) {
     }
 }
 
+//update: Add rider validation
+async function validateRider(id_rider) {
+    try {
+        const rider = await user_model.findOne({
+            where: {
+                id_user: id_rider,
+                type_user: 'rider'
+            }
+        });
+        
+        if (!rider) {
+            return {
+                isValid: false,
+                error: "El repartidor no existe o el usuario no es un repartidor"
+            };
+        }
+        
+        return {
+            isValid: true,
+            rider: rider
+        };
+    } catch (err) {
+        console.error("Error validating rider:", err);
+        return {
+            isValid: false,
+            error: "Error al validar el repartidor"
+        };
+    }
+}
+
 async function validateProduct(id_product, id_shop) {
     try {
         const product = await product_model.findOne({
@@ -134,6 +164,8 @@ async function getAll() {
         for (const order of orders) {
             const user = await user_model.findByPk(order.id_user);
             const shop = await shop_model.findByPk(order.id_shop);
+            //update: Get rider info if exists
+            const rider = order.id_rider ? await user_model.findByPk(order.id_rider) : null;
             
             // Get order products
             const orderProducts = [];
@@ -177,6 +209,12 @@ async function getAll() {
                     name_shop: shop.name_shop,
                     location_shop: shop.location_shop
                 } : null,
+                //update: Add rider info
+                rider: rider ? {
+                    id_rider: rider.id_user,
+                    name_rider: rider.name_user,
+                    email_rider: rider.email_user
+                } : null,
                 order_products: orderProducts,
                 order_packages: orderPackages
             });
@@ -201,6 +239,8 @@ async function getById(id_order) {
 
         const user = await user_model.findByPk(order.id_user);
         const shop = await shop_model.findByPk(order.id_shop);
+        //update: Get rider info if exists
+        const rider = order.id_rider ? await user_model.findByPk(order.id_rider) : null;
         
         // Get order products
         const orderProducts = [];
@@ -244,6 +284,12 @@ async function getById(id_order) {
                 name_shop: shop.name_shop,
                 location_shop: shop.location_shop
             } : null,
+            //update: Add rider info
+            rider: rider ? {
+                id_rider: rider.id_user,
+                name_rider: rider.name_user,
+                email_rider: rider.email_user
+            } : null,
             order_products: orderProducts,
             order_packages: orderPackages
         };
@@ -278,6 +324,8 @@ async function getByUserId(id_user) {
         const ordersWithDetails = [];
         for (const order of orders) {
             const shop = await shop_model.findByPk(order.id_shop);
+            //update: Get rider info if exists
+            const rider = order.id_rider ? await user_model.findByPk(order.id_rider) : null;
             
             // Get order products
             const orderProducts = [];
@@ -316,6 +364,12 @@ async function getByUserId(id_user) {
                     name_shop: shop.name_shop,
                     location_shop: shop.location_shop
                 } : null,
+                //update: Add rider info
+                rider: rider ? {
+                    id_rider: rider.id_user,
+                    name_rider: rider.name_user,
+                    email_rider: rider.email_user
+                } : null,
                 order_products: orderProducts,
                 order_packages: orderPackages
             });
@@ -353,6 +407,8 @@ async function getByShopId(id_shop) {
         const ordersWithDetails = [];
         for (const order of orders) {
             const user = await user_model.findByPk(order.id_user);
+            //update: Get rider info if exists
+            const rider = order.id_rider ? await user_model.findByPk(order.id_rider) : null;
             
             // Get order products
             const orderProducts = [];
@@ -391,6 +447,12 @@ async function getByShopId(id_shop) {
                     name_user: user.name_user,
                     email_user: user.email_user
                 } : null,
+                //update: Add rider info
+                rider: rider ? {
+                    id_rider: rider.id_user,
+                    name_rider: rider.name_user,
+                    email_rider: rider.email_user
+                } : null,
                 order_products: orderProducts,
                 order_packages: orderPackages
             });
@@ -402,6 +464,88 @@ async function getByShopId(id_shop) {
     } catch (err) {
         console.error("-> order_controller.js - getByShopId() - Error = ", err);
         return { error: "Error al obtener pedidos por comercio" };
+    }
+}
+
+//update: Add getByRiderId function
+async function getByRiderId(id_rider) {
+    try {
+        if (!id_rider) {
+            return { error: "El ID del repartidor es obligatorio" };
+        }
+
+        const riderValidation = await validateRider(id_rider);
+        if (!riderValidation.isValid) {
+            return { error: riderValidation.error };
+        }
+
+        const orders = await order_model.findAll({
+            where: { id_rider: id_rider },
+            order: [['created_at', 'DESC']]
+        });
+
+        if (!orders || orders.length === 0) {
+            return { error: "No hay pedidos asignados a este repartidor", data: [] };
+        }
+
+        const ordersWithDetails = [];
+        for (const order of orders) {
+            const user = await user_model.findByPk(order.id_user);
+            const shop = await shop_model.findByPk(order.id_shop);
+            
+            // Get order products
+            const orderProducts = [];
+            if (order.id_order_products && order.id_order_products.length > 0) {
+                for (const id of order.id_order_products) {
+                    const orderProduct = await order_product_model.findByPk(id);
+                    if (orderProduct) {
+                        const product = await product_model.findByPk(orderProduct.id_product);
+                        orderProducts.push({
+                            ...orderProduct.toJSON(),
+                            product: product ? product.toJSON() : null
+                        });
+                    }
+                }
+            }
+
+            // Get order packages
+            const orderPackages = [];
+            if (order.id_order_packages && order.id_order_packages.length > 0) {
+                for (const id of order.id_order_packages) {
+                    const orderPackage = await order_package_model.findByPk(id);
+                    if (orderPackage) {
+                        const packageItem = await package_model.findByPk(orderPackage.id_package);
+                        orderPackages.push({
+                            ...orderPackage.toJSON(),
+                            package: packageItem ? packageItem.toJSON() : null
+                        });
+                    }
+                }
+            }
+            
+            ordersWithDetails.push({
+                ...order.toJSON(),
+                user: user ? {
+                    id_user: user.id_user,
+                    name_user: user.name_user,
+                    email_user: user.email_user
+                } : null,
+                shop: shop ? {
+                    id_shop: shop.id_shop,
+                    name_shop: shop.name_shop,
+                    location_shop: shop.location_shop
+                } : null,
+                order_products: orderProducts,
+                order_packages: orderPackages
+            });
+        }
+
+        console.log("-> order_controller.js - getByRiderId() - pedidos encontrados = ", ordersWithDetails.length);
+
+        return { data: ordersWithDetails };
+    } catch (err) {
+        console.error("-> order_controller.js - getByRiderId() - Error = ", err);
+        return { error: "Error al obtener pedidos por repartidor" };
     }
 }
 
@@ -417,6 +561,14 @@ async function create(orderData) {
         const shopValidation = await validateShop(orderData.id_shop);
         if (!shopValidation.isValid) {
             return { error: shopValidation.error };
+        }
+
+        //update: Validate rider if provided
+        if (orderData.id_rider) {
+            const riderValidation = await validateRider(orderData.id_rider);
+            if (!riderValidation.isValid) {
+                return { error: riderValidation.error };
+            }
         }
 
         // Create order products
@@ -494,6 +646,9 @@ async function create(orderData) {
         const order = await order_model.create({
             id_user: orderData.id_user,
             id_shop: orderData.id_shop,
+            //update: Add rider fields
+            id_rider: orderData.id_rider || null,
+            rider_accepted: orderData.id_rider ? false : null,
             id_order_products: orderProductIds,
             id_order_packages: orderPackageIds,
             total_price: totalOrderPrice,
@@ -575,14 +730,99 @@ async function cancel(id_order, cancellation_reason) {
     }
 }
 
+//update: Add assignRider function
+async function assignRider(id_order, id_rider) {
+    try {
+        const order = await order_model.findByPk(id_order);
+        
+        if (!order) {
+            return { error: "Pedido no encontrado" };
+        }
+
+        if (order.order_status === 'delivered' || order.order_status === 'cancelled') {
+            return { error: "No se puede asignar un repartidor a un pedido entregado o cancelado" };
+        }
+
+        // Validate rider
+        const riderValidation = await validateRider(id_rider);
+        if (!riderValidation.isValid) {
+            return { error: riderValidation.error };
+        }
+
+        await order.update({ 
+            id_rider: id_rider,
+            rider_accepted: false
+        });
+        
+        const updatedOrder = await getById(id_order);
+        
+        return { 
+            data: updatedOrder.data,
+            message: "Repartidor asignado exitosamente"
+        };
+    } catch (err) {
+        console.error("Error al asignar repartidor =", err);
+        return { error: "Error al asignar el repartidor" };
+    }
+}
+
+//update: Add riderResponse function
+async function riderResponse(id_order, id_rider, accepted) {
+    try {
+        const order = await order_model.findByPk(id_order);
+        
+        if (!order) {
+            return { error: "Pedido no encontrado" };
+        }
+
+        if (!order.id_rider || order.id_rider !== id_rider) {
+            return { error: "Este pedido no está asignado a este repartidor" };
+        }
+
+        if (order.rider_accepted !== null) {
+            return { error: "El repartidor ya respondió a este pedido" };
+        }
+
+        if (order.order_status === 'delivered' || order.order_status === 'cancelled') {
+            return { error: "No se puede responder a un pedido entregado o cancelado" };
+        }
+
+        if (accepted) {
+            await order.update({ 
+                rider_accepted: true,
+                order_status: 'confirmed'
+            });
+        } else {
+            // If rider rejects, remove assignment
+            await order.update({ 
+                id_rider: null,
+                rider_accepted: null
+            });
+        }
+        
+        const updatedOrder = await getById(id_order);
+        
+        return { 
+            data: updatedOrder.data,
+            message: accepted ? "Pedido aceptado por el repartidor" : "Pedido rechazado por el repartidor"
+        };
+    } catch (err) {
+        console.error("Error al procesar respuesta del repartidor =", err);
+        return { error: "Error al procesar la respuesta del repartidor" };
+    }
+}
+
 export { 
     getAll, 
     getById,
     getByUserId,
     getByShopId,
+    getByRiderId,
     create, 
     updateStatus,
-    cancel
+    cancel,
+    assignRider,
+    riderResponse
 }
 
 export default { 
@@ -590,7 +830,10 @@ export default {
     getById,
     getByUserId,
     getByShopId,
+    getByRiderId,
     create, 
     updateStatus,
-    cancel
+    cancel,
+    assignRider,
+    riderResponse
 }

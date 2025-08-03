@@ -26,8 +26,10 @@ const buys_model = sequelize.define("buys", {
         allowNull: false
     },
     price_provider: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false
+        //update: Changed from INTEGER.UNSIGNED to DECIMAL(10,2) to match database schema
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0.0
     }
 }, {
     timestamps: false,
