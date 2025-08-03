@@ -25,11 +25,12 @@ export const UIProvider = ({ children }) => {
   const [showTopBar, setShowTopBar] = useState(false); 
   const [showLandingPage, setShowLandingPage] = useState(true); 
   const [showShopManagement, setShowShopManagement] = useState(false);
+  //update: Ensure showProductManagement is here
   const [showProductManagement, setShowProductManagement] = useState(false);
   const [showShopWindow, setShowShopWindow] = useState(false);
-  //update: Added showShopStore state for displaying individual shop stores
   const [showShopStore, setShowShopStore] = useState(false);
   const [selectedShopForStore, setSelectedShopForStore] = useState(null);
+  const [showShopsListBySeller, setShowShopsListBySeller] = useState(false);
 
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
@@ -42,12 +43,9 @@ export const UIProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isAccepted, setIsAccepted] = useState(false);
-  // 🚀 UPDATE: Added isDeclined state
   const [isDeclined, setIsDeclined] = useState(false);
-  // 🚀 UPDATE: Added modalConfirmCallback for better handling of modal actions
   const [modalConfirmCallback, setModalConfirmCallback] = useState(null);
   
-  // 🔄 UPDATE: Added isCardMinimized state for UserInfoCard
   const [isCardMinimized, setIsCardMinimized] = useState(false);
 
   // Confirmation modal helpers
@@ -80,7 +78,6 @@ export const UIProvider = ({ children }) => {
     closeConfirmationModal();
   };
 
-  // 🚀 UPDATE: Added new method to open simple confirmation modal
   const openModal = (message, callback) => {
     setModalMessage(message);
     setModalConfirmCallback(() => callback);
@@ -96,7 +93,6 @@ export const UIProvider = ({ children }) => {
     setSuccess({});
   };
   
-  // ⚠️ FIXED: Added individual clear functions
   const clearError = () => {
     setError({});
   };
@@ -148,11 +144,12 @@ export const UIProvider = ({ children }) => {
         showTopBar, setShowTopBar,
         showLandingPage, setShowLandingPage,
         showShopManagement, setShowShopManagement,
+        //update: Include showProductManagement
+        showProductManagement, setShowProductManagement,
         showShopWindow, setShowShopWindow,
         showShopStore, setShowShopStore,
         selectedShopForStore, setSelectedShopForStore,
-        
-        showProductManagement, setShowProductManagement,
+        showShopsListBySeller, setShowShopsListBySeller,
         
         // Image modal handlers
         showImageModal, setShowImageModal,

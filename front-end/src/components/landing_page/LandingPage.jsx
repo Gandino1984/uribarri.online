@@ -2,6 +2,7 @@
 import { useRef } from 'react';
 import { animated } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
+import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../../public/css/LandingPage.module.css';
 import { 
   useLandingPageStates, 
@@ -11,11 +12,11 @@ import {
 import OButton from '../Obutton/Obutton.jsx';
 
 const LandingPage = () => {
-  //update: Add setShowShopWindow to the destructured values
-  const { setShowTopBar, setShowLandingPage, setShowShopWindow } = useUI();
+  //update: Add setShowShopsListBySeller and get currentUser
+  const { setShowTopBar, setShowLandingPage, setShowShopWindow, setShowShopsListBySeller } = useUI();
+  const { currentUser } = useAuth();
   const buttonRef = useRef(null);
   
-  // 🚀 UPDATE: Using the refactored utility hooks for cleaner component logic
   // Step 1: Manage component states
   const {
     isHovering,
@@ -42,8 +43,15 @@ const LandingPage = () => {
   );
   
   // Step 3: Handle navigation after animation completes
-  //update: Pass setShowShopWindow to the navigation effect
-  useNavigationEffect(setShowTopBar, setShowLandingPage, setShowShopWindow, animationPhase);
+  //update: Pass setShowShopsListBySeller and currentUser to navigation effect
+  useNavigationEffect(
+    setShowTopBar, 
+    setShowLandingPage, 
+    setShowShopWindow, 
+    setShowShopsListBySeller,
+    animationPhase, 
+    currentUser
+  );
 
   return (
     <animated.div 

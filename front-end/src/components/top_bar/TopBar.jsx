@@ -5,6 +5,7 @@ import { ArrowLeft, DoorClosed, Menu, X, LogIn } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
+import { useProduct } from '../../app_context/ProductContext.jsx';
 import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 import userInfoStyles from '../../../../public/css/UserInfoCard.module.css';
 import AnimatedO from './components/AnimatedO.jsx';
@@ -28,8 +29,16 @@ function TopBar() {
   const {
     showShopWindow,
     setShowShopWindow,
-    setShowLandingPage
+    setShowLandingPage,
+    showProductManagement,
+    showShopsListBySeller,
+    //update: Add showShopStore
+    showShopStore
   } = useUI();
+  
+  const {
+    isUpdatingProduct
+  } = useProduct();
   
   const {
     handleBack,
@@ -40,12 +49,23 @@ function TopBar() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
   
-  //update: Added function to handle login button click
   const handleLoginClick = () => {
     setShowShopWindow(false);
     setShowLandingPage(false);
     setIsLoggingIn(true);
     setMobileMenuOpen(false);
+  };
+  
+  //update: Function to determine if back button should be shown
+  const shouldShowBackButton = () => {
+    // Show back button in various scenarios
+    if (showShopStore) return true; // Add this line
+    if (showShopCreationForm) return true;
+    if (selectedShop && showProductManagement) return true;
+    if (showShopsListBySeller && currentUser?.type_user === 'seller') return true;
+    if (showShopWindow && !currentUser) return true;
+    if (isUpdatingProduct) return true;
+    return false;
   };
   
   useEffect(() => {
@@ -113,7 +133,7 @@ function TopBar() {
           )}
 
           <div className={styles.buttonsContainer}>
-            {(selectedShop || showShopCreationForm) && (
+            {shouldShowBackButton() && (
               <button
                 className={styles.backButton}
                 onClick={handleBack}
@@ -134,7 +154,6 @@ function TopBar() {
                   <DoorClosed size={16}/>
               </button>
             ) : (
-              //update: Show login button when user is not logged in and in ShopWindow
               showShopWindow && (
                 <button 
                   type="button" 
@@ -166,7 +185,7 @@ function TopBar() {
               className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}
               ref={mobileMenuRef}
             >
-              {(selectedShop || showShopCreationForm) && (
+              {shouldShowBackButton() && (
                 <button
                 className={styles.active}
                   onClick={() => {
@@ -191,7 +210,6 @@ function TopBar() {
                   <span className={styles.buttonText}>Cerrar sesión</span>
                 </button>
               ) : (
-                //update: Show login button in mobile menu when user is not logged in
                 showShopWindow && (
                   <button 
                     className={styles.loginButton}
