@@ -255,6 +255,147 @@
   accent-color: var(--saturated-blue);
 }
 
+/* Image upload styles */
+.imageUploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.imagePreviewContainer {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.imagePreview:hover {
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+  transform: scale(1.02);
+}
+
+.removeImageButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-red-mid);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.removeImageButton:hover {
+  background: var(--gradient-red-dark);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.imageUploadLabel {
+  display: block;
+  cursor: pointer;
+  width: 100%;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  min-height: 150px;
+}
+
+.imageUploadLabel:hover .uploadPlaceholder {
+  border-color: var(--saturated-blue);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.uploadIcon {
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
+}
+
+.imageUploadLabel:hover .uploadIcon {
+  color: var(--saturated-blue);
+}
+
+.uploadText {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+}
+
+.uploadHint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+.uploadProgress {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.uploadProgressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--saturated-blue);
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.uploadProgressText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Form actions */
 .formActions {
   display: flex;
   justify-content: space-between;
@@ -409,5 +550,19 @@
   
   .productPrice {
     font-size: 0.85rem;
+  }
+  
+  .imagePreview {
+    height: 150px;
+  }
+  
+  .uploadPlaceholder {
+    padding: 1.5rem;
+    min-height: 120px;
+  }
+  
+  .uploadIcon {
+    width: 32px;
+    height: 32px;
   }
 }

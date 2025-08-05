@@ -1,5 +1,12 @@
 import packageController from "./package_controller.js";
 import package_model from "../../models/package_model.js";
+import shop_model from "../../models/shop_model.js";
+import path from 'path';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function getAll(req, res) {
     try {
@@ -24,7 +31,8 @@ async function create(req, res) {
             id_product4,
             id_product5,
             name_package,
-            discount_package //update: Added discount_package to destructuring
+            discount_package,
+            image_package //update: Added image_package
         } = req.body;
 
         // Validate required fields
@@ -42,7 +50,8 @@ async function create(req, res) {
             id_product4,
             id_product5,
             name_package,
-            discount_package //update: Pass discount_package to controller
+            discount_package,
+            image_package //update: Pass image_package to controller
         });
 
         if (error) {
@@ -75,7 +84,8 @@ async function update(req, res) {
             id_product5,
             name_package,
             active_package,
-            discount_package //update: Added discount_package to destructuring
+            discount_package,
+            image_package //update: Added image_package
         } = req.body;
 
         if (!id_package) {
@@ -94,7 +104,8 @@ async function update(req, res) {
                 id_product5,
                 name_package,
                 active_package,
-                discount_package //update: Pass discount_package to controller
+                discount_package,
+                image_package //update: Pass image_package to controller
             }
         );   
 
@@ -284,6 +295,104 @@ async function removeById(req, res) {
     }
 }
 
+//update: New function to handle package image upload
+async function uploadPackageImage(req, res) {
+    try {
+        console.log('Package image upload endpoint called');
+        console.log('Request file:', req.file);
+        console.log('Request headers:', req.headers);
+        
+        if (!req.file) {
+            return res.status(400).json({
+                error: "No se ha proporcionado ninguna imagen"
+            });
+        }
+
+        const shopId = req.headers['x-shop-id'];
+        const packageId = req.headers['x-package-id'];
+        
+        if (!shopId) {
+            // Clean up uploaded file
+            try {
+                await fs.unlink(req.file.path);
+            } catch (err) {
+                console.error('Error cleaning up file:', err);
+            }
+            
+            return res.status(400).json({
+                error: "El ID del comercio es obligatorio"
+            });
+        }
+
+        // Get shop information
+        const shop = await shop_model.findByPk(shopId);
+        if (!shop) {
+            // Clean up uploaded file
+            try {
+                await fs.unlink(req.file.path);
+            } catch (err) {
+                console.error('Error cleaning up file:', err);
+            }
+            
+            return res.status(404).json({
+                error: "Comercio no encontrado"
+            });
+        }
+
+        // Build relative path to the image
+        const relativePath = `images/uploads/shops/${shop.name_shop}/package_images/${req.file.filename}`;
+        
+        console.log('Package image uploaded successfully:', {
+            filename: req.file.filename,
+            relativePath: relativePath,
+            packageId: packageId
+        });
+
+        // If packageId is provided, update the package with the image path
+        if (packageId) {
+            const updateResult = await packageController.updatePackageImage(packageId, relativePath);
+            
+            if (updateResult.error) {
+                // Clean up uploaded file if update failed
+                try {
+                    await fs.unlink(req.file.path);
+                } catch (err) {
+                    console.error('Error cleaning up file:', err);
+                }
+                
+                return res.status(400).json({
+                    error: updateResult.error
+                });
+            }
+        }
+
+        res.json({
+            error: null,
+            data: {
+                image_package: relativePath,
+                id_package: packageId || null
+            },
+            success: "Imagen del paquete subida con éxito"
+        });
+    } catch (err) {
+        console.error("-> package_api_controller.js - uploadPackageImage() - Error =", err);
+        
+        // Clean up uploaded file on error
+        if (req.file && req.file.path) {
+            try {
+                await fs.unlink(req.file.path);
+            } catch (cleanupError) {
+                console.error('Error cleaning up file:', cleanupError);
+            }
+        }
+        
+        res.status(500).json({
+            error: "Error al subir la imagen del paquete",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -293,7 +402,8 @@ export {
     getByShopId,
     getActiveByShopId,
     getInactiveByShopId,
-    toggleActiveStatus
+    toggleActiveStatus,
+    uploadPackageImage
 }
 
 export default {
@@ -305,5 +415,6 @@ export default {
     getByShopId,
     getActiveByShopId,
     getInactiveByShopId,
-    toggleActiveStatus
+    toggleActiveStatus,
+    uploadPackageImage
 }

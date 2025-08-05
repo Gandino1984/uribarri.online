@@ -27,6 +27,8 @@ export const PackageProvider = ({ children }) => {
     id_product4: null,
     id_product5: null,
     name_package: '',
+    discount_package: 0,
+    image_package: null,
     active_package: true
   });
   

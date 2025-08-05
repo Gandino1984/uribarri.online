@@ -7,7 +7,9 @@ import { useUI } from '../../../../../../../../app_context/UIContext.jsx';
 import PackageCreationFormUtils from './PackageCreationFormUtils.jsx';
 import { useTransition, animated } from '@react-spring/web';
 import { formAnimation } from '../../../../../../../../utils/animation/transitions.js';
-import { ArrowLeft, PackagePlus, X, Save, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, PackagePlus, X, Save, AlertTriangle, Upload, Image as ImageIcon } from 'lucide-react';
+import { uploadPackageImage, formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
+import { validateImageFile } from '../../../../../../../../utils/image/imageValidation.js';
 
 import styles from '../../../../../../../../../../public/css/PackageCreationForm.module.css';
 
@@ -40,7 +42,8 @@ const PackageCreationForm = () => {
     setSuccess,
     setShowSuccessCard,
     setSingleSuccess,
-    setSingleError
+    setSingleError,
+    openImageModal
   } = useUI();
 
   // Local state
@@ -51,6 +54,12 @@ const PackageCreationForm = () => {
   //update: State for calculated prices
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
+  
+  //update: Image upload states
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   
   //update: Check if we're in edit mode
   const isEditMode = selectedPackage !== null;
@@ -88,8 +97,15 @@ const PackageCreationForm = () => {
             id_product5: selectedPackage.id_product5,
             name_package: selectedPackage.name_package || '',
             discount_package: selectedPackage.discount_package || 0,
-            active_package: selectedPackage.active_package
+            active_package: selectedPackage.active_package,
+            image_package: selectedPackage.image_package //update: Include existing image
           });
+          
+          //update: Set image preview if package has an image
+          if (selectedPackage.image_package) {
+            const imageUrl = formatImageUrl(selectedPackage.image_package);
+            setImagePreview(imageUrl);
+          }
         }
         
         // Get array of selected product IDs
@@ -161,6 +177,46 @@ const PackageCreationForm = () => {
     updateProductDetails();
   }, [newPackageData, getProductDetails]);
   
+  //update: Handle image file selection
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    try {
+      // Validate the image
+      await validateImageFile(file);
+      
+      // Set the file and create preview
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Clear any previous errors
+      if (formErrors.image_package) {
+        setFormErrors(prev => ({
+          ...prev,
+          image_package: ''
+        }));
+      }
+    } catch (error) {
+      console.error('Image validation error:', error);
+      setFormErrors(prev => ({
+        ...prev,
+        image_package: error.message
+      }));
+    }
+  };
+  
+  //update: Remove selected image
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setUploadProgress(0);
+  };
+  
   // Handle back button click
   const handleBackClick = async () => {
     // Reset form and navigate back
@@ -171,6 +227,8 @@ const PackageCreationForm = () => {
         resetPackageData();
         setSelectedProducts(new Set());
         setSelectedPackage(null); //update: Clear selected package
+        setImageFile(null);
+        setImagePreview(null);
       }, 500);
     } catch (error) {
       console.error('Error navigating back from package form:', error);
@@ -220,17 +278,45 @@ const PackageCreationForm = () => {
       
       // Create or update package based on mode
       let result;
+      let packageId;
+      
       if (isEditMode) {
         //update: Include package ID for update
         result = await handleUpdatePackage({
           ...newPackageData,
           id_package: selectedPackage.id_package
         });
+        packageId = selectedPackage.id_package;
       } else {
         result = await handleCreatePackage(newPackageData);
+        packageId = result.data?.id_package;
       }
       
       if (result.success) {
+        //update: Upload image if one was selected
+        if (imageFile && packageId) {
+          try {
+            setIsUploadingImage(true);
+            const imagePath = await uploadPackageImage({
+              file: imageFile,
+              shopId: selectedShop.id_shop,
+              packageId: packageId,
+              onProgress: (progress) => setUploadProgress(progress),
+              onError: (error) => {
+                console.error('Image upload error:', error);
+                setSingleError('productError', 'Error al subir la imagen del paquete');
+              }
+            });
+            
+            console.log('Package image uploaded successfully:', imagePath);
+          } catch (imageError) {
+            console.error('Failed to upload package image:', imageError);
+            // Don't fail the entire operation if just the image upload fails
+          } finally {
+            setIsUploadingImage(false);
+          }
+        }
+        
         // Show success message
         setSingleSuccess('productSuccess', isEditMode ? "Paquete actualizado exitosamente" : "Paquete creado exitosamente");
         
@@ -244,6 +330,8 @@ const PackageCreationForm = () => {
           resetPackageData();
           setSelectedProducts(new Set());
           setSelectedPackage(null);
+          setImageFile(null);
+          setImagePreview(null);
         }, 1500);
       } else {
         // Show error message
@@ -254,6 +342,7 @@ const PackageCreationForm = () => {
       setSingleError('productError', isEditMode ? "Error al actualizar el paquete" : "Error al crear el paquete");
     } finally {
       setIsSubmitting(false);
+      setIsUploadingImage(false);
     }
   };
   
@@ -382,13 +471,78 @@ const PackageCreationForm = () => {
             </div>
           </div>
           
+          {/* Image upload section */}
+          <div className={styles.formSection}>
+            <h3 className={styles.sectionTitle}>Imagen del Paquete</h3>
+            
+            <div className={styles.imageUploadContainer}>
+              {imagePreview ? (
+                <div className={styles.imagePreviewContainer}>
+                  <img 
+                    src={imagePreview} 
+                    alt="Vista previa del paquete" 
+                    className={styles.imagePreview}
+                    onClick={() => openImageModal(imagePreview)}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className={styles.removeImageButton}
+                    title="Eliminar imagen"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              ) : (
+                <label htmlFor="packageImage" className={styles.imageUploadLabel}>
+                  <input
+                    type="file"
+                    id="packageImage"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className={styles.hiddenFileInput}
+                    disabled={isUploadingImage}
+                  />
+                  <div className={styles.uploadPlaceholder}>
+                    <Upload size={40} className={styles.uploadIcon} />
+                    <span className={styles.uploadText}>
+                      Haga clic para seleccionar una imagen
+                    </span>
+                    <span className={styles.uploadHint}>
+                      JPEG, PNG, WebP (máx. 10MB)
+                    </span>
+                  </div>
+                </label>
+              )}
+              
+              {formErrors.image_package && (
+                <span className={styles.errorText}>
+                  <AlertTriangle size={14} />
+                  {formErrors.image_package}
+                </span>
+              )}
+              
+              {isUploadingImage && (
+                <div className={styles.uploadProgress}>
+                  <div 
+                    className={styles.uploadProgressBar} 
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                  <span className={styles.uploadProgressText}>
+                    Subiendo imagen... {uploadProgress}%
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+          
           {/* Form actions */}
           <div className={styles.formActions}>
             <button
               type="button"
               onClick={handleBackClick}
               className={`${styles.button} ${styles.cancelButton}`}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploadingImage}
             >
               <X size={18} />
               Cancelar
@@ -397,7 +551,7 @@ const PackageCreationForm = () => {
             <button
               type="submit"
               className={`${styles.button} ${styles.submitButton}`}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploadingImage}
             >
               <Save size={18} />
               {isSubmitting ? (isEditMode ? 'Actualizando...' : 'Creando...') : (isEditMode ? 'Actualizar Paquete' : 'Crear Paquete')}

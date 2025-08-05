@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ShoppingCart, Package, Clock, MapPin, Phone, Star } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Package, Clock, MapPin, Phone, Star, ShoppingBag, CheckCircle, XCircle, AlertCircle, Truck } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext';
 import { useUI } from '../../app_context/UIContext';
 import { useOrder } from '../../app_context/OrderContext';
@@ -32,7 +32,9 @@ const ShopStore = () => {
     setDeliveryAddress,
     orderNotes,
     setOrderNotes,
-    clearCart
+    clearCart,
+    fetchUserOrders,
+    userOrders
   } = useOrder();
   
   const [products, setProducts] = useState([]);
@@ -42,18 +44,24 @@ const ShopStore = () => {
   const [showCart, setShowCart] = useState(false);
   const [activeTab, setActiveTab] = useState('products');
   const [processingOrder, setProcessingOrder] = useState(false);
+  //update: Add state for shop-specific orders
+  const [shopOrders, setShopOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   
   useEffect(() => {
     if (selectedShopForStore?.id_shop) {
       fetchProducts();
       fetchPackages();
+      //update: Fetch orders when shop is selected and user is logged in
+      if (currentUser && currentUser.type_user === 'user') {
+        fetchShopUserOrders();
+      }
     }
-  }, [selectedShopForStore]);
+  }, [selectedShopForStore, currentUser]);
   
   const fetchProducts = async () => {
     try {
       setLoadingProducts(true);
-      //update: Using GET request with the shop ID in the URL path
       const response = await axiosInstance.get(`/product/active-by-shop-id/${selectedShopForStore.id_shop}`);
       
       if (response.data && !response.data.error) {
@@ -70,7 +78,6 @@ const ShopStore = () => {
   const fetchPackages = async () => {
     try {
       setLoadingPackages(true);
-      //update: Already using the correct GET endpoint
       const response = await axiosInstance.get(`/package/active-by-shop-id/${selectedShopForStore.id_shop}`);
       
       if (response.data && !response.data.error) {
@@ -83,6 +90,27 @@ const ShopStore = () => {
       setLoadingPackages(false);
     }
   };
+  
+  //update: Add function to fetch user orders for this specific shop
+  const fetchShopUserOrders = async () => {
+    try {
+      setLoadingOrders(true);
+      await fetchUserOrders();
+    } catch (error) {
+      console.error('Error fetching user orders:', error);
+      setError({ orderError: 'Error al cargar los pedidos' });
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+  
+  //update: Filter orders for current shop
+  useEffect(() => {
+    if (userOrders && selectedShopForStore) {
+      const filteredOrders = userOrders.filter(order => order.id_shop === selectedShopForStore.id_shop);
+      setShopOrders(filteredOrders);
+    }
+  }, [userOrders, selectedShopForStore]);
   
   const handleBack = () => {
     setShowShopStore(false);
@@ -131,7 +159,10 @@ const ShopStore = () => {
     
     if (order) {
       setShowCart(false);
-      // Optionally redirect to order tracking or show success message
+      //update: Refresh orders after creating new one
+      if (currentUser.type_user === 'user') {
+        fetchShopUserOrders();
+      }
     }
     
     setProcessingOrder(false);
@@ -176,6 +207,38 @@ const ShopStore = () => {
     }
     
     return `${formatTime(shop.morning_open)} - ${formatTime(shop.morning_close)} / ${formatTime(shop.afternoon_open)} - ${formatTime(shop.afternoon_close)}`;
+  };
+  
+  //update: Add function to get order status icon and color
+  const getOrderStatusDisplay = (status) => {
+    switch (status) {
+      case 'pending':
+        return { icon: <Clock size={16} />, text: 'Pendiente', color: '#FFA500' };
+      case 'confirmed':
+        return { icon: <CheckCircle size={16} />, text: 'Confirmado', color: '#4CAF50' };
+      case 'preparing':
+        return { icon: <AlertCircle size={16} />, text: 'Preparando', color: '#2196F3' };
+      case 'ready':
+        return { icon: <ShoppingBag size={16} />, text: 'Listo', color: '#00BCD4' };
+      case 'delivered':
+        return { icon: <Truck size={16} />, text: 'Entregado', color: '#4CAF50' };
+      case 'cancelled':
+        return { icon: <XCircle size={16} />, text: 'Cancelado', color: '#F44336' };
+      default:
+        return { icon: <Clock size={16} />, text: status, color: '#757575' };
+    }
+  };
+  
+  //update: Add function to format date
+  const formatOrderDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
   
   if (!selectedShopForStore) {
@@ -245,6 +308,15 @@ const ShopStore = () => {
         >
           Paquetes ({packages.length})
         </button>
+        {/*update: Add orders tab for regular users only*/}
+        {currentUser && currentUser.type_user === 'user' && (
+          <button 
+            className={`${styles.tab} ${activeTab === 'orders' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            Mis Pedidos ({shopOrders.length})
+          </button>
+        )}
       </div>
       
       <div className={styles.content}>
@@ -366,11 +438,11 @@ const ShopStore = () => {
                     <div className={styles.packagePricing}>
                       {pkg.discounted_price ? (
                         <>
-                          <span className={styles.originalPrice}>€{pkg.total_price?.toFixed(2)}</span>
-                          <span className={styles.packagePrice}>€{pkg.discounted_price?.toFixed(2)}</span>
+                          <span className={styles.originalPrice}>€{(pkg.total_price || 0).toFixed(2)}</span>
+                          <span className={styles.packagePrice}>€{(pkg.discounted_price || 0).toFixed(2)}</span>
                         </>
                       ) : (
-                        <span className={styles.packagePrice}>€{pkg.total_price?.toFixed(2) || '0.00'}</span>
+                        <span className={styles.packagePrice}>€{(pkg.total_price || 0).toFixed(2)}</span>
                       )}
                       {pkg.discount_package > 0 && (
                         <span className={styles.packageDiscount}>
@@ -418,6 +490,93 @@ const ShopStore = () => {
             )}
           </div>
         )}
+        
+        {/*update: Add orders tab content*/}
+        {activeTab === 'orders' && currentUser && currentUser.type_user === 'user' && (
+          <div className={styles.ordersList}>
+            {loadingOrders ? (
+              <div className={styles.loading}>Cargando pedidos...</div>
+            ) : shopOrders.length === 0 ? (
+              <div className={styles.emptyState}>No has realizado pedidos en este comercio</div>
+            ) : (
+              shopOrders.map(order => {
+                const statusDisplay = getOrderStatusDisplay(order.order_status);
+                return (
+                  <div key={order.id_order} className={styles.orderCard}>
+                    <div className={styles.orderHeader}>
+                      <div className={styles.orderInfo}>
+                        <h4 className={styles.orderId}>Pedido #{order.id_order}</h4>
+                        <span className={styles.orderDate}>{formatOrderDate(order.created_at)}</span>
+                      </div>
+                      <div className={styles.orderStatus} style={{ color: statusDisplay.color }}>
+                        {statusDisplay.icon}
+                        <span>{statusDisplay.text}</span>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.orderContent}>
+                      {order.order_products && order.order_products.length > 0 && (
+                        <div className={styles.orderSection}>
+                          <h5 className={styles.sectionTitle}>Productos:</h5>
+                          {order.order_products.map((item, index) => (
+                            <div key={index} className={styles.orderItem}>
+                              <span>{item.product?.name_product || 'Producto'}</span>
+                              <span className={styles.itemQuantity}>x{item.quantity}</span>
+                              <span className={styles.itemPrice}>€{(parseFloat(item.total_price) || 0).toFixed(2)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {order.order_packages && order.order_packages.length > 0 && (
+                        <div className={styles.orderSection}>
+                          <h5 className={styles.sectionTitle}>Paquetes:</h5>
+                          {order.order_packages.map((item, index) => (
+                            <div key={index} className={styles.orderItem}>
+                              <span>{item.package?.name_package || 'Paquete'}</span>
+                              <span className={styles.itemQuantity}>x{item.quantity}</span>
+                              <span className={styles.itemPrice}>€{(item.total_price || 0).toFixed(2)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className={styles.orderFooter}>
+                      <div className={styles.deliveryInfo}>
+                        <span className={styles.deliveryType}>
+                          {order.delivery_type === 'delivery' ? (
+                            <>
+                              <Truck size={16} /> Entrega a domicilio
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBag size={16} /> Recoger en tienda
+                            </>
+                          )}
+                        </span>
+                        {order.delivery_type === 'delivery' && order.delivery_address && (
+                          <span className={styles.deliveryAddress}>{order.delivery_address}</span>
+                        )}
+                      </div>
+                      <div className={styles.orderTotal}>
+                        <span>Total:</span>
+                        <span className={styles.totalPrice}>€{(parseFloat(order.total_price) || 0).toFixed(2)}</span>
+                      </div>
+                    </div>
+                    
+                    {order.order_notes && (
+                      <div className={styles.orderNotes}>
+                        <p className={styles.notesLabel}>Notas:</p>
+                        <p className={styles.notesText}>{order.order_notes}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
       
       {showCart && (
@@ -452,7 +611,7 @@ const ShopStore = () => {
                 <div key={item.id_package} className={styles.cartItem}>
                   <div className={styles.cartItemInfo}>
                     <h4>{item.package.name_package}</h4>
-                    <p>€{item.package.discounted_price?.toFixed(2) || item.package.total_price?.toFixed(2)} x {item.quantity}</p>
+                    <p>€{(item.package.discounted_price || item.package.total_price || 0).toFixed(2)} x {item.quantity}</p>
                   </div>
                   <div className={styles.cartItemActions}>
                     <button 
