@@ -7,6 +7,7 @@ const order_model = sequelize.define("order", {
         primaryKey: true,
         autoIncrement: true
     },
+    // buyer
     id_user: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
@@ -15,12 +16,10 @@ const order_model = sequelize.define("order", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
     },
-    //update: Add id_rider field with UNSIGNED
     id_rider: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
     },
-    //update: Add rider_accepted field
     rider_accepted: {
         type: DataTypes.BOOLEAN,
         allowNull: true,

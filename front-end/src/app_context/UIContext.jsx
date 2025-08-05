@@ -31,6 +31,8 @@ export const UIProvider = ({ children }) => {
   const [showShopStore, setShowShopStore] = useState(false);
   const [selectedShopForStore, setSelectedShopForStore] = useState(null);
   const [showShopsListBySeller, setShowShopsListBySeller] = useState(false);
+  //update: Add showRiderManagement state
+  const [showRiderManagement, setShowRiderManagement] = useState(false);
 
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
@@ -150,6 +152,8 @@ export const UIProvider = ({ children }) => {
         showShopStore, setShowShopStore,
         selectedShopForStore, setSelectedShopForStore,
         showShopsListBySeller, setShowShopsListBySeller,
+        //update: Include showRiderManagement
+        showRiderManagement, setShowRiderManagement,
         
         // Image modal handlers
         showImageModal, setShowImageModal,

@@ -5,6 +5,9 @@ const router = Router();
 
 router.get("/", orderApiController.getAll);
 
+//update: Add route for available orders for riders
+router.get("/available-for-riders", orderApiController.getAvailableForRiders);
+
 router.post("/by-id", orderApiController.getById);
 
 router.post("/by-user-id", orderApiController.getByUserId);

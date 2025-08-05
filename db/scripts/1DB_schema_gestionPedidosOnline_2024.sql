@@ -37,7 +37,9 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `contributor_user` TINYINT(1) NOT NULL DEFAULT 0,
   `age_user` INT NOT NULL DEFAULT 18,
   PRIMARY KEY (`id_user`),
-  UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE
+  UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE,
+  -- update: Add index for type_user to improve performance when filtering riders
+  INDEX `idx_type_user` (`type_user` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -247,6 +249,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
   `id_user` INT UNSIGNED NOT NULL,
   `id_shop` INT UNSIGNED NOT NULL,
   `id_rider` INT UNSIGNED NULL,
+  -- update: rider_accepted field to track rider request status
+  -- NULL = no request, FALSE = request declined, TRUE = request accepted
   `rider_accepted` TINYINT(1) NULL DEFAULT NULL,
   `id_order_products` JSON DEFAULT NULL,
   `id_order_packages` JSON DEFAULT NULL,
@@ -257,7 +261,14 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
   `order_notes` TEXT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_order`)
+  PRIMARY KEY (`id_order`),
+  -- update: Add indexes for better query performance
+  INDEX `idx_order_status` (`order_status` ASC),
+  INDEX `idx_id_shop` (`id_shop` ASC),
+  INDEX `idx_id_user` (`id_user` ASC),
+  INDEX `idx_id_rider` (`id_rider` ASC),
+  INDEX `idx_rider_accepted` (`rider_accepted` ASC),
+  INDEX `idx_created_at` (`created_at` DESC)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -284,6 +295,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
   `price_provider` DECIMAL(10,2) NOT NULL DEFAULT 0.0,
   PRIMARY KEY (`id_buys`)
 ) ENGINE = InnoDB;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

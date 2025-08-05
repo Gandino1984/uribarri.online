@@ -95,6 +95,20 @@ async function getByRiderId(req, res) {
     }
 }
 
+//update: Add getAvailableForRiders function
+async function getAvailableForRiders(req, res) {
+    try {
+        const { error, data } = await orderController.getAvailableForRiders();
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> order_api_controller.js - getAvailableForRiders() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener pedidos disponibles", 
+            data: null
+        });
+    }
+}
+
 async function create(req, res) {
     try {
         const { 
@@ -288,6 +302,7 @@ export {
     getByUserId,
     getByShopId,
     getByRiderId,
+    getAvailableForRiders,
     create,
     updateStatus,
     cancel,
@@ -301,6 +316,7 @@ export default {
     getByUserId,
     getByShopId,
     getByRiderId,
+    getAvailableForRiders,
     create,
     updateStatus,
     cancel,

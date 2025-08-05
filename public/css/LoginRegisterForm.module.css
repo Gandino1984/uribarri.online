@@ -5,9 +5,9 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  background-color: var(--light-gray);
-  /* background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end)); */
-  background-size: 200% 200%;
+  /* background-color: var(--light-gray); */
+    
+  /* background-size: 200% 200%; */
   position: relative;
   z-index: 100;
 }
@@ -31,9 +31,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  /* background-image:  */
+    /* linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), */
+    /* linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); */
   background-size: 20px 20px;
   pointer-events: none;
   z-index: 1;
@@ -63,12 +63,13 @@
 }
 
 .formTitle {
+  user-select: none;
   font-size: 2rem;
   font-weight: bold;
-  color: black;
+  color: rgb(11, 11, 11);
   text-align: center;
   margin-bottom: 1.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
   letter-spacing: 0.5px;
 }
 

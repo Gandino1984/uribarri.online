@@ -17,7 +17,7 @@ const FormContent = React.memo(() => {
   return (
     <div className={styles.formContentWrapper}>
       <h1 className={styles.formTitle}>
-        {isLoggingIn ? 'Inicia sesión, por favor.' : 'Crea tu usuari@ aquí.'}
+        {isLoggingIn ? 'Inicia sesión' : 'Crea tu usuari@ aquí.'}
       </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>

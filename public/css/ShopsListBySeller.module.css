@@ -4,12 +4,10 @@
   width: 100%;
   height: 100%;
   padding: 1rem;
-  /* 🛡️ UPDATE: Added padding-top to account for the TopBar height */
   padding-top: calc(var(--topbar-height) + 1rem);
   position: relative;
 }
 
-/* 🛡️ UPDATE: Added class for when the container has the ShopCard expanded */
 .expandedContainer {
   min-height: 100vh;
 }
@@ -42,7 +40,6 @@
   gap: 1rem;
 }
 
-/* update: Added flex container for buttons */
 .header button {
   margin: 0 0.5rem;
 }
@@ -61,7 +58,6 @@
   flex-direction: column;
   width: 100%;
   position: relative;
-  /* 🛡️ UPDATE: Ensure we can accommodate expanded content */
   min-height: 300px;
 }
 
@@ -74,11 +70,9 @@
   margin-bottom: 1.5rem;
 }
 
-/* 🏪 UPDATE: Added wrapper for ShopCard to handle positioning */
 .shopCardWrapper {
   position: relative;
   width: 100%;
-  /* 🛡️ UPDATE: Added proper spacing to prevent pushing content up */
   margin-top: 1rem;
   padding-bottom: 2rem;
 }
@@ -105,7 +99,6 @@
   /* margin: 0; */
 }
 
-/* Table Styles */
 .table {
   width: 100%;
   border-collapse: collapse;
