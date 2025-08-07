@@ -35,7 +35,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding-top: 3rem;
+  /* padding-top: 3rem; */
   width: 100%;
   gap: 1rem;
 }
@@ -73,6 +73,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
   /* background-color: white; */
   gap: .5rem;
 }
@@ -84,6 +85,8 @@
   align-items: center; */
   text-align: center;
   width: 100%;
+    padding-top: .5rem;
+  padding-bottom: .5rem;
   /* padding: 1rem; */
   background: linear-gradient( to right,  rgba(255, 255, 255, 0) ,  var(--light-gradient-purple-start) , var(--gradient-red-mid) , rgba(255, 255, 255, 0) 100%);
   /* border-radius: 8px; */
@@ -208,7 +211,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1rem 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -217,7 +220,8 @@
 .shopMeta {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  /* justify-content: center; */
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 

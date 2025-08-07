@@ -300,7 +300,7 @@ const ShopsListBySeller = () => {
               {selectedShop && (
                 <button 
                   onClick={() => setShowOrdersList(true)}
-                  className={`${styles.active} ${styles.ordersButton}`}
+                  className={styles.active}
                   title="Ver pedidos del comercio"
                 >
                   <ShoppingBag size={screenWidth > 480 ? 16 : 20} />
