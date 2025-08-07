@@ -1,5 +1,3 @@
-/* ShopsListBySeller.module.css - Updated with card-based design similar to ShopPackagesList */
-
 .container {
   display: flex;
   flex-direction: column;
@@ -10,6 +8,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   padding: 1rem;
+  background-color: var(--light-gray);
 }
 
 .content {
@@ -19,6 +18,7 @@
   max-width: 1200px;
   margin: 0 auto;
   gap: 1.5rem;
+  /* background-color: white; */
 }
 
 .headerContainer {
@@ -41,10 +41,10 @@
 }
 
 .title {
-  text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: white;
+  /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 1); */
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: rgb(27, 27, 27);
   margin-bottom: 1rem;
   text-align: center;
 }
@@ -72,6 +72,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  /* background-color: white; */
   gap: .5rem;
 }
 
@@ -82,7 +83,7 @@
   align-items: center;
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end));
+  background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--gradient-red-mid));
   border-radius: 8px;
   margin-bottom: .5rem;
   margin: 0 1rem;
@@ -106,11 +107,12 @@
   border-top-right-radius: 0px;
   gap: 1rem;
   padding: 0 1rem 1rem 1rem;
+  /* background-color: white; */
 }
 
 /* Shop Card Styles (similar to package cards) */
 .shopCard {
-  background: white;
+  background-color:  white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -130,20 +132,23 @@
 .shopCardHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+  justify-content: center;
+  padding: 2rem;
   gap: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
+  /* background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1)); */
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  background-color: white;
   cursor: pointer;
 }
 
 .shopMainInfo {
+  padding-left: 1rem;
   display: flex;
   align-items: center;
+  justify-content: left;
   gap: 1rem;
   flex: 1;
   min-width: 0;
@@ -152,8 +157,8 @@
 /* Shop Image Container */
 .shopImageContainer {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
@@ -289,16 +294,16 @@
   border-color: var(--gradient-red-mid);
 }
 
-/* Active/Create Buttons */
 .active {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--saturated-blue), var(--dark-gradient-purple-start));
+  background-color: var(--saturated-blue);
+  /* background: linear-gradient(135deg, var(--saturated-blue), var(--light-gradient-purple-start)); */
   color: white;
   border: none;
   transition: all 0.3s ease;
@@ -306,7 +311,10 @@
 }
 
 .active:hover {
-  background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
+  outline: 2px solid var(--saturated-blue);
+  color: var(--saturated-blue);
+  background-color: white;
+  /* background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end)); */
   box-shadow: 0 0 15px var(--saturated-blue-transparent);
   transform: translateY(-2px);
 }
@@ -626,9 +634,9 @@
     padding-top: 0.5rem;
   }
   
-  .active span {
+  /* .active span {
     display: none;
-  }
+  } */
   
   .active,
   .ordersButton {

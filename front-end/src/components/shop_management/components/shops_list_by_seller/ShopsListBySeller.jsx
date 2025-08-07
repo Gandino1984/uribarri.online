@@ -280,13 +280,13 @@ const ShopsListBySeller = () => {
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
             <h1 className={styles.title}>
-              Mis comercios
+              Maneja tus comercios
             </h1>
             
             <div className={styles.headerButtons}>
               <button 
                 onClick={() => handleAddShop(shopLimit)}
-                className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : ''}`}
+                className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : 'Crear'}`}
                 title="Crear nuevo comercio"
                 disabled={shopCount >= shopLimit}
               >

@@ -171,7 +171,7 @@ function TopBar() {
           {/* Show burger menu for both logged in users and non-logged in users in ShopWindow */}
           {(currentUser || (!currentUser && showShopWindow)) && (
             <button 
-              className={styles.burgerButton} 
+              // className={styles.burgerButton} 
               onClick={toggleMobileMenu}
               aria-label="Menu"
               ref={burgerButtonRef}
