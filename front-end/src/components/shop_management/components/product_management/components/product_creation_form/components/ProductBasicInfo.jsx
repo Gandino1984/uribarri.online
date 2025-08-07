@@ -7,18 +7,15 @@ import { useShop } from '../../../../../../../app_context/ShopContext.jsx';
 const ProductBasicInfo = ({ 
   productData, 
   onProductDataChange, 
-  productTypesAndSubtypes,
-  filteredProductTypes,
   setNewProductData,
   filterOptions
 }) => {
-  //update: Get category-related data from context
   const { 
     categories, 
     subcategories, 
     fetchSubcategoriesByCategory,
-    getAvailableProductTypesForShop,
     loadingCategories,
+    loadingSubcategories,
     categoriesError
   } = useProduct();
   
@@ -30,43 +27,29 @@ const ProductBasicInfo = ({
 
   //update: Debug logs
   console.log('ProductBasicInfo - categories:', categories);
-  console.log('ProductBasicInfo - loadingCategories:', loadingCategories);
-  console.log('ProductBasicInfo - categoriesError:', categoriesError);
-  console.log('ProductBasicInfo - filteredProductTypes:', filteredProductTypes);
-  console.log('ProductBasicInfo - selectedShop:', selectedShop);
+  console.log('ProductBasicInfo - subcategories:', subcategories);
+  console.log('ProductBasicInfo - productData.id_category:', productData.id_category);
+  console.log('ProductBasicInfo - loadingSubcategories:', loadingSubcategories);
 
-  //update: Modified filtering logic
-  // If we're updating a product, show all categories
-  // If creating new product and shop has restrictions, apply filtering
-  // If no categories match the filter, show all categories with a warning
-  let availableCategories = categories;
-  let showFilterWarning = false;
-  
-  if (!selectedProductToUpdate && filteredProductTypes.length > 0) {
-    const filtered = categories.filter(cat => filteredProductTypes.includes(cat.name_category));
-    
-    if (filtered.length > 0) {
-      availableCategories = filtered;
-    } else {
-      // No categories match the shop type - show all with warning
-      showFilterWarning = true;
-      console.warn('No categories match shop type restrictions. Showing all categories.');
-    }
-  }
-  
-  console.log('ProductBasicInfo - availableCategories:', availableCategories);
-
-  //update: Fetch subcategories when category changes
+  //update: Fetch subcategories when category changes or component mounts with a category
   useEffect(() => {
+    console.log('Category effect triggered, id_category:', productData.id_category);
     if (productData.id_category) {
+      console.log('Fetching subcategories for category:', productData.id_category);
       fetchSubcategoriesByCategory(productData.id_category);
+    } else {
+      // Clear subcategories if no category is selected
+      console.log('No category selected, subcategories should be cleared');
     }
   }, [productData.id_category, fetchSubcategoriesByCategory]);
 
   //update: Handle category change
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
+    console.log('Category selected:', categoryId);
+    
     const selectedCategory = categories.find(cat => cat.id_category === parseInt(categoryId));
+    console.log('Found category:', selectedCategory);
     
     setNewProductData(prev => ({
       ...prev,
@@ -81,6 +64,8 @@ const ProductBasicInfo = ({
   const handleSubcategoryChange = (e) => {
     const subcategoryId = e.target.value;
     const selectedSubcategory = subcategories.find(sub => sub.id_subcategory === parseInt(subcategoryId));
+    
+    console.log('Subcategory selected:', subcategoryId, selectedSubcategory);
     
     onProductDataChange({
       target: {
@@ -112,6 +97,11 @@ const ProductBasicInfo = ({
     );
   }
 
+  // Since categories are already filtered in ProductContext based on shop type,
+  // we can use them directly
+  console.log('Available categories for rendering:', categories);
+  console.log('Available subcategories for rendering:', subcategories);
+
   return (
     <section className={styles.basicInfoSection}>
       <h2 className={styles.sectionTitle}>Información básica</h2>
@@ -119,30 +109,22 @@ const ProductBasicInfo = ({
         Proporciona los detalles principales de tu producto
       </p>
       
-      {/* Show warning if no categories match shop type */}
-      {showFilterWarning && (
-        <div className={styles.warningMessage}>
-          <p>⚠️ No hay categorías que coincidan con el tipo de tienda "{selectedShop?.type_shop}". 
-          Mostrando todas las categorías disponibles.</p>
-        </div>
-      )}
-      
       {/* Category Dropdown - From database */}
       <div className={styles.formField}>
         <select
           id="id_category"
           name="id_category"
-          value={productData.id_category}
+          value={productData.id_category || ''}
           onChange={handleCategoryChange}
           required
-          disabled={loadingCategories || availableCategories.length === 0}
+          disabled={loadingCategories || categories.length === 0}
         >
           <option value="" disabled>
             {loadingCategories ? 'Cargando categorías...' : 
-             availableCategories.length === 0 ? 'No hay categorías disponibles' : 
+             categories.length === 0 ? 'No hay categorías disponibles' : 
              'Categoría:'}
           </option>
-          {availableCategories.map(category => (
+          {categories.map(category => (
             <option key={category.id_category} value={category.id_category}>
               {category.name_category}
             </option>
@@ -151,16 +133,21 @@ const ProductBasicInfo = ({
       </div>
 
       {/* Subcategory Dropdown - Only show if a category is selected */}
-      {productData.id_category && subcategories.length > 0 && (
+      {productData.id_category && (
         <div className={styles.formField}>
           <select
             id="id_subcategory"
             name="id_subcategory"
-            value={productData.id_subcategory}
+            value={productData.id_subcategory || ''}
             onChange={handleSubcategoryChange}
             required
+            disabled={loadingSubcategories}
           >
-            <option value="" disabled>Subcategoría:</option>
+            <option value="" disabled>
+              {loadingSubcategories ? 'Cargando subcategorías...' : 
+               subcategories.length === 0 ? 'No hay subcategorías disponibles' : 
+               'Subcategoría:'}
+            </option>
             {subcategories.map(subcategory => (
               <option key={subcategory.id_subcategory} value={subcategory.id_subcategory}>
                 {subcategory.name_subcategory}

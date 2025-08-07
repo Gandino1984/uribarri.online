@@ -36,17 +36,15 @@ const RatingStars = ({ rating }) => {
   );
 };
 
-const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule, formatOpenDays }) => {
+const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule, formatOpenDays, isOpen }) => {
   return (
     <div className={styles.infoContainer}>
       <div className={styles.header}>
         <h2 className={styles.title}>{shop?.name_shop}</h2>
         
-        {/* 🌟 UPDATE: Replaced numeric rating with star display */}
         <RatingStars rating={shop?.calification_shop} />
       </div>
       
-      {/*update: Wrapped all info items in a single container with consistent spacing*/}
       <div className={styles.scheduleInfo}>
         <p className={styles.shopType}>
           <Store size={14} className={styles.icon} />
@@ -58,23 +56,29 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
           {shop?.location_shop}
         </p>
         
-        {hasContinuousSchedule ? (
-          <span className={styles.scheduleTime}>
-            <Clock size={14} className={styles.icon} />
-            {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
+        {/*update: Added open/closed status indicator*/}
+        <div className={styles.scheduleWrapper}>
+          {hasContinuousSchedule ? (
+            <span className={styles.scheduleTime}>
+              <Clock size={14} className={styles.icon} />
+              {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
+            </span>
+          ) : (
+            <>
+              <span className={styles.scheduleTime}>
+                <Clock size={14} className={styles.icon} />
+                Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
+              </span>
+              <span className={styles.scheduleTime}>
+                <Clock size={14} className={styles.icon} />
+                Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
+              </span>
+            </>
+          )}
+          <span className={`${styles.openStatus} ${isOpen ? styles.open : styles.closed}`}>
+            {isOpen ? 'Abierto' : 'Cerrado'}
           </span>
-        ) : (
-          <>
-            <span className={styles.scheduleTime}>
-              <Clock size={14} className={styles.icon} />
-              Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
-            </span>
-            <span className={styles.scheduleTime}>
-              <Clock size={14} className={styles.icon} />
-              Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
-            </span>
-          </>
-        )}
+        </div>
         
         <span className={styles.scheduleTime}>
           <Calendar size={14} className={styles.icon} />

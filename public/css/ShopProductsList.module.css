@@ -2,10 +2,11 @@
    display: flex;
    flex-direction: column;
    width: 100%;
-   height: 100%;
+   min-height: 100vh;
    gap: 1.5rem;
-   margin-top: 5.5rem; 
+   margin-top: 11rem; 
    overflow-x: hidden;
+   overflow-y: auto;
 }
 
 .responsiveContainerColumn,
@@ -119,8 +120,10 @@
 .listTitle {
    user-select: none;
    color: white;
-   font-weight: 600;
-   text-shadow: black 2px 2px 0px;   
+   font-weight: 700;
+   font-size: 2.2rem;
+   text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+   margin-bottom: 1rem;
 }
 
 .productsCount {
@@ -142,13 +145,15 @@
 }
 
 .deleteButton {
-   color: #ff0000;
+   color: var(--gradient-red-mid);
    background-color: white;
 }
 
 .deleteButton:not(:disabled):hover {
    color: white;
-   background-color: #ff0000;
+   background-color: var(--gradient-red-mid);
+   box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.393);
+   border: 1px solid white;
 }
 
 .updateButton {
@@ -158,6 +163,9 @@
 
 .updateButton:not(:disabled):hover {
    background-color: var(--saturated-blue);
+   color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .filterButton {
@@ -177,6 +185,9 @@
 
 .filterButton:not(:disabled):hover {
    background-color: var(--saturated-blue);
+   color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .filterButtonIcon {
@@ -196,7 +207,7 @@
    height: 1.25rem;
    padding: 0 0.25rem;
    margin-right: .1rem;
-   background-color: #ef4444;
+   background-color: var(--gradient-red-mid);
    color: white;
    border-radius: 9999px;
    font-size: 0.75rem;
@@ -220,6 +231,8 @@
 .mobileMenuButton:hover {
    background-color: var(--saturated-blue);
    color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .mobileMenuButton.active {
@@ -273,6 +286,7 @@
    background-color: var(--saturated-blue);
    color: white;
    border-color: var(--saturated-blue);
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
 }
 
 .mobileMenuContent .active:disabled {
@@ -299,18 +313,25 @@
    position: relative;
    padding: 0 1rem;
    margin-bottom: 1rem;
+   background-color: rgba(255, 255, 255, 0.03);
+   border-radius: 8px;
+   backdrop-filter: blur(5px);
 }
 
 .tableResponsiveWrapper {
    width: 100%;
    overflow-x: auto;
+   overflow-y: visible;
    -webkit-overflow-scrolling: touch;
    margin-bottom: 1rem;
    border-radius: 8px;
    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
    max-width: 100%;
-   scrollbar-width:auto;
+   scrollbar-width: auto;
    scrollbar-color: var(--saturated-blue) #f1f1f1;
+   position: relative;
+   z-index: 1;
+   min-height: 300px;
 }
 
 .tableResponsiveWrapper::-webkit-scrollbar {
@@ -335,39 +356,53 @@
 .tableContainer {
    width: 100%;
    max-width: 100%;
-   overflow: auto;
+   overflow: visible;
    padding: 0 0.5rem;
    margin-bottom: 2rem;
+   border-radius: 8px;
+   background-color: rgba(255, 255, 255, 0.05);
+   padding: 1rem;
+   position: relative;
+   z-index: 1;
+   min-height: 400px;
 }
 
 .table {
    width: 100%;
    border-collapse: collapse;
-   background-color: white;
+   color: white;
    table-layout: auto;
    min-width: 650px;
 }
 
 .tableHeader {
-   background-color: #e1e6eb;
+   text-align: left;
+   font-weight: 500;
+   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
    position: sticky;
    top: 0;
    z-index: 10;
+   background-color: transparent;
 }
 
 .tableHeaderCell {
-   padding: 0.8rem 1rem;
+   padding: 0.5rem;
    text-align: center;
-   font-size: 0.85rem;
-   font-weight: 600;
-   color: #666;
+   font-size: 0.8rem;
+   font-weight: 500;
+   color: rgba(255, 255, 255, 0.7);
    white-space: nowrap;
 }
 
 .tableCell {
-   font-size: 0.85rem;
+   padding: 0.75rem;
+   font-size: 0.9rem;
    text-align: center;
    vertical-align: middle;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   max-width: 150px;
 }
 
 .smallCell {
@@ -390,42 +425,47 @@
 }
 
 .tableRow {
-   border-top: 1px solid #f0f0f0;
+   color: black;
+   background-color: rgb(255, 255, 255);
+   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+   cursor: pointer;
+   transition: all .2s ease;
 }
 
 .tableRow:hover {
-   color: var(--saturated-blue);
-   background-color: var(--superlight-blue);
+   color: white;
+   border-left: 3px solid white;
+   background-color: var(--light-gradient-purple-start);
 }
 
 .tableRow.selected {
-   background-color: var(--saturated-blue);
    color: white;
-   font-weight: 500;
+   background-color: var(--dark-gradient-purple-start) !important;
+   font-weight: 600;
 }
 
 .tableRow.selected:hover {
-   background-color: var(--saturated-blue);
+   background-color: var(--dark-gradient-purple-start);
    color: white;
    font-weight: 600;
 }
 
 .inactiveProduct {
    font-weight: 500;
-   background-color: red;
+   background-color: var(--gradient-red-mid);
    color: white;
 }
 
 .inactiveProduct:hover {
-   background-color: #ffcdd2;
+   background-color: var(--light-gradient-red-start);
 }
 
 .tableRow.selected.inactiveProduct {
-   background-color: #ef9a9a;
+   background-color: var(--gradient-red-start);
 }
 
 .tableRow.selected.inactiveProduct:hover {
-   background-color: #ef9a9a;
+   background-color: var(--gradient-red-start);
 }
 
 .noProducts {
@@ -434,13 +474,14 @@
    width: 100%;
    font-weight: 500;
    text-align: center;
+   padding: 2rem;
 }
 
 .actionsCell {
    display: flex;
    align-items: center;
    justify-content: center;
-   padding: 0.5rem;
+   padding: 0.75rem;
    left: 0;
    z-index: 20;
    white-space: nowrap;
@@ -454,7 +495,7 @@
 .actionButtonsContainer {
    display: flex;
    align-items: center;
-   gap: 0.4rem;
+   gap: 0.5rem;
    position: absolute;
    left: 45px;
    top: 50%;
@@ -474,14 +515,16 @@
    display: flex;
    align-items: center;
    justify-content: center;
-   color: var(--dark-orange);
-   background-color: white;
+   color: black;
+   background-color: rgba(255, 255, 255, 0.2);
    width: 40px;
    height: 40px;
-   border: 1px solid var(--light-orange);
+   border: none;
    cursor: pointer;
    z-index: 5;
-   padding: 0;
+   padding: 0.05rem 0.25rem;
+   border-radius: 4px;
+   transition: background-color 0.2s;
 }
 
 .mainActionButton svg {
@@ -493,7 +536,10 @@
 }
 
 .mainActionButton:hover {
-   background-color: var(--dark-blue);
+   background-color: rgba(255, 255, 255, 0.3);
+   color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .mainActionButton.active {
@@ -520,6 +566,11 @@
    align-items: center;
    justify-content: center;
    background-color: white;
+   border: none;
+   color: black;
+   padding: 0.05rem 0.25rem;
+   border-radius: 4px;
+   transition: background-color 0.2s;
 }
 
 .actionButtonsContainer .actionButton svg {
@@ -527,6 +578,13 @@
    height: 20px !important;
    min-width: 20px !important;
    min-height: 20px !important;
+}
+
+.actionButtonsContainer .actionButton:hover {
+   background-color: rgba(255, 255, 255, 0.3);
+   color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .actionButtonsContainer .actionButton span,
@@ -540,11 +598,10 @@
    display: flex;
    align-items: center;
    gap: 0.5rem;
-   padding: .3rem .4rem;
-   border-radius: 8px;
+   padding: 0.3rem 0.3rem;
+   border-radius: 5px;
    font-weight: 500;
    cursor: pointer;
-   margin-right: .5rem;
    background-color: rgba(255, 255, 255, 0.2);
    transition: all 0.2s ease;
    border: 1px solid rgba(255, 255, 255, 0.3);
@@ -554,7 +611,7 @@
    color: white;
    border: 1px solid white;
    background-color: rgba(255, 255, 255, 0.5);
-   box-shadow: 0 0 12px var(--saturated-blue-transparent);
+   box-shadow: 0 0 10px var(--saturated-blue-transparent);
 }
 
 .inactive {
@@ -563,7 +620,12 @@
 }
 
 .selectButton {
-   color: #666;
+   color: black;
+   background-color: rgba(255, 255, 255, 0.2);
+   border: none;
+   padding: 0.05rem 0.25rem;
+   border-radius: 4px;
+   transition: background-color 0.2s;
 }
 
 .selectButton.selected {
@@ -572,73 +634,123 @@
 }
 
 .selectButton:hover {
-   background-color: var(--saturated-blue);
+   background-color: rgba(255, 255, 255, 0.3);
    color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .uploadButton {
-   color: #666;
+   color: black;
+   background-color: rgba(255, 255, 255, 0.2);
+   border: none;
+   padding: 0.05rem 0.25rem;
+   border-radius: 4px;
+   transition: background-color 0.2s;
+}
+
+.uploadButton:hover {
+   background-color: rgba(255, 255, 255, 0.3);
+   color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .imageButton{
-   color: var(--dark-orange);
-   background-color: white;
+   color: black;
+   background-color: rgba(255, 255, 255, 0.2);
+   border: none;
+   padding: 0.05rem 0.25rem;
+   border-radius: 4px;
+   transition: background-color 0.2s;
 }
 
 .imageButton:hover {
-   background-color: var(--saturated-blue);
+   background-color: rgba(255, 255, 255, 0.3);
    color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .searchInputWrapper {
    display: flex;
    align-items: center;
    justify-content: center;
-   padding: 0.5rem 1rem;
+   padding: 0.5rem 0;
+   position: relative;
+   flex: 1;
 }
 
 .searchIcon {
-   margin-right: 0.5rem;
-   color: white;
+   position: absolute;
+   left: 0.75rem;
+   color: var(--light-gray);
    pointer-events: none;
    flex-shrink: 0;
+   z-index: 1;
+   transition: color 0.2s ease;
 }
 
 .searchInput {
-   border: 1px solid #ddd;
-   transition: all 0.3s ease;
+   color: black;
+   padding: 0.5rem 1rem 0.5rem 2.5rem;
+   cursor: pointer;
+   font-size: 0.9rem;
+   border-radius: 8px;
+   min-height: 2.5rem;
+   font-weight: 600;
    width: 100%;
-   padding: 0.5rem;
-   border-radius: 4px;
-   font-size: 1rem;
+   outline: none;
+   border: none;
+   background-color: white;
+   transition: all 0.2s ease;
+}
+
+.searchInput::placeholder {
+   color: var(--light-gray);
+   opacity: 1;
 }
 
 .searchInput:focus {
-   outline: none;
-   border-color: #4a90e2;
-   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+   color: black;
+   border: 2px solid white;
+   background-color: white;
+   box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+}
+
+.searchInput:hover {
+   border: 2px solid white;
+   background-color: rgba(255, 255, 255, 0.9);
+   box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+}
+
+.searchInputWrapper:focus-within .searchIcon {
+   color: var(--saturated-blue);
 }
 
 .clearSearchButton {
    position: absolute;
-   right: 1.5rem;
+   right: 0.5rem;
    background: none;
    border: none;
    font-size: 1.2rem;
-   color: #999;
+   color: var(--light-gray);
    cursor: pointer;
    display: flex;
    align-items: center;
    justify-content: center;
-   width: 24px;
-   height: 24px;
+   width: 30px;
+   height: 30px;
    border-radius: 50%;
    flex-shrink: 0;
+   transition: all 0.2s ease;
+   z-index: 1;
 }
 
 .clearSearchButton:hover {
-   color: #666;
-   background-color: #f1f1f1;
+   color: var(--gradient-red-mid);
+   background-color: rgba(255, 255, 255, 0.1);
+   transform: scale(1.1);
 }
 
 .buttonText {
@@ -656,20 +768,30 @@
 }
 
 .visibleButton {
-   color: var(--dark-orange);
+   color: black;
+   background-color: rgba(255, 255, 255, 0.2);
+   border: none;
+   padding: 0.05rem 0.25rem;
+   border-radius: 4px;
+   transition: background-color 0.2s;
 }
 
 .visibleButton:hover {
-   background-color: var(--saturated-blue);
+   background-color: rgba(255, 255, 255, 0.3);
+   color: white;
+   box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+   border: 1px solid white;
 }
 
 .hiddenButton {
-   background-color: #ff9800;
+   background-color: var(--saturated-orange);
    color: white;
 }
 
 .hiddenButton:hover {
-   background-color: #e68a00;
+   background-color: var(--dark-orange);
+   box-shadow: 0px 0px 10px var(--saturated-orange);
+   border: 1px solid white;
 }
 
 .searchContainer {
@@ -774,6 +896,10 @@
    
    .searchAndMenuContainer {
        padding: 0 0.5rem;
+   }
+   
+   .tableContainer {
+       padding: 0.5rem;
    }
 }
 
@@ -975,4 +1101,273 @@
    .buttonText {
        font-size: 0.75rem;
    }
+}
+
+/* Update: New mobile actions container with two burger menus */
+.mobileActionsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 200;
+}
+
+.productMenuContainer,
+.packageMenuContainer {
+  position: relative;
+  z-index: 201;
+}
+
+.burgerMenuButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  min-height: 2.5rem;
+  position: relative;
+  z-index: 202;
+}
+
+.burgerMenuButton:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  border-color: white;
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.burgerMenuButton.active {
+  background: var(--saturated-blue);
+  color: white;
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.burgerButtonText {
+  display: inline-block;
+  font-size: 0.875rem;
+}
+
+.menuDropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border: 1px solid var(--light-orange);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  min-width: 250px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.menuDropdown.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+  visibility: visible;
+  z-index: 10000;
+}
+
+.menuContent {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 10001;
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  color: var(--dark-orange);
+  border: 1px solid var(--light-orange);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.menuItem:hover:not(:disabled) {
+  background-color: var(--saturated-blue);
+  color: white;
+  border-color: var(--saturated-blue);
+  box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
+}
+
+.menuItem:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.menuItem.createButton {
+  background: var(--saturated-blue);
+  color: white;
+  border-color: var(--saturated-blue);
+}
+
+.menuItem.createButton:hover {
+  background: var(--dark-gradient-purple-start);
+  border-color: var(--dark-gradient-purple-start);
+}
+
+.menuItem.filterActive {
+  background-color: var(--light-blue);
+  border-color: var(--saturated-blue);
+}
+
+/* Hide the old mobile menu button when using new layout */
+.mobileActionsContainer + .mobileMenuButton {
+  display: none;
+}
+
+.searchAndMenuContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  z-index: 150;
+}
+
+.tableContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+  padding: 0 0.5rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.tableResponsiveWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  scrollbar-width:auto;
+  scrollbar-color: var(--saturated-blue) #f1f1f1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .searchAndMenuContainer {
+      padding: 0.75rem;
+      gap: 0.75rem;
+      background-color: rgba(255, 255, 255, 0.05);
+      z-index: 150;
+  }
+  
+  .searchInputWrapper {
+      padding: 0;
+  }
+  
+  .searchInput {
+      font-size: 0.875rem;
+      padding: 0.4rem 0.75rem 0.4rem 2.25rem;
+      min-height: 2.25rem;
+  }
+  
+  .searchIcon {
+      left: 0.5rem;
+      font-size: 0.9rem;
+  }
+  
+  .clearSearchButton {
+      width: 26px;
+      height: 26px;
+      font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchAndMenuContainer {
+      gap: 0.5rem;
+      padding: 0.5rem;
+      margin-bottom: 0.75rem;
+      z-index: 150;
+  }
+  
+  .burgerMenuButton {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.8rem;
+      min-height: 2.25rem;
+  }
+  
+  .burgerButtonText {
+      font-size: 0.8rem;
+  }
+  
+  .menuDropdown {
+      min-width: 220px;
+      z-index: 10000;
+  }
+  
+  .menuItem {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 374px) {
+  .mobileActionsContainer {
+      gap: 0.3rem;
+  }
+  
+  .burgerMenuButton {
+      padding: 0.35rem 0.5rem;
+      font-size: 0.75rem;
+      min-height: 2rem;
+  }
+  
+  .burgerButtonText {
+      font-size: 0.75rem;
+  }
+  
+  .menuDropdown {
+      min-width: 200px;
+      z-index: 10000;
+  }
+  
+  .menuItem {
+      padding: 0.5rem 0.6rem;
+      font-size: 0.75rem;
+  }
+  
+  .searchInput {
+      font-size: 0.8rem;
+      padding: 0.35rem 0.6rem 0.35rem 2rem;
+      min-height: 2rem;
+  }
 }

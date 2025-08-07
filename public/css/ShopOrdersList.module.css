@@ -1,0 +1,293 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.loading {
+  text-align: center;
+  color: white;
+  font-size: 1.2rem;
+  padding: 4rem;
+}
+
+.noOrders {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  padding: 4rem;
+}
+
+.ordersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.orderCard {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.orderCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--light-gradient-purple-start);
+}
+
+.selectedOrder {
+  border-color: var(--light-gradient-purple-start);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.orderId {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.orderDate {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.orderStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.statusText {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Status colors */
+.statuspending { color: #f59e0b; }
+.statusconfirmed { color: #3b82f6; }
+.statuspreparing { color: #8b5cf6; }
+.statusready { color: #10b981; }
+.statusdelivered { color: #059669; }
+.statuscancelled { color: #ef4444; }
+
+.statusIconPending { color: #f59e0b; }
+.statusIconConfirmed { color: #3b82f6; }
+.statusIconPreparing { color: #8b5cf6; }
+.statusIconReady { color: #10b981; }
+.statusIconDelivered { color: #059669; }
+.statusIconCancelled { color: #ef4444; }
+
+.customerInfo {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.orderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.deliveryInfo {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.deliveryAddress {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.orderTotal {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.orderNotes {
+  padding: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.updateButton,
+.cancelButton {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.updateButton {
+  background-color: var(--light-gradient-purple-start);
+  color: white;
+}
+
+.updateButton:hover:not(:disabled) {
+  background-color: var(--dark-gradient-purple-start);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cancelButton {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: #ef4444;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.updateButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.expandedDetails {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.expandedDetails h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+  margin-top: 1rem;
+}
+
+.expandedDetails h4:first-child {
+  margin-top: 0;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.orderItem:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .ordersGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .orderCard {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .orderStatus {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .statusText {
+    font-size: 0.8rem;
+  }
+}

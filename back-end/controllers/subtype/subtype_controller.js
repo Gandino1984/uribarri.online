@@ -1,12 +1,11 @@
-import subtype_model from "../../models/subtype_model.js";
-import type_model from "../../models/type_model.js";
-import shop_model from "../../models/shop_model.js";
+import shop_subtype_model from "../../models/shop_subtype_model.js";
+import shop_type_model from "../../models/shop_type_model.js";
 import { Op } from 'sequelize';
 
 //update: Modified to return ALL subtypes (verified and unverified)
 async function getAll() {
     try {
-        const subtypes = await subtype_model.findAll({
+        const subtypes = await shop_subtype_model.findAll({
             order: [['name_subtype', 'ASC']]
         });
 
@@ -17,7 +16,7 @@ async function getAll() {
         // Manually fetch type information for each subtype
         const subtypesWithType = [];
         for (const subtype of subtypes) {
-            const type = await type_model.findByPk(subtype.id_type);
+            const type = await shop_type_model.findByPk(subtype.id_type);
             subtypesWithType.push({
                 ...subtype.toJSON(),
                 type: type ? {
@@ -39,7 +38,7 @@ async function getAll() {
 //update: New function to get only verified subtypes
 async function getVerified() {
     try {
-        const subtypes = await subtype_model.findAll({
+        const subtypes = await shop_subtype_model.findAll({
             where: { verified_subtype: true },
             order: [['name_subtype', 'ASC']]
         });
@@ -51,7 +50,7 @@ async function getVerified() {
         // Manually fetch type information for each subtype
         const subtypesWithType = [];
         for (const subtype of subtypes) {
-            const type = await type_model.findByPk(subtype.id_type);
+            const type = await shop_type_model.findByPk(subtype.id_type);
             subtypesWithType.push({
                 ...subtype.toJSON(),
                 type: type ? {
@@ -73,7 +72,7 @@ async function getVerified() {
 //update: New function to get only unverified subtypes
 async function getUnverified() {
     try {
-        const subtypes = await subtype_model.findAll({
+        const subtypes = await shop_subtype_model.findAll({
             where: { verified_subtype: false },
             order: [['name_subtype', 'ASC']]
         });
@@ -85,7 +84,7 @@ async function getUnverified() {
         // Manually fetch type information for each subtype
         const subtypesWithType = [];
         for (const subtype of subtypes) {
-            const type = await type_model.findByPk(subtype.id_type);
+            const type = await shop_type_model.findByPk(subtype.id_type);
             subtypesWithType.push({
                 ...subtype.toJSON(),
                 type: type ? {
@@ -106,7 +105,7 @@ async function getUnverified() {
 
 async function getByTypeId(id_type) {
     try {
-        const subtypes = await subtype_model.findAll({
+        const subtypes = await shop_subtype_model.findAll({
             where: { 
                 id_type: id_type,
                 verified_subtype: true 
@@ -127,14 +126,14 @@ async function getByTypeId(id_type) {
 
 async function getById(id_subtype) {
     try {
-        const subtype = await subtype_model.findByPk(id_subtype);
+        const subtype = await shop_subtype_model.findByPk(id_subtype);
 
         if (!subtype) {
             return { error: "Subtipo no encontrado" };
         }
 
         // Manually fetch the type
-        const type = await type_model.findByPk(subtype.id_type);
+        const type = await shop_type_model.findByPk(subtype.id_type);
         
         const subtypeWithType = {
             ...subtype.toJSON(),
@@ -155,7 +154,7 @@ async function getById(id_subtype) {
 async function create(subtypeData) {
     try {
         // Check if subtype already exists for this type
-        const existingSubtype = await subtype_model.findOne({ 
+        const existingSubtype = await shop_subtype_model.findOne({ 
             where: { 
                 name_subtype: subtypeData.name_subtype,
                 id_type: subtypeData.id_type
@@ -170,13 +169,13 @@ async function create(subtypeData) {
         }
 
         // Verify that the type exists
-        const type = await type_model.findByPk(subtypeData.id_type);
+        const type = await shop_type_model.findByPk(subtypeData.id_type);
         if (!type) {
             return { error: "El tipo especificado no existe" };
         }
 
         // Create the subtype with verified_subtype: false by default
-        const subtype = await subtype_model.create({
+        const subtype = await shop_subtype_model.create({
             ...subtypeData,
             verified_subtype: false
         });
@@ -193,7 +192,7 @@ async function create(subtypeData) {
 
 async function update(id, subtypeData) {
     try {
-        const subtype = await subtype_model.findByPk(id);
+        const subtype = await shop_subtype_model.findByPk(id);
         
         if (!subtype) {
             console.log("Subtipo no encontrado con id:", id);
@@ -205,7 +204,7 @@ async function update(id, subtypeData) {
             (subtypeData.name_subtype !== subtype.name_subtype || 
              subtypeData.id_type !== subtype.id_type)) {
             
-            const existingSubtype = await subtype_model.findOne({ 
+            const existingSubtype = await shop_subtype_model.findOne({ 
                 where: { 
                     name_subtype: subtypeData.name_subtype,
                     id_type: subtypeData.id_type || subtype.id_type,
@@ -220,7 +219,7 @@ async function update(id, subtypeData) {
 
         // If changing type, verify the new type exists
         if (subtypeData.id_type && subtypeData.id_type !== subtype.id_type) {
-            const type = await type_model.findByPk(subtypeData.id_type);
+            const type = await shop_type_model.findByPk(subtypeData.id_type);
             if (!type) {
                 return { error: "El tipo especificado no existe" };
             }
@@ -229,8 +228,8 @@ async function update(id, subtypeData) {
         await subtype.update(subtypeData);
         
         // Fetch updated subtype with type info
-        const updatedSubtype = await subtype_model.findByPk(id);
-        const type = await type_model.findByPk(updatedSubtype.id_type);
+        const updatedSubtype = await shop_subtype_model.findByPk(id);
+        const type = await shop_type_model.findByPk(updatedSubtype.id_type);
         
         const subtypeWithType = {
             ...updatedSubtype.toJSON(),
@@ -254,7 +253,7 @@ async function removeById(id_subtype) {
             return { error: "Subtipo no encontrado" };
         }
 
-        const subtype = await subtype_model.findByPk(id_subtype);
+        const subtype = await shop_subtype_model.findByPk(id_subtype);
         
         if (!subtype) {
             return { 
@@ -262,18 +261,7 @@ async function removeById(id_subtype) {
             };
         }
 
-        // Manually check if there are shops using this subtype
-        const shops = await shop_model.findAll({
-            where: { id_subtype: id_subtype }
-        });
-        
-        if (shops && shops.length > 0) {
-            return { 
-                error: "No se puede eliminar el subtipo porque hay comercios que lo utilizan"
-            };
-        }
-
-        // Delete the subtype
+        //update: Since shops don't have id_subtype anymore, we can safely delete the subtype
         await subtype.destroy();
 
         return { 
@@ -294,13 +282,13 @@ async function removeByTypeId(id_type) {
         }
 
         // Verify that the type exists
-        const type = await type_model.findByPk(id_type);
+        const type = await shop_type_model.findByPk(id_type);
         if (!type) {
             return { error: "El tipo especificado no existe" };
         }
 
         // Find all subtypes for this type
-        const subtypes = await subtype_model.findAll({
+        const subtypes = await shop_subtype_model.findAll({
             where: { id_type: id_type }
         });
 
@@ -311,20 +299,8 @@ async function removeByTypeId(id_type) {
             };
         }
 
-        // Check if any of the subtypes are being used by shops
-        const subtypeIds = subtypes.map(subtype => subtype.id_subtype);
-        const shops = await shop_model.findAll({
-            where: { id_subtype: subtypeIds }
-        });
-
-        if (shops && shops.length > 0) {
-            return { 
-                error: "No se pueden eliminar los subtipos porque hay comercios que los utilizan"
-            };
-        }
-
-        // Delete all subtypes for this type
-        const deletedCount = await subtype_model.destroy({
+        //update: Since shops don't have id_subtype anymore, we can safely delete all subtypes
+        const deletedCount = await shop_subtype_model.destroy({
             where: { id_type: id_type }
         });
 

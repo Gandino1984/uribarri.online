@@ -5,7 +5,8 @@ import axiosInstance from '../../../../../utils/app/axiosConfig.js';
 const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
   //update: Add state to store types with their IDs
   const [typesWithIds, setTypesWithIds] = useState([]);
-  const [subtypesForSelectedType, setSubtypesForSelectedType] = useState([]);
+  //update: Add state for subtypes of selected type
+  const [availableSubtypes, setAvailableSubtypes] = useState([]);
   const [loadingSubtypes, setLoadingSubtypes] = useState(false);
   
   //update: Fetch types with IDs when component mounts
@@ -18,14 +19,14 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
     if (newShop.id_type) {
       fetchSubtypesForType(newShop.id_type);
     } else {
-      setSubtypesForSelectedType([]);
+      setAvailableSubtypes([]);
     }
   }, [newShop.id_type]);
   
   //update: Function to fetch types with their IDs
   const fetchTypesWithIds = async () => {
     try {
-      const response = await axiosInstance.get('/type');
+      const response = await axiosInstance.get('/type/verified');
       if (response.data && !response.data.error) {
         setTypesWithIds(response.data.data);
       }
@@ -33,28 +34,26 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
       console.error('Error fetching types:', error);
     }
   };
-  
-  //update: Function to fetch subtypes for a specific type - Fixed API endpoint
+
+  //update: Function to fetch subtypes for a specific type
   const fetchSubtypesForType = async (typeId) => {
     try {
       setLoadingSubtypes(true);
-      // Fixed: Use the correct API endpoint that matches the router
       const response = await axiosInstance.get(`/type/${typeId}/subtypes`);
       if (response.data && !response.data.error) {
-        setSubtypesForSelectedType(response.data.data);
+        setAvailableSubtypes(response.data.data);
       } else {
-        console.error('Error in response:', response.data.error);
-        setSubtypesForSelectedType([]);
+        setAvailableSubtypes([]);
       }
     } catch (error) {
       console.error('Error fetching subtypes:', error);
-      setSubtypesForSelectedType([]);
+      setAvailableSubtypes([]);
     } finally {
       setLoadingSubtypes(false);
     }
   };
 
-  //update: Handle type change - now sets id_type instead of type_shop
+  //update: Handle type change - now sets id_type and resets subtype
   const handleTypeChange = (e) => {
     const selectedTypeId = e.target.value;
     setNewShop({
@@ -63,8 +62,8 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
       id_subtype: '' // Reset subtype when type changes
     });
   };
-  
-  //update: Handle subtype change - now sets id_subtype
+
+  //update: Handle subtype change
   const handleSubtypeChange = (e) => {
     const selectedSubtypeId = e.target.value;
     setNewShop({
@@ -99,7 +98,7 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
             className={`${styles.input} ${newShop.id_type ? 'has-value' : ''}`}
             required
           >
-            <option value="" disabled>Categoría</option>
+            <option value="" disabled>Tipo de comercio</option>
             {typesWithIds.map(type => (
               <option key={type.id_type} value={type.id_type}>
                 {type.name_type}
@@ -107,7 +106,8 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
             ))}
           </select>
         </div>
-
+        
+        {/* Show subtype select only when a type is selected and subtypes are available */}
         {newShop.id_type && (
           <div className={styles.formField}>
             <select
@@ -115,12 +115,17 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
               onChange={handleSubtypeChange}
               className={`${styles.input} ${newShop.id_subtype ? 'has-value' : ''}`}
               required
-              disabled={loadingSubtypes}
+              disabled={loadingSubtypes || availableSubtypes.length === 0}
             >
               <option value="" disabled>
-                {loadingSubtypes ? 'Cargando subcategorías...' : 'Subcategoría'}
+                {loadingSubtypes 
+                  ? "Cargando subtipos..." 
+                  : availableSubtypes.length === 0 
+                    ? "Sin subtipos disponibles" 
+                    : "Selecciona un subtipo"
+                }
               </option>
-              {subtypesForSelectedType.map(subtype => (
+              {availableSubtypes.map(subtype => (
                 <option key={subtype.id_subtype} value={subtype.id_subtype}>
                   {subtype.name_subtype}
                 </option>
@@ -144,4 +149,4 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
   );
 };
 
-export default ShopBasicInfo; 
+export default ShopBasicInfo;

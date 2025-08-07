@@ -1,7 +1,7 @@
 import product_category_model from "../../models/product_category_model.js";
 import product_subcategory_model from "../../models/product_subcategory_model.js";
-import product_model from "../../models/product_model.js";
-import { Op } from 'sequelize';
+import type_category_model from "../../models/type_category_model.js";
+import sequelize from "../../config/sequelize.js";
 
 async function getAll() {
     try {
@@ -62,7 +62,7 @@ async function getUnverified() {
     }
 }
 
-async function getAllWithSubcategories() {
+async function getWithSubcategories() {
     try {
         const categories = await product_category_model.findAll({
             where: { verified_category: true },
@@ -70,11 +70,11 @@ async function getAllWithSubcategories() {
         });
 
         if (!categories || categories.length === 0) {
-            return { error: "No hay categorías registradas", data: [] };
+            return { error: "No hay categorías verificadas registradas", data: {} };
         }
 
-        // Manually fetch subcategories for each category
-        const categoriesAndSubcategories = {};
+        // Build object with categories as keys and their subcategories as values
+        const categoriesWithSubcategories = {};
         
         for (const category of categories) {
             const subcategories = await product_subcategory_model.findAll({
@@ -85,14 +85,12 @@ async function getAllWithSubcategories() {
                 order: [['name_subcategory', 'ASC']]
             });
             
-            categoriesAndSubcategories[category.name_category] = subcategories.map(subcategory => subcategory.name_subcategory);
+            categoriesWithSubcategories[category.name_category] = subcategories.map(sub => sub.name_subcategory);
         }
 
-        console.log("-> product_category_controller.js - getAllWithSubcategories() - categorías con subcategorías encontradas");
-
-        return { data: categoriesAndSubcategories };
+        return { data: categoriesWithSubcategories };
     } catch (err) {
-        console.error("-> product_category_controller.js - getAllWithSubcategories() - Error = ", err);
+        console.error("-> product_category_controller.js - getWithSubcategories() - Error = ", err);
         return { error: "Error al obtener categorías con subcategorías" };
     }
 }
@@ -112,98 +110,73 @@ async function getById(id_category) {
     }
 }
 
-async function getSubcategoriesByCategoryId(id_category) {
-    try {
-        // Verify that the category exists
-        const category = await product_category_model.findByPk(id_category);
-        
-        if (!category) {
-            return { error: "La categoría especificada no existe" };
-        }
-
-        // Get all subcategories for this category (both verified and unverified)
-        const subcategories = await product_subcategory_model.findAll({
-            where: { 
-                id_category: id_category
-            },
-            order: [['name_subcategory', 'ASC']]
-        });
-
-        if (!subcategories || subcategories.length === 0) {
-            return { 
-                error: "No hay subcategorías registradas para esta categoría", 
-                data: [],
-                category: {
-                    id_category: category.id_category,
-                    name_category: category.name_category
-                }
-            };
-        }
-
-        console.log(`-> product_category_controller.js - getSubcategoriesByCategoryId() - ${subcategories.length} subcategorías encontradas para la categoría ${id_category}`);
-
-        return { 
-            data: subcategories,
-            category: {
-                id_category: category.id_category,
-                name_category: category.name_category
-            }
-        };
-    } catch (err) {
-        console.error("-> product_category_controller.js - getSubcategoriesByCategoryId() - Error = ", err);
-        return { error: "Error al obtener subcategorías de la categoría" };
-    }
-}
-
 async function create(categoryData) {
+    const t = await sequelize.transaction();
+    
     try {
-        // Check if category already exists (regardless of verified status)
+        // Check if category already exists
         const existingCategory = await product_category_model.findOne({ 
-            where: { 
-                name_category: categoryData.name_category
-            } 
+            where: { name_category: categoryData.name_category } 
         });
 
         if (existingCategory) {
+            await t.rollback();
             console.error("Ya existe una categoría con ese nombre");
             return { 
                 error: "Ya existe una categoría con ese nombre"
             };
         }
 
+        //update: Validate that id_type is provided
+        if (!categoryData.id_type) {
+            await t.rollback();
+            return { 
+                error: "El tipo de comercio es obligatorio"
+            };
+        }
+
         // Create the category with verified_category: false by default
         const category = await product_category_model.create({
-            ...categoryData,
+            name_category: categoryData.name_category,
+            createdby_category: categoryData.createdby_category || null,
             verified_category: false
-        });
+        }, { transaction: t });
+        
+        //update: Create association with the shop type
+        await type_category_model.create({
+            id_type: categoryData.id_type,
+            id_category: category.id_category
+        }, { transaction: t });
+        
+        console.log(`Created association for category ${category.id_category} with shop type: ${categoryData.id_type}`);
+        
+        await t.commit();
         
         return { 
             success: "¡Categoría creada!",
             data: category
         };
     } catch (err) {
+        await t.rollback();
         console.error("-> product_category_controller.js - create() - Error al crear la categoría =", err);
         return { error: "Error al crear la categoría." };
     }
 }
 
-async function update(id, categoryData) {
+//update: Fixed parameter name from 'id' to 'id_category'
+async function update(id_category, categoryData) {
     try {
-        const category = await product_category_model.findByPk(id);
+        const category = await product_category_model.findByPk(id_category);
         
         if (!category) {
-            console.log("Categoría no encontrada con id:", id);
+            console.log("Categoría no encontrada con id:", id_category);
             return { error: "Categoría no encontrada" };
         }
 
         // Check if new name already exists (if name is being changed)
         if (categoryData.name_category && categoryData.name_category !== category.name_category) {
             const existingCategory = await product_category_model.findOne({ 
-                where: { 
-                    name_category: categoryData.name_category,
-                    id_category: { [Op.ne]: id },
-                    verified_category: true
-                } 
+                where: { name_category: categoryData.name_category } 
             });
 
             if (existingCategory) {
@@ -213,7 +186,7 @@ async function update(id, categoryData) {
 
         await category.update(categoryData);
         
-        const updatedCategory = await product_category_model.findByPk(id);
+        const updatedCategory = await product_category_model.findByPk(id_category);
         
         return { data: updatedCategory };
     } catch (err) {
@@ -222,92 +195,105 @@ async function update(id, categoryData) {
     }
 }
 
-async function removeById(id_category, cascadeDelete = false) {
+async function removeById(id_category) {
+    const t = await sequelize.transaction();
+    
     try {
         if (!id_category) {
+            await t.rollback();
             return { error: "Categoría no encontrada" };
         }
 
         const category = await product_category_model.findByPk(id_category);
         
         if (!category) {
+            await t.rollback();
             return { 
                 error: "Categoría no encontrada",
             };
         }
 
-        // Manually check if there are products using this category
-        const products = await product_model.findAll({
-            where: { id_category: id_category }
-        });
-        
-        if (products && products.length > 0) {
-            return { 
-                error: "No se puede eliminar la categoría porque hay productos que la utilizan"
-            };
-        }
-
-        // Manually check if there are subcategories for this category
+        // Check if there are subcategories for this category
         const subcategories = await product_subcategory_model.findAll({
             where: { id_category: id_category }
         });
         
         if (subcategories && subcategories.length > 0) {
-            if (cascadeDelete) {
-                // Delete all subcategories associated with this category
-                console.log(`Eliminando ${subcategories.length} subcategorías asociadas a la categoría ${id_category}`);
-                
-                for (const subcategory of subcategories) {
-                    // Check if any products are using this subcategory
-                    const productsUsingSubcategory = await product_model.findAll({
-                        where: { id_subcategory: subcategory.id_subcategory }
-                    });
-                    
-                    if (productsUsingSubcategory && productsUsingSubcategory.length > 0) {
-                        return { 
-                            error: `No se puede eliminar la categoría porque la subcategoría "${subcategory.name_subcategory}" está siendo usada por ${productsUsingSubcategory.length} producto(s)`
-                        };
-                    }
-                    
-                    // Delete the subcategory
-                    await subcategory.destroy();
-                }
-            } else {
-                return { 
-                    error: "No se puede eliminar la categoría porque tiene subcategorías asociadas. Use cascadeDelete=true para eliminar también las subcategorías."
-                };
-            }
+            await t.rollback();
+            return { 
+                error: "No se puede eliminar la categoría porque tiene subcategorías asociadas"
+            };
         }
 
+        // Delete shop type associations first
+        await type_category_model.destroy({
+            where: { id_category: id_category },
+            transaction: t
+        });
+
         // Delete the category
-        await category.destroy();
+        await category.destroy({ transaction: t });
+
+        await t.commit();
 
         return { 
             data: id_category,
-            message: cascadeDelete && subcategories.length > 0 
-                ? `La categoría y sus ${subcategories.length} subcategorías han sido eliminadas.`
-                : "La categoría se ha eliminado.",
-            deletedSubcategories: cascadeDelete ? subcategories.length : 0
+            message: "La categoría se ha eliminado." 
         };
     } catch (err) {
+        await t.rollback();
         console.error("-> product_category_controller.js - removeById() - Error = ", err);
         return { error: "Error al eliminar la categoría" };
     }
 }
 
-async function isCategoryValid(id_category) {
+async function getCategoriesForShop(id_shop) {
     try {
-        const category = await product_category_model.findOne({
-            where: {
-                id_category: id_category,
-                verified_category: true
-            }
+        const shop_model = (await import("../../models/shop_model.js")).default;
+        
+        // Get the shop
+        const shop = await shop_model.findByPk(id_shop);
+        
+        if (!shop) {
+            return { error: "El comercio no existe", data: [] };
+        }
+        
+        console.log(`Getting categories for shop ${id_shop} (type: ${shop.id_type})`);
+        
+        // Get all category IDs that are associated with this shop type
+        const shopTypeCategoryAssociations = await type_category_model.findAll({
+            where: { id_type: shop.id_type }
         });
         
-        return !!category;
+        if (!shopTypeCategoryAssociations || shopTypeCategoryAssociations.length === 0) {
+            console.log('No category restrictions found for this shop type - returning all verified categories');
+            // If no associations exist, return all verified categories (backward compatibility)
+            const allCategories = await product_category_model.findAll({
+                where: { verified_category: true },
+                order: [['name_category', 'ASC']]
+            });
+            return { data: allCategories };
+        }
+        
+        // Extract category IDs from associations
+        const allowedCategoryIds = shopTypeCategoryAssociations.map(assoc => assoc.id_category);
+        console.log(`Found ${allowedCategoryIds.length} allowed categories for shop type ${shop.id_type}:`, allowedCategoryIds);
+        
+        // Get only the categories that are allowed for this shop type
+        const categories = await product_category_model.findAll({
+            where: { 
+                id_category: allowedCategoryIds,
+                verified_category: true 
+            },
+            order: [['name_category', 'ASC']]
+        });
+        
+        console.log(`Returning ${categories.length} categories for shop`);
+        return { data: categories };
+        
     } catch (err) {
-        console.error("-> product_category_controller.js - isCategoryValid() - Error = ", err);
-        return false;
+        console.error("-> product_category_controller.js - getCategoriesForShop() - Error = ", err);
+        return { error: "Error al obtener categorías para el comercio" };
     }
 }
 
@@ -315,24 +301,22 @@ export {
     getAll, 
     getVerified,
     getUnverified,
-    getAllWithSubcategories,
+    getWithSubcategories,
     getById,
-    getSubcategoriesByCategoryId,
     create, 
     update, 
     removeById,
-    isCategoryValid
+    getCategoriesForShop
 }
 
 export default { 
     getAll, 
     getVerified,
     getUnverified,
-    getAllWithSubcategories,
+    getWithSubcategories,
     getById,
-    getSubcategoriesByCategoryId,
     create, 
     update, 
     removeById,
-    isCategoryValid
+    getCategoriesForShop
 }

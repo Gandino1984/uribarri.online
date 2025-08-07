@@ -15,6 +15,9 @@ router.get("/unverified", productSubcategoryApiController.getUnverified);
 // Get subcategories by category ID
 router.get("/by-category/:id_category", productSubcategoryApiController.getByCategoryId);
 
+//update: Get subcategories for a specific shop and category
+router.get("/shop/:id_shop/category/:id_category", productSubcategoryApiController.getSubcategoriesForShopAndCategory);
+
 // Create new subcategory
 router.post("/create", productSubcategoryApiController.create);
 

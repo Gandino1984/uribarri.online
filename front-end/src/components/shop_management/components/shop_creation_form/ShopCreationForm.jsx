@@ -7,6 +7,10 @@ import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { formAnimation } from '../../../../utils/animation/transitions.js';
+//update: Import formatImageUrl to properly handle image URLs
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
+//update: Import axios instance for debugging
+import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
 import ShopImageUpload from './components/ShopImageUpload.jsx';
 import ShopBasicInfo from './components/ShopBasicInfo.jsx';
@@ -72,9 +76,8 @@ const ShopCreationForm = () => {
   
   const defaultShopValues = {
     name_shop: '',
-    //update: Use id_type and id_subtype instead of strings
     id_type: '',
-    id_subtype: '',
+    id_subtype: '', //update: Added back id_subtype
     location_shop: '',
     id_user: currentUser?.id_user || '',
     calification_shop: 0,
@@ -111,15 +114,18 @@ const ShopCreationForm = () => {
 
   useEffect(() => {
     if (selectedShop && currentUser?.id_user) {
+      console.log('ShopCreationForm - Setting up form for update mode');
+      console.log('Selected shop:', selectedShop);
+      console.log('Shop image_shop value:', selectedShop.image_shop);
+      
       // Detect if shop has continuous schedule
       const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
       setHasContinuousSchedule(shopHasContinuousSchedule);
       
       setNewShop({
         name_shop: selectedShop.name_shop,
-        //update: Use id_type and id_subtype from selected shop
         id_type: selectedShop.id_type,
-        id_subtype: selectedShop.id_subtype,
+        id_subtype: selectedShop.id_subtype || '', //update: Include id_subtype
         location_shop: selectedShop.location_shop,
         id_user: currentUser.id_user, // Ensure we always set the current user ID
         calification_shop: selectedShop.calification_shop,
@@ -138,27 +144,36 @@ const ShopCreationForm = () => {
         open_sunday: selectedShop.open_sunday !== undefined ? selectedShop.open_sunday : false
       });
 
-      // Set image preview if exists
+      //update: Enhanced debug logging for image preview
       if (selectedShop.image_shop) {
-        try {
-          // If the image is already a complete URL
-          if (selectedShop.image_shop.startsWith('http') || 
-              selectedShop.image_shop.startsWith('data:') || 
-              selectedShop.image_shop.startsWith('blob:')) {
-            setImagePreview(selectedShop.image_shop);
-          } else {
-            // Build the relative URL to the base
-            const baseUrl = window.location.origin;
-            const cleanPath = selectedShop.image_shop.replace(/^\/+/, '');
-            const imageUrl = `${baseUrl}/${cleanPath}`;
-            console.log('Setting preview URL:', imageUrl);
-            setImagePreview(imageUrl);
-          }
-        } catch (err) {
-          console.error('Error formatting image URL:', err);
+        console.log('Attempting to format image URL for preview');
+        console.log('axios baseURL:', axiosInstance.defaults.baseURL);
+        
+        const imageUrl = formatImageUrl(selectedShop.image_shop);
+        console.log('Formatted image URL:', imageUrl);
+        
+        if (imageUrl) {
+          setImagePreview(imageUrl);
+          
+          // Test if the image URL is accessible
+          const testImg = new Image();
+          testImg.onload = () => {
+            console.log('Image preview loaded successfully:', imageUrl);
+          };
+          testImg.onerror = (e) => {
+            console.error('Failed to load image preview:', imageUrl, e);
+            console.log('This might be a CORS issue or incorrect URL');
+          };
+          testImg.src = imageUrl;
+        } else {
+          console.warn('formatImageUrl returned null for:', selectedShop.image_shop);
+          setImagePreview(null);
         }
+      } else {
+        console.log('No image_shop value, clearing preview');
+        //update: Clear preview if no image
+        setImagePreview(null);
       }
-      
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
@@ -249,11 +264,11 @@ const ShopCreationForm = () => {
       case 1: // Image upload - optional, so always valid
         return true;
       case 2: // Basic info
-        //update: Check for id_type and id_subtype instead of strings
+        //update: Check for all required fields including id_subtype
         if (!newShop.name_shop || !newShop.id_type || !newShop.id_subtype || !newShop.location_shop) {
           setError(prevError => ({
             ...prevError,
-            shopError: "Completa todos los campos."
+            shopError: "Completa todos los campos obligatorios."
           }));
           setShowErrorCard(true);
           return false;

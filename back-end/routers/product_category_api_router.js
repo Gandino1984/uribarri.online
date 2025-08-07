@@ -12,17 +12,17 @@ router.get("/verified", productCategoryApiController.getVerified);
 // Get unverified categories
 router.get("/unverified", productCategoryApiController.getUnverified);
 
-// Get all categories with their subcategories
-router.get("/with-subcategories", productCategoryApiController.getAllWithSubcategories);
+// Get categories with their subcategories
+router.get("/with-subcategories", productCategoryApiController.getWithSubcategories);
 
-// Get subcategories by category ID
-router.get("/:id_category/subcategories", productCategoryApiController.getSubcategoriesByCategoryId);
-
-// Get category by ID
-router.get("/:id_category", productCategoryApiController.getById);
+//update: Get categories available for a specific shop
+router.get("/shop/:id_shop", productCategoryApiController.getCategoriesForShop);
 
 // Create new category
 router.post("/create", productCategoryApiController.create);
+
+// Get category by ID
+router.get("/:id_category", productCategoryApiController.getById);
 
 // Update category
 router.patch("/update/:id_category", productCategoryApiController.update);

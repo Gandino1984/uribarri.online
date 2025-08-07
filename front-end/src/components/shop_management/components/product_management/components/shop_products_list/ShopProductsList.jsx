@@ -54,7 +54,11 @@ const ShopProductsList = () => {
     setSelectedProductForImageUpload,
     productListKey,
     setShowProductManagement,
-    refreshProductList
+    refreshProductList,
+    //update: Get categories and subcategories from context
+    categories,
+    subcategories,
+    fetchSubcategoriesByCategory
   } = useProduct();
 
   // ✨ UPDATE: Package context
@@ -118,7 +122,9 @@ const ShopProductsList = () => {
     handleResetAllFilters: handleResetAllFiltersFn,
     handleSelectForImageUpload: handleSelectForImageUploadFn,
     handleBulkUpdate: handleBulkUpdateFn,
-    isNewProduct
+    isNewProduct,
+    //update: Get allSubcategories from utils
+    allSubcategories
   } = ShopProductsListUtils();
 
   // 🌟 UPDATE: Create animation transitions using React Spring
@@ -235,6 +241,7 @@ const ShopProductsList = () => {
         try {
           const fetchedProducts = await fetchProductsByShop();
           console.log(`Loaded ${fetchedProducts?.length || 0} products for shop ${selectedShop.id_shop}`);
+          
           // 🌟 UPDATE: Set visible to true once products are loaded
           setIsVisible(true);
         } catch (error) {
@@ -268,11 +275,15 @@ const ShopProductsList = () => {
     if (searchTerm && searchTerm.trim() !== '') {
       const term = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(product => {
+        //update: Add category name search capability
+        const categoryName = categories?.find(cat => cat.id_category === product.id_category)?.name_category || '';
+        
         // Search in all text and number fields (convert numbers to strings)
         return (
           (product.name_product && product.name_product.toLowerCase().includes(term)) || 
           (product.type_product && product.type_product.toLowerCase().includes(term)) ||
           (product.subtype_product && product.subtype_product.toLowerCase().includes(term)) ||
+          (categoryName && categoryName.toLowerCase().includes(term)) ||
           (product.info_product && product.info_product.toLowerCase().includes(term)) ||
           (product.country_product && product.country_product.toLowerCase().includes(term)) ||
           (product.locality_product && product.locality_product.toLowerCase().includes(term)) ||
@@ -293,7 +304,7 @@ const ShopProductsList = () => {
     console.log(`Displaying ${filtered.length} products after filtering`);
     setFilteredProducts(filtered);
     setDisplayedProducts(filtered);
-  }, [products, filters, searchTerm, filterProducts, setFilteredProducts]);
+  }, [products, filters, searchTerm, filterProducts, setFilteredProducts, categories]);
 
   // Deletion handler
   useEffect(() => {
@@ -557,6 +568,9 @@ const ShopProductsList = () => {
                   handleToggleActiveStatus={handleToggleActiveStatus}
                   handleProductImageDoubleClick={handleProductImageDoubleClick}
                   currentDeletingProduct={currentDeletingProduct}
+                  //update: Pass categories and subcategories to ProductsTable
+                  categories={categories}
+                  subcategories={Object.values(allSubcategories)}
                 />
               </div>
             )}

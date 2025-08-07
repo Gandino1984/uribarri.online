@@ -3,25 +3,33 @@ import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../app_context/ProductContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useOrder } from '../../../../app_context/OrderContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
-import { Plus } from 'lucide-react';
+import { Plus, ShoppingBag } from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
 
 import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopsTable from './components/ShopsTable';
+import ShopOrdersList from '../shops_list_by_seller/components/shop_oders_list/ShopOrdersList.jsx';
 
 const ShopsListBySeller = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  //update: Added state for showing orders list
+  const [showOrdersList, setShowOrdersList] = useState(false);
+  //update: Added state for pending orders count
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
+  //update: Added order context methods
+  const { shopOrders, fetchShopOrders } = useOrder();
   
   // 🔧 UPDATE: Added UI context to manage info messages for shop instructions
   const { setInfo, setShowInfoCard } = useUI();
@@ -31,8 +39,8 @@ const ShopsListBySeller = () => {
   
   // Calculate appropriate limit based on user's category
   const shopLimit = useMemo(() => {
-    return currentUser?.category_user ? maxSponsorShops : maxRegularShops;
-  }, [currentUser?.category_user, maxSponsorShops, maxRegularShops]);
+    return currentUser?.contributor_user ? maxSponsorShops : maxRegularShops;
+  }, [currentUser?.contributor_user, maxSponsorShops, maxRegularShops]);
 
   const { 
     fetchUserShops,
@@ -119,6 +127,34 @@ const ShopsListBySeller = () => {
     }
   }, [shops, isVisible, setInfo, setShowInfoCard]);
 
+  //update: Effect to fetch orders when selected shop changes
+  useEffect(() => {
+    if (selectedShop?.id_shop) {
+      fetchShopOrders(selectedShop.id_shop);
+    }
+  }, [selectedShop?.id_shop]); // update: Only depend on shop ID to avoid infinite loops
+
+  //update: Effect to calculate pending orders count
+  useEffect(() => {
+    if (shopOrders && shopOrders.length > 0) {
+      const pendingCount = shopOrders.filter(order => order.order_status === 'pending').length;
+      setPendingOrdersCount(pendingCount);
+    } else {
+      setPendingOrdersCount(0);
+    }
+  }, [shopOrders]);
+
+  //update: Effect to poll for new orders every 30 seconds
+  useEffect(() => {
+    if (!selectedShop?.id_shop) return;
+
+    const interval = setInterval(() => {
+      fetchShopOrders(selectedShop.id_shop);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [selectedShop?.id_shop]); // update: Only depend on shop ID to avoid infinite loops
+
   // Log selected shop updates for debugging
   useEffect(() => {
     if (selectedShop) {
@@ -144,6 +180,21 @@ const ShopsListBySeller = () => {
               <span>Crear</span>
               <Plus size={screenWidth > 480 ? 16 : 20} />
             </button>
+            
+            {/* update: Added orders button with notification */}
+            {selectedShop && (
+              <button 
+                onClick={() => setShowOrdersList(true)}
+                className={`${styles.active} ${styles.ordersButton}`}
+                title="Ver pedidos del comercio"
+              >
+                <span>Pedidos</span>
+                <ShoppingBag size={screenWidth > 480 ? 16 : 20} />
+                {pendingOrdersCount > 0 && (
+                  <span className={styles.notificationBadge}>{pendingOrdersCount}</span>
+                )}
+              </button>
+            )}
           </animated.div>
         
           {/* Shop limit indicator */}
@@ -151,7 +202,7 @@ const ShopsListBySeller = () => {
             <ShopLimitIndicator 
               shopCount={shopCount} 
               shopLimit={shopLimit} 
-              isUserSponsor={!!currentUser?.category_user} 
+              isUserSponsor={!!currentUser?.contributor_user} 
             />
           </animated.div>
         </div>
@@ -180,6 +231,11 @@ const ShopsListBySeller = () => {
           )}
         </div>
       </div>
+      
+      {/* update: Added ShopOrdersList component */}
+      {showOrdersList && selectedShop && (
+        <ShopOrdersList onClose={() => setShowOrdersList(false)} />
+      )}
     </div>
   );
 };

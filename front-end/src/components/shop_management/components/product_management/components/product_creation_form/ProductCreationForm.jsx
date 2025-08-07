@@ -63,7 +63,8 @@ const ProductCreationForm = () => {
     shopToProductTypesMap,
     //update: Get loading state for categories
     loadingCategories,
-    categoriesError
+    categoriesError,
+    fetchSubcategoriesByCategory
   } = useProduct();
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -102,13 +103,28 @@ const ProductCreationForm = () => {
   // Load data for editing if in update mode
   useEffect(() => {
     if (isUpdatingProduct && selectedProductToUpdate) {
+      //update: Extract price unit from info_product if present
+      let priceUnit = 'Euros/unidad';
+      let cleanedInfo = selectedProductToUpdate.info_product || '';
+      
+      // Check if info_product starts with a price unit pattern
+      const priceUnitPattern = /^(Euros\/\w+)(\s*-\s*)?(.*)$/;
+      const match = cleanedInfo.match(priceUnitPattern);
+      
+      if (match) {
+        priceUnit = match[1];
+        cleanedInfo = match[3] || '';
+      }
+      
       // Map the product data to form fields
       const mappedData = {
         ...productData,
         ...selectedProductToUpdate,
         //update: Ensure category and subcategory IDs are set
         id_category: selectedProductToUpdate.id_category || '',
-        id_subcategory: selectedProductToUpdate.id_subcategory || ''
+        id_subcategory: selectedProductToUpdate.id_subcategory || '',
+        price_unit: priceUnit,
+        info_product: cleanedInfo
       };
       
       // Update form data
@@ -122,6 +138,11 @@ const ProductCreationForm = () => {
           });
         }
       });
+      
+      //update: Fetch subcategories for the selected category when updating
+      if (selectedProductToUpdate.id_category) {
+        fetchSubcategoriesByCategory(selectedProductToUpdate.id_category);
+      }
     }
   }, [isUpdatingProduct, selectedProductToUpdate]);
 
@@ -205,8 +226,7 @@ const ProductCreationForm = () => {
     setIsModalOpen(true);
   };
 
-  // Add navigation Utils
-  const goToNextStep = () => {
+const goToNextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
@@ -320,7 +340,7 @@ const ProductCreationForm = () => {
               <AlertCircle size={20} color={statusColor} className={styles.alertIcon}/>
               <span>Límite de productos: {productCount} / {productLimit}</span>
           </div>
-          {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
+          {!currentUser?.contributor_user && productCount >= productLimit * 0.7 && (
             <p className={styles.upgradeMessage}>
               Conviértete en sponsor para aumentar tu límite a 100 productos.
             </p>
@@ -396,6 +416,8 @@ const ProductCreationForm = () => {
     }
   };
 
+  console.log('Selected shop data:', selectedShop);
+
   return (
     <>
     {renderProductLimitInfo()}
@@ -410,7 +432,8 @@ const ProductCreationForm = () => {
       {/* Shop type and subtype guidance */}
       {selectedShop && !selectedProductToUpdate && (
         <div className={styles.shopTypeGuidance}>
-          <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
+          <p>Tienda de tipo: <strong>{selectedShop.type_shop || 'No especificado'}</strong></p>
+          {/* //update: Now using the subtype_shop field that comes from the backend */}
           <p>Subtipo: <strong>{selectedShop.subtype_shop || 'No especificado'}</strong></p>
         </div>
       )}

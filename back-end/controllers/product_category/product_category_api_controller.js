@@ -36,12 +36,12 @@ async function getUnverified(req, res) {
     }
 }
 
-async function getAllWithSubcategories(req, res) {
+async function getWithSubcategories(req, res) {
     try {
-        const { error, data } = await productCategoryController.getAllWithSubcategories();
+        const { error, data } = await productCategoryController.getWithSubcategories();
         res.json({ error, data });
     } catch (err) {
-        console.error("-> product_category_api_controller.js - getAllWithSubcategories() - Error =", err);
+        console.error("-> product_category_api_controller.js - getWithSubcategories() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener categorías con subcategorías"
         });
@@ -68,31 +68,12 @@ async function getById(req, res) {
     }
 }
 
-async function getSubcategoriesByCategoryId(req, res) {
-    try {
-        const { id_category } = req.params;
-        
-        if (!id_category) {
-            return res.status(400).json({ 
-                error: 'El ID de la categoría es obligatorio'
-            });
-        }
-        
-        const { error, data, category } = await productCategoryController.getSubcategoriesByCategoryId(id_category);
-        res.json({ error, data, category });
-    } catch (err) {
-        console.error("-> product_category_api_controller.js - getSubcategoriesByCategoryId() - Error =", err);
-        res.status(500).json({ 
-            error: "Error al obtener subcategorías de la categoría"
-        });
-    }
-}
-
 async function create(req, res) {
     try {
         const { 
             name_category,
-            createdby_category
+            createdby_category,
+            id_type
         } = req.body;
         
         // Validate required fields
@@ -102,9 +83,17 @@ async function create(req, res) {
             });
         }
         
+        //update: Validate id_type is provided
+        if (!id_type) {
+            return res.status(400).json({
+                error: 'El tipo de comercio es obligatorio'
+            });
+        }
+        
         const categoryData = {
             name_category,
-            createdby_category: createdby_category || null
+            createdby_category: createdby_category || null,
+            id_type: id_type
         };
         
         const { error, data, success } = await productCategoryController.create(categoryData);
@@ -179,26 +168,46 @@ async function removeById(req, res) {
     }
 }
 
+async function getCategoriesForShop(req, res) {
+    try {
+        const { id_shop } = req.params;
+        
+        if (!id_shop) {
+            return res.status(400).json({ 
+                error: 'El ID del comercio es obligatorio'
+            });
+        }
+        
+        const { error, data } = await productCategoryController.getCategoriesForShop(id_shop);
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> product_category_api_controller.js - getCategoriesForShop() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener categorías para el comercio"
+        });
+    }
+}
+
 export {
     getAll,
     getVerified,
     getUnverified,
-    getAllWithSubcategories,
+    getWithSubcategories,
     getById,
-    getSubcategoriesByCategoryId,
     create,
     update,
-    removeById
+    removeById,
+    getCategoriesForShop
 }
 
 export default {
     getAll,
     getVerified,
     getUnverified,
-    getAllWithSubcategories,
+    getWithSubcategories,
     getById,
-    getSubcategoriesByCategoryId,
     create,
     update,
-    removeById
+    removeById,
+    getCategoriesForShop
 }

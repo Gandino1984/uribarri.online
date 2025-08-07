@@ -1,18 +1,61 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import { X, Star, ShoppingCart, Tag, Calendar, Package, MapPin, Globe } from 'lucide-react';
 import styles from '../../../../../../../../public/css/ProductCard.module.css';
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
+import axiosInstance from '../../../../../../utils/app/axiosConfig';
 
 // UPDATE: Refactored to use specialized context hooks instead of AppContext
 const ProductCard = ({ onClose }) => {
   const { selectedProductDetails, setSelectedProductDetails } = useProduct();
+  //update: Added state for category and subcategory names
+  const [categoryName, setCategoryName] = useState('');
+  const [subcategoryName, setSubcategoryName] = useState('');
+  const [loadingCategoryInfo, setLoadingCategoryInfo] = useState(false);
+
+  //update: Fetch category and subcategory names when product details change
+  useEffect(() => {
+    const fetchCategoryInfo = async () => {
+      if (!selectedProductDetails) return;
+      
+      setLoadingCategoryInfo(true);
+      
+      try {
+        // Fetch category name if id_category exists
+        if (selectedProductDetails.id_category) {
+          //update: Fixed API endpoint - removed /by-id
+          const categoryResponse = await axiosInstance.get(`/product-category/${selectedProductDetails.id_category}`);
+          if (categoryResponse.data && categoryResponse.data.data) {
+            setCategoryName(categoryResponse.data.data.name_category);
+          }
+        }
+        
+        // Fetch subcategory name if id_subcategory exists
+        if (selectedProductDetails.id_subcategory) {
+          //update: Fixed API endpoint - removed /by-id
+          const subcategoryResponse = await axiosInstance.get(`/product-subcategory/${selectedProductDetails.id_subcategory}`);
+          if (subcategoryResponse.data && subcategoryResponse.data.data) {
+            setSubcategoryName(subcategoryResponse.data.data.name_subcategory);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching category/subcategory info:', error);
+      } finally {
+        setLoadingCategoryInfo(false);
+      }
+    };
+    
+    fetchCategoryInfo();
+  }, [selectedProductDetails]);
 
   useEffect(() => {
     // Cleanup function
     return () => {
       // Reset selected product when component unmounts
       setSelectedProductDetails(null);
+      //update: Reset category/subcategory names
+      setCategoryName('');
+      setSubcategoryName('');
     };
   }, [setSelectedProductDetails]);
 
@@ -119,15 +162,17 @@ const ProductCard = ({ onClose }) => {
             </div>  
             
             <div className={styles.categoryInfo}>
+              {/*update: Display category name from the fetched data, with fallback to type_product*/}
               <div className={styles.infoItem}>
                 <Tag size={18} />
-                <span>Tipo: {type_product}</span>
+                <span>Categoría: {loadingCategoryInfo ? 'Cargando...' : (categoryName || type_product || 'Sin categoría')}</span>
               </div>
               
-              {subtype_product && (
+              {/*update: Display subcategory name from the fetched data, with fallback to subtype_product*/}
+              {(subcategoryName || subtype_product) && (
                 <div className={styles.infoItem}>
                   <Tag size={18} />
-                  <span>Subtipo: {subtype_product}</span>
+                  <span>Subcategoría: {loadingCategoryInfo ? 'Cargando...' : (subcategoryName || subtype_product)}</span>
                 </div>
               )}
               

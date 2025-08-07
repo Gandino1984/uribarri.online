@@ -2,6 +2,12 @@ import package_model from "../../models/package_model.js";
 import product_model from "../../models/product_model.js";
 import shop_model from "../../models/shop_model.js";
 import { Op } from "sequelize";
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function getAll() {
     try {
@@ -30,7 +36,9 @@ async function create(packageData) {
             id_product3, 
             id_product4, 
             id_product5, 
-            name_package
+            name_package,
+            discount_package,
+            image_package //update: Added image_package
         } = packageData;
 
         // Validate required field
@@ -42,6 +50,14 @@ async function create(packageData) {
         const shopExists = await shop_model.findByPk(id_shop);
         if (!shopExists) {
             return { error: "El comercio especificado no existe" };
+        }
+
+        //update: Validate discount_package if provided
+        if (discount_package !== undefined && discount_package !== null) {
+            const discount = parseInt(discount_package);
+            if (isNaN(discount) || discount < 0 || discount > 100) {
+                return { error: "El descuento del paquete debe ser un número entre 0 y 100" };
+            }
         }
 
         // Verify that products exist and belong to the shop
@@ -69,6 +85,8 @@ async function create(packageData) {
             id_product4: id_product4 || null,
             id_product5: id_product5 || null,
             name_package: name_package || null,
+            discount_package: discount_package || 0,
+            image_package: image_package || null, //update: Include image_package
             active_package: true,
             // creation_package will be set automatically by the model default
         });
@@ -94,6 +112,14 @@ async function update(id_package, packageData) {
         // If id_product1 is being updated, ensure it's not null
         if (packageData.hasOwnProperty('id_product1') && !packageData.id_product1) {
             return { error: "Se requiere al menos un producto para el paquete" };
+        }
+
+        //update: Validate discount_package if provided
+        if (packageData.hasOwnProperty('discount_package') && packageData.discount_package !== null) {
+            const discount = parseInt(packageData.discount_package);
+            if (isNaN(discount) || discount < 0 || discount > 100) {
+                return { error: "El descuento del paquete debe ser un número entre 0 y 100" };
+            }
         }
 
         // Verify that products exist and belong to the shop
@@ -127,6 +153,8 @@ async function update(id_package, packageData) {
         if (packageData.hasOwnProperty('id_product5')) updateData.id_product5 = packageData.id_product5;
         if (packageData.hasOwnProperty('name_package')) updateData.name_package = packageData.name_package;
         if (packageData.hasOwnProperty('active_package')) updateData.active_package = packageData.active_package;
+        if (packageData.hasOwnProperty('discount_package')) updateData.discount_package = packageData.discount_package;
+        if (packageData.hasOwnProperty('image_package')) updateData.image_package = packageData.image_package; //update: Include image_package
 
         // Update the package
         await packageToUpdate.update(updateData);
@@ -180,6 +208,15 @@ async function getById(id_package) {
             if (packageData.id_product3) packageData.product3 = productsMap[packageData.id_product3];
             if (packageData.id_product4) packageData.product4 = productsMap[packageData.id_product4];
             if (packageData.id_product5) packageData.product5 = productsMap[packageData.id_product5];
+
+            //update: Calculate total price and discounted price for the package
+            let totalPrice = 0;
+            products.forEach(product => {
+                totalPrice += parseFloat(product.price_product) || 0;
+            });
+            
+            packageData.total_price = totalPrice;
+            packageData.discounted_price = totalPrice * (1 - (packageData.discount_package || 0) / 100);
         }
         
         return {
@@ -247,6 +284,15 @@ async function getByShopId(id_shop, activeStatus = null) {
                 if (pkg.id_product3 && productsMap[pkg.id_product3]) pkgData.product3 = productsMap[pkg.id_product3];
                 if (pkg.id_product4 && productsMap[pkg.id_product4]) pkgData.product4 = productsMap[pkg.id_product4];
                 if (pkg.id_product5 && productsMap[pkg.id_product5]) pkgData.product5 = productsMap[pkg.id_product5];
+
+                //update: Calculate total price and discounted price for each package
+                let totalPrice = 0;
+                products.forEach(product => {
+                    totalPrice += parseFloat(product.price_product) || 0;
+                });
+                
+                pkgData.total_price = totalPrice;
+                pkgData.discounted_price = totalPrice * (1 - (pkgData.discount_package || 0) / 100);
             }
             
             return pkgData;
@@ -306,6 +352,30 @@ async function removeById(id_package) {
             return { error: "Paquete no encontrado" };
         }
 
+        //update: If package has an image, try to delete it
+        if (package_found.image_package) {
+            try {
+                // Get shop to find the correct directory
+                const shop = await shop_model.findByPk(package_found.id_shop);
+                if (shop) {
+                    const imagePath = path.join(
+                        __dirname,
+                        '..',
+                        '..',
+                        '..',
+                        'public',
+                        package_found.image_package
+                    );
+                    
+                    await fs.unlink(imagePath);
+                    console.log(`Deleted package image: ${imagePath}`);
+                }
+            } catch (error) {
+                console.error('Error deleting package image:', error);
+                // Continue with package deletion even if image deletion fails
+            }
+        }
+
         // Delete the package
         await package_found.destroy();
 
@@ -330,6 +400,31 @@ async function removeByShopId(id_shop, transaction) {
             return { count: 0 };
         }
 
+        //update: Delete package images
+        const shop = await shop_model.findByPk(id_shop);
+        if (shop) {
+            for (const pkg of packages) {
+                if (pkg.image_package) {
+                    try {
+                        const imagePath = path.join(
+                            __dirname,
+                            '..',
+                            '..',
+                            '..',
+                            'public',
+                            pkg.image_package
+                        );
+                        
+                        await fs.unlink(imagePath);
+                        console.log(`Deleted package image: ${imagePath}`);
+                    } catch (error) {
+                        console.error('Error deleting package image:', error);
+                        // Continue even if image deletion fails
+                    }
+                }
+            }
+        }
+
         // Remove all packages for this shop
         await package_model.destroy({
             where: { id_shop },
@@ -346,6 +441,28 @@ async function removeByShopId(id_shop, transaction) {
     }
 }
 
+//update: Function to update package image after upload
+async function updatePackageImage(id_package, imagePath) {
+    try {
+        const packageToUpdate = await package_model.findByPk(id_package);
+        if (!packageToUpdate) {
+            return { error: "Paquete no encontrado" };
+        }
+
+        // Update the image path
+        packageToUpdate.image_package = imagePath;
+        await packageToUpdate.save();
+
+        return {
+            data: packageToUpdate,
+            success: "Imagen del paquete actualizada con éxito"
+        };
+    } catch (err) {
+        console.error("-> package_controller.js - updatePackageImage() - Error = ", err);
+        return { error: "Error al actualizar la imagen del paquete" };
+    }
+}
+
 export { 
     getAll, 
     getById, 
@@ -356,7 +473,8 @@ export {
     getByShopId,
     getActiveByShopId,
     getInactiveByShopId,
-    toggleActiveStatus
+    toggleActiveStatus,
+    updatePackageImage
 }
 
 export default { 
@@ -369,5 +487,6 @@ export default {
     getByShopId,
     getActiveByShopId,
     getInactiveByShopId,
-    toggleActiveStatus
+    toggleActiveStatus,
+    updatePackageImage
 }

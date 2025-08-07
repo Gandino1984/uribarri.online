@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import axiosInstance from '../../../../../../utils/app/axiosConfig.js';
 import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../../../app_context/UIContext.jsx';
@@ -45,8 +45,13 @@ const ShopProductsListUtils = () => {
     setSelectedProductForImageUpload,
     setIsUpdatingProduct,
     refreshProductList,
-    setNewProductData
+    setNewProductData,
+    //update: Get categories from context
+    categories
   } = useProduct();
+
+  //update: Local state for all subcategories
+  const [allSubcategories, setAllSubcategories] = useState({});
 
   const { resetNewProductData } = ProductCreationFormUtils ? ProductCreationFormUtils() : { resetNewProductData: () => {} };
 
@@ -195,9 +200,13 @@ const ShopProductsListUtils = () => {
         (filters.temporada.toLowerCase() === 'todo el año' && 
          product.season_product.toLowerCase().includes('todo'));
   
-      // Type match - exact match required
+      //update: Modified type match to check both category name and type_product
       const typeMatch = !filters.tipo || 
-        product.type_product === filters.tipo;
+        product.type_product === filters.tipo ||
+        (categories && categories.find(cat => 
+          cat.id_category === product.id_category && 
+          cat.name_category === filters.tipo
+        ));
   
       // Subtype match - only apply if type matches
       const subtypeMatch = !filters.subtipo || 
@@ -233,7 +242,41 @@ const ShopProductsListUtils = () => {
              surplusMatch && expirationMatch &&
              secondHandMatch && newProductsMatch;
     });
-  }, [isNewProduct]);
+  }, [isNewProduct, categories]);
+
+  //update: Function to fetch all subcategories for the products
+  const fetchAllSubcategories = useCallback(async (products) => {
+    if (!products || products.length === 0) return {};
+    
+    try {
+      // Get unique category IDs from products
+      const uniqueCategoryIds = [...new Set(products
+        .filter(p => p.id_category)
+        .map(p => p.id_category))];
+      
+      const subcategoriesMap = {};
+      
+      // Fetch subcategories for each category
+      for (const categoryId of uniqueCategoryIds) {
+        try {
+          const response = await axiosInstance.get(`/product-subcategory/by-category/${categoryId}`);
+          if (response.data && response.data.data) {
+            // Store subcategories indexed by subcategory ID for easy lookup
+            response.data.data.forEach(subcategory => {
+              subcategoriesMap[subcategory.id_subcategory] = subcategory;
+            });
+          }
+        } catch (error) {
+          console.error(`Error fetching subcategories for category ${categoryId}:`, error);
+        }
+      }
+      
+      return subcategoriesMap;
+    } catch (error) {
+      console.error('Error fetching all subcategories:', error);
+      return {};
+    }
+  }, []);
 
   const fetchProductsByShop = useCallback(async () => {
     try {
@@ -260,6 +303,10 @@ const ShopProductsListUtils = () => {
       
       console.log(`Successfully fetched ${validProducts.length} valid products for shop ${selectedShop.name_shop}`);
       
+      //update: Fetch all subcategories for the products
+      const subcategoriesMap = await fetchAllSubcategories(validProducts);
+      setAllSubcategories(subcategoriesMap);
+      
       // Sort the products to maintain consistent order after updates
       // Most recent products first (assuming higher ID means more recent)
       const sortedProducts = [...validProducts].sort((a, b) => {
@@ -278,7 +325,7 @@ const ShopProductsListUtils = () => {
       setProducts([]);
       return [];
     } 
-  }, [selectedShop, setProducts, setSelectedProducts, setError]);
+  }, [selectedShop, setProducts, setSelectedProducts, setError, fetchAllSubcategories]);
 
   // Define deleteProduct before it's used in bulkDeleteProducts
   const deleteProduct = useCallback(async (id_product) => {
@@ -535,6 +582,9 @@ const ShopProductsListUtils = () => {
       calification_product: 0,
       type_product: '',
       subtype_product: '',
+      //update: Add category fields
+      id_category: '',
+      id_subcategory: '',
       sold_product: 0,
       info_product: '',
       id_shop: selectedShop?.id_shop || '',
@@ -662,7 +712,9 @@ const ShopProductsListUtils = () => {
     handleResetAllFilters,
     handleSelectForImageUpload,
     handleBulkUpdate,
-    isNewProduct
+    isNewProduct,
+    //update: Export allSubcategories
+    allSubcategories
   };
 };
 

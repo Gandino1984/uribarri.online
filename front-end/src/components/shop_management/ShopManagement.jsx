@@ -16,10 +16,11 @@ const ShopManagement = () => {
     selectedShop
   } = useShop();
   
-  const { setShowShopManagement } = useUI();
-  
-  
-  const { showProductManagement } = useUI();
+  //update: Get both setShowShopManagement and showProductManagement from UI context
+  const { 
+    setShowShopManagement,
+    showProductManagement 
+  } = useUI();
   
   const hasInitiallyFetchedShops = useRef(false);
   

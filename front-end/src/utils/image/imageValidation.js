@@ -4,14 +4,14 @@
  * Validates an image file
  * @param {File} file - The file to validate
  * @param {Object} options - Validation options
- * @param {number} options.maxSize - Maximum file size in bytes (default: 1MB)
+ * @param {number} options.maxSize - Maximum file size in bytes (default: 10MB for initial upload)
  * @param {string[]} options.allowedTypes - Allowed MIME types (default: common image types)
  * @returns {Promise<boolean>} - Returns true if valid, throws error if invalid
  */
 export const validateImageFile = (file, options = {}) => {
   return new Promise((resolve, reject) => {
     const {
-      maxSize = 1 * 1024 * 1024, //update: 1MB default max size
+      maxSize = 10 * 1024 * 1024, //update: Changed to 10MB to match backend initial limit
       allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
     } = options;
 
@@ -21,8 +21,13 @@ export const validateImageFile = (file, options = {}) => {
       return;
     }
 
-    //update: Don't check file size here since we'll compress it if needed
-    // We'll validate the final size after optimization
+    //update: Check file size against initial upload limit (10MB)
+    // The backend will compress it to 1MB, but we need to accept up to 10MB initially
+    if (file.size > maxSize) {
+      reject(new Error(`El archivo es demasiado grande. Máximo ${Math.round(maxSize / (1024 * 1024))}MB permitido.`));
+      return;
+    }
+
     console.log(`Validating image: ${file.name}, Type: ${file.type}, Size: ${Math.round(file.size / 1024)}KB`);
 
     // Check file type
@@ -38,6 +43,12 @@ export const validateImageFile = (file, options = {}) => {
       const img = new Image();
       img.onload = () => {
         console.log(`Image validated successfully: ${file.name}`);
+        
+        //update: Log if image will likely be compressed by backend
+        if (file.size > 1024 * 1024) {
+          console.log(`Note: Image is ${Math.round(file.size / (1024 * 1024))}MB and will be compressed by the server to under 1MB`);
+        }
+        
         resolve(true);
       };
       img.onerror = () => reject(new Error("El archivo no es una imagen válida"));

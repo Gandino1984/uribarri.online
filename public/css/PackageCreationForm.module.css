@@ -1,253 +1,568 @@
+/* PackageCreationForm.module.css - Updated to match app style */
+
 .formContainer {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 24px;
-    max-width: 800px;
-    margin: 0 auto;
-    overflow: hidden;
-  }
-  
-  .formHeader {
-    display: flex;
-    align-items: center;
-    margin-bottom: 24px;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 16px;
-  }
-  
-  .backButton {
-    background: none;
-    border: none;
-    color: #555;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    border-radius: 50%;
-    margin-right: 12px;
-    transition: background-color 0.2s, color 0.2s;
-  }
-  
-  .backButton:hover {
-    background-color: #f5f5f5;
-    color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 450px;
+  margin-top: 1rem;
+  padding: 1rem 1rem;
+  background: linear-gradient(190deg, rgba(255, 255, 255, 0.116), rgba(255, 255, 255, 0.56));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .5rem;
+  padding-bottom: .5rem;
+  width: 100%;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background-color: #e5e5e5;
+  color: white;
+  background-color: var(--saturated-orange);
+}
+
+.formTitle {
+  width: 100%;
+  text-align: center;
+  color: white;
+  line-height: 1.85rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  margin-bottom: .5rem;
+  font-size: 1.8rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.formTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent 0%, 
+    rgba(221, 221, 221, 0.3) 5%, 
+    rgba(221, 221, 221, 0.8) 15%, 
+    rgba(221, 221, 221, 1) 30%, 
+    rgba(221, 221, 221, 1) 70%, 
+    rgba(221, 221, 221, 0.8) 85%, 
+    rgba(221, 221, 221, 0.3) 95%, 
+    transparent 100%
+  );
+}
+
+.formTitleIcon {
+  color: var(--saturated-blue);
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.formSection {
+  width: 100%;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: black;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.selectedProductsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.selectedProductsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selectedProductsList::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.selectedProductsList::-webkit-scrollbar-thumb {
+  background: var(--saturated-orange);
+  border-radius: 3px;
+}
+
+.selectedProductItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  border-left: 3px solid var(--saturated-blue);
+  transition: all 0.2s ease;
+}
+
+.selectedProductItem:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.productNumber {
+  font-weight: 700;
+  margin-right: 0.75rem;
+  color: var(--saturated-blue);
+  min-width: 20px;
+}
+
+.productName {
+  flex: 1;
+  font-weight: 500;
+  color: white;
+}
+
+.productPrice {
+  font-weight: 700;
+  color: var(--light-orange);
+  margin-left: 0.75rem;
+}
+
+.noProductsMessage {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.formField {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: .5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: .9rem;
+  font-weight: 500;
+  color: white;
+  align-self: flex-start;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: white;
+  transition: all 0.2s ease;
+  color: black;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--light-gray);
+  opacity: 1;
+}
+
+.input:focus {
+  border: 2px solid white;
+  background-color: white;
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+}
+
+.input:hover {
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+}
+
+.inputError {
+  border: 2px solid var(--gradient-red-mid) !important;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 13px 1px rgba(229, 57, 53, 0.3) !important;
+}
+
+.errorText {
+  color: var(--gradient-red-mid);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  align-self: flex-start;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.checkbox {
+  margin-right: 0.5rem;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--saturated-blue);
+}
+
+/* Image upload styles */
+.imageUploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.imagePreviewContainer {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.imagePreview:hover {
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+  transform: scale(1.02);
+}
+
+.removeImageButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-red-mid);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.removeImageButton:hover {
+  background: var(--gradient-red-dark);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.imageUploadLabel {
+  display: block;
+  cursor: pointer;
+  width: 100%;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  min-height: 150px;
+}
+
+.imageUploadLabel:hover .uploadPlaceholder {
+  border-color: var(--saturated-blue);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.uploadIcon {
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
+}
+
+.imageUploadLabel:hover .uploadIcon {
+  color: var(--saturated-blue);
+}
+
+.uploadText {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+}
+
+.uploadHint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+.uploadProgress {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.uploadProgressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--saturated-blue);
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.uploadProgressText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Form actions */
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  width: 100%;
+  gap: 1rem;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background-color: #f5f5f5;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--dark-orange);
+  gap: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.button:hover {
+  color: white;
+  background-color: var(--saturated-orange);
+}
+
+.cancelButton {
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.cancelButton:hover {
+  background-color: #e5e5e5;
+  color: #333;
+  border-color: #ccc;
+}
+
+.submitButton {
+  background-color: var(--saturated-orange);
+  color: white;
+  border: none;
+}
+
+.submitButton:hover {
+  background-color: var(--dark-orange);
+}
+
+.submitButton:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* Loading state */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: white;
+}
+
+.spinner {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Price summary styles */
+.priceSummary {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.priceRow:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.priceLabel {
+  font-weight: 500;
+}
+
+.priceValue {
+  font-weight: 600;
+  color: var(--light-orange);
+}
+
+.discountValue {
+  font-weight: 600;
+  color: var(--light-green);
+}
+
+.finalPriceValue {
+  font-weight: 700;
+  color: var(--saturated-blue);
+  font-size: 1.1rem;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+  .formContainer {
+    padding: 15px;
+    max-width: 100%;
+    margin: 0 0.5rem;
   }
   
   .formTitle {
-    display: flex;
-    align-items: center;
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-  }
-  
-  .formTitleIcon {
-    margin-right: 10px;
-    color: #4a6fa5;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  
-  .formSection {
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    padding: 16px;
-    background-color: #fafafa;
+    font-size: 1.5rem;
   }
   
   .sectionTitle {
-    font-size: 18px;
-    font-weight: 500;
-    color: #444;
-    margin-top: 0;
-    margin-bottom: 16px;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 8px;
-  }
-  
-  .selectedProductsList {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 250px;
-    overflow-y: auto;
-    padding-right: 8px;
-  }
-  
-  .selectedProductItem {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #f0f4f8;
-    border-radius: 6px;
-    border-left: 4px solid #4a6fa5;
-  }
-  
-  .productNumber {
-    font-weight: 600;
-    margin-right: 12px;
-    color: #4a6fa5;
-    min-width: 24px;
-  }
-  
-  .productName {
-    flex: 1;
-    font-weight: 500;
-  }
-  
-  .productPrice {
-    font-weight: 600;
-    color: #2c7be5;
-    margin-left: 12px;
-  }
-  
-  .noProductsMessage {
-    color: #888;
-    font-style: italic;
-    text-align: center;
-    padding: 16px;
-  }
-  
-  .formField {
-    margin-bottom: 16px;
-  }
-  
-  .label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: #444;
-  }
-  
-  .input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    transition: border-color 0.2s;
-  }
-  
-  .input:focus {
-    border-color: #4a6fa5;
-    outline: none;
-  }
-  
-  .inputError {
-    border-color: #e53935;
-  }
-  
-  .errorText {
-    color: #e53935;
-    font-size: 14px;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .checkboxLabel {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-weight: 500;
-    color: #444;
-  }
-  
-  .checkbox {
-    margin-right: 8px;
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
+    font-size: 1.1rem;
   }
   
   .formActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
+    flex-direction: column;
   }
   
   .button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    border: none;
+    width: 100%;
+    justify-content: center;
   }
   
-  .cancelButton {
-    background-color: #f5f5f5;
-    color: #555;
+  .selectedProductItem {
+    padding: 0.5rem;
+    font-size: 0.85rem;
   }
   
-  .cancelButton:hover {
-    background-color: #e0e0e0;
+  .productName {
+    font-size: 0.85rem;
   }
   
-  .submitButton {
-    background-color: #4a6fa5;
-    color: white;
+  .productPrice {
+    font-size: 0.85rem;
   }
   
-  .submitButton:hover {
-    background-color: #3b5a84;
+  .imagePreview {
+    height: 150px;
   }
   
-  .submitButton:disabled {
-    background-color: #9cb3d0;
-    cursor: not-allowed;
+  .uploadPlaceholder {
+    padding: 1.5rem;
+    min-height: 120px;
   }
   
-  /* Responsive styles */
-  @media (max-width: 768px) {
-    .formContainer {
-      padding: 16px;
-      margin: 0 8px;
-    }
-  
-    .formTitle {
-      font-size: 20px;
-    }
-  
-    .formActions {
-      flex-direction: column;
-    }
-  
-    .button {
-      width: 100%;
-      justify-content: center;
-    }
+  .uploadIcon {
+    width: 32px;
+    height: 32px;
   }
-  
-  @media (max-width: 480px) {
-    .formHeader {
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-    }
-  
-    .sectionTitle {
-      font-size: 16px;
-    }
-  
-    .selectedProductItem {
-      padding: 8px;
-      flex-wrap: wrap;
-    }
-  
-    .productName {
-      width: 100%;
-      margin-bottom: 4px;
-    }
-  }
+}

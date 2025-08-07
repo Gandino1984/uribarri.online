@@ -36,15 +36,31 @@ const package_model = sequelize.define("package", {
         type: DataTypes.STRING(100),
         allowNull: true
     },
+    discount_package: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0,
+        validate: {
+            min: 0,
+            max: 100
+        },
+        comment: 'Percentage discount applied to the total package price (0-100)'
+    },
+    //update: Added image_package field
+    image_package: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        comment: 'Path to the package image'
+    },
     creation_package: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     },
     active_package: {
-        type: DataTypes.TINYINT(1),
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 1
+        defaultValue: true
     }
 }, {
     timestamps: false,

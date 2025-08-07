@@ -84,6 +84,17 @@ const ProductImageUpload = ({
     });
   };
 
+  //update: Add price unit options
+  const priceUnitOptions = [
+    'Euros/unidad',
+    'Euros/hora',
+    'Euros/sesión',
+    'Euros/día',
+    'Euros/semana',
+    'Euros/mes',
+    'Euros/año'
+  ];
+
   return (
     <section className={styles.imageSection}>
       <h2 className={styles.sectionTitle}>Imagen del producto</h2>
@@ -180,20 +191,37 @@ const ProductImageUpload = ({
         />
       </div>
       
-      {/* Product Price */}
+      {/* update: Product Price with Unit Select */}
       <div className={styles.formField}>
-        <label htmlFor="price_product">Precio</label>
-        <input
-          type="number"
-          id="price_product"
-          name="price_product"
-          value={productData.price_product}
-          onChange={onNumericInputChange}
-          step="0.01"
-          min="0"
-          required
-          placeholder="0.00" /* 💰 UPDATE: Added placeholder for price format */
-        />
+        <label className={styles.inputLabel} htmlFor="price_product">Precio</label>
+        <div className={styles.priceContainer}>
+          <input
+            type="number"
+            id="price_product"
+            name="price_product"
+            value={productData.price_product}
+            onChange={onNumericInputChange}
+            step="0.01"
+            min="0"
+            required
+            placeholder="0.00" /* 💰 UPDATE: Added placeholder for price format */
+            className={styles.priceInput}
+          />
+          <select
+            id="price_unit"
+            name="price_unit"
+            value={productData.price_unit || 'Euros/unidad'}
+            onChange={handleChange}
+            className={styles.priceUnitSelect}
+            required
+          >
+            {priceUnitOptions.map(option => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </section>
   );

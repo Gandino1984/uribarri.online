@@ -26,12 +26,6 @@ const SearchBar = ({ searchTerm, handleSearchChange, placeholder = 'Buscar paque
   // 🌟 Enhanced search bar with full width and improved styling
   return (
     <div className={styles.searchInputWrapper}>
-      <Search 
-        size={isSmallScreen ? 16 : 18} 
-        className={styles.searchIcon} 
-        strokeWidth={3}
-        color="white"
-      />
       <input
         type="text"
         value={searchTerm}
@@ -40,6 +34,7 @@ const SearchBar = ({ searchTerm, handleSearchChange, placeholder = 'Buscar paque
         className={styles.searchInput}
         aria-label="Buscar"
       />
+      
       {searchTerm && (
         <button 
           className={styles.clearSearchButton}
@@ -50,6 +45,12 @@ const SearchBar = ({ searchTerm, handleSearchChange, placeholder = 'Buscar paque
           <X size={isSmallScreen ? 16 : 18} />
         </button>
       )}
+           <Search 
+        size={isSmallScreen ? 16 : 18} 
+        className={styles.searchIcon} 
+        strokeWidth={3}
+        color="white"
+      />
     </div>
   );
 };

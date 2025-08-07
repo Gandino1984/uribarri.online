@@ -198,7 +198,7 @@ export const AppContextProvider = ({ children }) => {
       type_user: userData.type_user,   
       location: userData.location_user, 
       image_user: userData.image_user, 
-      category_user: userData.category_user, 
+      contributor_user: userData.contributor_user, 
     };
     
     // Create timestamp data for localStorage

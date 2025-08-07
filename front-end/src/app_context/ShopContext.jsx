@@ -23,7 +23,7 @@ export const ShopProvider = ({ children }) => {
   const [newShop, setNewShop] = useState({
     name_shop: '',
     id_type: '',
-    id_subtype: '',
+    id_subtype: '', //update: Added back id_subtype
     location_shop: '',
     id_user: '',
     calification_shop: 0, 
@@ -130,7 +130,6 @@ export const ShopProvider = ({ children }) => {
     shouldExitShopForm,
     startFormExitAnimation,
     closeShopFormWithAnimation,
-    //update: Add new properties for types loading state
     typesLoading,
     typesError,
     fetchTypesAndSubtypes

@@ -34,6 +34,14 @@ const PackageCreationFormUtils = () => {
       errors.id_shop = "Se requiere un comercio para crear un paquete";
     }
 
+    //update: Validate discount_package if provided
+    if (packageData.discount_package !== undefined && packageData.discount_package !== '') {
+      const discount = parseInt(packageData.discount_package);
+      if (isNaN(discount) || discount < 0 || discount > 100) {
+        errors.discount_package = "El descuento debe ser un número entre 0 y 100";
+      }
+    }
+
     return errors;
   }, []);
 
@@ -105,6 +113,7 @@ const PackageCreationFormUtils = () => {
         id_product4: packageData.id_product4,
         id_product5: packageData.id_product5,
         name_package: packageData.name_package,
+        discount_package: packageData.discount_package || 0, //update: Include discount_package
         active_package: packageData.active_package
       });
       
@@ -164,6 +173,96 @@ const PackageCreationFormUtils = () => {
     }
   }, [selectedShop, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setPackages]);
 
+  // ✨ UPDATE: Update an existing package
+  const handleUpdatePackage = useCallback(async (packageData) => {
+    try {
+      console.log('Updating package with data:', packageData);
+      
+      // Ensure there's a product1
+      if (!packageData.id_product1) {
+        return {
+          success: false,
+          message: "Se requiere al menos un producto para el paquete"
+        };
+      }
+
+      // Ensure we have the package ID
+      if (!packageData.id_package) {
+        return {
+          success: false,
+          message: "ID del paquete requerido para actualizar"
+        };
+      }
+
+      // Make API call to update package
+      const response = await axiosInstance.patch('/package/update', {
+        id_package: packageData.id_package,
+        id_product1: packageData.id_product1,
+        id_product2: packageData.id_product2,
+        id_product3: packageData.id_product3,
+        id_product4: packageData.id_product4,
+        id_product5: packageData.id_product5,
+        name_package: packageData.name_package,
+        discount_package: packageData.discount_package || 0,
+        active_package: packageData.active_package
+      });
+      
+      console.log('Package update response:', response.data);
+      
+      if (response.data && response.data.success) {
+        // Set success message
+        setSuccess(prev => ({
+          ...prev,
+          productSuccess: response.data.success || "Paquete actualizado exitosamente"
+        }));
+        setShowSuccessCard(true);
+        
+        // Fetch updated packages list
+        try {
+          const packagesResponse = await axiosInstance.get(`/package/by-shop-id/${selectedShop.id_shop}`);
+          if (packagesResponse.data && packagesResponse.data.data) {
+            setPackages(packagesResponse.data.data || []);
+          }
+        } catch (fetchError) {
+          console.error('Error fetching updated packages:', fetchError);
+        }
+        
+        return {
+          success: true,
+          data: response.data.data,
+          message: response.data.success
+        };
+      } else {
+        // Handle API error
+        setError(prevError => ({
+          ...prevError,
+          productError: response.data.error || "Error al actualizar el paquete"
+        }));
+        setShowErrorCard(true);
+        
+        return {
+          success: false,
+          message: response.data.error || "Error al actualizar el paquete"
+        };
+      }
+    } catch (error) {
+      console.error('Error updating package:', error);
+      
+      const errorMessage = error.response?.data?.error || "Error al actualizar el paquete";
+      
+      setError(prevError => ({
+        ...prevError,
+        productError: errorMessage
+      }));
+      setShowErrorCard(true);
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }, [selectedShop, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setPackages]);
+
   // ✨ UPDATE: Fetch packages by shop
   const fetchPackagesByShop = useCallback(async () => {
     try {
@@ -199,6 +298,7 @@ const PackageCreationFormUtils = () => {
     validatePackageForm,
     getProductDetails,
     handleCreatePackage,
+    handleUpdatePackage,
     fetchPackagesByShop
   };
 };

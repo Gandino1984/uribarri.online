@@ -10,6 +10,8 @@ router.get("/", shopApiController.getAll);
 
 router.get('/types-of-shops', shopApiController.getTypesOfShops);
 
+router.get('/subtypes-for-type/:id_type', shopApiController.getSubtypesForType);
+
 router.post("/by-type", shopApiController.getByType);
 
 router.post("/by-id", shopApiController.getById);
@@ -29,5 +31,7 @@ router.patch("/update", shopApiController.update);
 router.patch("/update-with-folder", shopApiController.updateWithFolder);
 
 router.post("/upload-cover-image", handleShopCoverUpload, shopApiController.uploadCoverImage);
+
+router.patch("/verify/:id_shop", shopApiController.verifyShop);
 
 export default router;

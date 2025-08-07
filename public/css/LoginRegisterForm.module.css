@@ -3,11 +3,11 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* margin-top: 1rem; */
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--gradient-purple-start), var(--gradient-purple-mid), var(--gradient-purple-end));
-  background-size: 200% 200%;
+  /* background-color: var(--light-gray); */
+    
+  /* background-size: 200% 200%; */
   position: relative;
   z-index: 100;
 }
@@ -19,12 +19,11 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%);
+  /* background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%); */
   pointer-events: none;
   z-index: 0;
 }
 
-/* ⚙️ UPDATE: Added grid overlay for the login form container */
 .container::before {
   content: '';
   position: absolute;
@@ -32,9 +31,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  /* background-image:  */
+    /* linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), */
+    /* linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); */
   background-size: 20px 20px;
   pointer-events: none;
   z-index: 1;
@@ -59,25 +58,37 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 1rem;
   padding: 1rem;
+}
+
+.formTitle {
+  user-select: none;
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgb(11, 11, 11);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
+  letter-spacing: 0.5px;
 }
 
 .formContent {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 1rem;
   align-items: stretch;
   justify-content: center;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.205);
   border-radius: 12px;
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end));
-  /* background-origin: border-box;
-  background-clip: padding-box, border-box; */
-  padding: .5rem .8rem .5rem .8rem;
+background-color: white;
+  /* background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end)); */
+  padding: .7rem .5rem .7rem .5rem;
   backdrop-filter: blur(1.9px);
   z-index: 0;
   width: 100%;
+  margin-top: 1rem;
 }
 
 .inputSection{
@@ -168,6 +179,10 @@
     align-items: center;
   }
 
+  .formTitle {
+    font-size: 2.5rem;
+  }
+
   input[type="text"],
   input[type="number"],
   select {
@@ -206,5 +221,10 @@
   
   .submitButton {
     min-width: 120px;
+  }
+
+
+  .formTitle {
+    font-size: 3rem;
   }
 }

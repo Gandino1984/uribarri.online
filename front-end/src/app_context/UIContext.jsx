@@ -22,32 +22,32 @@ export const UIProvider = ({ children }) => {
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   
   // Navigation and UI display states
-  const [showTopBar, setShowTopBar] = useState(false); // ⚙️ UPDATE: Hidden by default for landing page
-  const [showLandingPage, setShowLandingPage] = useState(true); // ⚙️ UPDATE: Show landing page by default
+  const [showTopBar, setShowTopBar] = useState(false); 
+  const [showLandingPage, setShowLandingPage] = useState(true); 
   const [showShopManagement, setShowShopManagement] = useState(false);
-  
-  // ⚠️ FIXED: Added showProductManagement state
+  //update: Ensure showProductManagement is here
   const [showProductManagement, setShowProductManagement] = useState(false);
-  
+  const [showShopWindow, setShowShopWindow] = useState(false);
+  const [showShopStore, setShowShopStore] = useState(false);
+  const [selectedShopForStore, setSelectedShopForStore] = useState(null);
+  const [showShopsListBySeller, setShowShopsListBySeller] = useState(false);
+  //update: Add showRiderManagement state
+  const [showRiderManagement, setShowRiderManagement] = useState(false);
+
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
   
-  // ⚠️ FIXED: Added missing uploading state
   const [uploading, setUploading] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImageForModal, setSelectedImageForModal] = useState('');
   
-  // ⚠️ FIXED: Added missing modal states for shop operations
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isAccepted, setIsAccepted] = useState(false);
-  // 🚀 UPDATE: Added isDeclined state
   const [isDeclined, setIsDeclined] = useState(false);
-  // 🚀 UPDATE: Added modalConfirmCallback for better handling of modal actions
   const [modalConfirmCallback, setModalConfirmCallback] = useState(null);
   
-  // 🔄 UPDATE: Added isCardMinimized state for UserInfoCard
   const [isCardMinimized, setIsCardMinimized] = useState(false);
 
   // Confirmation modal helpers
@@ -80,7 +80,6 @@ export const UIProvider = ({ children }) => {
     closeConfirmationModal();
   };
 
-  // 🚀 UPDATE: Added new method to open simple confirmation modal
   const openModal = (message, callback) => {
     setModalMessage(message);
     setModalConfirmCallback(() => callback);
@@ -96,7 +95,6 @@ export const UIProvider = ({ children }) => {
     setSuccess({});
   };
   
-  // ⚠️ FIXED: Added individual clear functions
   const clearError = () => {
     setError({});
   };
@@ -129,7 +127,6 @@ export const UIProvider = ({ children }) => {
         error, setError,
         success, setSuccess,
         clearNotifications,
-        // ⚠️ FIXED: Added clear functions
         clearError,
         clearInfo, 
         clearSuccess,
@@ -149,31 +146,30 @@ export const UIProvider = ({ children }) => {
         showTopBar, setShowTopBar,
         showLandingPage, setShowLandingPage,
         showShopManagement, setShowShopManagement,
-        
-        // ⚠️ FIXED: Added showProductManagement state
+        //update: Include showProductManagement
         showProductManagement, setShowProductManagement,
+        showShopWindow, setShowShopWindow,
+        showShopStore, setShowShopStore,
+        selectedShopForStore, setSelectedShopForStore,
+        showShopsListBySeller, setShowShopsListBySeller,
+        //update: Include showRiderManagement
+        showRiderManagement, setShowRiderManagement,
         
         // Image modal handlers
         showImageModal, setShowImageModal,
         modalImageSrc, setModalImageSrc,
         openImageModal, closeImageModal,
-        
-        // ⚠️ FIXED: Added missing uploading state and image modal states
+    
         uploading, setUploading,
         isImageModalOpen, setIsImageModalOpen,
         selectedImageForModal, setSelectedImageForModal,
         
-        // ⚠️ FIXED: Added missing modal states for shop operations
         isModalOpen, setIsModalOpen,
         modalMessage, setModalMessage,
         isAccepted, setIsAccepted,
-        // 🚀 UPDATE: Added isDeclined state
         isDeclined, setIsDeclined,
-        // 🚀 UPDATE: Added modalConfirmCallback and openModal
         modalConfirmCallback, setModalConfirmCallback,
         openModal,
-        
-        // 🔄 UPDATE: Added isCardMinimized state and setter for UserInfoCard
         isCardMinimized, setIsCardMinimized
       }}
     >

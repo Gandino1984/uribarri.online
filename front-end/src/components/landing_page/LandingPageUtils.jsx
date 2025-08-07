@@ -3,10 +3,6 @@ import { useEffect, useState } from 'react';
 import { useSpring } from '@react-spring/web';
 import { landingPageAnimations } from '../../utils/animation/transitions';
 
-/**
- * 🚀 UPDATE: Custom hook to handle landing page hover and exit states
- * @returns {Object} Hover and exit state management functions
- */
 export const useLandingPageStates = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -51,33 +47,44 @@ export const useLandingPageStates = () => {
 };
 
 /**
- * 🚀 UPDATE: Custom hook to manage the navigation after animation completes
+ * //update: Modified to handle navigation based on user type
  * @param {Function} setShowTopBar - Function to set top bar visibility
  * @param {Function} setShowLandingPage - Function to set landing page visibility
+ * @param {Function} setShowShopWindow - Function to set shop window visibility
+ * @param {Function} setShowShopsListBySeller - Function to set shops list by seller visibility
  * @param {String} animationPhase - Current phase of animation
+ * @param {Object} currentUser - Current user object with type_user property
  */
-export const useNavigationEffect = (setShowTopBar, setShowLandingPage, animationPhase) => {
+export const useNavigationEffect = (
+  setShowTopBar, 
+  setShowLandingPage, 
+  setShowShopWindow, 
+  setShowShopsListBySeller,
+  animationPhase, 
+  currentUser
+) => {
   useEffect(() => {
     if (animationPhase === 'completed') {
-      // Switch to login form with minimal delay
       const timer = setTimeout(() => {
         setShowTopBar(true);
         setShowLandingPage(false);
+        
+        //update: Navigate based on user type
+        if (currentUser && currentUser.type_user === 'seller') {
+          setShowShopsListBySeller(true);
+          setShowShopWindow(false);
+        } else {
+          // Default to ShopWindow for 'user' type or no user
+          setShowShopWindow(true);
+          setShowShopsListBySeller(false);
+        }
       }, 10); // Minimum possible delay for smooth transition
       
       return () => clearTimeout(timer);
     }
-  }, [animationPhase, setShowTopBar, setShowLandingPage]);
+  }, [animationPhase, setShowTopBar, setShowLandingPage, setShowShopWindow, setShowShopsListBySeller, currentUser]);
 };
 
-/**
- * 🚀 UPDATE: Custom hook to create all needed animations for LandingPage
- * @param {Boolean} isHovering - Whether button is being hovered
- * @param {Boolean} isExiting - Whether page is exiting
- * @param {String} animationPhase - Current animation phase
- * @param {Function} handleButtonAnimationComplete - Called when button animation completes
- * @returns {Object} All animation springs and configs for the component
- */
 export const useLandingPageAnimations = (
   isHovering, 
   isExiting, 

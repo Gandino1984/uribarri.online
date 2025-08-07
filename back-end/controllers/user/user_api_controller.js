@@ -94,7 +94,7 @@ async function update(req, res) {
         type_user, 
         image_user, 
         calification_user,
-        category_user,
+        contributor_user,
         age_user 
     } = req.body;
     
@@ -111,7 +111,7 @@ async function update(req, res) {
         type_user, 
         image_user,
         calification_user,
-        category_user,
+        contributor_user,
         age_user 
     });
     

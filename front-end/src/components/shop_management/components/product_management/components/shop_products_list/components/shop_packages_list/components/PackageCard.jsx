@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { X, Package, Calendar, Tag, Layers, Info, Check, XCircle } from 'lucide-react';
+import { X, Package, Calendar, Tag, Layers, Info, Check, XCircle, Percent, DollarSign} from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
-import styles from '../../../../../../../../../../../public/css/ShopPackagesList.module.css';
+//update: Import dedicated PackageCard styles
+import styles from '../../../../../../../../../../../public/css/PackageCard.module.css';
 import ProductImage from '../../../../product_image/ProductImage.jsx';
 
 const PackageCard = ({ package: packageItem, productDetails, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
+  //update: State for calculated prices
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
   
   // Animation for the card
   const animation = useSpring({
@@ -50,6 +54,21 @@ const PackageCard = ({ package: packageItem, productDetails, onClose }) => {
     setIsVisible(true);
   }, []);
   
+  //update: Calculate total and discounted prices when component mounts or productDetails change
+  useEffect(() => {
+    if (productDetails && productDetails.length > 0) {
+      const total = productDetails.reduce((sum, product) => {
+        return sum + (parseFloat(product.price_product) || 0);
+      }, 0);
+      setTotalPrice(total);
+      
+      // Calculate discounted price
+      const discount = parseInt(packageItem.discount_package) || 0;
+      const discounted = total * (1 - discount / 100);
+      setDiscountedPrice(discounted);
+    }
+  }, [productDetails, packageItem.discount_package]);
+  
   // Ensure we have valid product details
   const validProductDetails = productDetails || [];
   
@@ -78,11 +97,11 @@ const PackageCard = ({ package: packageItem, productDetails, onClose }) => {
             </h3>
             <div className={styles.infoGrid}>
               <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>ID:</span>
+                <span className={styles.infoLabel}>ID de paquete:</span>
                 <span className={styles.infoValue}>{packageItem.id_package}</span>
               </div>
               <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Comercio ID:</span>
+                <span className={styles.infoLabel}>ID de comercio:</span>
                 <span className={styles.infoValue}>{packageItem.id_shop}</span>
               </div>
               <div className={styles.infoItem}>
@@ -100,16 +119,60 @@ const PackageCard = ({ package: packageItem, productDetails, onClose }) => {
                 <span className={styles.infoValue}>
                   {packageItem.active_package ? (
                     <span className={styles.statusActive}>
-                      <Check size={16} color="green" />
                       Activo
+                      <Check size={16} color="green" />
                     </span>
                   ) : (
                     <span className={styles.statusInactive}>
-                      <XCircle size={16} color="red" />
                       Inactivo
+                      <XCircle size={16} color="red" />
                     </span>
                   )}
                 </span>
+              </div>
+              {/* {packageItem.discount_package > 0 && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>
+                    <Percent size={16} />
+                    <span>Descuento del Paquete:</span>
+                  </span>
+                  <span className={styles.infoValue}>
+                    <span className={styles.discountBadge}>
+                      {packageItem.discount_package}%
+                    </span>
+                  </span>
+                </div>
+              )} */}
+            </div>
+            
+            {/* Price summary section */}
+            <div className={styles.priceSummarySection}>
+              <h4 className={styles.priceSummaryTitle}>
+                <span>Resumen de Precios</span>
+              </h4>
+              <div className={styles.priceSummary}>
+                <div className={styles.priceRow}>
+                  <span className={styles.priceLabel}>Precio total productos:</span>
+                  <span className={styles.priceValue}>€{totalPrice.toFixed(2)}</span>
+                </div>
+                {packageItem.discount_package > 0 && (
+                  <>
+                    <div className={styles.priceRow}>
+                      <span className={styles.priceLabel}>Descuento ({packageItem.discount_package}%):</span>
+                      <span className={styles.discountValue}>-€{(totalPrice - discountedPrice).toFixed(2)}</span>
+                    </div>
+                    <div className={styles.priceRow}>
+                      <span className={styles.priceLabel}><strong>Precio final del paquete:</strong></span>
+                      <span className={styles.finalPriceValue}><strong>€{discountedPrice.toFixed(2)}</strong></span>
+                    </div>
+                  </>
+                )}
+                {packageItem.discount_package === 0 && (
+                  <div className={styles.priceRow}>
+                    <span className={styles.priceLabel}><strong>Precio final del paquete:</strong></span>
+                    <span className={styles.finalPriceValue}><strong>€{totalPrice.toFixed(2)}</strong></span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

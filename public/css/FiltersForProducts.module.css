@@ -1,47 +1,51 @@
-/* FiltersForProducts.module.css - Updated for orange color scheme */
+/* FiltersForProducts.module.css - Updated with app color scheme and improved responsive layout */
 
 .filtersContainer {
   width: 100%;
   max-width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   padding: 0;
-  background-color: white;
-  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  will-change: height, transform, opacity;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  overflow: visible;
+  min-height: fit-content;
+  height: auto;
+  will-change: transform, opacity;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
+  position: relative;
+  z-index: 10;
 }
 
 .filterControls {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   width: 100%;
   padding: 1rem;
+  min-height: fit-content;
   will-change: transform, opacity;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Row for select filters */
 .selectFiltersRow {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 0.75rem;
   width: 100%;
-  /* Add small delay to each child when animating */
+  min-height: fit-content;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* Row for checkbox filters */
 .checkboxFiltersRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 0.75rem;
   width: 100%;
+  min-height: fit-content;
   margin-top: 0.5rem;
-  flex-direction: column;
-  /* Add small delay to each child when animating */
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.05s;
 }
 
@@ -53,269 +57,296 @@
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* FIXED: Select styling with correct state colors */
+/* Select styling matching app theme */
 .filterSelect {
   width: 100%;
-  padding: 0.6rem 0.75rem;
-  border: 2px solid #e2e2e2;
-  /* border-radius: 0.375rem; */
-  font-size: 0.875rem;
-  color: var(--lighter-gray); /* Default color as light gray for placeholder */
+  max-width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--light-gray);
   background-color: white;
+  border-radius: 8px;
   cursor: pointer;
-  /* transition: all 0.2s ease-in-out; */
-  /* Add subtle shadow for depth */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: none;
+  border: none;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1em;
 }
 
-/* Hover state turns orange - add more specificity */
+/* Hover state */
 .filterSelect:hover {
-  border-color: var(--saturated-orange);
-  color: var(--dark-orange); /* Text turns orange on hover */
-  /* transform: translateY(-1px); */
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 .filterSelect:focus {
+  color: var(--lighter-gray);
+  border-color: none;
+  background-color: var(--superlight-blue);
   outline: none;
-  border-color: var(--saturated-orange);
-  box-shadow: 0 0 0 2px rgba(238, 135, 10, 0.1);
+  border: none;
 }
 
-/* Make selected values blue - higher specificity */
-.selectFiltersRow .filterSelect.hasValue {
-  color: var(--saturated-blue) !important; /* Force blue color for selected values */
+/* Selected values with blue color */
+.filterSelect.hasValue {
+  color: black !important;
 }
 
 /* Keep the blue when hovering a selected value */
-.selectFiltersRow .filterSelect.hasValue:hover {
-  border-color: var(--saturated-orange);
-  color: var(--saturated-blue) !important; /* Keep blue when hovering selected value */
+.filterSelect.hasValue:hover {
+  color: black;
+  border: none;
 }
 
-/* Set the option styles */
+/* Option styling */
 .filterSelect option {
-  color: var(--saturated-blue); /* Option items are blue in dropdown */
+  font-size: 0.9rem;
+  color: black;
   background-color: white;
 }
 
+/* First option (placeholder) stays light gray */
 .filterSelect option:first-child {
-  color: var(--lighter-gray); /* Placeholder option is gray */
+  color: black;
 }
 
-/* UPDATE: Added toggle filter wrapper styles with improved alignment */
+/* Toggle filter wrapper styles */
 .toggleFilterWrapper {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
 }
 
-/* UPDATE: Improved alignment in toggle switch container */
+/* Toggle switch container matching app style */
 .toggleSwitchContainer {
   display: flex;
   align-items: center;
-  justify-content: center; /* Changed to space-between for better label/toggle separation */
+  justify-content: space-between;
   width: 100%;
   gap: 1rem;
   padding: 0.5rem 0.75rem;
-  background-color: white;
-  border: 2px solid #e2e2e2;
-  min-height: 40px; /* UPDATE: Added fixed height to ensure alignment */
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  min-height: 2.5rem;
+  transition: all 0.2s ease;
 }
 
 .toggleSwitchContainer:hover {
-  border: 2px solid var(--saturated-blue);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
 }
 
-/* UPDATE: Improved toggleContainer vertical alignment */
-.toggleContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
+/* Toggle icon and label */
 .toggleIconLabel {
   user-select: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--dark-gray);
-  font-size: 0.8rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .toggleIconLabel svg {
-  display: block; 
-  flex-shrink: 0; 
+  display: block;
+  flex-shrink: 0;
+  color: white;
 }
 
-.checkboxWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  color: var(--dark-gray);
-  font-size: 0.8rem;
-  width: 100%;
-  transition: transform 0.2s ease;
-}
-
-.checkboxLabel:hover {
-  transform: translateX(2px);
-  color: var(--saturated-orange);
-}
-
-/* Changed to blue for checkboxes */
-.checkbox {
-  width: 1rem;
-  height: 1rem;
-  cursor: pointer;
-  accent-color: var(--saturated-blue); /* Blue checkboxes */
-}
-
+/* Reset button matching app style */
 .resetButtonWrapper {
   display: flex;
   justify-content: center;
   width: 100%;
-  /* Add small delay to button when animating */
+  margin-top: 0.5rem;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
 }
 
+.resetButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+
+.resetButton:hover {
+  color: white;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 12px var(--saturated-blue-transparent);
+}
 
 /* Active (pressed) state for reset button */
 .resetButton:active {
   background-color: var(--saturated-blue);
   border-color: var(--saturated-blue);
   color: white;
-  /* transform: translateY(0); */
 }
 
+/* Filter count badge */
 .filterCount {
-  position: absolute;
-  /* top: 0; */
-  right: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.25rem;
-  background-color: var(--saturated-blue);
+  background-color: var(--gradient-red-mid);
   color: white;
-  border-radius: 50%;
-  font-size: 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 0.25rem;
 }
 
-.dateRangeContainer {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 0.75rem;
-  background-color: white;
-  border: 1px solid #e2e2e2;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.08s;
-}
-
-.dateLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  color: var(--dark-gray);
-}
-
-.dateInputs {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.dateInput {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #e2e2e2;
-  font-size: 0.875rem;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.dateInput:focus {
-  border-color: var(--saturated-orange);
-  box-shadow: 0 0 0 2px rgba(238, 135, 10, 0.1);
-}
-
-.dateInput:hover {
-  border-color: var(--medium-gray);
-}
-
-/* Responsive improvements */
-/* Small tablets (640px and up) */
-@media (min-width: 640px) {
+/* Responsive Grid Layouts */
+/* Mobile - 1 column */
+@media (max-width: 639px) {
   .filterControls {
-    gap: 1rem;
+    padding: 0.75rem;
+    padding-bottom: 1rem;
+  }
+  
+  .selectFiltersRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .checkboxFiltersRow {
+    grid-template-columns: 1fr;
+    margin-bottom: 0.5rem;
+  }
+  
+  .filterSelect {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .toggleIconLabel {
+    font-size: 0.8rem;
+  }
+}
+
+/* Small tablets - 2 columns */
+@media (min-width: 640px) and (max-width: 767px) {
+  .selectFiltersRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .checkboxFiltersRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablets - 3 columns for selects, 2-3 for toggles */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .filterControls {
     padding: 1.25rem;
   }
   
-  .checkboxFiltersRow {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  
-  .checkboxWrapper, .toggleFilterWrapper {
-    width: auto;
-  }
-  
-  .dateInputs {
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .dateInput {
-    flex: 1;
-  }
-}
-
-/* Tablets (768px and up) */
-@media (min-width: 768px) {
   .selectFiltersRow {
-    flex-direction: row;
-    flex-wrap: wrap;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
   }
   
-  .filterWrapper {
-    flex-direction: row;
-    flex: 1 1 200px;
+  .checkboxFiltersRow {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
   }
 }
 
-/* Laptops/Desktops (1024px and up) */
+/* Desktop - optimal columns */
 @media (min-width: 1024px) {
   .filterControls {
     padding: 1.5rem;
+    gap: 1.25rem;
   }
   
-  .filterWrapper {
-    flex-direction: row;
-    flex: 1 1 220px;
+  .selectFiltersRow {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
   }
   
   .checkboxFiltersRow {
-    justify-content: flex-start;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+  }
+  
+  .toggleSwitchContainer {
+    padding: 0.6rem 1rem;
+  }
+}
+
+/* Large desktop - max width for better readability */
+@media (min-width: 1280px) {
+  .filtersContainer {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Animation classes for smooth transitions */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filtersContainer {
+  animation: slideDown 0.3s ease-out;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Ensure all child elements are properly sized */
+.filtersContainer * {
+  box-sizing: border-box;
+}
+
+/* Ensure proper stacking context for dropdowns */
+.filterWrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.filterWrapper:hover {
+  z-index: 2;
+}
+
+/* Dark mode support using CSS variables */
+@media (prefers-color-scheme: dark) {
+  .filtersContainer {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+  
+  .toggleSwitchContainer {
+    background-color: rgba(255, 255, 255, 0.05);
   }
 }

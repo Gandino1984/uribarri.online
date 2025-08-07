@@ -3,6 +3,7 @@ import { useTransition, animated } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import ShopManagement from "../shop_management/ShopManagement.jsx";
+import ShopStore from "../shop_store/ShopStore.jsx";
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
@@ -10,8 +11,14 @@ import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 // Memoize form content
 const FormContent = React.memo(() => {
+  //update: Import isLoggingIn from AuthContext to determine which title to show
+  const { isLoggingIn } = useAuth();
+  
   return (
     <div className={styles.formContentWrapper}>
+      <h1 className={styles.formTitle}>
+        {isLoggingIn ? 'Inicia sesión' : 'Crea tu usuari@ aquí.'}
+      </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
         <FormFields />
@@ -28,14 +35,16 @@ const LoginRegisterForm = () => {
   const { 
     showShopManagement, 
     showLandingPage,
-    setShowTopBar  
+    setShowTopBar,
+    showShopStore,
+    showShopWindow
   } = useUI();
   
   // Track if mounted, not animation state
   const [isMounted, setIsMounted] = useState(false);
   
   // Simple state to track if we should show content
-  const shouldShow = !showLandingPage && !showShopManagement && !currentUser;
+  const shouldShow = !showLandingPage && !showShopManagement && !currentUser && !showShopStore && !showShopWindow;
   
   // Show TopBar when form is visible
   useEffect(() => {
@@ -57,7 +66,11 @@ const LoginRegisterForm = () => {
   
   const transitions = useTransition(shouldShow, getTransition());
   
-  // Return ShopManagement if we should show it instead
+  // Return appropriate component based on state
+  if (showShopStore) {
+    return <ShopStore />;
+  }
+  
   if (showShopManagement || currentUser) {
     return <ShopManagement />;
   }

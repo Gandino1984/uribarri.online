@@ -20,7 +20,10 @@ const ProductTableRow = ({
   currentDeletingProduct,
   showExtendedInfo,
   showMediumInfo,
-  isSmallScreen
+  isSmallScreen,
+  //update: Added categories and subcategories props
+  categories,
+  subcategories
 }) => {
   // Determine if product is inactive to apply styling
   const isInactive = product.active_product === false || product.active_product === 0;
@@ -52,6 +55,31 @@ const ProductTableRow = ({
       return window.innerWidth < 374 ? '-' : (isSmallScreen ? '-' : 'No');
     }
     return window.innerWidth < 374 ? `${discount}` : `${discount}%`;
+  };
+  
+  //update: Helper function to get category name from ID
+  const getCategoryName = (categoryId) => {
+    if (!categoryId || !categories || categories.length === 0) {
+      // Fallback to type_product if no category ID
+      return product.type_product || '-';
+    }
+    
+    const category = categories.find(cat => cat.id_category === categoryId);
+    return category ? category.name_category : (product.type_product || '-');
+  };
+  
+  //update: Enhanced helper function to get subcategory name
+  const getSubcategoryName = () => {
+    // First check if we have a subcategory ID
+    if (product.id_subcategory && subcategories && Array.isArray(subcategories)) {
+      const subcategory = subcategories.find(sub => sub.id_subcategory === product.id_subcategory);
+      if (subcategory) {
+        return subcategory.name_subcategory;
+      }
+    }
+    
+    // Fallback to subtype_product field
+    return product.subtype_product || '-';
   };
   
   return (
@@ -91,10 +119,10 @@ const ProductTableRow = ({
         {formatPrice(product.price_product)}
       </td>
       <td className={`${styles.tableCell} ${styles.smallCell}`}>
-        {formatText(product.type_product, isSmallScreen ? 6 : 15)}
+        {formatText(getCategoryName(product.id_category), isSmallScreen ? 6 : 15)}
       </td>
       <td className={`${styles.tableCell} ${styles.smallCell}`}>
-        {formatText(product.subtype_product, isSmallScreen ? 6 : 15)}
+        {formatText(getSubcategoryName(), isSmallScreen ? 6 : 15)}
       </td>
       {showMediumInfo && (
         <>

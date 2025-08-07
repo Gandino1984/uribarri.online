@@ -1,4 +1,4 @@
-import React, { useCallback, memo, useState } from 'react';
+import React, { useCallback, memo, useState, useEffect } from 'react';
 import styles from '../../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from './components/shop_cover_image/ShopCoverImage.jsx';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
@@ -21,7 +21,25 @@ const ShopCard = ({ shop }) => {
   const { setSelectedShop, setShowShopCreationForm } = useShop();
   const { setShowProductManagement } = useUI();
   
-  const { formatTime, formatShopType, checkHasContinuousSchedule, formatOpenDays } = ShopCardUtils();
+  const { formatTime, formatShopType, checkHasContinuousSchedule, formatOpenDays, isShopOpen } = ShopCardUtils();
+
+  //update: State to track if shop is open
+  const [isOpen, setIsOpen] = useState(false);
+
+  //update: Check if shop is open on mount and every minute
+  useEffect(() => {
+    const checkOpenStatus = () => {
+      setIsOpen(isShopOpen(shop));
+    };
+
+    // Check immediately
+    checkOpenStatus();
+
+    // Set up interval to check every minute
+    const interval = setInterval(checkOpenStatus, 60000);
+
+    return () => clearInterval(interval);
+  }, [shop, isShopOpen]);
 
   // Event handlers
   const toggleMinimized = useCallback(() => {
@@ -48,6 +66,14 @@ const ShopCard = ({ shop }) => {
     setShowProductManagement(false);
   }, [shop, setSelectedShop, setShowShopCreationForm, setShowProductManagement]);
 
+  //update: Handler for report button
+  const handleReport = useCallback((e) => {
+    e.stopPropagation();
+    // TODO: Implement report functionality
+    console.log('Report shop:', shop.id_shop);
+    // You can add a modal or redirect to a report form here
+  }, [shop]);
+
   // Memoized values
   const isSeller = currentUser?.type_user === 'seller';
   const hasContinuousSchedule = checkHasContinuousSchedule(shop);
@@ -55,7 +81,6 @@ const ShopCard = ({ shop }) => {
   // Memoize formatted shop type
   const shopTypeFormatted = formatShopType(shop);
 
-  //update: Create wrapper div with conditional class for layout
   return (
     <div className={`${styles.shopCardWrapper} ${showMap && !minimized && !isSmallScreen ? styles.withMap : ''}`}>
       <div 
@@ -70,6 +95,7 @@ const ShopCard = ({ shop }) => {
               toggleMinimized={toggleMinimized}
               handleUpdateShop={handleUpdateShop}
               toggleMap={toggleMap}
+              handleReport={handleReport}
               isSeller={isSeller}
             />
             <ShopCoverImage id_shop={shop.id_shop} />
@@ -79,6 +105,7 @@ const ShopCard = ({ shop }) => {
               formatShopType={shopTypeFormatted}
               hasContinuousSchedule={hasContinuousSchedule}
               formatOpenDays={formatOpenDays}
+              isOpen={isOpen}
             />
           </>
         )}

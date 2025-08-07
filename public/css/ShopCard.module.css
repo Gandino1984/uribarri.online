@@ -417,6 +417,46 @@ header p{
   cursor: not-allowed;
 }
 
+/* Schedule wrapper for better alignment */
+.scheduleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Open/Closed status styles */
+.openStatus {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+.openStatus.open {
+  background-color: #10b981;
+  color: white;
+}
+
+.openStatus.closed {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Report button specific styling (optional) */
+.active[title="Reportar actividad inusual"] {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.active[title="Reportar actividad inusual"]:hover {
+  background-color: rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
 @media (max-width: 639px) {
   .container {
     max-height: 400px;

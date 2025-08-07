@@ -105,7 +105,6 @@ const ShopCardUtils = () => {
     return imageUrl;
   }, []);
 
-  // UPDATE: Modified formatTime to use 24-hour format
   const formatTime = useCallback((time) => {
     if (!time) return '00:00';
     return new Date(`2000-01-01T${time}`).toLocaleTimeString('es-ES', {
@@ -115,7 +114,6 @@ const ShopCardUtils = () => {
     });
   }, []);
 
-  //update: Modified to work with type and subtype names from the shop object
   const formatShopType = useCallback((shop) => {
     // Check if shop has type and subtype information
     if (!shop?.type || !shop?.type?.name_type) return 'No especificado';
@@ -133,7 +131,6 @@ const ShopCardUtils = () => {
     return !shop?.morning_close || !shop?.afternoon_open;
   }, []);
   
-  // UPDATE: Added function to format open days
   const formatOpenDays = useCallback((shop) => {
     if (!shop) return 'No disponible';
     
@@ -198,13 +195,63 @@ const ShopCardUtils = () => {
     }
   }, []);
 
+  //update: New function to check if shop is currently open
+  const isShopOpen = useCallback((shop) => {
+    if (!shop) return false;
+    
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Convert to minutes
+    
+    // Map current day to shop open days (0 = Sunday, 1 = Monday, etc.)
+    const dayMapping = [
+      'open_sunday',
+      'open_monday', 
+      'open_tuesday',
+      'open_wednesday',
+      'open_thursday',
+      'open_friday',
+      'open_saturday'
+    ];
+    
+    const todayKey = dayMapping[currentDay];
+    
+    // Check if shop is open today
+    if (!shop[todayKey]) {
+      return false;
+    }
+    
+    // Parse shop hours
+    const parseTime = (timeString) => {
+      if (!timeString) return null;
+      const [hours, minutes] = timeString.split(':').map(Number);
+      return hours * 60 + minutes;
+    };
+    
+    const morningOpen = parseTime(shop.morning_open);
+    const morningClose = parseTime(shop.morning_close);
+    const afternoonOpen = parseTime(shop.afternoon_open);
+    const afternoonClose = parseTime(shop.afternoon_close);
+    
+    // Check if shop has continuous schedule
+    if (!morningClose || !afternoonOpen) {
+      // Continuous schedule
+      return currentTime >= morningOpen && currentTime <= afternoonClose;
+    } else {
+      // Split schedule
+      return (currentTime >= morningOpen && currentTime <= morningClose) ||
+             (currentTime >= afternoonOpen && currentTime <= afternoonClose);
+    }
+  }, []);
+
   return {
     getShopImageUrl,
     handleShopImageUpload,
     formatTime,
     formatShopType,
     checkHasContinuousSchedule,
-    formatOpenDays
+    formatOpenDays,
+    isShopOpen
   };
 };
 
