@@ -1,3 +1,4 @@
+// front-end/src/components/shop_management/components/shops_list_by_seller/ShopsListBySeller.jsx
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
@@ -7,37 +8,41 @@ import { useOrder } from '../../../../app_context/OrderContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
-import { Plus, ShoppingBag } from 'lucide-react';
+import { 
+  Plus, 
+  ShoppingBag, 
+  Store, 
+  MapPin, 
+  Star, 
+  Edit, 
+  Trash2,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 import ShopLimitIndicator from './components/ShopLimitIndicator';
-import ShopsTable from './components/ShopsTable';
 import ShopOrdersList from '../shops_list_by_seller/components/shop_oders_list/ShopOrdersList.jsx';
 
 const ShopsListBySeller = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  //update: Added state for showing orders list
   const [showOrdersList, setShowOrdersList] = useState(false);
-  //update: Added state for pending orders count
   const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
-
+  const [expandedShop, setExpandedShop] = useState(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
-  //update: Added order context methods
   const { shopOrders, fetchShopOrders } = useOrder();
-  
-  // 🔧 UPDATE: Added UI context to manage info messages for shop instructions
-  const { setInfo, setShowInfoCard } = useUI();
+  const { setInfo, setShowInfoCard, openImageModal } = useUI();
 
   const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
   const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
   
-  // Calculate appropriate limit based on user's category
   const shopLimit = useMemo(() => {
     return currentUser?.contributor_user ? maxSponsorShops : maxRegularShops;
   }, [currentUser?.contributor_user, maxSponsorShops, maxRegularShops]);
@@ -53,7 +58,7 @@ const ShopsListBySeller = () => {
     shouldShowShopCard
   } = ShopsListBySellerUtils();
 
-  // Using title animation from transitions file
+  // Title animation
   const titleAnimation = useSpring({
     opacity: isVisible ? 1 : 0,
     transform: isVisible 
@@ -62,8 +67,8 @@ const ShopsListBySeller = () => {
     config: shopsListAnimations.titleAnimation.config
   });
 
-  // Using table transition from transitions file
-  const tableTransition = useTransition(isVisible && !isExiting, {
+  // List animation
+  const listTransition = useTransition(isVisible && !isExiting, {
     from: shopsListAnimations.tableAnimation.from,
     enter: shopsListAnimations.tableAnimation.enter,
     leave: shopsListAnimations.tableAnimation.leave,
@@ -76,7 +81,7 @@ const ShopsListBySeller = () => {
     }
   });
 
-  // Using shop card animation from transitions file
+  // Shop card animation
   const cardAnimation = useSpring({
     opacity: selectedShop && shouldShowShopCard() && !showProductManagement 
       ? shopsListAnimations.shopCardAnimation.enter.opacity 
@@ -85,6 +90,15 @@ const ShopsListBySeller = () => {
       ? shopsListAnimations.shopCardAnimation.enter.transform 
       : shopsListAnimations.shopCardAnimation.from.transform,
     config: shopsListAnimations.shopCardAnimation.config
+  });
+
+  // Individual shop card animations
+  const shopCardsTransition = useTransition(shops, {
+    keys: shop => shop.id_shop,
+    from: { opacity: 0, transform: 'translateY(20px)' },
+    enter: { opacity: 1, transform: 'translateY(0px)' },
+    leave: { opacity: 0, transform: 'translateY(-20px)' },
+    config: { tension: 280, friction: 25 }
   });
 
   useEffect(() => {
@@ -98,43 +112,35 @@ const ShopsListBySeller = () => {
     };
   }, []);
 
-  // Load shops when necessary
   useEffect(() => {
     if ((!shops || shops.length === 0) && currentUser?.id_user) {
       fetchUserShops();
     }
   }, [currentUser?.id_user, fetchUserShops, shops]);
 
-  // Handle visibility changes on mount/unmount
   useEffect(() => {
-    // Component mounted
     setIsVisible(true);
-    
-    // Cleanup function for unmounting
     return () => {
       setIsExiting(true);
     };
   }, []);
 
-  // 🔧 UPDATE: Show instruction message when component loads and there are shops
   useEffect(() => {
     if (shops && shops.length > 0 && isVisible) {
       setInfo(prevInfo => ({
         ...prevInfo,
-        shopInstructions: "Haz doble click en un comercio para administrar sus productos"
+        shopInstructions: "Haz clic en un comercio para administrar sus productos"
       }));
       setShowInfoCard(true);
     }
   }, [shops, isVisible, setInfo, setShowInfoCard]);
 
-  //update: Effect to fetch orders when selected shop changes
   useEffect(() => {
     if (selectedShop?.id_shop) {
       fetchShopOrders(selectedShop.id_shop);
     }
-  }, [selectedShop?.id_shop]); // update: Only depend on shop ID to avoid infinite loops
+  }, [selectedShop?.id_shop]);
 
-  //update: Effect to calculate pending orders count
   useEffect(() => {
     if (shopOrders && shopOrders.length > 0) {
       const pendingCount = shopOrders.filter(order => order.order_status === 'pending').length;
@@ -144,26 +150,132 @@ const ShopsListBySeller = () => {
     }
   }, [shopOrders]);
 
-  //update: Effect to poll for new orders every 30 seconds
   useEffect(() => {
     if (!selectedShop?.id_shop) return;
 
     const interval = setInterval(() => {
       fetchShopOrders(selectedShop.id_shop);
-    }, 30000); // 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, [selectedShop?.id_shop]); // update: Only depend on shop ID to avoid infinite loops
+  }, [selectedShop?.id_shop]);
 
-  // Log selected shop updates for debugging
-  useEffect(() => {
-    if (selectedShop) {
-      console.log('Selected shop updated:', selectedShop.id_shop);
-    }
-  }, [selectedShop]);
+  const toggleExpanded = (shopId) => {
+    setExpandedShop(prev => prev === shopId ? null : shopId);
+  };
+
+  const renderShopCard = (shop, style) => {
+    const isSelected = isShopSelected(shop.id_shop);
+    const isExpanded = expandedShop === shop.id_shop;
+    
+    return (
+      <animated.div 
+        key={shop.id_shop}
+        style={style} 
+        className={`${styles.shopCard} ${isSelected ? styles.selectedShop : ''}`}
+      >
+        <div 
+          className={styles.shopCardHeader}
+          onClick={() => handleSelectShop(shop)}
+        >
+          <div className={styles.shopMainInfo}>
+            {/* Shop Image */}
+            {shop.image_shop ? (
+              <div 
+                className={styles.shopImageContainer}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openImageModal(formatImageUrl(shop.image_shop));
+                }}
+              >
+                <img 
+                  src={formatImageUrl(shop.image_shop)} 
+                  alt={shop.name_shop}
+                  className={styles.shopImage}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            ) : (
+              <div className={`${styles.shopImageContainer} ${styles.noImage}`}>
+                <Store size={30} className={styles.placeholderIcon} />
+              </div>
+            )}
+            
+            {/* Shop Info */}
+            <div className={styles.shopInfo}>
+              <h4 className={styles.shopName}>{shop.name_shop}</h4>
+              <div className={styles.shopMeta}>
+                <span className={styles.shopType}>
+                  {shop.type_shop}
+                </span>
+                {shop.subtype_shop && (
+                  <span className={styles.shopSubtype}>
+                    {shop.subtype_shop}
+                  </span>
+                )}
+                <span className={styles.shopLocation}>
+                  <MapPin size={14} />
+                  {shop.location_shop}
+                </span>
+                <span className={styles.shopRating}>
+                  <Star size={14} />
+                  {shop.calification_shop}/5
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Shop Actions */}
+          <div className={styles.shopActions}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateShop(shop);
+              }}
+              className={styles.actionButton}
+              title="Actualizar comercio"
+            >
+              <Edit size={18} />
+            </button>
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteShop(shop.id_shop);
+              }}
+              className={styles.actionButton}
+              title="Eliminar comercio"
+            >
+              <Trash2 size={18} />
+            </button>
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleExpanded(shop.id_shop);
+              }}
+              className={styles.actionButton}
+              title={isExpanded ? "Contraer" : "Expandir"}
+            >
+              {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+          </div>
+        </div>
+        
+        {/* Expanded Details */}
+        {isExpanded && (
+          <div className={styles.shopDetails}>
+            <ShopCard shop={shop} />
+          </div>
+        )}
+      </animated.div>
+    );
+  };
 
   return (
-    <div className={`${styles.container} ${selectedShop && shouldShowShopCard() ? styles.expandedContainer : ''}`}>
+    <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
@@ -171,33 +283,33 @@ const ShopsListBySeller = () => {
               Mis comercios
             </h1>
             
-            <button 
-              onClick={() => handleAddShop(shopLimit)}
-              className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : ''}`}
-              title="Crear nuevo comercio"
-              disabled={shopCount >= shopLimit}
-            >
-              <span>Crear</span>
-              <Plus size={screenWidth > 480 ? 16 : 20} />
-            </button>
-            
-            {/* update: Added orders button with notification */}
-            {selectedShop && (
+            <div className={styles.headerButtons}>
               <button 
-                onClick={() => setShowOrdersList(true)}
-                className={`${styles.active} ${styles.ordersButton}`}
-                title="Ver pedidos del comercio"
+                onClick={() => handleAddShop(shopLimit)}
+                className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : ''}`}
+                title="Crear nuevo comercio"
+                disabled={shopCount >= shopLimit}
               >
-                <span>Pedidos</span>
-                <ShoppingBag size={screenWidth > 480 ? 16 : 20} />
-                {pendingOrdersCount > 0 && (
-                  <span className={styles.notificationBadge}>{pendingOrdersCount}</span>
-                )}
+                <Plus size={screenWidth > 480 ? 16 : 20} />
+                <span>Crear comercio</span>
               </button>
-            )}
+              
+              {selectedShop && (
+                <button 
+                  onClick={() => setShowOrdersList(true)}
+                  className={`${styles.active} ${styles.ordersButton}`}
+                  title="Ver pedidos del comercio"
+                >
+                  <ShoppingBag size={screenWidth > 480 ? 16 : 20} />
+                  <span>Pedidos</span>
+                  {pendingOrdersCount > 0 && (
+                    <span className={styles.notificationBadge}>{pendingOrdersCount}</span>
+                  )}
+                </button>
+              )}
+            </div>
           </animated.div>
         
-          {/* Shop limit indicator */}
           <animated.div style={titleAnimation}>
             <ShopLimitIndicator 
               shopCount={shopCount} 
@@ -208,31 +320,37 @@ const ShopsListBySeller = () => {
         </div>
 
         <div className={styles.shopManagementContainer}>
-          {tableTransition((style, show) => 
+          {listTransition((style, show) => 
             show && (
-              <animated.div style={{...style, width: '100%'}} className={styles.tableContainer}>
-                <ShopsTable 
-                  shops={shops}
-                  isShopSelected={isShopSelected}
-                  handleSelectShop={handleSelectShop}
-                  handleUpdateShop={handleUpdateShop}
-                  handleDeleteShop={handleDeleteShop}
-                />
+              <animated.div style={{...style, width: '100%'}}>
+                {(!shops || shops.length === 0) ? (
+                  <div className={styles.messageNoShops}>
+                    <Store size={48} />
+                    <p>No tienes comercios registrados</p>
+                    <p>¡Crea tu primer comercio para comenzar!</p>
+                  </div>
+                ) : (
+                  <div className={styles.listHeaderContainer}>
+                    <div className={styles.listHeader}>
+                      <h3 className={styles.listTitle}>
+                        <Store size={20} />
+                        Comercios ({shops.length})
+                      </h3>
+                    </div>
+                    
+                    <div className={styles.shopsList}>
+                      {shopCardsTransition((style, shop) => 
+                        shop && renderShopCard(shop, style)
+                      )}
+                    </div>
+                  </div>
+                )}
               </animated.div>
             )
-          )}
-
-          {selectedShop && shouldShowShopCard() && !showProductManagement && (
-            <div className={styles.shopCardWrapper}>
-              <animated.div style={cardAnimation} className={styles.shopCardContainer}>
-                <ShopCard shop={selectedShop} />
-              </animated.div>
-            </div>
           )}
         </div>
       </div>
       
-      {/* update: Added ShopOrdersList component */}
       {showOrdersList && selectedShop && (
         <ShopOrdersList onClose={() => setShowOrdersList(false)} />
       )}

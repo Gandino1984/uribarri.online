@@ -1,15 +1,15 @@
+/* ShopsListBySeller.module.css - Updated with card-based design similar to ShopPackagesList */
+
 .container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
-  padding: 1rem;
-  padding-top: calc(var(--topbar-height) + 1rem);
-  position: relative;
-}
-
-.expandedContainer {
   min-height: 100vh;
+  gap: 1.5rem;
+  margin-top: 11rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 1rem;
 }
 
 .content {
@@ -40,160 +40,275 @@
   gap: 1rem;
 }
 
-.header button {
-  margin: 0 0.5rem;
-}
-
 .title {
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
   font-size: 2.2rem;
   font-weight: 700;
   color: white;
   margin-bottom: 1rem;
-  /* margin: 0; */
+  text-align: center;
 }
 
+/* Header Buttons Container */
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Shop Management Container */
 .shopManagementContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
   position: relative;
   min-height: 300px;
+  gap: .5rem;
 }
 
-.tableContainer {
+.listHeaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+/* Card-based List Header (similar to ShopPackagesList) */
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  overflow-x: auto;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
   padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.shopCardWrapper {
-  position: relative;
-  width: 100%;
-  margin-top: 1rem;
-  padding-bottom: 2rem;
-}
-
-.shopCardContainer {
-  width: 100%;
+  background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end));
   border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  position: relative;
-  z-index: 1;
+  margin-bottom: .5rem;
+  margin: 0 1rem;
 }
 
-.shopCardInstructions {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.shopCardInstructions p {
-  color: white;
-  font-size: 0.8rem;
-  /* margin: 0; */
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  color: white;
-}
-
-.tableHeader {
-  text-align: left;
-  font-weight: 500;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.tableHeaderCell {
-  padding: 0.5rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.tableRow {
-  color: black;
-  background-color: rgb(255, 255, 255);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: all .2s ease;
-}
-
-.tableRow:hover {
-  color: white;
-  border-left: 3px solid white;
-  background-color: var(--light-gradient-purple-start);
-}
-
-.selectedRow {
-  color: white;
-  background-color: var(--dark-gradient-purple-start) !important; 
+.listTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
+  color: white;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
-.tableCell {
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  white-space: nowrap;
+/* Shops List Container */
+.shopsList {
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  gap: 1rem;
+  padding: 0 1rem 1rem 1rem;
+}
+
+/* Shop Card Styles (similar to package cards) */
+.shopCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.shopCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.shopCard.selectedShop {
+  box-shadow: 0 0 0 3px var(--saturated-blue);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
+}
+
+.shopCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  cursor: pointer;
+}
+
+.shopMainInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Shop Image Container */
+.shopImageContainer {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.shopImageContainer:hover {
+  transform: scale(1.05);
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+}
+
+.shopImageContainer.noImage {
+  border: 2px dashed rgba(209, 213, 219, 0.8);
+  background: rgba(243, 244, 246, 0.5);
+}
+
+.shopImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholderIcon {
+  color: rgba(156, 163, 175, 0.6);
+}
+
+/* Shop Info */
+.shopInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.shopName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px;
+  white-space: nowrap;
 }
 
-.actionsCell {
+.shopMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.shopType {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(219, 234, 254, 1), rgba(191, 219, 254, 1));
+  color: #1e40af;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(30, 64, 175, 0.2);
+}
+
+.shopSubtype {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(243, 232, 255, 1), rgba(233, 213, 255, 1));
+  color: #6b21a8;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(107, 33, 168, 0.2);
+}
+
+.shopLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.shopRating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(254, 240, 138, 1), rgba(253, 224, 71, 1));
+  color: #92400e;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(146, 64, 14, 0.2);
+}
+
+/* Shop Actions */
+.shopActions {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem;
 }
 
-.updateButton, 
-.deleteButton {
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: black;
-  padding: 0.05rem 0.25rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+.actionButton {
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.updateButton:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+.actionButton:hover {
+  background: var(--saturated-blue);
   color: white;
-  box-shadow: 0px 0px 10px var(--saturated-blue-transparent);
-  border: 1px solid white;
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .deleteButton:hover {
-  border: 1px solid white;
-  background-color: rgba(255, 255, 255, 0.3);
-  color: var(--gradient-red-mid);
-  box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.393);
+  background: var(--gradient-red-mid);
+  border-color: var(--gradient-red-mid);
 }
 
+/* Active/Create Buttons */
 .active {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.3rem .3rem;
-  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, var(--saturated-blue), var(--dark-gradient-purple-start));
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .active:hover {
-  color: white;
-  border: 1px solid white;
-  background-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+  background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+  transform: translateY(-2px);
 }
 
 .inactive {
@@ -201,19 +316,19 @@
   cursor: not-allowed;
 }
 
-/* update: Added orders button specific styles */
+/* Orders button specific styles */
 .ordersButton {
   position: relative;
-  background-color: var(--light-gradient-purple-start);
+  background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--dark-gradient-purple-start));
   color: white;
 }
 
 .ordersButton:hover {
-  background-color: var(--dark-gradient-purple-start);
+  background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
   box-shadow: 0 0 15px var(--saturated-purple-transparent);
 }
 
-/* update: Added notification badge styles */
+/* Notification badge */
 .notificationBadge {
   position: absolute;
   top: -8px;
@@ -245,118 +360,278 @@
   }
 }
 
-/* Shop Limit Indicator Styles */
+/* Shop Limit Indicator */
 .shopLimitInfo {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  /* background-color: rgba(255, 255, 255, 0.05); */
+  /* background: rgba(255, 255, 255, 0.1); */
+  backdrop-filter: blur(4px);
 }
 
 .limitHeader {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: white;
-  font-size: 0.8rem;
+  color: gray;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
+.limitHeader span{
+  color: var(--dark-gradient-purple-end);
+}
+
 .upgradeMessage {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .statusGreen {
-  color: var(--light-green);
+  color: #10b981;
 }
 
 .statusOrange {
-  color: var(--saturated-orange);
+  color: #f59e0b;
 }
 
 .statusRed {
-  color: var(--light-gradient-purple-end);
+  color: #ef4444;
 }
 
+/* Empty state */
 .messageNoShops {
-  width: 100%;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 1rem;
   text-align: center;
-  font-size: .8rem;
   color: white;
-  /* background-color: rgba(255, 255, 255, 0.05); */
-  border-radius: 8px;
+  font-weight: 500;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
-/* 🛡️ UPDATE: Added responsive adjustments */
+.messageNoShops svg {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Shop Details Card (when selected) */
+.shopCardWrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.shopCardContainer {
+  width: 100%;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+/* Shop Details (expanded section) */
+.shopDetails {
+  background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5));
+  padding: 1rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+/* Loading and Empty States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.loadingIcon {
+  animation: spin 2s linear infinite;
+  color: var(--saturated-blue);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Create Shop Button in Empty State */
+.createButton {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--saturated-blue), var(--dark-gradient-purple-start));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.createButton:hover {
+  background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;
-    /* 🛡️ UPDATE: Adjust top padding for smaller screens */
-    padding-top: calc(var(--topbar-height) + 0.5rem);
+    margin-top: 10rem;
   }
   
   .content {
     gap: 1rem;
   }
   
-  .shopCardContainer {
-    padding: 1rem;
-  }
-  
   .header {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
     padding-top: 2rem;
   }
   
   .title {
-    width: 100%;
-    text-align: center;
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
   }
   
-  .header button {
-    margin: 0.25rem;
+  .headerButtons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .listHeader {
+    margin: 0 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .shopsList {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+  }
+  
+  .shopCardHeader {
+    padding: 0.75rem;
+  }
+  
+  .shopImageContainer {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .shopName {
+    font-size: 1rem;
+  }
+  
+  .shopMeta {
+    gap: 0.5rem;
+  }
+  
+  .active {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 0.25rem;
+    margin-top: 9rem;
+  }
+  
   .header {
     gap: 0.75rem;
     padding-top: 1.5rem;
-  }
-  
-  .tableContainer {
-    padding: 0.5rem;
-  }
-  
-  .shopCardContainer {
-    padding: 0.75rem;
   }
   
   .title {
     font-size: 1.5rem;
   }
   
-  .header button {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.9rem;
+  .listHeader {
+    margin: 0 0.25rem;
+    padding: 0.5rem;
   }
   
-  .ordersButton span,
+  .listTitle {
+    font-size: 1.125rem;
+  }
+  
+  .shopsList {
+    padding: 0 0.25rem 0.25rem 0.25rem;
+    gap: 0.5rem;
+  }
+  
+  .shopCardHeader {
+    padding: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .shopImageContainer {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .shopName {
+    font-size: 0.875rem;
+  }
+  
+  .shopType,
+  .shopSubtype,
+  .shopRating {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
+  }
+  
+  .shopLocation {
+    font-size: 0.75rem;
+  }
+  
+  .shopActions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+  }
+  
   .active span {
     display: none;
   }
   
-  .ordersButton,
-  .active {
+  .active,
+  .ordersButton {
     padding: 0.5rem;
   }
   
