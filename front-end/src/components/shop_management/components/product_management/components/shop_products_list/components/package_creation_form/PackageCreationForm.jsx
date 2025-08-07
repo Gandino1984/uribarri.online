@@ -1,3 +1,4 @@
+// front-end/src/components/shop_management/components/product_management/components/product_creation_form/components/shops_packages_list/components/package_creation_form/PackageCreationForm.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../../../../../app_context/ShopContext.jsx';
@@ -8,8 +9,11 @@ import PackageCreationFormUtils from './PackageCreationFormUtils.jsx';
 import { useTransition, animated } from '@react-spring/web';
 import { formAnimation } from '../../../../../../../../utils/animation/transitions.js';
 import { ArrowLeft, PackagePlus, X, Save, AlertTriangle, Upload, Image as ImageIcon } from 'lucide-react';
+//update: Import from the new packageImageUploadService file
 import { uploadPackageImage, formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
 import { validateImageFile } from '../../../../../../../../utils/image/imageValidation.js';
+import { optimizeImage } from '../../../../../../../../utils/image/imageOptimizer.js';
+import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 
 import styles from '../../../../../../../../../../public/css/PackageCreationForm.module.css';
 
@@ -177,7 +181,7 @@ const PackageCreationForm = () => {
     updateProductDetails();
   }, [newPackageData, getProductDetails]);
   
-  //update: Handle image file selection
+  //update: Enhanced image file selection with optimization
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -186,13 +190,33 @@ const PackageCreationForm = () => {
       // Validate the image
       await validateImageFile(file);
       
-      // Set the file and create preview
-      setImageFile(file);
+      // Optimize the image client-side first (similar to product image handling)
+      let optimizedFile = file;
+      try {
+        optimizedFile = await optimizeImage(file, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.85,
+          format: 'image/webp',
+          maxSizeKB: 1024 // 1MB limit
+        });
+        console.log('Package image optimized client-side:', {
+          originalSize: Math.round(file.size / 1024) + 'KB',
+          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+        });
+      } catch (optimizeError) {
+        console.warn('Client-side optimization failed, will use original:', optimizeError);
+      }
+      
+      // Set the optimized file
+      setImageFile(optimizedFile);
+      
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(optimizedFile);
       
       // Clear any previous errors
       if (formErrors.image_package) {
@@ -261,7 +285,7 @@ const PackageCreationForm = () => {
     }
   };
   
-  // Submit form handler
+  //update: Enhanced submit handler with proper image upload flow
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -276,44 +300,103 @@ const PackageCreationForm = () => {
         return;
       }
       
-      // Create or update package based on mode
+      let tempImageData = null;
+      
+      // Step 1: Upload image first (if selected) without package ID for new packages
+      if (imageFile && !isEditMode) {
+        try {
+          setIsUploadingImage(true);
+          console.log('Uploading image first for new package...');
+          
+          // Upload image without package ID (will get temp filename)
+          const imagePath = await uploadPackageImage({
+            file: imageFile,
+            shopId: selectedShop.id_shop,
+            packageId: null, // No package ID yet for new packages
+            onProgress: (progress) => setUploadProgress(progress),
+            onError: (error) => {
+              console.error('Image upload error:', error);
+              setSingleError('productError', 'Error al subir la imagen del paquete');
+            }
+          });
+          
+          console.log('Temporary image uploaded:', imagePath);
+          tempImageData = {
+            path: imagePath,
+            filename: imagePath.split('/').pop() // Get just the filename
+          };
+        } catch (imageError) {
+          console.error('Failed to upload package image:', imageError);
+          setSingleError('productError', 'Error al subir la imagen del paquete');
+          setIsSubmitting(false);
+          setIsUploadingImage(false);
+          return; // Stop if image upload fails
+        } finally {
+          setIsUploadingImage(false);
+        }
+      }
+      
+      // Step 2: Create or update package
       let result;
       let packageId;
       
       if (isEditMode) {
-        //update: Include package ID for update
-        result = await handleUpdatePackage({
-          ...newPackageData,
-          id_package: selectedPackage.id_package
-        });
-        packageId = selectedPackage.id_package;
-      } else {
-        result = await handleCreatePackage(newPackageData);
-        packageId = result.data?.id_package;
-      }
-      
-      if (result.success) {
-        //update: Upload image if one was selected
-        if (imageFile && packageId) {
+        // For edit mode, upload image with package ID
+        if (imageFile) {
           try {
             setIsUploadingImage(true);
             const imagePath = await uploadPackageImage({
               file: imageFile,
               shopId: selectedShop.id_shop,
-              packageId: packageId,
+              packageId: selectedPackage.id_package, // We have the package ID in edit mode
               onProgress: (progress) => setUploadProgress(progress),
               onError: (error) => {
                 console.error('Image upload error:', error);
                 setSingleError('productError', 'Error al subir la imagen del paquete');
               }
             });
-            
-            console.log('Package image uploaded successfully:', imagePath);
+            console.log('Package image updated:', imagePath);
           } catch (imageError) {
             console.error('Failed to upload package image:', imageError);
-            // Don't fail the entire operation if just the image upload fails
+            // Don't fail the entire operation if just the image upload fails in edit mode
           } finally {
             setIsUploadingImage(false);
+          }
+        }
+        
+        result = await handleUpdatePackage({
+          ...newPackageData,
+          id_package: selectedPackage.id_package
+        });
+        packageId = selectedPackage.id_package;
+      } else {
+        // Create new package (with the temp image path if uploaded)
+        const createData = {
+          ...newPackageData,
+          image_package: tempImageData ? tempImageData.path : null
+        };
+        result = await handleCreatePackage(createData);
+        packageId = result.data?.id_package;
+      }
+      
+      if (result.success) {
+        // Step 3: If we uploaded a temp image for a new package, rename it with the package ID
+        if (tempImageData && packageId && !isEditMode) {
+          try {
+            console.log('Renaming temp image with package ID:', packageId);
+            
+            const renameResponse = await axiosInstance.post('/package/rename-image', {
+              packageId: packageId,
+              tempFilename: tempImageData.filename,
+              shopName: selectedShop.name_shop
+            });
+            
+            if (renameResponse.data && renameResponse.data.success) {
+              console.log('Image renamed successfully:', renameResponse.data);
+            }
+          } catch (renameError) {
+            console.error('Failed to rename package image:', renameError);
+            // Don't fail the entire operation if just the rename fails
           }
         }
         
@@ -336,6 +419,16 @@ const PackageCreationForm = () => {
       } else {
         // Show error message
         setSingleError('productError', result.message || (isEditMode ? "Error al actualizar el paquete" : "Error al crear el paquete"));
+        
+        // If package creation failed but we uploaded an image, try to clean it up
+        if (tempImageData && !isEditMode) {
+          try {
+            // Optionally: Add an API endpoint to delete orphaned temp images
+            console.log('Package creation failed, orphaned temp image:', tempImageData.filename);
+          } catch (cleanupError) {
+            console.error('Error cleaning up temp image:', cleanupError);
+          }
+        }
       }
     } catch (error) {
       console.error('Error submitting package form:', error);

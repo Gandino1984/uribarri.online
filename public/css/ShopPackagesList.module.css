@@ -83,6 +83,390 @@
    margin: 0;
 }
 
+/* New Package List Card Styles */
+.header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 1rem;
+   background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end));
+   border-radius: 12px 12px 0 0;
+   margin: 0 1rem;
+}
+
+.title {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   font-size: 1.25rem;
+   font-weight: 600;
+   color: white;
+   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.packagesList {
+   display: flex;
+   flex-direction: column;
+   gap: 1rem;
+   padding: 0 1rem 1rem 1rem;
+}
+
+.packageCard {
+   background: white;
+   border-radius: 12px;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+   overflow: hidden;
+   transition: all 0.3s ease;
+}
+
+.packageCard:hover {
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   transform: translateY(-2px);
+}
+
+.packageHeader {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 1rem;
+   gap: 1rem;
+   background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
+}
+
+.packageMainInfo {
+   display: flex;
+   align-items: center;
+   gap: 1rem;
+   flex: 1;
+   min-width: 0;
+}
+
+/* update: Package image styles matching the app design */
+.packageImageContainer {
+   position: relative;
+   width: 80px;
+   height: 80px;
+   border-radius: 8px;
+   overflow: hidden;
+   flex-shrink: 0;
+   cursor: pointer;
+   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.9));
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   transition: all 0.3s ease;
+   border: 2px solid rgba(59, 130, 246, 0.2);
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.packageImageContainer:hover {
+   transform: scale(1.05);
+   border-color: var(--saturated-blue);
+   box-shadow: 0 0 15px var(--saturated-blue-transparent);
+}
+
+.packageImageContainer.noImage {
+   border: 2px dashed rgba(209, 213, 219, 0.8);
+   background: rgba(243, 244, 246, 0.5);
+   cursor: default;
+}
+
+.packageImageContainer.noImage:hover {
+   transform: none;
+   border-color: rgba(209, 213, 219, 0.8);
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.packageImage {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+}
+
+.placeholderIcon {
+   color: rgba(156, 163, 175, 0.6);
+}
+
+.imageOverlay {
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8));
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   opacity: 0;
+   transition: opacity 0.3s ease;
+   pointer-events: none;
+}
+
+.packageImageContainer:hover .imageOverlay {
+   opacity: 1;
+}
+
+.imageOverlay svg {
+   color: white;
+}
+
+.packageInfo {
+   flex: 1;
+   min-width: 0;
+}
+
+.packageName {
+   font-size: 1.125rem;
+   font-weight: 600;
+   color: #1f2937;
+   margin: 0 0 0.5rem 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+.packageMeta {
+   display: flex;
+   align-items: center;
+   gap: 0.75rem;
+   flex-wrap: wrap;
+}
+
+.statusBadge {
+   padding: 0.25rem 0.75rem;
+   border-radius: 9999px;
+   font-size: 0.75rem;
+   font-weight: 500;
+   text-transform: uppercase;
+}
+
+.statusBadge.active {
+   background: linear-gradient(135deg, rgba(209, 250, 229, 1), rgba(167, 243, 208, 1));
+   color: #065f46;
+   border: 1px solid rgba(6, 95, 70, 0.2);
+}
+
+.statusBadge.inactive {
+   background: linear-gradient(135deg, rgba(254, 226, 226, 1), rgba(254, 202, 202, 1));
+   color: #991b1b;
+   border: 1px solid rgba(153, 27, 27, 0.2);
+}
+
+.discountBadge {
+   display: flex;
+   align-items: center;
+   gap: 0.25rem;
+   padding: 0.25rem 0.75rem;
+   background: linear-gradient(135deg, var(--saturated-orange), var(--dark-orange));
+   color: white;
+   border-radius: 9999px;
+   font-size: 0.75rem;
+   font-weight: 600;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.productCount {
+   font-size: 0.875rem;
+   color: #6b7280;
+   font-weight: 500;
+}
+
+.packagePricing {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-end;
+   gap: 0.25rem;
+   padding: 0 1rem;
+}
+
+.originalPrice {
+   font-size: 0.875rem;
+   color: #9ca3af;
+   text-decoration: line-through;
+}
+
+.finalPrice {
+   font-size: 1.25rem;
+   font-weight: 700;
+   color: var(--saturated-blue);
+}
+
+.savings {
+   font-size: 0.75rem;
+   color: #059669;
+   font-weight: 600;
+   background: rgba(5, 150, 105, 0.1);
+   padding: 0.125rem 0.5rem;
+   border-radius: 4px;
+}
+
+.packageActions {
+   display: flex;
+   gap: 0.5rem;
+}
+
+.actionButton {
+   padding: 0.5rem;
+   background: white;
+   border: 1px solid #e5e7eb;
+   border-radius: 8px;
+   color: #6b7280;
+   cursor: pointer;
+   transition: all 0.2s ease;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.actionButton:hover {
+   background: var(--saturated-blue);
+   color: white;
+   border-color: var(--saturated-blue);
+   box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.actionButton:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+}
+
+.expandButton {
+   padding: 0.5rem;
+   background: transparent;
+   border: none;
+   color: #6b7280;
+   cursor: pointer;
+   transition: all 0.2s ease;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   border-radius: 8px;
+}
+
+.expandButton:hover {
+   color: var(--saturated-blue);
+   background: rgba(59, 130, 246, 0.1);
+}
+
+.packageDetails {
+   background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5));
+   padding: 1rem;
+   border-top: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.productsSection {
+   margin-bottom: 1rem;
+}
+
+.sectionTitle {
+   font-size: 0.875rem;
+   font-weight: 600;
+   color: #4b5563;
+   margin: 0 0 0.75rem 0;
+}
+
+.productsList {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.productItem {
+   display: flex;
+   align-items: center;
+   gap: 0.75rem;
+   padding: 0.5rem;
+   background: white;
+   border-radius: 6px;
+   border-left: 3px solid var(--saturated-blue);
+   transition: all 0.2s ease;
+}
+
+.productItem:hover {
+   background: rgba(59, 130, 246, 0.05);
+   transform: translateX(2px);
+}
+
+.productIndex {
+   font-weight: 600;
+   color: var(--saturated-blue);
+   min-width: 1.5rem;
+}
+
+.productName {
+   flex: 1;
+   color: #1f2937;
+   font-size: 0.875rem;
+   font-weight: 500;
+}
+
+.productPrice {
+   font-weight: 700;
+   color: var(--saturated-blue);
+   font-size: 0.875rem;
+}
+
+.packageFooter {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding-top: 0.75rem;
+   border-top: 1px solid rgba(229, 231, 235, 0.3);
+}
+
+.packageId,
+.creationDate {
+   font-size: 0.75rem;
+   color: #9ca3af;
+   font-weight: 500;
+}
+
+/* Empty states */
+.noShopContainer,
+.emptyContainer {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   padding: 3rem;
+   gap: 1rem;
+   background: rgba(255, 255, 255, 0.1);
+   border-radius: 12px;
+   margin: 1rem;
+}
+
+.noShopContainer svg,
+.emptyContainer svg {
+   color: rgba(255, 255, 255, 0.5);
+}
+
+.noShopContainer p,
+.emptyContainer p {
+   color: white;
+   font-weight: 500;
+   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.createButton {
+   margin-top: 1rem;
+   padding: 0.75rem 1.5rem;
+   background: linear-gradient(135deg, var(--saturated-blue), var(--dark-gradient-purple-start));
+   color: white;
+   border: none;
+   border-radius: 8px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.createButton:hover {
+   background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
+   box-shadow: 0 0 15px var(--saturated-blue-transparent);
+   transform: translateY(-2px);
+}
+
+/* Keep existing styles below */
 .buttonGroupContainer {
    display: flex;
    align-items: center;
@@ -95,27 +479,6 @@
    align-items: center;
    justify-content: center;
    gap: 1rem;
-}
-
-.actionButton {
-   display: flex;
-   align-items: center;
-   gap: 0.5rem;
-   padding: 0.5rem 1rem;
-   border-radius: 8px;
-   font-weight: 500;
-   cursor: pointer;
-   background-color: rgba(255, 255, 255, 0.2);
-   color: white;
-   transition: all 0.2s ease;
-   border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.actionButton:hover {
-   color: white;
-   border: 1px solid white;
-   background-color: rgba(255, 255, 255, 0.5);
-   box-shadow: 0 0 10px var(--saturated-blue-transparent);
 }
 
 .addButton {
@@ -142,7 +505,6 @@
    position: relative;
    width: 100%;
    max-width: 600px;
-   /* margin: 0 auto;    */
 }
 
 .searchIcon {
@@ -610,22 +972,6 @@
   margin-bottom: 0;
 }
 
-.sectionTitle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-}
-
-.sectionTitle svg {
-  color: var(--saturated-blue);
-}
-
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -670,12 +1016,6 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--gradient-red-mid);
-}
-
-.productsList {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 .packageProductItem {
@@ -732,27 +1072,65 @@
   margin-right: 0.5rem;
 }
 
-.discountBadge {
-  background-color: var(--gradient-red-mid);
-  color: white;
-  padding: 0.125rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-left: 0.5rem;
-}
-
 .productDescription {
   font-style: italic;
   color: #777;
   line-height: 1.4;
 }
 
-.noProducts {
-  text-align: center;
-  color: #999;
-  font-style: italic;
-  padding: 2rem;
+/* Price Summary Section */
+.priceSummarySection {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+  border-radius: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.priceSummaryTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--saturated-blue);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.priceSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.priceLabel {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.priceValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.discountValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gradient-red-mid);
+}
+
+.finalPriceValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--saturated-blue);
 }
 
 /* Responsive styles */
@@ -760,6 +1138,33 @@
   .container {
       padding-left: 0.5rem;
       padding-right: 0.5rem;
+  }
+  
+  .packageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .packageMainInfo {
+    width: 100%;
+  }
+  
+  .packageImageContainer {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .packagePricing {
+    align-items: flex-start;
+    width: 100%;
+    padding: 0;
+    margin-top: 0.5rem;
+  }
+  
+  .packageActions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
   }
   
   .searchInputWrapper {
@@ -820,6 +1225,40 @@
   .container {
       padding: 8px;
       max-width: 100vw;
+  }
+  
+  .header {
+    margin: 0 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.125rem;
+  }
+  
+  .packagesList {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+  }
+  
+  .packageCard {
+    border-radius: 8px;
+  }
+  
+  .packageHeader {
+    padding: 0.75rem;
+  }
+  
+  .packageImageContainer {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .packageName {
+    font-size: 1rem;
+  }
+  
+  .finalPrice {
+    font-size: 1.125rem;
   }
   
   .listTitle {
@@ -901,6 +1340,43 @@
 @media (max-width: 374px) {
   .container {
       padding: 4px;
+  }
+  
+  .header {
+    margin: 0 0.25rem;
+    padding: 0.5rem;
+  }
+  
+  .packagesList {
+    padding: 0 0.25rem 0.25rem 0.25rem;
+    gap: 0.5rem;
+  }
+  
+  .packageImageContainer {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .packageName {
+    font-size: 0.875rem;
+  }
+  
+  .packageMeta {
+    gap: 0.5rem;
+  }
+  
+  .statusBadge,
+  .discountBadge {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
+  }
+  
+  .productCount {
+    font-size: 0.75rem;
+  }
+  
+  .finalPrice {
+    font-size: 1rem;
   }
   
   .listTitle {

@@ -1,164 +1,183 @@
+// back-end/utils/imageConversionUtils.js
 import sharp from 'sharp';
+import fs from 'fs/promises';
 import path from 'path';
-import fs from 'fs';
 
-export const convertToWebP = async (inputPath) => {
-    try {
-        const parsedPath = path.parse(inputPath);
-        
-        // Get file stats to check size
-        const stats = await fs.promises.stat(inputPath);
-        const fileSizeInMB = stats.size / (1024 * 1024);
-        
-        //update: Check if file is already WebP and under 1MB
-        if (parsedPath.ext.toLowerCase() === '.webp' && fileSizeInMB <= 1) {
-            console.log(`File is already WebP and under 1MB (${fileSizeInMB.toFixed(2)}MB), no conversion needed`);
-            return {
-                path: inputPath,
-                converted: false,
-                originalPath: inputPath,
-                finalSize: fileSizeInMB
-            };
-        }
-        
-        //update: Create a different output path if input is already WebP
-        let outputPath;
-        if (parsedPath.ext.toLowerCase() === '.webp') {
-            // If already WebP, we'll create a temporary file with _compressed suffix
-            outputPath = path.join(parsedPath.dir, `${parsedPath.name}_compressed.webp`);
-        } else {
-            // If not WebP, use the standard naming
-            outputPath = path.join(parsedPath.dir, `${parsedPath.name}.webp`);
-        }
-        
-        console.log(`Converting/compressing image (original size: ${fileSizeInMB.toFixed(2)}MB)`);
-        
-        //update: Determine initial quality based on original file size
-        let quality = 80; // Default quality
-        if (fileSizeInMB > 2) quality = 60;
-        if (fileSizeInMB > 5) quality = 50;
-        
-        // First conversion attempt
-        await sharp(inputPath)
-            .resize({ 
-                width: 1200, 
-                height: 1200, 
-                fit: 'inside', 
-                withoutEnlargement: true 
-            })
-            .webp({ quality })
-            .toFile(outputPath);
+/**
+ * Process and optimize an uploaded image
+ * Converts to WebP format and ensures file size is under 1MB
+ * @param {Object} file - Multer file object
+ * @param {number} maxSizeKB - Maximum file size in KB (default: 1024 = 1MB)
+ * @returns {Promise<Object>} - Updated file object with new path and info
+ */
+export async function processUploadedImage(file, maxSizeKB = 1024) {
+  if (!file || !file.path) {
+    throw new Error('No file provided for processing');
+  }
 
-        // Check if the converted file is still over 1MB
-        const convertedStats = await fs.promises.stat(outputPath);
-        const convertedSizeInMB = convertedStats.size / (1024 * 1024);
-        
-        if (convertedSizeInMB > 1) {
-            console.log(`First conversion resulted in ${convertedSizeInMB.toFixed(2)}MB, optimizing further...`);
-            
-            // Delete the first attempt
-            await fs.promises.unlink(outputPath);
-            
-            // Try with lower quality and smaller dimensions
-            let finalQuality = 40;
-            let maxDimension = 1000;
-            
-            // Keep trying until we get under 1MB
-            while (convertedSizeInMB > 1 && finalQuality >= 20) {
-                try {
-                    await sharp(inputPath)
-                        .resize({ 
-                            width: maxDimension, 
-                            height: maxDimension, 
-                            fit: 'inside', 
-                            withoutEnlargement: true 
-                        })
-                        .webp({ quality: finalQuality })
-                        .toFile(outputPath);
-                    
-                    const tempStats = await fs.promises.stat(outputPath);
-                    const tempSizeInMB = tempStats.size / (1024 * 1024);
-                    
-                    if (tempSizeInMB <= 1) {
-                        console.log(`Successfully optimized to ${tempSizeInMB.toFixed(2)}MB with quality ${finalQuality}`);
-                        break;
-                    } else {
-                        // Delete and try again with lower quality
-                        await fs.promises.unlink(outputPath);
-                        finalQuality -= 10;
-                        if (finalQuality < 30) {
-                            maxDimension = 800; // Reduce dimensions if quality is getting too low
-                        }
-                    }
-                } catch (innerError) {
-                    console.error('Error during optimization iteration:', innerError);
-                    break;
-                }
-            }
-        }
-        
-        // Final size check
-        const finalStats = await fs.promises.stat(outputPath);
-        const finalSizeInMB = finalStats.size / (1024 * 1024);
-        console.log(`Final WebP image size: ${finalSizeInMB.toFixed(2)}MB`);
+  console.log('Processing uploaded image:', {
+    filename: file.filename,
+    path: file.path,
+    size: Math.round(file.size / 1024) + 'KB',
+    mimetype: file.mimetype
+  });
 
-        //update: If we created a compressed version of a WebP file, replace the original
-        if (parsedPath.ext.toLowerCase() === '.webp' && outputPath.includes('_compressed')) {
-            // Delete the original and rename the compressed version
-            await fs.promises.unlink(inputPath);
-            const finalPath = inputPath; // Keep the original path
-            await fs.promises.rename(outputPath, finalPath);
-            
-            return {
-                path: finalPath,
-                converted: true,
-                originalPath: inputPath,
-                finalSize: finalSizeInMB
-            };
-        }
+  try {
+    // Verify the input file exists
+    await fs.access(file.path);
+    console.log('✓ Input file exists:', file.path);
+    
+    const originalPath = file.path;
+    const directory = path.dirname(originalPath);
+    const baseName = path.basename(file.filename, path.extname(file.filename));
+    
+    // Generate new filename with .webp extension
+    const newFilename = `${baseName}.webp`;
+    const newPath = path.join(directory, newFilename);
 
-        return {
-            path: outputPath,
-            converted: true,
-            originalPath: inputPath,
-            finalSize: finalSizeInMB
-        };
-    } catch (error) {
-        throw new Error(`Error converting image to WebP: ${error.message}`);
+    console.log('Converting to WebP:', {
+      from: originalPath,
+      to: newPath
+    });
+
+    // Initial quality setting
+    let quality = 85;
+    let width = 1200;
+    let height = 1200;
+    let outputBuffer;
+    let attempts = 0;
+    const maxAttempts = 10;
+    const maxSizeBytes = maxSizeKB * 1024;
+
+    // Get original image metadata
+    const metadata = await sharp(originalPath).metadata();
+    console.log('Original image metadata:', {
+      width: metadata.width,
+      height: metadata.height,
+      format: metadata.format,
+      size: metadata.size
+    });
+
+    // Calculate initial dimensions maintaining aspect ratio
+    if (metadata.width > width || metadata.height > height) {
+      const ratio = Math.min(width / metadata.width, height / metadata.height);
+      width = Math.floor(metadata.width * ratio);
+      height = Math.floor(metadata.height * ratio);
+    } else {
+      width = metadata.width;
+      height = metadata.height;
     }
-};
 
-export const processUploadedImage = async (file) => {
-    try {
-        //update: Always convert to WebP
-        const conversionResult = await convertToWebP(file.path);
+    // Iteratively optimize until under size limit
+    while (attempts < maxAttempts) {
+      attempts++;
+      
+      console.log(`Optimization attempt ${attempts}: quality=${quality}, dimensions=${width}x${height}`);
+      
+      // Process the image
+      outputBuffer = await sharp(originalPath)
+        .resize(width, height, {
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+        .webp({ quality })
+        .toBuffer();
+      
+      const outputSize = outputBuffer.length;
+      console.log(`Attempt ${attempts} output size: ${Math.round(outputSize / 1024)}KB`);
+      
+      // Check if size is acceptable
+      if (outputSize <= maxSizeBytes) {
+        console.log(`✓ Success! Image optimized to ${Math.round(outputSize / 1024)}KB`);
+        break;
+      }
+      
+      // If still too large, adjust parameters
+      if (quality > 30) {
+        // First try reducing quality
+        quality = Math.max(quality - 10, 30);
+      } else {
+        // If quality is at minimum, reduce dimensions
+        width = Math.floor(width * 0.9);
+        height = Math.floor(height * 0.9);
+        quality = 70; // Reset quality when scaling down
         
-        // Delete the original file if conversion happened
-        if (conversionResult.converted && conversionResult.originalPath !== conversionResult.path) {
-            await fs.promises.unlink(conversionResult.originalPath);
-            console.log('Original file deleted after conversion');
+        // Don't go below 400px
+        if (width < 400 || height < 400) {
+          console.warn('Cannot optimize further without significant quality loss');
+          break;
         }
-        
-        // Update the file object to reflect the new path
-        file.path = conversionResult.path;
-        file.filename = path.basename(conversionResult.path);
-        file.mimetype = 'image/webp';
-        
-        //update: Verify final size is under 1MB
-        if (conversionResult.finalSize > 1) {
-            console.warn(`Warning: Final image size is ${conversionResult.finalSize.toFixed(2)}MB, which exceeds the 1MB limit`);
-        }
-        
-        return file;
-    } catch (error) {
-        // Cleanup in case of error
-        try {
-            if (file.path) {
-                await fs.promises.unlink(file.path);
-            }
-        } catch (cleanupError) {
-            console.error('Error during cleanup:', cleanupError);
-        }
-        throw error;
+      }
     }
+
+    // Write the optimized image
+    await fs.writeFile(newPath, outputBuffer);
+    console.log('✓ WebP file written:', newPath);
+    
+    // Verify the new file exists
+    await fs.access(newPath);
+    console.log('✓ WebP file verified on disk');
+    
+    // Delete the original file if it's different from the new one
+    if (originalPath !== newPath) {
+      try {
+        await fs.unlink(originalPath);
+        console.log('✓ Deleted original file:', originalPath);
+      } catch (err) {
+        console.error('Error deleting original file:', err);
+      }
+    }
+
+    // Get the final file stats
+    const stats = await fs.stat(newPath);
+    
+    // Return updated file object
+    return {
+      ...file,
+      filename: newFilename,
+      path: newPath,
+      size: stats.size,
+      mimetype: 'image/webp'
+    };
+  } catch (error) {
+    console.error('Error processing image:', error);
+    throw new Error(`Failed to process image: ${error.message}`);
+  }
+}
+
+/**
+ * Delete an image file and optionally its directory if empty
+ * @param {string} imagePath - Path to the image file
+ * @param {boolean} deleteEmptyDir - Whether to delete directory if empty
+ */
+export async function deleteImageFile(imagePath, deleteEmptyDir = false) {
+  try {
+    // Check if file exists
+    await fs.access(imagePath);
+    
+    // Delete the file
+    await fs.unlink(imagePath);
+    console.log('Deleted image file:', imagePath);
+    
+    if (deleteEmptyDir) {
+      const directory = path.dirname(imagePath);
+      
+      // Check if directory is empty
+      const files = await fs.readdir(directory);
+      if (files.length === 0) {
+        await fs.rmdir(directory);
+        console.log('Deleted empty directory:', directory);
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting image file:', error);
+    return false;
+  }
+}
+
+export default {
+  processUploadedImage,
+  deleteImageFile
 };

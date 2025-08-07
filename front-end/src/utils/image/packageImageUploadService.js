@@ -1,8 +1,43 @@
-// utils/image/packageImageUploadService.js
+// front-end/src/utils/image/packageImageUploadService.js
 import axiosInstance from '../app/axiosConfig.js';
 import { optimizeImage } from './imageOptimizer.js';
 import { validateImageFile } from './imageValidation.js';
-import { formatImageUrl } from './imageUploadService.js';
+
+/**
+ * Formats package image URL from the server path
+ * @param {string} imagePath - The path returned from the server
+ * @returns {string|null} - Formatted URL or null if invalid
+ */
+export const formatImageUrl = (imagePath) => {
+  if (!imagePath) {
+    console.warn('No image path provided to formatImageUrl');
+    return null;
+  }
+
+  try {
+    // If it's already a full URL (including data URLs or blob URLs)
+    if (imagePath.startsWith('http') || imagePath.startsWith('data:') || imagePath.startsWith('blob:')) {
+      return imagePath;
+    }
+
+    // Use the baseURL from axios instance - strip any trailing slashes
+    const apiBaseUrl = (axiosInstance.defaults.baseURL || '')
+      .replace(/\/+$/, '');
+    
+    // Clean the path - ensure it has no leading slashes
+    const cleanPath = imagePath.replace(/^\/+/, '');
+    
+    // Combine and normalize the URL (avoid double slashes except in protocol)
+    const imageUrl = `${apiBaseUrl}/${cleanPath}`.replace(/([^:]\/)(\/)+/g, "$1");
+    
+    console.log('Generated package image URL:', imageUrl);
+    
+    return imageUrl;
+  } catch (error) {
+    console.error('Error formatting package image URL:', error, 'for path:', imagePath);
+    return null;
+  }
+};
 
 /**
  * Specialized function for uploading package images
@@ -16,8 +51,8 @@ import { formatImageUrl } from './imageUploadService.js';
  */
 export const uploadPackageImage = async ({ 
   file, 
-  shopId, 
-  packageId, 
+  shopId,
+  packageId = null, 
   onProgress, 
   onError 
 }) => {
@@ -41,12 +76,12 @@ export const uploadPackageImage = async ({
         format: 'image/webp',
         maxSizeKB: 1024 // 1MB size limit
       });
-      console.log('Image optimized:', {
+      console.log('Package image optimized:', {
         originalSize: Math.round(file.size / 1024) + 'KB',
         optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
       });
     } catch (optimizeError) {
-      console.warn('Image optimization failed, using original file:', optimizeError);
+      console.warn('Package image optimization failed, using original file:', optimizeError);
     }
     
     // Create form data with the EXACT field name expected by the backend
@@ -77,7 +112,7 @@ export const uploadPackageImage = async ({
     // Make the request
     const response = await axiosInstance.post('/package/upload-image', formData, config);
     
-    console.log('Upload response:', response.data);
+    console.log('Package upload response:', response.data);
     
     if (!response.data?.data?.image_package) {
       throw new Error('Invalid response from server: missing image_package path');
@@ -94,6 +129,3 @@ export const uploadPackageImage = async ({
     throw error;
   }
 };
-
-// Export formatImageUrl from the main image upload service
-export { formatImageUrl } from './imageUploadService.js';

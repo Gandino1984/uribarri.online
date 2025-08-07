@@ -1,3 +1,4 @@
+// back-end/middleware/PackageUploadMiddleware.js
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
@@ -12,11 +13,26 @@ const __dirname = path.dirname(__filename);
 // Helper function to ensure directory exists with proper permissions
 const ensureDirectoryExists = async (dirPath) => {
   try {
-    await fs.mkdir(dirPath, { recursive: true, mode: 0o755 });
-    console.log(`Directory created: ${dirPath}`);
+    // Check if directory exists
+    try {
+      await fs.access(dirPath);
+      console.log(`Directory already exists: ${dirPath}`);
+    } catch {
+      // Directory doesn't exist, create it
+      await fs.mkdir(dirPath, { recursive: true, mode: 0o755 });
+      console.log(`Directory created successfully: ${dirPath}`);
+    }
+    
+    // Try to set permissions (may fail in Docker, that's ok)
+    try {
+      await fs.chmod(dirPath, 0o755);
+    } catch (chmodError) {
+      console.warn('Could not set directory permissions:', chmodError.message);
+    }
+    
     return true;
   } catch (error) {
-    console.error('Error creating directory:', error);
+    console.error('Error ensuring directory exists:', error);
     throw error;
   }
 };
@@ -29,6 +45,7 @@ const cleanExistingPackageImages = async (dirPath, packageId) => {
       await fs.access(dirPath);
     } catch (err) {
       // Directory doesn't exist, nothing to clean
+      console.log('Directory does not exist yet, nothing to clean');
       return;
     }
     
@@ -36,6 +53,7 @@ const cleanExistingPackageImages = async (dirPath, packageId) => {
     const files = await fs.readdir(dirPath);
     
     if (!files || files.length === 0) {
+      console.log('No files to clean in directory');
       return;
     }
     
@@ -46,6 +64,7 @@ const cleanExistingPackageImages = async (dirPath, packageId) => {
     );
     
     if (packageFiles.length === 0) {
+      console.log('No existing package files to clean');
       return;
     }
     
@@ -65,10 +84,14 @@ const cleanExistingPackageImages = async (dirPath, packageId) => {
 
 const packageImageStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    console.log('Multer processing package image:', file.fieldname, file.originalname);
+    console.log('=== Package Image Upload - Setting Destination ===');
+    console.log('Processing file:', file.fieldname, file.originalname);
     
     const shopId = req.headers['x-shop-id'];
     const packageId = req.headers['x-package-id'];
+    
+    console.log('Shop ID:', shopId);
+    console.log('Package ID:', packageId);
 
     if (!shopId) {
       return cb(new Error('Shop ID is required'));
@@ -83,13 +106,13 @@ const packageImageStorage = multer.diskStorage({
       }
       
       const shopName = shop.name_shop;
-      console.log(`Found shop name: ${shopName} for ID: ${shopId}`);
+      console.log(`Found shop: ${shopName} (ID: ${shopId})`);
       
       // Create path for shop-specific package images
+      // Use absolute path to ensure correct location
+      const projectRoot = path.resolve(__dirname, '..', '..');
       const uploadsDir = path.join(
-        __dirname, 
-        '..',
-        '..',
+        projectRoot,
         'public', 
         'images', 
         'uploads', 
@@ -98,23 +121,34 @@ const packageImageStorage = multer.diskStorage({
         'package_images'
       );
 
-      console.log(`Attempting to create directory: ${uploadsDir}`);
+      console.log(`Target directory path: ${uploadsDir}`);
       
-      // Ensure the directory exists
+      // Ensure all parent directories exist
+      const shopsDir = path.join(projectRoot, 'public', 'images', 'uploads', 'shops');
+      const shopDir = path.join(shopsDir, shopName);
+      
+      // Create directories step by step
+      await ensureDirectoryExists(path.join(projectRoot, 'public'));
+      await ensureDirectoryExists(path.join(projectRoot, 'public', 'images'));
+      await ensureDirectoryExists(path.join(projectRoot, 'public', 'images', 'uploads'));
+      await ensureDirectoryExists(shopsDir);
+      await ensureDirectoryExists(shopDir);
       await ensureDirectoryExists(uploadsDir);
       
-      //update: Clean existing package images if packageId is provided
+      // Clean existing package images if packageId is provided (for updates)
       if (packageId) {
         await cleanExistingPackageImages(uploadsDir, packageId);
       }
       
       console.log(`Package image will be stored in: ${uploadsDir}`);
       
-      // Make sure permissions are set correctly (important for Docker)
+      // Verify the directory was created
       try {
-        await fs.chmod(uploadsDir, 0o755);
-      } catch (chmodError) {
-        console.warn('Could not set directory permissions:', chmodError.message);
+        await fs.access(uploadsDir);
+        console.log('✓ Directory verified and accessible');
+      } catch (err) {
+        console.error('✗ Directory not accessible after creation:', err);
+        throw err;
       }
       
       cb(null, uploadsDir);
@@ -125,7 +159,7 @@ const packageImageStorage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const packageId = req.headers['x-package-id'];
-    //update: Use temporary filename since we'll rename after WebP conversion
+    // Use temporary filename since we'll rename after WebP conversion
     const tempFileName = packageId 
       ? `temp_package_${packageId}_${Date.now()}${path.extname(file.originalname)}`
       : `temp_package_new_${Date.now()}${path.extname(file.originalname)}`;
@@ -149,14 +183,17 @@ const uploadPackageImage = multer({
   storage: packageImageStorage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 //update: 10MB limit for initial upload (we'll compress it later)
+    fileSize: 10 * 1024 * 1024 // 10MB limit for initial upload
   }
-}).single('packageImage'); // IMPORTANT: This must match the field name from the frontend
+}).single('packageImage'); // This must match the field name from the frontend
 
 const handlePackageImageUpload = async (req, res, next) => {
-  console.log('Starting package image upload handler');
+  console.log('=== Starting Package Image Upload Handler ===');
   console.log('Request content type:', req.headers['content-type']);
-  console.log('Request headers:', req.headers);
+  console.log('Request headers:', {
+    'x-shop-id': req.headers['x-shop-id'],
+    'x-package-id': req.headers['x-package-id']
+  });
   
   uploadPackageImage(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
@@ -183,7 +220,7 @@ const handlePackageImageUpload = async (req, res, next) => {
       });
     }
     
-    console.log('Package image upload processed successfully');
+    console.log('Package image upload processed by multer successfully');
     
     if (!req.file) {
       console.warn('No file data in request after processing');
@@ -195,35 +232,56 @@ const handlePackageImageUpload = async (req, res, next) => {
     console.log('Uploaded file details:', {
       filename: req.file.filename,
       path: req.file.path,
-      size: req.file.size
+      size: req.file.size,
+      mimetype: req.file.mimetype
     });
+    
+    // Verify the file was actually saved
+    try {
+      await fs.access(req.file.path);
+      console.log('✓ File verified on disk at:', req.file.path);
+    } catch (verifyError) {
+      console.error('✗ File not found on disk:', verifyError);
+      return res.status(500).json({
+        error: 'Error al guardar el archivo',
+        details: 'El archivo no se guardó correctamente'
+      });
+    }
     
     try {
       // Validate the image
       await validateImageMiddleware(req, res, async () => {
         try {
-          //update: Process the image (convert to WebP and compress to 1MB)
           console.log('Processing uploaded image for WebP conversion and compression...');
+          
+          // Process the image (convert to WebP and compress to 1MB)
           const processedFile = await processUploadedImage(req.file);
           
-          //update: Store processed filename for later use
-          req.processedFile = processedFile;
+          console.log('Image processed:', {
+            original: req.file.filename,
+            processed: processedFile.filename,
+            size: Math.round(processedFile.size / 1024) + 'KB'
+          });
           
-          // Don't rename yet if this is a new package (no package ID yet)
+          // Rename the processed file to 'package_[id].webp' if we have a package ID
           const packageId = req.headers['x-package-id'];
           if (packageId) {
             const finalFilename = `package_${packageId}.webp`;
             const finalPath = path.join(path.dirname(processedFile.path), finalFilename);
             
-            // If a file with this name already exists, it should have been cleaned up
+            console.log(`Renaming ${processedFile.filename} to ${finalFilename}`);
+            
+            // If a file with this name already exists, delete it
             try {
               await fs.unlink(finalPath);
+              console.log('Deleted existing file with same name');
             } catch (unlinkErr) {
               // File doesn't exist, which is fine
             }
             
             // Rename the processed file
             await fs.rename(processedFile.path, finalPath);
+            console.log('✓ File renamed successfully');
             
             // Update the file object
             processedFile.path = finalPath;
@@ -233,8 +291,9 @@ const handlePackageImageUpload = async (req, res, next) => {
           // Update req.file with the processed file info
           req.file = processedFile;
           
+          // Verify the final file exists
           const stats = await fs.stat(processedFile.path);
-          console.log('Image processed successfully:', {
+          console.log('✓ Final image file verified:', {
             filename: processedFile.filename,
             size: Math.round(stats.size / 1024) + 'KB',
             type: processedFile.mimetype,
@@ -249,6 +308,7 @@ const handlePackageImageUpload = async (req, res, next) => {
           if (req.file && req.file.path) {
             try {
               await fs.unlink(req.file.path);
+              console.log('Cleaned up failed upload file');
             } catch (cleanupError) {
               console.error('Error cleaning up file:', cleanupError);
             }

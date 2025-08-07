@@ -1,3 +1,4 @@
+// back-end/controllers/package/package_api_controller.js
 import packageController from "./package_controller.js";
 import package_model from "../../models/package_model.js";
 import shop_model from "../../models/shop_model.js";
@@ -32,7 +33,7 @@ async function create(req, res) {
             id_product5,
             name_package,
             discount_package,
-            image_package //update: Added image_package
+            image_package
         } = req.body;
 
         // Validate required fields
@@ -51,7 +52,7 @@ async function create(req, res) {
             id_product5,
             name_package,
             discount_package,
-            image_package //update: Pass image_package to controller
+            image_package
         });
 
         if (error) {
@@ -85,7 +86,7 @@ async function update(req, res) {
             name_package,
             active_package,
             discount_package,
-            image_package //update: Added image_package
+            image_package
         } = req.body;
 
         if (!id_package) {
@@ -105,7 +106,7 @@ async function update(req, res) {
                 name_package,
                 active_package,
                 discount_package,
-                image_package //update: Pass image_package to controller
+                image_package
             }
         );   
 
@@ -295,7 +296,7 @@ async function removeById(req, res) {
     }
 }
 
-//update: New function to handle package image upload
+//update: Enhanced function to handle package image upload with WebP conversion
 async function uploadPackageImage(req, res) {
     try {
         console.log('Package image upload endpoint called');
@@ -309,7 +310,7 @@ async function uploadPackageImage(req, res) {
         }
 
         const shopId = req.headers['x-shop-id'];
-        const packageId = req.headers['x-package-id'];
+        let packageId = req.headers['x-package-id'];
         
         if (!shopId) {
             // Clean up uploaded file
@@ -340,12 +341,21 @@ async function uploadPackageImage(req, res) {
         }
 
         // Build relative path to the image
-        const relativePath = `images/uploads/shops/${shop.name_shop}/package_images/${req.file.filename}`;
+        // The file has already been processed to WebP by the middleware
+        const relativePath = path.join(
+            'images',
+            'uploads',
+            'shops',
+            shop.name_shop,
+            'package_images',
+            req.file.filename
+        ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
         
-        console.log('Package image uploaded successfully:', {
+        console.log('Package image uploaded and processed successfully:', {
             filename: req.file.filename,
             relativePath: relativePath,
-            packageId: packageId
+            packageId: packageId,
+            size: Math.round(req.file.size / 1024) + 'KB'
         });
 
         // If packageId is provided, update the package with the image path
@@ -353,24 +363,19 @@ async function uploadPackageImage(req, res) {
             const updateResult = await packageController.updatePackageImage(packageId, relativePath);
             
             if (updateResult.error) {
-                // Clean up uploaded file if update failed
-                try {
-                    await fs.unlink(req.file.path);
-                } catch (err) {
-                    console.error('Error cleaning up file:', err);
-                }
-                
-                return res.status(400).json({
-                    error: updateResult.error
-                });
+                // Don't delete the file, it might be used later
+                console.error('Failed to update package with image:', updateResult.error);
             }
         }
-
+        
+        // Always return success with the image path
+        // The frontend will handle associating it with the package
         res.json({
             error: null,
             data: {
                 image_package: relativePath,
-                id_package: packageId || null
+                id_package: packageId || null,
+                filename: req.file.filename
             },
             success: "Imagen del paquete subida con éxito"
         });
@@ -393,6 +398,101 @@ async function uploadPackageImage(req, res) {
     }
 }
 
+//update: Function to rename package image after package creation (for new packages)
+async function renamePackageImage(req, res) {
+    try {
+        const { packageId, tempFilename, shopName } = req.body;
+        
+        if (!packageId || !tempFilename || !shopName) {
+            return res.status(400).json({
+                error: "Faltan parámetros requeridos"
+            });
+        }
+        
+        const oldPath = path.join(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            'public',
+            'images',
+            'uploads',
+            'shops',
+            shopName,
+            'package_images',
+            tempFilename
+        );
+        
+        const newFilename = `package_${packageId}.webp`;
+        const newPath = path.join(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            'public',
+            'images',
+            'uploads',
+            'shops',
+            shopName,
+            'package_images',
+            newFilename
+        );
+        
+        // Check if old file exists
+        try {
+            await fs.access(oldPath);
+        } catch (err) {
+            return res.status(404).json({
+                error: "Archivo temporal no encontrado"
+            });
+        }
+        
+        // Delete any existing file with the new name
+        try {
+            await fs.unlink(newPath);
+        } catch (err) {
+            // File doesn't exist, which is fine
+        }
+        
+        // Rename the file
+        await fs.rename(oldPath, newPath);
+        
+        // Build new relative path
+        const relativePath = path.join(
+            'images',
+            'uploads',
+            'shops',
+            shopName,
+            'package_images',
+            newFilename
+        ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
+        
+        // Update package with new image path
+        const updateResult = await packageController.updatePackageImage(packageId, relativePath);
+        
+        if (updateResult.error) {
+            return res.status(400).json({
+                error: updateResult.error
+            });
+        }
+        
+        res.json({
+            error: null,
+            data: {
+                image_package: relativePath,
+                id_package: packageId
+            },
+            success: "Imagen del paquete actualizada con éxito"
+        });
+    } catch (err) {
+        console.error("-> package_api_controller.js - renamePackageImage() - Error =", err);
+        res.status(500).json({
+            error: "Error al renombrar la imagen del paquete",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -403,7 +503,8 @@ export {
     getActiveByShopId,
     getInactiveByShopId,
     toggleActiveStatus,
-    uploadPackageImage
+    uploadPackageImage,
+    renamePackageImage
 }
 
 export default {
@@ -416,5 +517,6 @@ export default {
     getActiveByShopId,
     getInactiveByShopId,
     toggleActiveStatus,
-    uploadPackageImage
+    uploadPackageImage,
+    renamePackageImage
 }

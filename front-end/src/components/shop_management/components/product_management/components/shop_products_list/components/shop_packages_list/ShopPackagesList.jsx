@@ -1,359 +1,402 @@
-import { useEffect, useState, useRef } from 'react';
-import { useUI } from '../../../../../../../../app_context/UIContext.jsx';
-import { useShop } from '../../../../../../../../app_context/ShopContext.jsx';
+import React, { useState, useEffect } from 'react';
 import { usePackage } from '../../../../../../../../app_context/PackageContext.jsx';
-import ShopPackagesListUtils from './ShopPackagesListUtils.jsx';
+import { useShop } from '../../../../../../../../app_context/ShopContext.jsx';
+import { useUI } from '../../../../../../../../app_context/UIContext.jsx';
+import { useTransition, animated } from '@react-spring/web';
+import { shopsListAnimations } from '../../../../../../../../utils/animation/transitions.js';
+import { 
+  Package, 
+  Edit2, 
+  Trash2, 
+  ToggleLeft, 
+  ToggleRight,
+  Image,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  Tag
+} from 'lucide-react';
+import { formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
+import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
+import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
 
 import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
-import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
-import ShopCard from '../../../../../shop_card/ShopCard.jsx';
-import useScreenSize from '../../../../../shop_card/components/useScreenSize.js';
-import PackageCard from './components/PackageCard.jsx';
 
-// Import components
-import SearchBar from './components/SearchBar.jsx';
-import PackageActionButtons from './components/PackageActionButtons.jsx';
-import PackagesCount from './components/PackagesCount.jsx';
-import NoPackagesMessage from './components/NoPackagesMessage.jsx';
-import NoShopSelected from './components/NoShopSelected.jsx';
-import PackagesTable from './components/PackagesTable.jsx';
-
-// Import animations
-import { useTransition, animated } from '@react-spring/web';
-import { formAnimation, fadeInScale } from '../../../../../../../../utils/animation/transitions.js';
-
-const ShopPackagesList = ({ onBack }) => {
-  // UI context
-  const {
-    clearError, setError,
-    isModalOpen, setIsModalOpen,
-    isAccepted, setIsAccepted,
-    isDeclined, setIsDeclined,
-    setShowSuccessCard,
-    setShowErrorCard,
-    setSuccess
-  } = useUI();
-
-  // Shop context
-  const { selectedShop } = useShop();
-
-  // Package context
-  const {
-    packages,
+const ShopPackagesList = () => {
+  const { 
+    packages, 
     setPackages,
-    packageToDelete, setPackageToDelete,
-    packageListKey,
-    refreshPackageList,
-    closePackageFormWithAnimation
+    setSelectedPackage,
+    setIsAddingPackage,
+    packageListKey
   } = usePackage();
-
+  const { selectedShop } = useShop();
+  const { 
+    setError, 
+    setShowErrorCard,
+    setSuccess,
+    setShowSuccessCard,
+    setSingleSuccess,
+    setSingleError,
+    openImageModal
+  } = useUI();
+  
   // Local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [displayedPackages, setDisplayedPackages] = useState([]);
-  const [showPackageCard, setShowPackageCard] = useState(false);
-  const [selectedPackageDetails, setSelectedPackageDetails] = useState(null);
-  const [activeActionsMenu, setActiveActionsMenu] = useState(null);
+  const [expandedPackages, setExpandedPackages] = useState(new Set());
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [packageToDelete, setPackageToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isTogglingStatus, setIsTogglingStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Add refs to track deletion
-  const deletionInProgress = useRef(false);
-  const currentDeletingPackage = useRef(null);
-  
-  // Animation visibility state
-  const [isVisible, setIsVisible] = useState(true);
-  
-  // Get screen size for responsive behavior
-  const isSmallScreen = useScreenSize(768);
-  
-  // Get all Utils from ShopPackagesListUtils
-  const {
-    fetchPackagesByShop,
-    deletePackage,
-    handleDeletePackage,
-    handleAddPackage,
-    handleUpdatePackage,
-    handleToggleActiveStatus,
-    formatDate,
-    formatActiveStatus,
-    handlePackageRowClick: handleRowClick,
-    toggleActionsMenu: toggleActionsMenuFn,
-    handleSearchChange: handleSearchChangeFn,
-    getProductDetailsForPackage,
-    filterPackages
-  } = ShopPackagesListUtils();
-  
-  // Create animation transitions using React Spring
-  const contentTransition = useTransition(isVisible, {
-    ...formAnimation,
-    config: {
-      mass: 1,
-      tension: 280,
-      friction: 24
-    }
-  });
-
-  // Create separate transition for ShopCard
-  const shopCardTransition = useTransition(isVisible && selectedShop, {
-    ...fadeInScale,
-    config: {
-      mass: 1,
-      tension: 280,
-      friction: 24
-    }
-  });
-  
-  // Wrapper Utils
-  const handleSearchChange = (e) => {
-    handleSearchChangeFn(e, setSearchTerm);
-  };
-  
-  const toggleActionsMenu = (packageId, e) => {
-    toggleActionsMenuFn(packageId, activeActionsMenu, setActiveActionsMenu, e);
-  };
-  
-  const handlePackageRowClick = (pkg) => {
-    handleRowClick(pkg, setSelectedPackageDetails, setShowPackageCard);
-  };
-  
-  // Package fetching with error handling
-  useEffect(() => {
-    const loadPackages = async () => {
-      console.log('ShopPackagesList - Fetching packages for shop:', selectedShop?.id_shop);
-      if (selectedShop?.id_shop) {
-        try {
-          const fetchedPackages = await fetchPackagesByShop();
-          console.log(`Loaded ${fetchedPackages?.length || 0} packages for shop ${selectedShop.id_shop}`);
-          setIsVisible(true);
-        } catch (error) {
-          console.error('Error loading packages:', error);
-          setError(prevError => ({
-            ...prevError,
-            productError: "Error al cargar los paquetes"
-          }));
-          setShowErrorCard(true);
-        }
-      }
-    };
-    
-    loadPackages();
-  }, [selectedShop, packageListKey, fetchPackagesByShop, setError, setShowErrorCard]);
-  
-  // Update displayed packages when search term changes
-  useEffect(() => {
-    if (!Array.isArray(packages)) {
-      console.log('Packages is not an array:', packages);
-      setDisplayedPackages([]);
+  // Fetch packages function
+  const fetchPackages = async () => {
+    if (!selectedShop?.id_shop) {
+      console.log('No shop selected, skipping package fetch');
+      setPackages([]);
       return;
     }
-
-    console.log(`Filtering ${packages.length} packages with search term`);
     
-    // Apply search term if provided
-    let filtered = packages;
-    if (searchTerm && searchTerm.trim() !== '') {
-      filtered = filterPackages(packages, searchTerm);
-    }
-    
-    console.log(`Displaying ${filtered.length} packages after filtering`);
-    setDisplayedPackages(filtered);
-  }, [packages, searchTerm, filterPackages]);
-  
-  // Handle package deletion
-  useEffect(() => {
-    // Only run if isAccepted changes to true and we're not already in the middle of deletion
-    if (isAccepted && !deletionInProgress.current) {
-      const handleConfirmedDelete = async () => {
-        try {
-          // Set flag to prevent duplicate deletions
-          deletionInProgress.current = true;
-          
-          // Clear any existing success messages
-          setSuccess(prev => ({
-            ...prev,
-            productSuccess: '',
-            createSuccess: '',
-            updateSuccess: '',
-            deleteSuccess: ''
-          }));
-          
-          console.log('Beginning package deletion process');
-          
-          if (packageToDelete) {
-            // Store current package ID being deleted to avoid re-processing
-            currentDeletingPackage.current = packageToDelete;
-            console.log('Deleting package with ID:', packageToDelete);
-            
-            const result = await deletePackage(packageToDelete);
-            console.log('Delete API result:', result);
-            
-            if (result.success) {
-              console.log('Package deleted successfully, fetching updated package list');
-              
-              // First fetch updated packages
-              await fetchPackagesByShop();
-              
-              // Set a success message for deletion
-              setSuccess(prev => ({
-                ...prev,
-                deleteSuccess: "Paquete eliminado." 
-              }));
-              setShowSuccessCard(true);
-              
-              // Refresh UI
-              refreshPackageList();
-            } else {
-              console.error('Package deletion failed:', result.message);
-              setError(prevError => ({
-                ...prevError,
-                productError: result.message || "Error al eliminar el paquete"
-              }));
-            }
-          }
-        } catch (error) {
-          console.error('Error during package deletion process:', error);
-          setError(prevError => ({
-            ...prevError,
-            productError: "Error al eliminar el paquete: " + (error.message || "Error desconocido")
-          }));
-        } finally {
-          // Reset all delete-related state
-          setPackageToDelete(null);
-          setIsAccepted(false);
-          clearError();
-          
-          // Reset our deletion flags
-          deletionInProgress.current = false;
-          currentDeletingPackage.current = null;
-        }
-      };
-
-      handleConfirmedDelete();
-    }
-  }, [isAccepted, packageToDelete, deletePackage, fetchPackagesByShop, refreshPackageList, setSuccess, setError, setPackageToDelete, setIsAccepted, clearError, setShowSuccessCard]);
-  
-  // Handle deletion cancellation
-  useEffect(() => {
-    if (isDeclined) {
-      setPackageToDelete(null);
-      setIsDeclined(false);
-      clearError();
+    try {
+      setIsLoading(true);
+      console.log(`Fetching packages for shop ID: ${selectedShop.id_shop}`);
       
-      // Reset deletion flags on cancel
-      deletionInProgress.current = false;
-      currentDeletingPackage.current = null;
-    }
-  }, [isDeclined, setPackageToDelete, setIsDeclined, clearError]);
-  
-  // Handle clicks outside active menu
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Only close menu if clicking outside of an actions cell
-      if (activeActionsMenu !== null && !event.target.closest(`.${styles.actionsCellWrapper}`)) {
-        setActiveActionsMenu(null);
+      const response = await axiosInstance.get(`/package/by-shop-id/${selectedShop.id_shop}`);
+      
+      if (response.data && !response.data.error) {
+        const fetchedPackages = response.data.data || [];
+        console.log(`Fetched ${fetchedPackages.length} packages for shop ${selectedShop.name_shop}`);
+        setPackages(fetchedPackages);
+      } else {
+        console.error('Error in response:', response.data?.error);
+        setPackages([]);
+        if (response.data?.error) {
+          setSingleError('productError', response.data.error);
+        }
       }
-    };
+    } catch (error) {
+      console.error('Error fetching packages:', error);
+      setPackages([]);
+      setSingleError('productError', 'Error al cargar los paquetes');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Load packages when shop changes or packageListKey updates
+  useEffect(() => {
+    fetchPackages();
+  }, [selectedShop, packageListKey]);
+  
+  // Animation for package list
+  const packagesTransition = useTransition(packages, {
+    ...shopsListAnimations.shopCardAnimation,
+    keys: item => item.id_package
+  });
+  
+  // Toggle expanded state for a package
+  const toggleExpanded = (packageId) => {
+    setExpandedPackages(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(packageId)) {
+        newSet.delete(packageId);
+      } else {
+        newSet.add(packageId);
+      }
+      return newSet;
+    });
+  };
+  
+  // Handle edit package
+  const handleEditPackage = (pkg) => {
+    setSelectedPackage(pkg);
+    setIsAddingPackage(true);
+  };
+  
+  // Handle delete package
+  const handleDeletePackage = (pkg) => {
+    setPackageToDelete(pkg);
+    setShowDeleteModal(true);
+  };
+  
+  // Confirm delete package
+  const confirmDeletePackage = async () => {
+    if (!packageToDelete) return;
     
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+    try {
+      setIsDeleting(true);
+      
+      // Use the correct endpoint with the package ID in the URL
+      const response = await axiosInstance.delete(`/package/remove/${packageToDelete.id_package}`);
+      
+      if (response.data && response.data.success) {
+        setSingleSuccess('productSuccess', response.data.success);
+        
+        // Refresh the package list
+        await fetchPackages();
+        
+        // Close modal
+        setShowDeleteModal(false);
+        setPackageToDelete(null);
+      } else {
+        setSingleError('productError', response.data.error || 'Error al eliminar el paquete');
+      }
+    } catch (error) {
+      console.error('Error deleting package:', error);
+      setSingleError('productError', error.response?.data?.error || 'Error al eliminar el paquete');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  
+  // Toggle package active status
+  const handleToggleStatus = async (pkg) => {
+    try {
+      setIsTogglingStatus(pkg.id_package);
+      
+      const response = await axiosInstance.patch(`/package/toggle-status/${pkg.id_package}`);
+      
+      if (response.data && response.data.success) {
+        setSingleSuccess('productSuccess', response.data.success);
+        
+        // Update local state
+        setPackages(prev => 
+          prev.map(p => 
+            p.id_package === pkg.id_package 
+              ? { ...p, active_package: !p.active_package }
+              : p
+          )
+        );
+      } else {
+        setSingleError('productError', response.data.error || 'Error al cambiar el estado del paquete');
+      }
+    } catch (error) {
+      console.error('Error toggling package status:', error);
+      setSingleError('productError', error.response?.data?.error || 'Error al cambiar el estado del paquete');
+    } finally {
+      setIsTogglingStatus(null);
+    }
+  };
+  
+  // Format price with discount
+  const formatPrice = (price) => {
+    return typeof price === 'number' ? price.toFixed(2) : '0.00';
+  };
+  
+  // Calculate package prices
+  const calculatePackagePrices = (pkg) => {
+    const products = [pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p);
+    const totalPrice = products.reduce((sum, product) => sum + (parseFloat(product.price_product) || 0), 0);
+    const discount = pkg.discount_package || 0;
+    const discountedPrice = totalPrice * (1 - discount / 100);
+    
+    return {
+      totalPrice,
+      discountedPrice,
+      savings: totalPrice - discountedPrice
     };
-  }, [activeActionsMenu]);
+  };
+  
+  // Render product item in package
+  const renderProductItem = (product, index) => {
+    if (!product) return null;
+    
+    return (
+      <div key={product.id_product || index} className={styles.productItem}>
+        <span className={styles.productIndex}>{index}.</span>
+        <span className={styles.productName}>{product.name_product}</span>
+        <span className={styles.productPrice}>€{formatPrice(parseFloat(product.price_product))}</span>
+      </div>
+    );
+  };
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Package size={48} className={styles.loadingIcon} />
+        <p>Cargando paquetes...</p>
+      </div>
+    );
+  }
   
   if (!selectedShop) {
-    console.log('No shop selected in ShopPackagesList');
-    return <NoShopSelected />;
+    return (
+      <div className={styles.noShopContainer}>
+        <AlertCircle size={48} />
+        <p>Selecciona un comercio para ver sus paquetes</p>
+      </div>
+    );
   }
-
+  
+  if (packages.length === 0) {
+    return (
+      <div className={styles.emptyContainer}>
+        <Package size={48} />
+        <p>No hay paquetes creados</p>
+        <button 
+          className={styles.createButton}
+          onClick={() => setIsAddingPackage(true)}
+        >
+          Crear primer paquete
+        </button>
+      </div>
+    );
+  }
+  
   return (
     <>
-      <ConfirmationModal 
-        isOpen={isModalOpen}
-        onConfirm={() => {
-          setIsModalOpen(false);
-          setIsAccepted(true);
-        }}
-        onCancel={() => {
-          setIsModalOpen(false);
-          setIsDeclined(true);
-        }}
-      />
-
-      {showPackageCard && selectedPackageDetails && (
-        <PackageCard 
-          package={selectedPackageDetails}
-          productDetails={getProductDetailsForPackage(selectedPackageDetails)}
-          onClose={() => {
-            setShowPackageCard(false);
-            setSelectedPackageDetails(null);
-          }} 
-        />
-      )}
-
-      {contentTransition((style, item) => 
-        item && (
-          <animated.div style={style} className={styles.container}>
-            {/* Animated ShopCard */}
-            {shopCardTransition((cardStyle, shop) => 
-              shop && (
-                <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
-                  <ShopCard shop={selectedShop} />
-                </animated.div>
-              )
-            )}
-
-            <div className={styles.listHeaderTop}>
-              <div className={styles.listTitleWrapper}>
-                <div className={styles.titleWithBackButton}>
-                  <button 
-                    onClick={onBack}
-                    className={styles.backButton}
-                    title="Volver a productos"
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>
+            <Package size={20} />
+            Paquetes ({packages.length})
+          </h3>
+        </div>
+        
+        <div className={styles.packagesList}>
+          {packagesTransition((style, pkg) => (
+            <animated.div style={style} className={styles.packageCard}>
+              <div className={styles.packageHeader}>
+                <div className={styles.packageMainInfo}>
+                  {/* Display package image if available */}
+                  {pkg.image_package ? (
+                    <div 
+                      className={styles.packageImageContainer}
+                      onClick={() => openImageModal(formatImageUrl(pkg.image_package))}
+                    >
+                      <img 
+                        src={formatImageUrl(pkg.image_package)} 
+                        alt={pkg.name_package || 'Paquete'}
+                        className={styles.packageImage}
+                        onError={(e) => {
+                          console.error('Error loading package image:', pkg.image_package);
+                          // Hide broken image
+                          e.target.parentElement.style.display = 'none';
+                        }}
+                      />
+                      <div className={styles.imageOverlay}>
+                        <Image size={16} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`${styles.packageImageContainer} ${styles.noImage}`}>
+                      <Package size={30} className={styles.placeholderIcon} />
+                    </div>
+                  )}
+                  
+                  <div className={styles.packageInfo}>
+                    <h4 className={styles.packageName}>{pkg.name_package || 'Paquete sin nombre'}</h4>
+                    <div className={styles.packageMeta}>
+                      <span className={`${styles.statusBadge} ${pkg.active_package ? styles.active : styles.inactive}`}>
+                        {pkg.active_package ? 'Activo' : 'Inactivo'}
+                      </span>
+                      {pkg.discount_package > 0 && (
+                        <span className={styles.discountBadge}>
+                          <Tag size={12} />
+                          {pkg.discount_package}% dto
+                        </span>
+                      )}
+                      <span className={styles.productCount}>
+                        {[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length} productos
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className={styles.packagePricing}>
+                  {(() => {
+                    const prices = calculatePackagePrices(pkg);
+                    return (
+                      <>
+                        {pkg.discount_package > 0 && (
+                          <span className={styles.originalPrice}>€{formatPrice(prices.totalPrice)}</span>
+                        )}
+                        <span className={styles.finalPrice}>€{formatPrice(prices.discountedPrice)}</span>
+                        {pkg.discount_package > 0 && (
+                          <span className={styles.savings}>Ahorro: €{formatPrice(prices.savings)}</span>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+                
+                <div className={styles.packageActions}>
+                  <button
+                    onClick={() => handleToggleStatus(pkg)}
+                    className={styles.actionButton}
+                    disabled={isTogglingStatus === pkg.id_package}
+                    title={pkg.active_package ? 'Desactivar' : 'Activar'}
                   >
-                    ← Productos
+                    {pkg.active_package ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
                   </button>
-                  <h1 className={styles.listTitle}>Lista de Paquetes</h1>
+                  
+                  <button
+                    onClick={() => handleEditPackage(pkg)}
+                    className={styles.actionButton}
+                    title="Editar"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  
+                  <button
+                    onClick={() => handleDeletePackage(pkg)}
+                    className={styles.actionButton}
+                    title="Eliminar"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                  
+                  <button
+                    onClick={() => toggleExpanded(pkg.id_package)}
+                    className={styles.expandButton}
+                    title={expandedPackages.has(pkg.id_package) ? 'Contraer' : 'Expandir'}
+                  >
+                    {expandedPackages.has(pkg.id_package) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  </button>
                 </div>
               </div>
               
-              <SearchBar 
-                searchTerm={searchTerm}
-                handleSearchChange={handleSearchChange}
-                placeholder="Buscar paquetes..."
-              />
-              
-              <div className={styles.buttonGroupContainer}>
-                <PackageActionButtons 
-                  handleAddPackage={handleAddPackage}
-                  selectedPackages={[]}
-                  displayedPackages={displayedPackages}
-                />
-              </div>
-            </div>
-
-            {displayedPackages.length === 0 ? (
-              <NoPackagesMessage packages={packages} />
-            ) : (       
-              <div className={styles.tableContainer}>
-                <PackagesCount 
-                  displayedPackages={displayedPackages}
-                />
-                
-                <PackagesTable 
-                  displayedPackages={displayedPackages}
-                  formatDate={formatDate}
-                  formatActiveStatus={formatActiveStatus}
-                  handlePackageRowClick={handlePackageRowClick}
-                  activeActionsMenu={activeActionsMenu}
-                  toggleActionsMenu={toggleActionsMenu}
-                  handleUpdatePackage={handleUpdatePackage}
-                  handleDeletePackage={handleDeletePackage}
-                  handleToggleActiveStatus={handleToggleActiveStatus}
-                  currentDeletingPackage={currentDeletingPackage}
-                  getProductDetailsForPackage={getProductDetailsForPackage}
-                />
-              </div>
-            )}
-          </animated.div>
-        )
+              {expandedPackages.has(pkg.id_package) && (
+                <div className={styles.packageDetails}>
+                  <div className={styles.productsSection}>
+                    <h5 className={styles.sectionTitle}>Productos incluidos:</h5>
+                    <div className={styles.productsList}>
+                      {pkg.product1 && renderProductItem(pkg.product1, 1)}
+                      {pkg.product2 && renderProductItem(pkg.product2, 2)}
+                      {pkg.product3 && renderProductItem(pkg.product3, 3)}
+                      {pkg.product4 && renderProductItem(pkg.product4, 4)}
+                      {pkg.product5 && renderProductItem(pkg.product5, 5)}
+                    </div>
+                  </div>
+                  
+                  <div className={styles.packageFooter}>
+                    <span className={styles.packageId}>ID: {pkg.id_package}</span>
+                    <span className={styles.creationDate}>
+                      Creado: {new Date(pkg.creation_package).toLocaleDateString('es-ES')}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </animated.div>
+          ))}
+        </div>
+      </div>
+      
+      {showDeleteModal && (
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setPackageToDelete(null);
+          }}
+          onConfirm={confirmDeletePackage}
+          title="Eliminar Paquete"
+          message={`¿Estás seguro de que deseas eliminar el paquete "${packageToDelete?.name_package || 'Sin nombre'}"? Esta acción no se puede deshacer.`}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+          isLoading={isDeleting}
+        />
       )}
     </>
   );
