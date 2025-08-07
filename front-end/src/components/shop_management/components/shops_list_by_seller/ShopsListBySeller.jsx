@@ -204,6 +204,7 @@ const ShopsListBySeller = () => {
             )}
             
             {/* Shop Info */}
+            <div>
             <div className={styles.shopInfo}>
               <h4 className={styles.shopName}>{shop.name_shop}</h4>
               <div className={styles.shopMeta}>
@@ -262,6 +263,8 @@ const ShopsListBySeller = () => {
               {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
           </div>
+            </div>
+            
         </div>
         
         {/* Expanded Details */}
@@ -332,10 +335,10 @@ const ShopsListBySeller = () => {
                 ) : (
                   <div className={styles.listHeaderContainer}>
                     <div className={styles.listHeader}>
-                      <h3 className={styles.listTitle}>
-                        <Store size={20} />
+                      <span className={styles.listTitle}>
+                        {/* <Store size={20} /> */}
                         Comercios ({shops.length})
-                      </h3>
+                      </span>
                     </div>
                     
                     <div className={styles.shopsList}>
