@@ -26,12 +26,12 @@ const SearchBar = ({ searchTerm, handleSearchChange }) => {
   // 🌟 UPDATE: Enhanced search bar with full width and improved styling
   return (
     <div className={styles.searchInputWrapper}>
-      <Search 
+      {/* <Search 
         size={isSmallScreen ? 16 : 18} 
         className={styles.searchIcon} 
         strokeWidth={3}
         color="white"
-      />
+      /> */}
       <input
         type="text"
         value={searchTerm}
