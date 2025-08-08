@@ -75,9 +75,9 @@
   gap: 1rem;
   width: 100%;
   padding: 1rem;
-  background: white;
+  /* background: white; */
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   position: relative;
   z-index: -1; /* Low z-index */
 }
@@ -86,9 +86,10 @@
 .searchInputWrapper {
   display: flex;
   align-items: center;
+  justify-content: center;
   position: relative;
   flex: 1;
-  max-width: 600px;
+  /* max-width: 600px; */
   margin: 0 auto;
 }
 
@@ -441,13 +442,15 @@
 }
 
 .tableRow {
+user-select: none;
   background-color: white;
   border-bottom: 1px solid #f3f4f6;
-  transition: all 0.2s ease;
+  /* transition: all 0.15s ease; */
   cursor: pointer;
 }
 
 .tableRow:hover {
+  border-left: 2px solid var(--saturated-blue);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
   transform: translateX(4px);
 }
