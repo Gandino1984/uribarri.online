@@ -4,6 +4,8 @@ import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
 import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx';
 import ShopPackagesList from './components/shop_packages_list/ShopPackagesList.jsx';
+//update: Import PackageCreationForm
+import PackageCreationForm from '../shop_products_list/components/package_creation_form/PackageCreationForm.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
 
@@ -61,12 +63,14 @@ const ShopProductsList = () => {
     fetchSubcategoriesByCategory
   } = useProduct();
 
-  // ✨ UPDATE: Package context
+  // ✨ UPDATE: Package context - include showPackageCreationForm
   const {
     setNewPackageData,
     initNewPackageData,
     setShowPackageCreationForm,
-    setIsAddingPackage
+    setIsAddingPackage,
+    showPackageCreationForm,
+    isAddingPackage
   } = usePackage();
 
   const [showProductCard, setShowProductCard] = useState(false);
@@ -430,6 +434,11 @@ const ShopProductsList = () => {
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
     return <NoShopSelected setShowProductManagement={setShowProductManagement} />;
+  }
+  
+  //update: Check if we should show the PackageCreationForm
+  if (showPackageCreationForm && isAddingPackage) {
+    return <PackageCreationForm />;
   }
   
   // 🔄 UPDATE: If showPackages is true, render the ShopPackagesList component

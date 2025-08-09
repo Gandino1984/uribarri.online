@@ -25,7 +25,7 @@ router.get('/by-shop-id/:id_shop', packageApiController.getByShopId);
 router.get('/active-by-shop-id/:id_shop', packageApiController.getActiveByShopId);
 router.get('/inactive-by-shop-id/:id_shop', packageApiController.getInactiveByShopId);
 
-// Status operations
+//update: Status operations - Fixed route path
 router.patch('/toggle-status/:id_package', packageApiController.toggleActiveStatus);
 
 // Image upload operations with enhanced processing

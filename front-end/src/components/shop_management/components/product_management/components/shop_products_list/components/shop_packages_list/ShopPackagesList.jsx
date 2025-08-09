@@ -28,6 +28,8 @@ const ShopPackagesList = () => {
     setPackages,
     setSelectedPackage,
     setIsAddingPackage,
+    //update: Add showPackageCreationForm to control form visibility
+    setShowPackageCreationForm,
     packageListKey
   } = usePackage();
   const { selectedShop } = useShop();
@@ -36,8 +38,6 @@ const ShopPackagesList = () => {
     setShowErrorCard,
     setSuccess,
     setShowSuccessCard,
-    setSingleSuccess,
-    setSingleError,
     openImageModal
   } = useUI();
   
@@ -48,6 +48,8 @@ const ShopPackagesList = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  //update: Add a state to force re-renders when packages are updated
+  const [updateKey, setUpdateKey] = useState(0);
   
   // Fetch packages function
   const fetchPackages = async () => {
@@ -71,13 +73,21 @@ const ShopPackagesList = () => {
         console.error('Error in response:', response.data?.error);
         setPackages([]);
         if (response.data?.error) {
-          setSingleError('productError', response.data.error);
+          setError(prevError => ({
+            ...prevError,
+            productError: response.data.error
+          }));
+          setShowErrorCard(true);
         }
       }
     } catch (error) {
       console.error('Error fetching packages:', error);
       setPackages([]);
-      setSingleError('productError', 'Error al cargar los paquetes');
+      setError(prevError => ({
+        ...prevError,
+        productError: 'Error al cargar los paquetes'
+      }));
+      setShowErrorCard(true);
     } finally {
       setIsLoading(false);
     }
@@ -88,10 +98,19 @@ const ShopPackagesList = () => {
     fetchPackages();
   }, [selectedShop, packageListKey]);
   
+  //update: Debug effect to monitor packages state changes
+  useEffect(() => {
+    console.log('PACKAGES STATE UPDATED:', packages);
+    console.log('Number of packages:', packages.length);
+    if (packages.length > 0) {
+      console.log('First package active status:', packages[0].active_package, 'Type:', typeof packages[0].active_package);
+    }
+  }, [packages]);
+  
   // Animation for package list
   const packagesTransition = useTransition(packages, {
     ...shopsListAnimations.shopCardAnimation,
-    keys: item => item.id_package
+    keys: item => `${item.id_package}-${item.active_package}` // Include active status in key to force re-render
   });
   
   // Toggle expanded state for a package
@@ -107,10 +126,12 @@ const ShopPackagesList = () => {
     });
   };
   
-  // Handle edit package
+  //update: Handle edit package - properly set states to show the form
   const handleEditPackage = (pkg) => {
+    console.log('Editing package:', pkg);
     setSelectedPackage(pkg);
     setIsAddingPackage(true);
+    setShowPackageCreationForm(true); // This is important to show the form
   };
   
   // Handle delete package
@@ -130,7 +151,11 @@ const ShopPackagesList = () => {
       const response = await axiosInstance.delete(`/package/remove/${packageToDelete.id_package}`);
       
       if (response.data && response.data.success) {
-        setSingleSuccess('productSuccess', response.data.success);
+        setSuccess(prev => ({
+          ...prev,
+          productSuccess: response.data.success
+        }));
+        setShowSuccessCard(true);
         
         // Refresh the package list
         await fetchPackages();
@@ -139,40 +164,95 @@ const ShopPackagesList = () => {
         setShowDeleteModal(false);
         setPackageToDelete(null);
       } else {
-        setSingleError('productError', response.data.error || 'Error al eliminar el paquete');
+        setError(prevError => ({
+          ...prevError,
+          productError: response.data.error || 'Error al eliminar el paquete'
+        }));
+        setShowErrorCard(true);
       }
     } catch (error) {
       console.error('Error deleting package:', error);
-      setSingleError('productError', error.response?.data?.error || 'Error al eliminar el paquete');
+      setError(prevError => ({
+        ...prevError,
+        productError: error.response?.data?.error || 'Error al eliminar el paquete'
+      }));
+      setShowErrorCard(true);
     } finally {
       setIsDeleting(false);
     }
   };
   
-  // Toggle package active status
+  //update: Toggle package active status - fixed with correct UI context functions
   const handleToggleStatus = async (pkg) => {
     try {
       setIsTogglingStatus(pkg.id_package);
       
+      console.log('BEFORE TOGGLE - Package:', pkg.id_package, 'Current status:', pkg.active_package);
+      console.log('BEFORE TOGGLE - All packages:', packages);
+      
+      // Call the API endpoint
       const response = await axiosInstance.patch(`/package/toggle-status/${pkg.id_package}`);
       
+      console.log('API RESPONSE:', response.data);
+      
       if (response.data && response.data.success) {
-        setSingleSuccess('productSuccess', response.data.success);
+        // Use the correct setSuccess function
+        setSuccess(prev => ({
+          ...prev,
+          productSuccess: response.data.success
+        }));
+        setShowSuccessCard(true);
         
-        // Update local state
-        setPackages(prev => 
-          prev.map(p => 
-            p.id_package === pkg.id_package 
-              ? { ...p, active_package: !p.active_package }
-              : p
-          )
-        );
+        // Get the new status from the response
+        const newStatus = response.data.data?.active_package;
+        console.log('NEW STATUS FROM API:', newStatus);
+        
+        // Update the packages array
+        const updatedPackages = packages.map(p => {
+          if (p.id_package === pkg.id_package) {
+            const updatedPackage = {
+              ...p,
+              active_package: newStatus !== undefined ? newStatus : !p.active_package
+            };
+            console.log('UPDATED PACKAGE:', updatedPackage);
+            return updatedPackage;
+          }
+          return p;
+        });
+        
+        console.log('AFTER TOGGLE - Updated packages:', updatedPackages);
+        
+        // Set the new packages array
+        setPackages(updatedPackages);
+        
+        // Force a re-render by updating the key
+        setUpdateKey(prev => prev + 1);
+        
+        // Double-check by fetching fresh data after a short delay
+        setTimeout(async () => {
+          console.log('Fetching fresh data from server...');
+          await fetchPackages();
+        }, 500);
+        
       } else {
-        setSingleError('productError', response.data.error || 'Error al cambiar el estado del paquete');
+        console.error('API ERROR:', response.data.error);
+        setError(prevError => ({
+          ...prevError,
+          productError: response.data.error || 'Error al cambiar el estado del paquete'
+        }));
+        setShowErrorCard(true);
+        // Refresh to sync with backend on error
+        await fetchPackages();
       }
     } catch (error) {
-      console.error('Error toggling package status:', error);
-      setSingleError('productError', error.response?.data?.error || 'Error al cambiar el estado del paquete');
+      console.error('EXCEPTION in toggle:', error);
+      setError(prevError => ({
+        ...prevError,
+        productError: error.response?.data?.error || 'Error al cambiar el estado del paquete'
+      }));
+      setShowErrorCard(true);
+      // Refresh packages to ensure UI is in sync with backend even on error
+      await fetchPackages();
     } finally {
       setIsTogglingStatus(null);
     }
@@ -236,7 +316,11 @@ const ShopPackagesList = () => {
         <p>No hay paquetes creados</p>
         <button 
           className={styles.createButton}
-          onClick={() => setIsAddingPackage(true)}
+          onClick={() => {
+            //update: Also set the form visibility when creating new package
+            setIsAddingPackage(true);
+            setShowPackageCreationForm(true);
+          }}
         >
           Crear primer paquete
         </button>
@@ -254,9 +338,9 @@ const ShopPackagesList = () => {
           </h3>
         </div>
         
-        <div className={styles.packagesList}>
-          {packagesTransition((style, pkg) => (
-            <animated.div style={style} className={styles.packageCard}>
+        <div className={styles.packagesList} key={updateKey}>
+          {packages.map(pkg => (
+            <div key={`package-${pkg.id_package}-${pkg.active_package}`} className={styles.packageCard}>
               <div className={styles.packageHeader}>
                 <div className={styles.packageMainInfo}>
                   {/* Display package image if available */}
@@ -288,8 +372,12 @@ const ShopPackagesList = () => {
                   <div className={styles.packageInfo}>
                     <h4 className={styles.packageName}>{pkg.name_package || 'Paquete sin nombre'}</h4>
                     <div className={styles.packageMeta}>
-                      <span className={`${styles.statusBadge} ${pkg.active_package ? styles.active : styles.inactive}`}>
-                        {pkg.active_package ? 'Activo' : 'Inactivo'}
+                      {console.log(`Rendering package ${pkg.id_package}, active_package:`, pkg.active_package, 'Type:', typeof pkg.active_package)}
+                      <span 
+                        key={`status-${pkg.id_package}-${pkg.active_package}-${updateKey}`}
+                        className={`${styles.statusBadge} ${pkg.active_package === true || pkg.active_package === 1 ? styles.active : styles.inactive}`}
+                      >
+                        {pkg.active_package === true || pkg.active_package === 1 ? 'Activo' : 'Inactivo'}
                       </span>
                       {pkg.discount_package > 0 && (
                         <span className={styles.discountBadge}>
@@ -323,12 +411,13 @@ const ShopPackagesList = () => {
                 
                 <div className={styles.packageActions}>
                   <button
+                    key={`toggle-${pkg.id_package}-${pkg.active_package}`}
                     onClick={() => handleToggleStatus(pkg)}
                     className={styles.actionButton}
                     disabled={isTogglingStatus === pkg.id_package}
-                    title={pkg.active_package ? 'Desactivar' : 'Activar'}
+                    title={pkg.active_package === true || pkg.active_package === 1 ? 'Desactivar' : 'Activar'}
                   >
-                    {pkg.active_package ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                    {pkg.active_package === true || pkg.active_package === 1 ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
                   </button>
                   
                   <button
@@ -378,7 +467,7 @@ const ShopPackagesList = () => {
                   </div>
                 </div>
               )}
-            </animated.div>
+            </div>
           ))}
         </div>
       </div>
