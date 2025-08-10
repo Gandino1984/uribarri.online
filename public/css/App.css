@@ -317,7 +317,7 @@ select {
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--light-gray) !important; 
+  color: gray !important; 
   background-color: white;
   border-radius: 8px;
   margin-bottom: .5rem;
@@ -338,7 +338,7 @@ select:hover {
 
 /* Clear any default selected styling */
 select:focus:not(.has-value) {
-  color: var(--lighter-gray) !important;
+  color: var(--saturated-blue) !important;
   border-color: none;
   background-color: var(--superlight-blue) !important;
   outline: none;
