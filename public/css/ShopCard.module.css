@@ -1,6 +1,8 @@
 /* ShopCard.module.css - Complete Updated Version */
 
 .shopCardWrapper {
+  outline: 2px solid var(--saturated-blue);
+  border-radius: 8px;
   width: 100%;
   display: flex;
   flex-direction: column;

@@ -327,7 +327,7 @@ const ShopProductsListUtils = () => {
     } 
   }, [selectedShop, setProducts, setSelectedProducts, setError, fetchAllSubcategories]);
 
-  // Define deleteProduct before it's used in bulkDeleteProducts
+  //update: Fixed deleteProduct function with better error handling and state management
   const deleteProduct = useCallback(async (id_product) => {
     try {
       console.log(`Starting deletion of product with ID: ${id_product}`);
@@ -366,74 +366,67 @@ const ShopProductsListUtils = () => {
         }
       }
 
-      // Now delete the actual product from the database with error handling for race conditions
-      try {
-        console.log(`Sending API request to delete product with ID: ${id_product}`);
-        const response = await axiosInstance.delete(`/product/remove-by-id/${id_product}`);
+      // Now delete the actual product from the database
+      console.log(`Sending API request to delete product with ID: ${id_product}`);
+      const response = await axiosInstance.delete(`/product/remove-by-id/${id_product}`);
+      
+      console.log('Delete API response:', response);
+      
+      // Check if deletion was successful
+      if (response.data && (response.data.success || response.data.data === id_product)) {
+        console.log('Product deletion successful');
         
-        // Verify deletion success
-        if (response.data && response.data.success) {
-          console.log('Product deletion API success response:', response.data);
-          
-          // Verify the ID returned matches what we sent
-          if (response.data.data && response.data.data.toString() === id_product.toString()) {
-            console.log('Deletion verified by matching IDs');
-            
-            // Apply proper success message for deletion
-            setSuccess(prev => ({
-              ...prev,
-              deleteSuccess: "Producto eliminado.",
-              // Clear other product-related messages to avoid confusion
-              productSuccess: '',
-              createSuccess: '',
-              updateSuccess: ''
-            }));
-            setShowSuccessCard(true);
-            
-            return { 
-              success: true, 
-              message: response.data.success || "Producto eliminado." 
-            };
-          } else {
-            console.warn('Product deletion API returned success but with unexpected data:', response.data);
-            return { success: true, message: "Producto eliminado" };
-          }
-        } else {
-          // This could be a race condition - check if product was already deleted
-          if (response.data && response.data.error === "Producto no encontrado") {
-            console.warn('Product not found in database. It may have been already deleted.');
-            // We'll count this as a successful deletion since the product is gone
-            return { success: true, message: "Producto eliminado (ya no existía)" };
-          }
-          
-          console.error('API reported error during product deletion:', response.data);
-          setError(prevError => ({
-            ...prevError,
-            productError: response.data.error || "Error al eliminar el producto"
-          }));
-          setShowErrorCard(true);
-          return { success: false, message: response.data.error || "Error al eliminar el producto" };
-        }
-      } catch (apiError) {
-        // Check if the error is a 404, which could mean the product was already deleted
-        if (apiError.response && apiError.response.status === 404) {
-          console.warn('Got 404 response - product may have been already deleted');
-          // Even though we got an error, the product is gone, so technically this is a success
-          return { success: true, message: "Producto eliminado (ya no existía)" };
-        }
+        // Update local state immediately to remove the product from the list
+        setProducts(prevProducts => prevProducts.filter(p => p.id_product !== id_product));
         
-        throw apiError; // Re-throw for other errors
+        // Clear selected products if this product was selected
+        setSelectedProducts(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(id_product);
+          return newSet;
+        });
+        
+        return { 
+          success: true, 
+          message: response.data.success || "Producto eliminado correctamente" 
+        };
+      } else if (response.data && response.data.error) {
+        console.error('API reported error during product deletion:', response.data.error);
+        return { 
+          success: false, 
+          message: response.data.error || "Error al eliminar el producto" 
+        };
+      } else {
+        // Unexpected response format but might still be successful
+        console.warn('Unexpected response format from delete API:', response.data);
+        
+        // Update local state anyway since the request didn't fail
+        setProducts(prevProducts => prevProducts.filter(p => p.id_product !== id_product));
+        
+        return { 
+          success: true, 
+          message: "Producto eliminado" 
+        };
       }
     } catch (err) {
       console.error('Exception in deleteProduct function:', err);
-      setError(prevError => ({
-        ...prevError,
-        productError: "Error al eliminar el producto: " + (err.message || "Error desconocido")
-      }));
-      setShowErrorCard(true);
-      return { success: false, message: "Error al eliminar el producto" };
+      
+      // Check if the error is a 404, which could mean the product was already deleted
+      if (err.response && err.response.status === 404) {
+        console.warn('Got 404 response - product may have been already deleted');
+        
+        // Update local state to remove the product
+        setProducts(prevProducts => prevProducts.filter(p => p.id_product !== id_product));
+        
+        return { success: true, message: "Producto eliminado" };
+      }
+      
+      return { 
+        success: false, 
+        message: err.response?.data?.error || err.message || "Error al eliminar el producto" 
+      };
     }
-  }, [products, setError, setShowErrorCard, setSuccess, setShowSuccessCard]);
+  }, [products, setProducts, setSelectedProducts]);
 
   // Now bulkDeleteProducts can use deleteProduct since it's already defined
   const bulkDeleteProducts = useCallback(async () => {

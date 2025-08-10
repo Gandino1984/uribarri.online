@@ -79,9 +79,9 @@
 
 /* Card-based List Header (similar to ShopPackagesList) */
 .listHeader {
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
   text-align: center;
   width: 100%;
   padding-top: .5rem;
@@ -94,11 +94,11 @@
 }
 
 .listTitle {
+  /* display: flex;
+  align-items: center; */
   width: 100%;
   text-align: center;
   text-shadow: 1px 0px 3px white;
-  /* display: flex;
-  align-items: center; */
   gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 600;

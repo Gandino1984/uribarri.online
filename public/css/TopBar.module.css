@@ -44,31 +44,32 @@
 }
 
 .backButton {
-    color: black;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background-color: rgba(255, 255, 255, 0.2);
+    color: gray;
+    /* border: 1px solid rgba(255, 255, 255, 0.25); */
+    background-color: white;
 }
 
 .backButton:hover {
     color: white;
-    border: 1px solid white;
-    background-color: rgba(255, 255, 255, 0.4) !important;
-    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+    /* border: 1px solid white; */
+    background-color: var(--saturated-blue) !important;
+    box-shadow: 0px 0px 4px 1px var(--saturated-blue-transparent) !important;
 }
 
 .active {
-    color: black;
+    color: gray;
     font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: white;
+    /* border: 1px solid rgba(255, 255, 255, 0.25); */
+    /* background-color: rgba(255, 255, 255, 0.2); */
 }
   
 .active:hover {
     color: white;
-    border: 1px solid white;
-    background-color: rgba(255, 255, 255, 0.4);
+    /* border: 1px solid white; */
+    background-color: var(--saturated-blue);
     /* text-shadow: 0px 0px 8px 1px var(--saturated-blue-transparent) !important; */
-    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+    box-shadow: 0px 0px 4px 1px var(--saturated-blue-transparent) !important;
 }
 
 /* .burgerButton {

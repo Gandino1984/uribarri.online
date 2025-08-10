@@ -229,9 +229,12 @@ async function getById(req, res) {
     }
 }
 
+//update: Fixed removeById function to properly handle the deletion
 async function removeById(req, res) {
     try {
         const id_product = req.params.id_product;
+        
+        console.log('-> product_api_controller.js - removeById() - Starting deletion for product ID:', id_product);
         
         if (!id_product) {  
             console.error('-> product_api_controller.js - removeById() - Error = El parámetro id_product es obligatorio');
@@ -240,14 +243,32 @@ async function removeById(req, res) {
             });
         }
 
+        // Call the controller to delete the product
         const {error, data, success} = await productController.removeById(id_product);
         
-        res.json({error, data, success});    
+        console.log('-> product_api_controller.js - removeById() - Result:', { error, data, success });
+        
+        // Always return a consistent response structure
+        if (error) {
+            return res.status(400).json({
+                error: error,
+                data: null,
+                success: null
+            });
+        }
+        
+        // Return success response with the deleted product ID
+        return res.json({
+            error: null,
+            data: id_product,
+            success: success || "Producto eliminado correctamente"
+        });
     } catch (err) {
         console.error("-> product_api_controller.js - removeById() - Error =", err);
         res.status(500).json({ 
             error: "Error al eliminar un producto", 
-            data: null
+            data: null,
+            success: null
         });
     }
 }
