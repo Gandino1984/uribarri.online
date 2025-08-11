@@ -1,3 +1,4 @@
+// back-end/controllers/product/product_api_controller.js
 import productController from "./product_controller.js";
 import product_model from "../../models/product_model.js";
 
@@ -22,8 +23,11 @@ async function create(req, res) {
             discount_product, 
             season_product, 
             calification_product, 
-            type_product, 
-            subtype_product, 
+            //update: Accept both old and new field names
+            type_product,
+            subtype_product,
+            id_category,
+            id_subcategory,
             sold_product, 
             info_product, 
             id_shop,
@@ -32,17 +36,16 @@ async function create(req, res) {
             expiration_product,
             country_product,
             locality_product,
-            // UPDATE: Added active_product parameter
             active_product
         } = req.body;
 
+        //update: Modified validation to check for either category/subcategory IDs or type/subtype strings
         if (name_product === undefined || 
             price_product === undefined || 
             discount_product === undefined || 
             season_product === undefined || 
             calification_product === undefined || 
-            type_product === undefined || 
-            subtype_product === undefined || 
+            ((!type_product && !id_category) || (!subtype_product && !id_subcategory)) ||
             sold_product === undefined || 
             info_product === undefined || 
             id_shop === undefined ||
@@ -69,8 +72,10 @@ async function create(req, res) {
             discount_product, 
             season_product, 
             calification_product, 
-            type_product, 
-            subtype_product, 
+            type_product,
+            subtype_product,
+            id_category,
+            id_subcategory,
             sold_product, 
             info_product, 
             id_shop,
@@ -79,7 +84,6 @@ async function create(req, res) {
             expiration_product,
             country_product,
             locality_product,
-            // UPDATE: Pass active_product parameter if provided
             active_product
         });
 
@@ -102,8 +106,11 @@ async function update(req, res) {
             discount_product, 
             season_product, 
             calification_product, 
+            //update: Accept both old and new field names
             type_product,
-            subtype_product, 
+            subtype_product,
+            id_category,
+            id_subcategory,
             sold_product, 
             info_product, 
             id_shop,
@@ -112,18 +119,17 @@ async function update(req, res) {
             expiration_product,
             country_product,
             locality_product,
-            // UPDATE: Added active_product parameter
             active_product
         } = req.body;
 
+        //update: Modified validation to check for either category/subcategory IDs or type/subtype strings
         if(id_product === undefined || 
            name_product === undefined || 
            price_product === undefined || 
            discount_product === undefined || 
            season_product === undefined || 
            calification_product === undefined || 
-           type_product === undefined ||
-           subtype_product === undefined || 
+           ((!type_product && !id_category) || (!subtype_product && !id_subcategory)) ||
            sold_product === undefined || 
            info_product === undefined || 
            id_shop === undefined ||
@@ -153,7 +159,9 @@ async function update(req, res) {
                 season_product, 
                 calification_product, 
                 type_product,
-                subtype_product, 
+                subtype_product,
+                id_category,
+                id_subcategory,
                 sold_product, 
                 info_product, 
                 id_shop,
@@ -162,7 +170,6 @@ async function update(req, res) {
                 expiration_product,
                 country_product,
                 locality_product,
-                // UPDATE: Pass active_product parameter if provided
                 active_product
             }
         );   
@@ -177,7 +184,6 @@ async function update(req, res) {
     }
 }
 
-// UPDATE: Added function to toggle product active status
 async function toggleActiveStatus(req, res) {
     try {
         const { id_product } = req.body;
@@ -223,9 +229,12 @@ async function getById(req, res) {
     }
 }
 
+//update: Fixed removeById function to properly handle the deletion
 async function removeById(req, res) {
     try {
         const id_product = req.params.id_product;
+        
+        console.log('-> product_api_controller.js - removeById() - Starting deletion for product ID:', id_product);
         
         if (!id_product) {  
             console.error('-> product_api_controller.js - removeById() - Error = El parámetro id_product es obligatorio');
@@ -234,19 +243,36 @@ async function removeById(req, res) {
             });
         }
 
+        // Call the controller to delete the product
         const {error, data, success} = await productController.removeById(id_product);
         
-        res.json({error, data, success});    
+        console.log('-> product_api_controller.js - removeById() - Result:', { error, data, success });
+        
+        // Always return a consistent response structure
+        if (error) {
+            return res.status(400).json({
+                error: error,
+                data: null,
+                success: null
+            });
+        }
+        
+        // Return success response with the deleted product ID
+        return res.json({
+            error: null,
+            data: id_product,
+            success: success || "Producto eliminado correctamente"
+        });
     } catch (err) {
         console.error("-> product_api_controller.js - removeById() - Error =", err);
         res.status(500).json({ 
             error: "Error al eliminar un producto", 
-            data: null
+            data: null,
+            success: null
         });
     }
 }
 
-// UPDATE: Modified to handle active parameter query
 async function getByShopId(req, res) {
     try {
         const { id_shop } = req.params;
@@ -270,7 +296,6 @@ async function getByShopId(req, res) {
     }
 }
 
-// UPDATE: Added function to get only active products by shop ID
 async function getActiveByShopId(req, res) {
     try {
         const { id_shop } = req.params;
@@ -293,7 +318,6 @@ async function getActiveByShopId(req, res) {
     }
 }
 
-// UPDATE: Added function to get only inactive products by shop ID
 async function getInactiveByShopId(req, res) {
     try {
         const { id_shop } = req.params;
@@ -338,7 +362,6 @@ async function getByType(req, res) {
     }
 }
 
-// Nueva función para obtener productos por país
 async function getByCountry(req, res) {
     try {
         const { country_product } = req.params;
@@ -361,7 +384,6 @@ async function getByCountry(req, res) {
     }
 }
 
-// Nueva función para obtener productos por localidad
 async function getByLocality(req, res) {
     try {
         const { locality_product } = req.params;
@@ -502,7 +524,6 @@ export {
     verifyProductName,
     getByCountry,
     getByLocality,
-    // UPDATE: Export new functions
     toggleActiveStatus,
     getActiveByShopId,
     getInactiveByShopId
@@ -522,7 +543,6 @@ export default {
     verifyProductName,
     getByCountry,
     getByLocality,
-    // UPDATE: Export new functions
     toggleActiveStatus,
     getActiveByShopId,
     getInactiveByShopId

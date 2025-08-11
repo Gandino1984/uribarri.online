@@ -1,3 +1,4 @@
+// front-end/src/components/shop_management/components/product_management/components/product_creation_form/ProductCreationForm.jsx
 import { useEffect, useState, useRef } from 'react';
 import ProductCreationFormUtils from './ProductCreationFormUtils.jsx';
 import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
@@ -5,7 +6,7 @@ import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
-import { AlertCircle, PackagePlus, Save, RefreshCw } from 'lucide-react';
+import { AlertCircle, PackagePlus, Save, RefreshCw, Loader } from 'lucide-react';
 
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
@@ -26,7 +27,6 @@ const ProductCreationForm = () => {
     productLimit,
     fetchProductsByShop,
     handleImageUpload,
-    // handleViewProductList: navigateToProductList,
     resetNewProductData
   } = ProductCreationFormUtils();
 
@@ -40,7 +40,6 @@ const ProductCreationForm = () => {
     setShowErrorCard,
     setSuccess,
     setShowSuccessCard,
-    // 🔄 UPDATE: Added modal state for reset confirmation
     setIsModalOpen,
     setModalMessage,
     isAccepted,
@@ -56,15 +55,16 @@ const ProductCreationForm = () => {
   const { 
     newProductData: productData,
     filterOptions,
-    // setShowProductManagement,
     isUpdatingProduct,
-    // setIsUpdatingProduct,
     selectedProductToUpdate,
-    // setSelectedProductToUpdate,
     productTypesAndSubtypes,
     setNewProductData,
     refreshProductList,
-    shopToProductTypesMap
+    shopToProductTypesMap,
+    //update: Get loading state for categories
+    loadingCategories,
+    categoriesError,
+    fetchSubcategoriesByCategory
   } = useProduct();
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -75,7 +75,6 @@ const ProductCreationForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
   
-  // 🔄 UPDATE: Added state to track if form reset is pending
   const [isResetPending, setIsResetPending] = useState(false);
   
   // Get available product types based on shop type
@@ -104,21 +103,48 @@ const ProductCreationForm = () => {
   // Load data for editing if in update mode
   useEffect(() => {
     if (isUpdatingProduct && selectedProductToUpdate) {
-      Object.keys(selectedProductToUpdate).forEach(key => {
+      //update: Extract price unit from info_product if present
+      let priceUnit = 'Euros/unidad';
+      let cleanedInfo = selectedProductToUpdate.info_product || '';
+      
+      // Check if info_product starts with a price unit pattern
+      const priceUnitPattern = /^(Euros\/\w+)(\s*-\s*)?(.*)$/;
+      const match = cleanedInfo.match(priceUnitPattern);
+      
+      if (match) {
+        priceUnit = match[1];
+        cleanedInfo = match[3] || '';
+      }
+      
+      // Map the product data to form fields
+      const mappedData = {
+        ...productData,
+        ...selectedProductToUpdate,
+        //update: Ensure category and subcategory IDs are set
+        id_category: selectedProductToUpdate.id_category || '',
+        id_subcategory: selectedProductToUpdate.id_subcategory || '',
+        price_unit: priceUnit,
+        info_product: cleanedInfo
+      };
+      
+      // Update form data
+      Object.keys(mappedData).forEach(key => {
         if (key in productData) {
           handleChange({
             target: {
               name: key,
-              value: selectedProductToUpdate[key]
+              value: mappedData[key]
             }
           });
         }
       });
-    } else if (isUpdatingProduct && !selectedProductToUpdate) {
-      // We're in "create new product" mode (isUpdatingProduct is true but no selectedProductToUpdate)
-      console.log('ProductCreationForm - In create new product mode');
+      
+      //update: Fetch subcategories for the selected category when updating
+      if (selectedProductToUpdate.id_category) {
+        fetchSubcategoriesByCategory(selectedProductToUpdate.id_category);
+      }
     }
-  }, [isUpdatingProduct, selectedProductToUpdate, productData, handleChange]);
+  }, [isUpdatingProduct, selectedProductToUpdate]);
 
   // Load products when selected shop changes
   useEffect(() => {
@@ -132,13 +158,14 @@ const ProductCreationForm = () => {
     if (selectedShop && !selectedProductToUpdate) {
       setNewProductData(prev => ({
         ...prev,
+        id_category: '',
+        id_subcategory: '',
         type_product: '',
         subtype_product: ''
       }));
     }
   }, [selectedShop, selectedProductToUpdate, setNewProductData]);
 
-  // 🔄 UPDATE: Added effect to handle modal confirmation for form reset
   useEffect(() => {
     if (isAccepted && isResetPending) {
       // Reset form if user confirmed
@@ -152,12 +179,6 @@ const ProductCreationForm = () => {
     }
   }, [isAccepted, isDeclined, isResetPending]);
 
-  // // Using the navigation handler
-  // const handleViewProductList = () => {
-  //   navigateToProductList(setIsUpdatingProduct, setSelectedProductToUpdate, setShowProductManagement);
-  // };
-
-  // 🔄 UPDATE: Added resetForm function
   const resetForm = () => {
     // Reset to first step
     setCurrentStep(1);
@@ -178,19 +199,18 @@ const ProductCreationForm = () => {
     // Show success message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      productSuccess: "Formulario limpiado ."
+      productSuccess: "¡Formulario limpiado!"
     }));
     setShowSuccessCard(true);
     
     console.log('Product form has been reset to default values');
   };
 
-  // 🔄 UPDATE: Added confirmation method to use modal dialog
   const confirmResetForm = () => {
     // Check if form has any data worth confirming
     const isFormEmpty = !productData.name_product && 
                         !productData.price_product && 
-                        !productData.type_product && 
+                        !productData.id_category && 
                         !selectedImage;
     
     if (isFormEmpty) {
@@ -206,8 +226,7 @@ const ProductCreationForm = () => {
     setIsModalOpen(true);
   };
 
-  // Add navigation Utils
-  const goToNextStep = () => {
+const goToNextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
@@ -233,10 +252,11 @@ const ProductCreationForm = () => {
         }
         return true;
       case 2: // Basic info
-        if (!productData.type_product || !productData.subtype_product) {
+        //update: Check for category and subcategory IDs
+        if (!productData.id_category || !productData.id_subcategory) {
           setError(prevError => ({
             ...prevError,
-            productError: "Tipo y subtipo de producto son requeridos."
+            productError: "Categoría y subcategoría son requeridas."
           }));
           setShowErrorCard(true);
           return false;
@@ -320,7 +340,7 @@ const ProductCreationForm = () => {
               <AlertCircle size={20} color={statusColor} className={styles.alertIcon}/>
               <span>Límite de productos: {productCount} / {productLimit}</span>
           </div>
-          {!currentUser?.category_user && productCount >= productLimit * 0.7 && (
+          {!currentUser?.contributor_user && productCount >= productLimit * 0.7 && (
             <p className={styles.upgradeMessage}>
               Conviértete en sponsor para aumentar tu límite a 100 productos.
             </p>
@@ -328,6 +348,29 @@ const ProductCreationForm = () => {
       </div>
     );
   };
+
+  //update: Show loading state if categories are loading
+  if (loadingCategories) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Loader size={40} className={styles.spinner} />
+        <p>Cargando categorías...</p>
+      </div>
+    );
+  }
+
+  //update: Show error if categories failed to load
+  if (categoriesError) {
+    return (
+      <div className={styles.errorContainer}>
+        <AlertCircle size={40} color="red" />
+        <p>{categoriesError}</p>
+        <button onClick={() => window.location.reload()} className={styles.retryButton}>
+          Reintentar
+        </button>
+      </div>
+    );
+  }
 
   // Render the appropriate step component based on currentStep
   const renderStepContent = () => {
@@ -373,6 +416,8 @@ const ProductCreationForm = () => {
     }
   };
 
+  console.log('Selected shop data:', selectedShop);
+
   return (
     <>
     {renderProductLimitInfo()}
@@ -387,8 +432,8 @@ const ProductCreationForm = () => {
       {/* Shop type and subtype guidance */}
       {selectedShop && !selectedProductToUpdate && (
         <div className={styles.shopTypeGuidance}>
-          <p>Tienda de tipo: <strong>{selectedShop.type_shop}</strong></p>
-          {/* 🏪 UPDATE: Added shop subtype display */}
+          <p>Tienda de tipo: <strong>{selectedShop.type_shop || 'No especificado'}</strong></p>
+          {/* //update: Now using the subtype_shop field that comes from the backend */}
           <p>Subtipo: <strong>{selectedShop.subtype_shop || 'No especificado'}</strong></p>
         </div>
       )}
@@ -396,7 +441,6 @@ const ProductCreationForm = () => {
       <form onSubmit={handleFormSubmit} className={styles.form}>
         {renderStepContent()}
           
-        {/* 🔄 UPDATE: Added form buttons container to include reset button */}
         <div className={styles.buttonsContainer}>
           {/* Reset button */}
           <button

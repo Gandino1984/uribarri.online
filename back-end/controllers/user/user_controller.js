@@ -27,7 +27,7 @@ const validateUserData = (userData) => {
         }
     }
     if (userData.type_user) {
-        const validTypes = ['user', 'seller', 'provider', 'admin'];
+        const validTypes = ['user', 'seller', 'rider' , 'provider', 'admin'];
         if (!validTypes.includes(userData.type_user)) {
             errors.push('Tipo de usuari@ no valido');
         }
@@ -38,8 +38,20 @@ const validateUserData = (userData) => {
     if (userData.calification_user !== undefined && userData.calification_user < 0) {
         errors.push('La calificación no puede ser negativa');
     }
-    if (userData.category_user !== undefined && typeof userData.category_user !== 'boolean') {
+    if (userData.contributor_user !== undefined && typeof userData.contributor_user !== 'boolean') {
         errors.push('La categoría de usuario debe ser un valor booleano');
+    }
+    //update: Added age_user validation
+    if (userData.age_user !== undefined) {
+        if (!Number.isInteger(userData.age_user) || userData.age_user < 0) {
+            errors.push('La edad debe ser un número entero positivo');
+        }
+        if (userData.age_user < 18) {
+            errors.push('La edad mínima es 18 años');
+        }
+        if (userData.age_user > 120) {
+            errors.push('La edad no puede ser mayor a 120 años');
+        }
     }
 
     return {
@@ -190,14 +202,16 @@ async function login(userData) {
             };
         }
 
-        // Return user data including category_user
+        // Return user data including contributor_user
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
             type_user: user.type_user,
             location_user: user.location_user,
             image_user: user.image_user,
-            category_user: user.category_user
+            contributor_user: user.contributor_user,
+            //update: Added age_user to login response
+            age_user: user.age_user
         };
 
         console.log('-> login() - User response:', userResponse); 
@@ -243,10 +257,14 @@ async function register(userData) {
         if (userData.calification_user === undefined) {
             userData.calification_user = 5;
         }
-        if (userData.category_user === undefined) {
+        if (userData.contributor_user === undefined) {
             //if category is false it means the user is not a sponsor of the app
             //by default all users are not sponsors
-            userData.category_user = false;
+            userData.contributor_user = false;
+        }
+        //update: Added default age_user if not provided
+        if (userData.age_user === undefined) {
+            userData.age_user = 18;
         }
 
         const user = await user_model.create(userData);
@@ -258,7 +276,9 @@ async function register(userData) {
             type_user: user.type_user,
             location_user: user.location_user,
             calification_user: user.calification_user,
-            category_user: user.category_user
+            contributor_user: user.contributor_user,
+            //update: Added age_user to register response
+            age_user: user.age_user
         };
 
         return { 
@@ -303,7 +323,8 @@ async function update(id, userData) {
         if (userData.location_user) fieldsToUpdate.location_user = userData.location_user;
         if (userData.type_user) fieldsToUpdate.type_user = userData.type_user;
         if (userData.calification_user !== undefined) fieldsToUpdate.calification_user = userData.calification_user;
-        if (userData.category_user !== undefined) fieldsToUpdate.category_user = userData.category_user;
+        if (userData.contributor_user !== undefined) fieldsToUpdate.contributor_user = userData.contributor_user;
+        if (userData.age_user !== undefined) fieldsToUpdate.age_user = userData.age_user;
 
         const validation = validateUserData(fieldsToUpdate);
         if (!validation.isValid) {

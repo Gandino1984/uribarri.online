@@ -2,6 +2,7 @@ import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useProduct } from '../../app_context/ProductContext.jsx';
+import { usePackage } from '../../app_context/PackageContext.jsx';
 
 export const TopBarUtils = () => {
     // Auth context values
@@ -11,15 +12,28 @@ export const TopBarUtils = () => {
         setShowPasswordLabel, setKeyboardKey, 
         setDisplayedPassword, 
         setUserType, logout,
-        currentUser, setCurrentUser
+        currentUser, setCurrentUser,
+        clearUserSession: authClearUserSession
     } = useAuth();
 
     // UI context values
     const {
-        setError, setSuccess,
+        // setError, setSuccess, setInfo,
+        setShowErrorCard, setShowSuccessCard, setShowInfoCard,
+        clearError, clearSuccess, clearInfo,
         setShowShopManagement,
         setShowProductManagement,
-        setShowLandingPage
+        setShowLandingPage,
+        setShowImageModal,
+        setShowShopsListBySeller,
+        setShowShopWindow,
+        showShopsListBySeller,
+        showProductManagement,
+        //update: Add shop store related states
+        showShopStore,
+        setShowShopStore,
+        selectedShopForStore,
+        setSelectedShopForStore
     } = useUI();
 
     // Shop context values
@@ -28,58 +42,91 @@ export const TopBarUtils = () => {
         setShowShopCreationForm,
         showShopCreationForm, 
         selectedShop, setSelectedShop,
-        setShops, setSelectedShopType
+        setShops, setSelectedShopType,
+        closeShopFormWithAnimation
     } = useShop();
 
     // Product context values
     const {
-        showProductManagement,
         isUpdatingProduct, 
         setIsUpdatingProduct, 
-        setSelectedProductToUpdate
+        setSelectedProductToUpdate,
+        setProducts
     } = useProduct();
+    
+    // Package context values
+    const {
+        showPackageCreationForm,
+        setShowPackageCreationForm,
+        closePackageFormWithAnimation
+    } = usePackage();
 
-    const handleBack = () => {
-        // 🔄 UPDATE: Fixed navigation flow - when in ShopProductsList, go back to shop list
-        if (selectedShop && showProductManagement && !isUpdatingProduct) {
-            console.log('Navigating from ShopProductsList back to ShopsListBySeller');
-            setShowProductManagement(false);
-            setSelectedShop(null);
+    //update: Enhanced handleBack with shop store navigation
+    const handleBack = async () => {
+        //update: Add navigation from ShopStore back to ShopWindow
+        if (showShopStore) {
+            console.log('Navigating from ShopStore back to ShopWindow');
+            setShowShopStore(false);
+            setSelectedShopForStore(null);
+            setShowShopWindow(true);
             return;
         }
         
-        // 🔄 UPDATE: Improved condition for product creation/update form
-        if (selectedShop && !showShopCreationForm && isUpdatingProduct) {
+        // If creating packages within product management, go back to products list
+        if (selectedShop && showProductManagement && showPackageCreationForm) {
+            console.log('Navigating from PackageCreationForm back to ShopProductsList');
+            await closePackageFormWithAnimation();
+            return;
+        }
+        
+        // When in ProductCreationForm, go back to ShopProductsList
+        if (selectedShop && showProductManagement && isUpdatingProduct) {
             console.log('Navigating from ProductCreationForm back to ShopProductsList');
             setIsUpdatingProduct(false);
             setSelectedProductToUpdate(null);
-            setShowProductManagement(true);
             return;
         }
         
-        // If we're creating a shop, go back to shop management
+        // When in ShopProductsList (ProductManagement), go back to ShopsListBySeller
+        if (showProductManagement && selectedShop && !isUpdatingProduct && !showPackageCreationForm) {
+            console.log('Navigating from ShopProductsList back to ShopsListBySeller');
+            
+            // Just toggle showProductManagement, ShopManagement will handle the rendering
+            setShowProductManagement(false);
+            // Don't clear selectedShop - ShopsListBySeller needs it to show the shop card
+            
+            return;
+        }
+        
+        // If we're creating a shop, go back to shops list
         if (showShopCreationForm) {
-            setShowShopCreationForm(false);
-            setShowShopManagement(true);
+            console.log('Navigating from ShopCreationForm back to ShopsListBySeller');
+            await closeShopFormWithAnimation();
+            // No need to set showShopsListBySeller - ShopManagement handles this
             return;
         }
         
-        // 🔄 UPDATE: Clarified condition for selected shop without product management
-        if (selectedShop && !showProductManagement) {
+        // If we're in ShopsListBySeller (no product management, no shop creation), go back to landing
+        if (showShopsListBySeller && !showProductManagement && !showShopCreationForm) {
+            console.log('Navigating from ShopsListBySeller back to LandingPage');
+            setShowShopsListBySeller(false);
+            setShowLandingPage(true);
             setSelectedShop(null);
-            setShowShopManagement(true);
             return;
         }
         
-        // If we're in shop management, go back to login
-        if (showShopManagement) {
-            setShowShopManagement(false);
-            setIsLoggingIn(true);
+        // If we're in ShopWindow, go back to LandingPage
+        if (showShopWindow) {
+            console.log('Navigating from ShopWindow back to LandingPage');
+            setShowShopWindow(false);
+            setShowLandingPage(true);
             return;
         }
     };
 
+    //update: Enhanced clearUserSession with more cleanup
     const clearUserSession = () => {
+        // Handle Auth context cleanup
         if (currentUser) {
             setCurrentUser(null);
             setNameUser('');
@@ -90,44 +137,47 @@ export const TopBarUtils = () => {
             setUserType('');
         }
         
+        // Handle Shop context cleanup
         setSelectedShop(null);
         setShowShopCreationForm(false);
         setShowShopManagement(false);
-        setShowProductManagement(false);
         setShops([]);
         setSelectedShopType(null);
         
+        // Handle Product context cleanup
+        setShowProductManagement(false);
+        setProducts([]);
+        
+        // Handle Package context cleanup
+        setShowPackageCreationForm(false);
+        
+        // Handle UI context cleanup
         setIsLoggingIn(true);
         setKeyboardKey((prev) => prev + 1);
-        
-        // Set showLandingPage to true when logging out
         setShowLandingPage(true);
+        setShowImageModal(false);
+        setShowShopsListBySeller(false);
+        setShowShopWindow(false);
+        //update: Also clear shop store states
+        setShowShopStore(false);
+        setSelectedShopForStore(null);
         
+        // Also use Auth context's clearUserSession function
+        authClearUserSession();
+        
+        // Clear localStorage
         localStorage.removeItem('currentUser');
 
-        // Clear both error and success states
-        setError({
-            userError: '',
-            passwordError: '',
-            passwordRepeatError: '',
-            ipError: '',
-            userlocationError: '',
-            userTypeError: '',
-            databaseResponseError: '',
-            shopError: '',
-            productError: '',
-            imageError: ''
-        });
-
-        setSuccess({
-            loginSuccess: '',
-            shopSuccess: '',
-            productSuccess: '',
-            updateSuccess: '',
-            deleteSuccess: '',
-            imageSuccess: ''
-        });
+        // Clear all notification states
+        clearError();
+        clearSuccess();
+        clearInfo();
         
+        setShowErrorCard(false);
+        setShowSuccessCard(false);
+        setShowInfoCard(false);
+        
+        // Complete logout
         logout();
     };
 

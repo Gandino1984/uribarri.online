@@ -42,7 +42,8 @@ const ProductCreationFormUtils = () => {
     setIsUpdatingProduct,
     setSelectedProductToUpdate,
     shopToProductTypesMap,
-    refreshProductList
+    refreshProductList,
+    categories //update: Add categories to get the actual category name
   } = useProduct();
 
 
@@ -102,7 +103,7 @@ const ProductCreationFormUtils = () => {
 
   // Determinar el límite de productos basado en la categoría del usuario
   useEffect(() => {
-    if (currentUser?.category_user) {
+    if (currentUser?.contributor_user) {
       setProductLimit(200); // Límite para usuarios sponsor
     } else {
       setProductLimit(7); // Límite para usuarios no sponsor
@@ -171,6 +172,7 @@ const ProductCreationFormUtils = () => {
     handleModalResponse();
   }, [isAccepted, isDeclined, currentOperation, selectedProductToUpdate, newProductData, setError, setShowErrorCard, setIsAccepted, setIsDeclined]);
 
+  //update: Modified handleChange to handle price_unit
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     if (name === 'info_product') {
@@ -258,19 +260,18 @@ const ProductCreationFormUtils = () => {
         setError(prevError => ({ ...prevError, productError: "El nombre de producto es requerido"}));
         throw new Error("El nombre de producto es requerido");
       }
-      if (!productData.type_product) {
-        setError(prevError => ({ ...prevError, productError: "El tipo de producto es requerido"}));
-        throw new Error("El tipo de producto es requerido");
+      //update: Check for category and subcategory IDs instead of type/subtype
+      if (!productData.id_category) {
+        setError(prevError => ({ ...prevError, productError: "La categoría es requerida"}));
+        throw new Error("La categoría es requerida");
+      }
+      if (!productData.id_subcategory) {
+        setError(prevError => ({ ...prevError, productError: "La subcategoría es requerida"}));
+        throw new Error("La subcategoría es requerida");
       }
       
-      // Validate that product type is compatible with shop type
-      if (selectedShop && !isValidProductTypeForShop(productData.type_product, selectedShop.type_shop)) {
-        setError(prevError => ({ 
-          ...prevError, 
-          productError: `El tipo de producto "${productData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`
-        }));
-        throw new Error(`El tipo de producto "${productData.type_product}" no es válido para tiendas de tipo "${selectedShop.type_shop}"`);
-      }
+      //update: Remove the type_product validation since we're using categories now
+      // The backend will handle the type_product based on the selected category
       
       if (productData.discount_product < 0 || productData.discount_product > 100) {
         setError(prevError => ({ ...prevError, productError: "Valor de descuento fuera del rango permitido"}));
@@ -284,11 +285,6 @@ const ProductCreationFormUtils = () => {
       if (productData.price_product.toString().split('.')[1]?.length > 2) {
         setError(prevError => ({ ...prevError, productError: "El precio debe tener máximo 2 decimales"}));
         throw new Error("El precio debe tener máximo 2 decimales");
-      }
-
-      if (!productData.subtype_product) {
-        setError(prevError => ({ ...prevError, productError: "El subtipo de producto es requerido"}));
-        throw new Error("El subtipo de producto es requerido");
       }
 
       if (productData.surplus_product < 0) {
@@ -307,7 +303,7 @@ const ProductCreationFormUtils = () => {
       if (!selectedProductToUpdate && productCount >= productLimit) {
         setError(prevError => ({ 
           ...prevError, 
-          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
         }));
         throw new Error(`Has alcanzado el límite de ${productLimit} productos`);
       }
@@ -318,7 +314,7 @@ const ProductCreationFormUtils = () => {
       setError(prevError => ({ ...prevError, productError: err.message || "Error al validar los datos del producto" }));
       return false;
     }
-  }, [selectedShop, selectedProductToUpdate, productCount, productLimit, currentUser, isValidProductTypeForShop, setError]);
+  }, [selectedShop, selectedProductToUpdate, productCount, productLimit, currentUser, setError]);
 
   const resetNewProductData = useCallback(() => {
     setNewProductData({
@@ -337,7 +333,10 @@ const ProductCreationFormUtils = () => {
       expiration_product: null,
       country_product: '',
       locality_product: '',
-      active_product: true  // Ensure new product has active_product set to true by default
+      active_product: true,  // Ensure new product has active_product set to true by default
+      id_category: '',
+      id_subcategory: '',
+      price_unit: 'Euros/unidad' //update: Add default price unit
     });
     
     setError(prevError => ({
@@ -458,7 +457,7 @@ const ProductCreationFormUtils = () => {
     }
   }, [selectedShop, products, setUploading, setError, setProducts, refreshProductList, setSuccess, setShowSuccessCard, setShowErrorCard]);
 
-  // UPDATE: Enhanced createProduct function with better error handling, logging, and state management
+  //update: Modified createProduct to handle price unit in info_product
   const createProduct = useCallback(async () => {
     try {
       console.log('Starting product creation process...');
@@ -467,17 +466,27 @@ const ProductCreationFormUtils = () => {
       if (productCount >= productLimit) {
         setError(prevError => ({
           ...prevError,
-          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
         }));
         setShowErrorCard(true);
         return false;
       }
 
+      //update: Ensure type_product is set from the selected category
+      const selectedCategory = categories.find(cat => cat.id_category === parseInt(newProductData.id_category));
+      
+      //update: Combine existing info_product with price_unit
+      const priceUnit = newProductData.price_unit || 'Euros/unidad';
+      const existingInfo = newProductData.info_product ? newProductData.info_product.trim() : '';
+      const combinedInfo = existingInfo ? `${priceUnit} - ${existingInfo}` : priceUnit;
+      
       // Ensure price has exactly 2 decimal places before submitting
       const formattedData = {
         ...newProductData,
         price_product: Number(newProductData.price_product).toFixed(2),
-        active_product: true  // Explicitly set active_product to true for new products
+        active_product: true,  // Explicitly set active_product to true for new products
+        type_product: selectedCategory ? selectedCategory.name_category : newProductData.type_product, // Use actual category name
+        info_product: combinedInfo //update: Include price unit in info_product
       };
 
       console.log('Creating product with data:', formattedData);
@@ -552,7 +561,7 @@ const ProductCreationFormUtils = () => {
       });
       return false;
     }
-  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setProducts]);
+  }, [productCount, productLimit, currentUser, newProductData, setError, setShowErrorCard, fetchProductsByShop, refreshProductList, setSuccess, setShowSuccessCard, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setProducts, categories]);
 
   // Updated handleSubmit with operation tracking
   const handleSubmit = useCallback(async (e, imageFile = null) => {
@@ -606,7 +615,7 @@ const ProductCreationFormUtils = () => {
     }
   }, [newProductData, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, createProduct, handleImageUpload, setError, setShowErrorCard]);
 
-  // Updated handleUpdate with operation tracking
+  //update: Modified handleUpdate to handle price unit
   const handleUpdate = useCallback(async (e, imageFile = null) => {
     e.preventDefault();
     try {
@@ -635,11 +644,20 @@ const ProductCreationFormUtils = () => {
         }
       }
       
+      //update: Combine price unit with existing info_product
+      const priceUnit = newProductData.price_unit || 'Euros/unidad';
+      const existingInfo = newProductData.info_product ? newProductData.info_product.trim() : '';
+      
+      // Remove existing price unit prefix if present
+      const cleanedInfo = existingInfo.replace(/^(Euros\/\w+)(\s*-\s*)?/, '').trim();
+      const combinedInfo = cleanedInfo ? `${priceUnit} - ${cleanedInfo}` : priceUnit;
+      
       // If name is unique or unchanged, proceed with update
       const updateData = {
         ...newProductData,
         id_product,
-        price_product: Number(newProductData.price_product).toFixed(2)
+        price_product: Number(newProductData.price_product).toFixed(2),
+        info_product: combinedInfo
       };
       
       const result = await updateProductInDB(updateData);
@@ -663,11 +681,19 @@ const ProductCreationFormUtils = () => {
     }
   }, [newProductData, selectedProductToUpdate, validateProductData, setModalMessage, setCurrentOperation, setIsModalOpen, handleImageUpload, setError, setShowErrorCard]);
   
-  // UPDATE: Improved updateProductInDB with better state management
+  //update: Updated to properly handle updateProductInDB the processed info_product field
   const updateProductInDB = useCallback(async (updateData) => {
     try {
-      console.log('Starting product update with data:', updateData);
-      const response = await axiosInstance.patch('/product/update', updateData);
+      //update: Ensure type_product is set from the selected category
+      const selectedCategory = categories.find(cat => cat.id_category === parseInt(updateData.id_category));
+      
+      const dataWithType = {
+        ...updateData,
+        type_product: selectedCategory ? selectedCategory.name_category : updateData.type_product
+      };
+      
+      console.log('Starting product update with data:', dataWithType);
+      const response = await axiosInstance.patch('/product/update', dataWithType);
     
       if (!response.data) {
         throw new Error('No response data received');
@@ -690,7 +716,7 @@ const ProductCreationFormUtils = () => {
         setProducts(prevProducts => {
           return prevProducts.map(product => {
             if (product.id_product === updateData.id_product) {
-              return { ...product, ...updateData };
+              return { ...product, ...dataWithType };
             }
             return product;
           });
@@ -727,7 +753,7 @@ const ProductCreationFormUtils = () => {
       console.error('Error updating product:', err);
       throw err;
     }
-  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setProducts]);
+  }, [fetchProductsByShop, refreshProductList, resetNewProductData, setShowProductManagement, setIsUpdatingProduct, setSelectedProductToUpdate, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setProducts, categories]);
 
   // Function to get available product types for the selected shop
   const getAvailableProductTypesForShop = useCallback(() => {
@@ -824,4 +850,4 @@ const ProductCreationFormUtils = () => {
   };
 };
 
-export default ProductCreationFormUtils;  
+export default ProductCreationFormUtils;

@@ -1,501 +1,667 @@
-/* UPDATE: Modified container structure for better layout management */
-/* 📱 UPDATE: Fixed container to ensure proper containment on small screens */
 .container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  gap: 1.5rem;
+  margin-top: 11rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* padding: 1rem; */
+  background-color: var(--light-gray);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 1.5rem;
+  /* background-color: white; */
+}
+
+.headerContainer {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   width: 100%;
   gap: 1rem;
-  z-index: 100;
-  padding-bottom: 1rem;
-  overflow-x: hidden;
-  /* box-sizing: border-box; */
-  max-width: 100%;
-}
-
-/* 📱 UPDATE: Enhanced content wrapper to prevent overflow on small screens */
-.content {
-  width: 100%;
-  height: 100%;
-  max-width: 100vw;
-  overflow-x: hidden; /* Contain any overflow */
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
-.headerContainer {
-  width: 100%;
-  max-width: 72rem;
-  padding-bottom: 2rem;
 }
 
 .header {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+  flex-direction: column;
+  /* padding-top: 3rem; */
+  width: 100%;
+  gap: 1rem;
 }
 
 .title {
-  text-shadow: var(--light-orange) 2px 1px 0px;   
-  font-weight: bold;
-  padding-right: 1.5rem;
-  color: var(--superdark-orange);
-}
-
-.addButton {
-  gap: 0.3rem;
-  display: inline-flex;
-}
-
-.messageNoShops {
-  font-size: 0.9rem;
-  font-weight: 500;
+  /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 1); */
+  font-size: 3rem;
+  text-spacing-trim: 1px;
+  font-weight: 800;
+  color: rgb(27, 27, 27);
+  margin-bottom: 1rem;
   text-align: center;
-  padding: 3rem 3rem;
-  color: gray;
 }
 
-/* 📏 UPDATE: Fixed shopManagementContainer to maintain exact height */
+/* Header Buttons Container */
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Shop Management Container */
 .shopManagementContainer {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  height: auto;
+  position: relative;
+  min-height: 300px;
+  gap: .5rem;
 }
 
-/* 📱 UPDATE: Fixed table container to prevent overflow on small screens with proper height */
-.tableContainer {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: visible; /* Allow vertical content to be fully visible */
-  max-width: 100%;
-  background-color: white;
-  -webkit-overflow-scrolling: touch;
-  box-sizing: border-box;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  /* Force the container to respect width constraints */
-  margin: 0 auto;
-  /* Critical fix to prevent overflow on small screens */
-  max-width: calc(100vw - 20px);
-  /* Ensure proper vertical spacing */
-  padding-bottom: 10px;
-}
-
-/* 📏 UPDATE: Modified table to maintain exact height needed for content */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  min-width: 480px;
-  height: auto;
-}
-
-.tableHeader {
-  background-color:#c2c2c2;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.tableHeaderCell {
-  padding: 0.7rem 1rem;
-  text-align: left;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: rgb(104, 104, 104);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 🛠️ UPDATE: Improved column width distribution for responsiveness */
-.tableHeaderCell:nth-child(1),
-.tableCell:nth-child(1) {
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
-} /* Actions */
-
-.tableHeaderCell:nth-child(2),
-.tableCell:nth-child(2) {
-  width: 20%;
-  min-width: 120px;
-} /* Name */
-
-.tableHeaderCell:nth-child(3),
-.tableCell:nth-child(3) {
-  width: 25%;
-  min-width: 150px;
-} /* Location */
-
-.tableHeaderCell:nth-child(4),
-.tableCell:nth-child(4) {
-  width: 15%;
-  min-width: 100px;
-} /* Type */
-
-.tableHeaderCell:nth-child(5),
-.tableCell:nth-child(5) {
-  width: 15%;
-  min-width: 100px;
-} /* Sub-type */
-
-.tableHeaderCell:nth-child(6),
-.tableCell:nth-child(6) {
-  width: 15%;
-  min-width: 80px;
-  text-align: center;
-} /* Rating */
-
-/* 📱 UPDATE: Ensure table rows are fully visible with proper height */
-.tableRow {
-  background-color: white;
-  border-top: 1px solid #f0f0f0;
-  cursor: pointer;
-  height: auto;
-  min-height: 48px; /* Ensure minimum height for visibility */
-}
-
-.tableRow:hover {
-  color: var(--saturated-blue);
-  background-color: #e6f3ff; /* Light blue hover effect for better visual feedback */
-}
-
-/* Enhanced selected row styling with blue background */
-.selectedRow {
-  background-color: var(--saturated-blue);
-  font-weight: 500;
-  color: white;
-  border-left: none;
-}
-
-/* 📱 UPDATE: Enhanced table cells to ensure proper height and spacing */
-.tableCell {
-  padding: .5rem 1rem;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  /* line-height: 2; */
-  min-height: 22px; /* Minimum height for cell content */
-}
-
-.actionsCell {
-  padding: .5rem;
+.listHeaderContainer {
   display: flex;
-  margin-top: .2rem;
-  align-items: center;
-  gap: 0.5rem;
   justify-content: center;
-  white-space: nowrap;
-  /* width: 80px; */
+  align-items: center;
+  flex-direction: column;
+  /* background-color: white; */
+  gap: .5rem;
+}
+
+/* Card-based List Header (similar to ShopPackagesList) */
+.listHeader {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  /* padding: 1rem; */
+  background: linear-gradient( to right,  rgba(255, 255, 255, 0) ,  var( --gradient-purple-end) , var(--saturated-orange) , rgba(255, 255, 255, 0) 100%);
+  /* border-radius: 8px; */
+  /* margin-bottom: .5rem; */
+  /* margin: 0 1rem; */
+}
+
+.listTitle {
+  /* display: flex;
+  align-items: center; */
+  width: 100%;
+  text-align: center;
+  text-shadow: 1px 0px 3px white;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--light-gray);
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Shops List Container */
+.shopsList {
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  gap: 1rem;
+  padding: 0 1rem 1rem 1rem;
+  /* background-color: white; */
+}
+
+/* Shop Card Styles (similar to package cards) */
+.shopCard {
+  background-color:  white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.shopCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.shopCard.selectedShop {
+  box-shadow: 0 0 0 3px var(--saturated-blue);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
+}
+
+.shopCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  padding: 1rem;
+  gap: 1rem;
+  /* background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1)); */
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.shopMainInfo {
+  padding-left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Shop Image Container */
+.shopImageContainer {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.shopImageContainer:hover {
+  transform: scale(1.05);
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+}
+
+.shopImageContainer.noImage {
+  border: 2px dashed rgba(209, 213, 219, 0.8);
+  background: rgba(243, 244, 246, 0.5);
+}
+
+.shopImage {
+  width: 100%;
   height: 100%;
-  min-width: 80px;
-  max-width: 80px;
+  object-fit: cover;
+}
+
+.placeholderIcon {
+  color: rgba(156, 163, 175, 0.6);
+}
+
+/* Shop Info */
+.shopInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.shopName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shopMeta {
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.shopType {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(219, 234, 254, 1), rgba(191, 219, 254, 1));
+  color: #1e40af;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(30, 64, 175, 0.2);
+}
+
+.shopSubtype {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(243, 232, 255, 1), rgba(233, 213, 255, 1));
+  color: #6b21a8;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(107, 33, 168, 0.2);
+}
+
+.shopLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.shopRating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(254, 240, 138, 1), rgba(253, 224, 71, 1));
+  color: #92400e;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(146, 64, 14, 0.2);
+}
+
+/* Shop Actions */
+.shopActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  gap: 0.5rem;
 }
 
 .actionButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--saturated-orange);
-  border: none;
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
   cursor: pointer;
-}
-
-/* 🛠️ UPDATE: Fixed action buttons spacing and visibility */
-.updateButton {
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: 50%;
-  composes: actionButton;
-  background-color: white;
-  color: var(--saturated-orange);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
-  flex-shrink: 0;
 }
 
-.updateButton:hover {
-  background-color: var(--saturated-blue);
+.actionButton:hover {
+  background: var(--saturated-blue);
   color: white;
-  border: none;
-  border-radius: 50%;
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
 }
 
-.deleteButton {
-  width: 28px !important;
-  height: 28px !important; 
-  border-radius: 50%;
-  background-color: white;
-  composes: actionButton;
-  color: #ff0000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  flex-shrink: 0;
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .deleteButton:hover {
+  background: var(--gradient-red-mid);
+  border-color: var(--gradient-red-mid);
+}
+
+.active {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--saturated-blue);
+  /* background: linear-gradient(135deg, var(--saturated-blue), var(--light-gradient-purple-start)); */
+  color: white;
   border: none;
-  background-color: red;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.active:hover {
+  outline: 2px solid var(--saturated-blue);
+  color: var(--saturated-blue);
+  background-color: white;
+  /* background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end)); */
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+  transform: translateY(-2px);
+}
+
+.inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Orders button specific styles */
+.ordersButton {
+  position: relative;
+  background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--dark-gradient-purple-start));
   color: white;
 }
 
+.ordersButton:hover {
+  background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
+  box-shadow: 0 0 15px var(--saturated-purple-transparent);
+}
+
+/* Notification badge */
+.notificationBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--gradient-red-mid);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Shop Limit Indicator */
 .shopLimitInfo {
-  margin-top: 10px;
-  /* padding-left: 1rem; */
-  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  /* background: rgba(255, 255, 255, 0.1); */
+  backdrop-filter: blur(4px);
 }
 
 .limitHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-  color: var(--superdark-orange);
+  gap: 0.5rem;
+  color: gray;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.limitHeader span{
+  color: var(--dark-gradient-purple-end);
 }
 
 .upgradeMessage {
-  margin-top: .5rem;
-  color: var(--light-orange);
-  font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.disabledButton {
-  opacity: 0.5;
-  cursor: not-allowed;
+.statusGreen {
+  color: #10b981;
 }
 
-.disabledButton:hover {
-  background-color: var(--dark-orange);
+.statusOrange {
+  color: #f59e0b;
+}
+
+.statusRed {
+  color: #ef4444;
+}
+
+/* Empty state */
+.messageNoShops {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 1rem;
+  text-align: center;
+  color: white;
+  font-weight: 500;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.messageNoShops svg {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Shop Details Card (when selected) */
+.shopCardWrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .shopCardContainer {
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
-.shopCardInstructions {
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 0.75rem;
+/* Shop Details (expanded section) */
+.shopDetails {
+  background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5));
+  padding: 1rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+/* Loading and Empty States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.loadingIcon {
+  animation: spin 2s linear infinite;
+  color: var(--saturated-blue);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Create Shop Button in Empty State */
+.createButton {
   margin-top: 1rem;
-  text-align: center;
-  color: var(--light-orange);
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--saturated-blue), var(--dark-gradient-purple-start));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.statusGreen {
-  border-radius: 50%;
-  color: green;
-  background-color: var(--light-green);
+.createButton:hover {
+  background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end));
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+  transform: translateY(-2px);
 }
 
-.statusOrange {
-  border-radius: 50%;
-  color: orange;
-  background-color: var(--light-orange);
-}
-
-.statusRed {
-  border-radius: 50%;
-  color: red;
-  background-color: var(--light-red);
-}
-
-/* 📏 UPDATE: Fixed mobile styles to maintain exact table height */
+/* Responsive Design */
 @media (max-width: 768px) {
   .container {
-    padding: 0.5rem 0;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .content {
-    padding: 0 5px;
-  }
-
-  .headerContainer {
-    padding-bottom: 1rem;
-    width: 100%;
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-
-  .buttonText {
-    display: none;
-  }
-  
-  .addButton {
     padding: 0.5rem;
+    margin-top: 10rem;
   }
   
-  .tableCell, 
-  .tableHeaderCell {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.75rem;
-    min-height: 22px;
-  }
-  
-  /* 🛠️ UPDATE: Fixed action cell width for mobile */
-  .actionsCell {
-    padding: 0.25rem;
-    gap: 0.35rem;
-    height: auto;
-    width: 70px;
-    min-width: 70px;
-    max-width: 70px;
-  }
-  
-  .actionButton {
-    padding: 0.25rem;
-    min-width: 24px;
-    min-height: 24px;
-  }
-  
-  /* 🛠️ UPDATE: Fixed button sizes for mobile with better visibility */
-  .updateButton, .deleteButton {
-    width: 24px !important;
-    height: 24px !important;
-    padding: 4px;
+  .content {
+    gap: 1rem;
   }
   
   .header {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: 2rem;
   }
-
+  
   .title {
-    padding-right: 0;
-    /* font-size: 1.25rem; */
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
   }
   
-  .table {
-    min-width: 460px;
+  .headerButtons {
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
-  .shopManagementContainer {
-    width: 100%;
-    max-width: 100%;
-    padding: 0;
+  .listHeader {
+    margin: 0 0.5rem;
+    padding: 0.75rem;
   }
   
-  /* 📏 UPDATE: Fixed row height for consistent display */
-  .tableRow {
-    height: auto;
-    min-height: 0;
+  .shopsList {
+    padding: 0 0.5rem 0.5rem 0.5rem;
   }
   
-  /* 🛠️ UPDATE: Ensure action column doesn't shrink */
-  .tableHeaderCell:nth-child(1),
-  .tableCell:nth-child(1) {
-    width: 70px;
-    min-width: 70px;
-    max-width: 70px;
+  .shopCardHeader {
+    padding: 0.75rem;
   }
   
-  /* 📏 UPDATE: Removed fixed height values from containers */
-  .tableContainer {
-    height: auto;
-    min-height: 0;
+  .shopImageContainer {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .shopName {
+    font-size: 1rem;
+  }
+  
+  .shopMeta {
+    gap: 0.5rem;
+  }
+  
+  .active {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
-/* 📏 UPDATE: Fixed small screen styles to maintain exact table height */
-@media (max-width: 500px) {
-  .container, 
-  .content,
-  .shopManagementContainer {
-    padding: 0;
-    overflow-x: hidden;
+@media (max-width: 480px) {
+  .container {
+    /* padding: 0.25rem; */
+    margin-top: 9rem;
   }
   
-  .tableContainer {
-    border-radius: 4px;
-    width: calc(100vw - 10px);
-    margin-left: auto;
-    margin-right: auto;
-    height: auto;
-    min-height: 0;
-    max-height: none;
-    overflow-y: visible;
+  .header {
+    gap: 0.75rem;
+    padding-top: 1.5rem;
   }
   
-  /* 🛠️ UPDATE: Maintained proper button sizes for very small screens */
-  .updateButton, .deleteButton {
-    width: 22px !important;
-    height: 22px !important;
-    padding: 3px;
+  .title {
+    font-size: 1.5rem;
   }
   
-  /* 🛠️ UPDATE: Fixed action cell width for very small screens */
-  .actionsCell {
-    padding: 0.15rem;
-    gap: 0.25rem;
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
+  /* .listHeader {
+    margin: 0 0.25rem;
+    padding: 0.5rem;
+  } */
+  
+  .listTitle {
+    font-size: 1.3rem;
   }
   
-  /* Further reduce table minimum width */
-  .table {
-    min-width: 400px;
-    height: auto;
+  .shopsList {
+    padding: 0 0.25rem 0.25rem 0.25rem;
+    gap: 0.5rem;
   }
   
-  /* 📏 UPDATE: Fixed row height to fit content exactly */
-  .tableRow {
-    height: auto;
-    min-height: 0;
+  .shopCardHeader {
+    padding: 0.5rem;
+    /* flex-direction: column; */
+    /* align-items: flex-start; */
   }
   
-  /* 📏 UPDATE: Adjusted cell padding for consistent spacing */
-  .tableCell {
-    padding: 0.6rem 0.25rem;
-    min-height: 0;
+  .shopImageContainer {
+    width: 50px;
+    height: 50px;
   }
   
-  /* 🛠️ UPDATE: Fixed action column width for very small screens */
-  .tableHeaderCell:nth-child(1),
-  .tableCell:nth-child(1) {
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
+  .shopName {
+    font-size: 0.875rem;
   }
   
-  .tableHeaderCell:nth-child(2),
-  .tableCell:nth-child(2) {
-    width: 22%;
-    min-width: 100px;
+  .shopType,
+  .shopSubtype,
+  .shopRating {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
   }
   
-  .tableHeaderCell:nth-child(3),
-  .tableCell:nth-child(3) {
-    width: 35%;
-    min-width: 120px;
+  .shopLocation {
+    font-size: 0.75rem;
   }
   
-  .tableHeaderCell:nth-child(4),
-  .tableCell:nth-child(4) {
-    width: 35%;
-    min-width: 120px;
+  .shopActions {
+    width: 30%;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* padding-top: 0.5rem; */
+  }
+  
+  /* .active span {
+    display: none;
+  } */
+  
+  .active,
+  .ordersButton {
+    padding: 0.5rem;
+  }
+  
+  .notificationBadge {
+    top: -6px;
+    right: -6px;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    min-width: 18px;
   }
 }

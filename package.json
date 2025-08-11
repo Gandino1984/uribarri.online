@@ -7,7 +7,6 @@
   "scripts": {
     "test": "jest",
     "dev": "nodemon back-end\\index.js",
-    "lint": "eslint .",
     "start": "node back-end\\index.js"
   },
   "dependencies": {
@@ -22,12 +21,10 @@
     "validate-image-type": "^3.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.13.0",
     "@types/bcrypt": "^5.0.2",
     "@types/multer": "^1.4.12",
-    "eslint": "9.13.0",
     "globals": "15.11.0",
-    "nodemon": "3.1.7"
+    "nodemon": "^3.1.10"
   },
   "repository": {
     "type": "git",
@@ -37,6 +34,9 @@
     "barrio",
     "reservas",
     "pedidos",
+    "agenda",
+    "comercio",
+    "uribarri",
     "distrito02"
   ],
   "author": "German Andino",

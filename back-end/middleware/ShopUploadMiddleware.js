@@ -3,6 +3,8 @@ import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import shop_model from '../models/shop_model.js'; // Import shop model to get shop name
+import { validateImageMiddleware } from '../utils/imageValidationUtilities.js';
+import { processUploadedImage } from '../utils/imageConversionUtils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +22,7 @@ const ensureDirectoryExists = async (dirPath) => {
 };
 
 // Helper function to remove existing cover image files
-// UPDATE: Added function to clean existing cover images before saving new ones
+//update: Added function to clean existing cover images before saving new ones
 const cleanExistingCoverImages = async (dirPath) => {
     try {
         // Check if directory exists first
@@ -92,7 +94,7 @@ const shopCoverStorage = multer.diskStorage({
             // Ensure the directory exists
             await ensureDirectoryExists(uploadsDir);
             
-            // UPDATE: Clean existing cover images before saving new one
+            //update: Clean existing cover images before saving new one
             await cleanExistingCoverImages(uploadsDir);
             
             console.log(`Shop cover will be stored in: ${uploadsDir}`);
@@ -111,12 +113,10 @@ const shopCoverStorage = multer.diskStorage({
         }
     },
     filename: function (req, file, cb) {
-        // UPDATE: Always use 'cover.ext' as filename to ensure consistent naming
-        // Use the original file extension but enforce lowercase
-        const ext = path.extname(file.originalname).toLowerCase();
-        const fileName = `cover${ext}`;
-        console.log(`Generated filename: ${fileName}`);
-        cb(null, fileName);
+        //update: Use temporary filename since we'll rename after WebP conversion
+        const tempFileName = `temp_${Date.now()}${path.extname(file.originalname)}`;
+        console.log(`Generated temporary filename: ${tempFileName}`);
+        cb(null, tempFileName);
     }
 });
 
@@ -135,7 +135,7 @@ const uploadShopCover = multer({
     storage: shopCoverStorage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 3 * 1024 * 1024 // 5MB limit
+        fileSize: 10 * 1024 * 1024 //update: Increased to 10MB limit for initial upload (we'll compress it later)
     }
 }).single('shopCover'); // IMPORTANT: This must match the field name from the frontend
 
@@ -144,9 +144,17 @@ const handleShopCoverUpload = async (req, res, next) => {
     console.log('Request content type:', req.headers['content-type']);
     console.log('Request headers:', req.headers);
     
-    uploadShopCover(req, res, function (err) {
+    uploadShopCover(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             console.error('Multer error:', err);
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({
+                    error: 'El archivo es demasiado grande. Máximo 10MB permitido para procesamiento.',
+                    details: err.message,
+                    code: err.code,
+                    field: err.field
+                });
+            }
             return res.status(400).json({
                 error: 'Error uploading file',
                 details: err.message,
@@ -162,17 +170,83 @@ const handleShopCoverUpload = async (req, res, next) => {
         }
         
         console.log('Shop cover upload processed successfully');
-        if (req.file) {
-            console.log('Uploaded file details:', {
-                filename: req.file.filename,
-                path: req.file.path,
-                size: req.file.size
-            });
-        } else {
+        
+        if (!req.file) {
             console.warn('No file data in request after processing');
+            return res.status(400).json({
+                error: 'No se ha proporcionado ningún archivo'
+            });
         }
         
-        next();
+        console.log('Uploaded file details:', {
+            filename: req.file.filename,
+            path: req.file.path,
+            size: req.file.size
+        });
+        
+        try {
+            // Validate the image
+            await validateImageMiddleware(req, res, async () => {
+                try {
+                    //update: Process the image (convert to WebP and compress to 1MB)
+                    console.log('Processing uploaded image for WebP conversion and compression...');
+                    const processedFile = await processUploadedImage(req.file);
+                    
+                    //update: Rename the processed file to 'cover.webp' only if it's not already named that
+                    const finalPath = path.join(path.dirname(processedFile.path), 'cover.webp');
+                    
+                    // If the processed file is not already named 'cover.webp', rename it
+                    if (processedFile.filename !== 'cover.webp') {
+                        // If a file with this name already exists, it should have been cleaned up,
+                        // but let's make sure
+                        try {
+                            await fs.unlink(finalPath);
+                        } catch (unlinkErr) {
+                            // File doesn't exist, which is fine
+                        }
+                        
+                        // Rename the processed file
+                        await fs.rename(processedFile.path, finalPath);
+                        
+                        // Update the file object
+                        processedFile.path = finalPath;
+                        processedFile.filename = 'cover.webp';
+                    }
+                    
+                    // Update req.file with the processed file info
+                    req.file = processedFile;
+                    
+                    const stats = await fs.stat(finalPath);
+                    console.log('Image processed successfully:', {
+                        filename: processedFile.filename,
+                        size: Math.round(stats.size / 1024) + 'KB',
+                        type: processedFile.mimetype,
+                        path: processedFile.path
+                    });
+                    
+                    next();
+                } catch (processError) {
+                    console.error('Error processing image:', processError);
+                    
+                    // Clean up the file if processing failed
+                    if (req.file && req.file.path) {
+                        try {
+                            await fs.unlink(req.file.path);
+                        } catch (cleanupError) {
+                            console.error('Error cleaning up file:', cleanupError);
+                        }
+                    }
+                    
+                    return res.status(500).json({
+                        error: 'Error al procesar la imagen',
+                        details: processError.message
+                    });
+                }
+            });
+        } catch (validationError) {
+            // Validation error is already handled by validateImageMiddleware
+            console.error('Image validation failed:', validationError);
+        }
     });
 };
 

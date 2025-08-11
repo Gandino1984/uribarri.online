@@ -5,7 +5,6 @@ import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx'
 import styles from '../../../../../public/css/LoginRegisterForm.module.css'; 
 
 export const FormFields = () => {
-  // UPDATE: Using useAuth and useUI hooks instead of AppContext
   const {
     name_user,
     isLoggingIn,
@@ -45,9 +44,11 @@ export const FormFields = () => {
               required
             >
               <option value="" disabled>Tipo:</option>
-              <option value="user">usuario</option>
-              <option value="seller">vendedor</option>
-              <option value="provider" disabled>Productora</option>
+              <option value="user">Usuaria/o</option>
+              <option value="seller">Vendedor/a</option>
+              <option value="rider">Repartidor/a</option>
+              <option value="handler" disabled>Gestor/a de tienda</option>
+              <option value="provider" disabled>Productor/a</option>
             </select>
           
             <input

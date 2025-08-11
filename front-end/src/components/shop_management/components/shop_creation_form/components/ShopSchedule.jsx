@@ -22,12 +22,6 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
     }
   };
 
-  // Helper to format time for display
-  const formatTimeDisplay = (time) => {
-    if (!time) return '';
-    return time;
-  };
-
   return (
     <section className={styles.scheduleContainer}>
       <h2 className={styles.sectionTitle}>Horario y disponibilidad</h2>
@@ -49,128 +43,98 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
           // Continuous schedule: only show opening and closing
           <div className={styles.scheduleSimple}>
             <div className={styles.scheduleFields}>
-              <div className={styles.timeFieldContainer}>
-                <label className={styles.timeFieldLabel}>
-                  <Clock size={16} className={styles.timeIcon} />
+              <div className="timeFieldContainer">
+                <label className="timeFieldLabel">
+                  <Clock size={16} className="timeIcon" />
                   Abre:
                 </label>
                 <input
                   type="time"
                   value={newShop.morning_open || ''}
                   onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.morning_open ? styles.hasValue : ''}`}
+                  className={newShop.morning_open ? "hasValue" : ""}
                   required
                 />
-                {newShop.morning_open && (
-                  <span className={styles.timeDisplay}>
-                    {formatTimeDisplay(newShop.morning_open)}
-                  </span>
-                )}
               </div>
               
-              <div className={styles.timeFieldContainer}>
-                <label className={styles.timeFieldLabel}>
-                  <Clock size={16} className={styles.timeIcon} />
+              <div className="timeFieldContainer">
+                <label className="timeFieldLabel">
+                  <Clock size={16} className="timeIcon" />
                   Cierra:
                 </label>
                 <input
                   type="time"
                   value={newShop.afternoon_close || ''}
                   onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                  className={`${styles.timeInput} ${newShop.afternoon_close ? styles.hasValue : ''}`}
+                  className={newShop.afternoon_close ? "hasValue" : ""}
                   required
                 />
-                {newShop.afternoon_close && (
-                  <span className={styles.timeDisplay}>
-                    {formatTimeDisplay(newShop.afternoon_close)}
-                  </span>
-                )}
               </div>
             </div>
           </div>
         ) : (
           // Schedule with rest period: show all 4 fields
           <>
-            <div>
+            <div className={styles.scheduleWithRest}>
               <h4 className={styles.scheduleTitle}>
-                <Clock size={16} className={styles.scheduleIcon} />
+                <Clock size={16} className={styles.timeIcon} />
                 Horario de la mañana
               </h4>
               <div className={styles.scheduleFields}>
-                <div className={styles.timeFieldGroup}>
-                  <label className={styles.timeFieldLabel}>Abre:</label>
+                <div className="timeFieldGroup">
+                  <label className="timeFieldLabel">Abre:</label>
                   <input
                     type="time"
                     value={newShop.morning_open || ''}
                     onChange={(e) => setNewShop({...newShop, morning_open: e.target.value})}
-                    className={`${styles.timeInput} ${newShop.morning_open ? styles.hasValue : ''}`}
+                    className={newShop.morning_open ? "hasValue" : ""}
                     required
                   />
-                  {/* {newShop.morning_open && (
-                    <span className={styles.timeDisplay}>
-                      {formatTimeDisplay(newShop.morning_open)}
-                    </span>
-                  )} */}
                 </div>
                 
-                <span className={styles.timeSeparator}>a</span>
+                <span className="timeSeparator">a</span>
                 
-                <div className={styles.timeFieldGroup}>
-                  <label className={styles.timeFieldLabel}>Cierra:</label>
+                <div className="timeFieldGroup">
+                  <label className="timeFieldLabel">Cierra:</label>
                   <input
                     type="time"
                     value={newShop.morning_close || ''}
                     onChange={(e) => setNewShop({...newShop, morning_close: e.target.value})}
-                    className={`${styles.timeInput} ${newShop.morning_close ? styles.hasValue : ''}`}
+                    className={newShop.morning_close ? "hasValue" : ""}
                     required
                   />
-                  {/* {newShop.morning_close && (
-                    <span className={styles.timeDisplay}>
-                      {formatTimeDisplay(newShop.morning_close)}
-                    </span>
-                  )} */}
                 </div>
               </div>
             </div>
 
-            <div>
+            <div className={styles.scheduleWithRest}>
               <h4 className={styles.scheduleTitle}>
-                <Clock size={16} className={styles.scheduleIcon} />
+                <Clock size={16} className={styles.timeIcon} />
                 Horario de la tarde
               </h4>
               <div className={styles.scheduleFields}>
-                <div className={styles.timeFieldGroup}>
-                  <label className={styles.timeFieldLabel}>Abre:</label>
+                <div className="timeFieldGroup">
+                  <label className="timeFieldLabel">Abre:</label>
                   <input
                     type="time"
                     value={newShop.afternoon_open || ''}
                     onChange={(e) => setNewShop({...newShop, afternoon_open: e.target.value})}
-                    className={`${styles.timeInput} ${newShop.afternoon_open ? styles.hasValue : ''}`}
+                    className={newShop.afternoon_open ? "hasValue" : ""}
                     required
                   />
-                  {/* {newShop.afternoon_open && (
-                    <span className={styles.timeDisplay}>
-                      {formatTimeDisplay(newShop.afternoon_open)}
-                    </span>
-                  )} */}
                 </div>
                 
-                <span className={styles.timeSeparator}>a</span>
+                <span className="timeSeparator">a</span>
                 
-                <div className={styles.timeFieldGroup}>
-                  <label className={styles.timeFieldLabel}>Cierra:</label>
+                <div className="timeFieldGroup">
+                  <label className="timeFieldLabel">Cierra:</label>
                   <input
                     type="time"
                     value={newShop.afternoon_close || ''}
                     onChange={(e) => setNewShop({...newShop, afternoon_close: e.target.value})}
-                    className={`${styles.timeInput} ${newShop.afternoon_close ? styles.hasValue : ''}`}
+                    className={newShop.afternoon_close ? "hasValue" : ""}
                     required
                   />
-                  {/* {newShop.afternoon_close && (
-                    <span className={styles.timeDisplay}>
-                      {formatTimeDisplay(newShop.afternoon_close)}
-                    </span>
-                  )} */}
                 </div>
               </div>
             </div>
@@ -178,10 +142,10 @@ const ShopSchedule = ({ newShop, setNewShop, hasContinuousSchedule, setHasContin
         )}
       </div>
       
-      {/* UPDATE: Added days of week selection */}
+      {/* Days of week selection */}
       <ShopDaysSelection newShop={newShop} setNewShop={setNewShop} />
       
-      {/* UPDATE: Added delivery service toggle */}
+      {/* Delivery service toggle */}
       <ShopDeliveryToggle newShop={newShop} setNewShop={setNewShop} />
     </section>
   );

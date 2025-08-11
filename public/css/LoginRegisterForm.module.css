@@ -3,12 +3,40 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  flex: 1;
   width: 100%;
-  min-height: calc(100vh - var(--topbar-height));
-  /* margin-top: var(--topbar-height);   */
-  padding-top: 1rem; /* 📌 UPDATE: Add padding for better spacing */
+  min-height: 100vh;
+  /* background-color: var(--light-gray); */
+    
+  /* background-size: 200% 200%; */
+  position: relative;
+  z-index: 100;
+}
 
+.container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  /* background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%); */
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-image:  */
+    /* linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), */
+    /* linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); */
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .formContainer {
@@ -21,6 +49,7 @@
   padding: 1rem;
   margin: auto;
   position: relative;
+  z-index: 2;
 }
 
 .formContentWrapper {
@@ -29,55 +58,53 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-top-left-radius: 8px;
-  box-shadow:rgba(0, 0, 0, 0.2) 0px 0px 10px;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.formTitle {
+  user-select: none;
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgb(11, 11, 11);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
+  letter-spacing: 0.5px;
 }
 
 .formContent {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 1rem;
   align-items: stretch;
   justify-content: center;
   position: relative;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
-  padding: 1rem;
-  border: 1px solid var(--light-orange);
-  border-top: none;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 0; 
+  border: 1px solid rgba(255, 255, 255, 0.205);
+  border-radius: 12px;
+background-color: white;
+  /* background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end)); */
+  padding: .7rem .5rem .7rem .5rem;
+  backdrop-filter: blur(1.9px);
   z-index: 0;
   width: 100%;
+  margin-top: 1rem;
 }
 
 .inputSection{
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.formTitle {
-  padding-bottom: .5rem;
+  padding-left: .5rem;
 }
 
 .formActions {
   display: flex;
   width: 100%;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  justify-content: right;
-  z-index: 10;
-}
-
-.formActions button :hover{
-  color: white;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 1rem;
+  margin-bottom: .5rem;
 }
 
 .formField {
@@ -86,79 +113,21 @@
   justify-content: center;
   flex-direction: column;
   margin-top: .3rem;
-  gap: 1rem;
+  gap: .6rem;
   width: 100%;
 }
 
-.formField label {
-  font-weight: 500;
-  padding-bottom: .5rem;
-}
-
 .submitButton {
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 0px;
-  border-bottom: none;
-  position: relative;
-  /* margin-bottom: -1px; */
-  z-index: 5;
   min-width: 80px;
   align-self: flex-start;
 }
 
-.submitButton:hover{
-  color: white !important;
-  background-color: var(--saturated-blue) !important;
-}
-
 .toggleButton {
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 8px;
-  border-bottom: none;
-  position: relative;
-  /* margin-bottom: -1px; */
-  z-index: 5;
   min-width: 80px;
-  align-self: flex-end;
 }
 
-.validationMessage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: .5rem;
-}
-
-::placeholder {
-  color: lightgrey;
-  opacity: 1; 
-}
-
-.validText {
-  color: #16a34a;
-  font-weight: 500;
-}
-
-.errorText {
-  color: #dc2626;
-  font-weight: 500;
-}
-
-.validIcon {
-  color: #16a34a;
-}
-
-.errorIcon {
-  color: #dc2626;
-}
-
-.passwordLabel {
-  min-height: 25px;
-  display: block;
+.toggleButton:hover {
+  text-shadow: 0 0 8px var(--saturated-blue);
 }
 
 .inputError {
@@ -166,33 +135,20 @@
   color: red;
 }
 
-.inputSuccess {
-  border: 2px solid green;
-  color: green;
-}
-
-.repeatPasswordMessage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .8rem;
-}
-
 .active {
-  color: rgb(247, 247, 247);
-  background-color: var(--saturated-orange);
-  color: white;
+  color: black;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .active:hover {
   color: white;
-  background-color: var(--dark-orange);
-  /* transform: translateY(-1px); */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
 .inactive {
-  background-color: var(--saturated-orange);
   color: var(--gray);
   cursor: not-allowed;
   opacity: 0.3;
@@ -202,7 +158,6 @@
   .container {
     display: flex;
     justify-content: center;
-    padding: 0;
   }
 
   .formContent {
@@ -216,7 +171,6 @@
 
 @media screen and (min-width: 768px) {
   .container {
-    /* padding-top: 1rem; */
     justify-content: center;
   }
 
@@ -225,10 +179,8 @@
     align-items: center;
   }
 
-  .formField label {
-    padding-bottom: 0;
-    text-align: right;
-    margin-right: 1rem;
+  .formTitle {
+    font-size: 2.5rem;
   }
 
   input[type="text"],
@@ -239,14 +191,7 @@
   }
 }
 
-/* Desktop Breakpoint */
 @media screen and (min-width: 1024px) {
-
-  .formTitle {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
   .formField {
     margin-top: 1rem;
     gap: 1rem;
@@ -258,7 +203,6 @@
   }
 }
 
-/* Large Desktop Breakpoint */
 @media screen and (min-width: 1440px) {
   .container {
     justify-content: center;
@@ -277,5 +221,10 @@
   
   .submitButton {
     min-width: 120px;
+  }
+
+
+  .formTitle {
+    font-size: 3rem;
   }
 }

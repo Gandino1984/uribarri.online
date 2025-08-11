@@ -17,16 +17,12 @@ export const optimizeImage = (file, options = {}) => {
       maxWidth = 1200,
       maxHeight = 1200,
       quality = 0.8,
-      format = 'image/webp', // UPDATE: Default to WebP format
-      maxSizeKB = 1024 // UPDATE: Default max size 1MB (1024KB)
+      format = 'image/webp', //update: Always default to WebP format
+      maxSizeKB = 1024 //update: Default max size 1MB (1024KB)
     } = options;
 
-    // UPDATE: Only skip optimization if file is already WebP and under size limit
-    if (file.type === 'image/webp' && file.size < maxSizeKB * 1024) {
-      console.log('File is already WebP and under size limit, skipping optimization');
-      resolve(file);
-      return;
-    }
+    //update: Always convert to WebP, don't skip optimization
+    console.log('Starting image optimization for:', file.name, 'Size:', Math.round(file.size/1024) + 'KB');
 
     // Read the file
     const reader = new FileReader();
@@ -56,52 +52,81 @@ export const optimizeImage = (file, options = {}) => {
         // Draw the image on canvas
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Determine output format
-        let outputFormat = format;
-        if (!outputFormat) {
-          // Use original format if not specified
-          outputFormat = file.type;
-        }
+        //update: Always use WebP format for output
+        const outputFormat = 'image/webp';
         
-        // UPDATE: Function to check file size and recursively optimize if needed
-        const createOptimizedFile = (blob, currentQuality) => {
+        //update: Function to check file size and recursively optimize if needed
+        const createOptimizedFile = (blob, currentQuality, currentScale = 1) => {
           if (!blob) {
             reject(new Error('Failed to create optimized image'));
             return;
           }
           
-          // UPDATE: Check if the blob is over the size limit
-          if (blob.size > maxSizeKB * 1024 && currentQuality > 0.3) {
-            // If still too large and we can reduce quality further
-            console.log(`Image still too large (${Math.round(blob.size/1024)}KB), reducing quality further`);
-            const newQuality = Math.max(currentQuality - 0.1, 0.3);
-            
-            // Try again with lower quality
-            canvas.toBlob(
-              newBlob => createOptimizedFile(newBlob, newQuality),
-              'image/webp', // Force WebP format for better compression
-              newQuality
-            );
-          } else {
-            // Get file extension from MIME type
-            const fileExt = outputFormat === 'image/webp' ? '.webp' : 
-                           (outputFormat === 'image/png' ? '.png' : '.jpg');
-                           
-            // Create a new filename with the correct extension if converting to WebP
-            let newFilename = file.name;
-            if (outputFormat === 'image/webp' && !file.name.toLowerCase().endsWith('.webp')) {
-              const baseName = file.name.substring(0, file.name.lastIndexOf('.'));
-              newFilename = `${baseName}${fileExt}`;
+          const sizeInKB = Math.round(blob.size / 1024);
+          console.log(`Optimization attempt - Quality: ${currentQuality}, Scale: ${currentScale}, Size: ${sizeInKB}KB`);
+          
+          //update: Check if the blob is over the size limit
+          if (blob.size > maxSizeKB * 1024) {
+            // If quality can still be reduced
+            if (currentQuality > 0.1) {
+              const newQuality = Math.max(currentQuality - 0.1, 0.1);
+              console.log(`Image still too large (${sizeInKB}KB), reducing quality to ${newQuality}`);
+              
+              canvas.toBlob(
+                newBlob => createOptimizedFile(newBlob, newQuality, currentScale),
+                outputFormat,
+                newQuality
+              );
+            } 
+            // If quality is at minimum, reduce dimensions
+            else if (currentScale > 0.5) {
+              const newScale = currentScale - 0.1;
+              const newWidth = Math.floor(width * newScale);
+              const newHeight = Math.floor(height * newScale);
+              
+              console.log(`Quality at minimum, reducing dimensions to ${newWidth}x${newHeight}`);
+              
+              // Create a new canvas with smaller dimensions
+              const smallerCanvas = document.createElement('canvas');
+              const smallerCtx = smallerCanvas.getContext('2d');
+              smallerCanvas.width = newWidth;
+              smallerCanvas.height = newHeight;
+              smallerCtx.drawImage(img, 0, 0, newWidth, newHeight);
+              
+              // Try again with the smaller canvas
+              smallerCanvas.toBlob(
+                newBlob => createOptimizedFile(newBlob, 0.8, newScale), // Reset quality when scaling down
+                outputFormat,
+                0.8
+              );
+            } else {
+              // If we've tried everything and still can't get under 1MB, use the current result
+              console.warn(`Could not optimize image to under ${maxSizeKB}KB. Final size: ${sizeInKB}KB`);
+              
+              //update: Create the file with WebP extension
+              const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+              const newFilename = `${baseName}.webp`;
+              
+              const optimizedFile = new File(
+                [blob], 
+                newFilename, 
+                { type: outputFormat }
+              );
+              
+              resolve(optimizedFile);
             }
+          } else {
+            //update: Success! Create the file with WebP extension
+            const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            const newFilename = `${baseName}.webp`;
             
-            // Create optimized file
             const optimizedFile = new File(
               [blob], 
               newFilename, 
               { type: outputFormat }
             );
             
-            console.log(`Optimized image: ${Math.round(file.size/1024)}KB → ${Math.round(optimizedFile.size/1024)}KB (${outputFormat})`);
+            console.log(`Successfully optimized: ${Math.round(file.size/1024)}KB → ${Math.round(optimizedFile.size/1024)}KB (${outputFormat})`);
             resolve(optimizedFile);
           }
         };

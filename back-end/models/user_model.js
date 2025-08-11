@@ -33,10 +33,16 @@ const user_model = sequelize.define("user", {
         allowNull: false,
         defaultValue: 5
     },
-    category_user: {
+    contributor_user: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    //update: Added age_user field with default value of 18
+    age_user: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 18
     }
 }, {
     timestamps: false,

@@ -1,28 +1,51 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSpring, animated } from '@react-spring/web';
 import { X, MessageCircleWarning } from 'lucide-react';
 import { useUI } from '../../app_context/UIContext.jsx';
 import styles from '../../../../public/css/ConfirmationModal.module.css';
 
 const ConfirmationModal = () => {
-  // UPDATE: Using useUI hooxk instead of AppContext
+  // 🚀 UPDATE: Using consistent props from useUI hook
   const { 
     isModalOpen, 
     setIsModalOpen,
-    setIsAccepted,
-    setIsDeclined,
     modalMessage,
+    modalConfirmCallback,
+    setIsAccepted,
+    setIsDeclined
   } = useUI();
 
+  // 🚀 UPDATE: React Spring animations for modal
+  const overlayAnimation = useSpring({
+    opacity: isModalOpen ? 1 : 0,
+    config: { tension: 280, friction: 20 }
+  });
+
+  const modalAnimation = useSpring({
+    opacity: isModalOpen ? 1 : 0,
+    transform: isModalOpen ? 'translateY(0)' : 'translateY(-40px)',
+    config: { mass: 0.6, tension: 280, friction: 26 }
+  });
+
+  // 🚀 UPDATE: Updated handlers with explicit state management
   const handleAccept = () => {
     setIsAccepted(true);
     setIsDeclined(false);
     setIsModalOpen(false);
+    // Call the callback function if it exists
+    if (modalConfirmCallback && typeof modalConfirmCallback === 'function') {
+      modalConfirmCallback(true);
+    }
   };
 
   const handleDecline = () => {
     setIsDeclined(true);
     setIsAccepted(false);
     setIsModalOpen(false);
+    // Call the callback function with false if it exists
+    if (modalConfirmCallback && typeof modalConfirmCallback === 'function') {
+      modalConfirmCallback(false);
+    }
   };
 
   // Close modal if clicked outside
@@ -32,17 +55,39 @@ const ConfirmationModal = () => {
     }
   };
 
+  // 🚀 UPDATE: Add keyboard support for ESC key
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        handleDecline();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscKey);
+    return () => {
+      window.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isModalOpen]);
+
   if (!isModalOpen) return null;
 
   return (
-    <div className={styles.modalOverlay} onClick={handleOverlayClick}>
-      <div className={styles.modalContainer}>
-        <button
+    <animated.div 
+      className={styles.modalOverlay} 
+      onClick={handleOverlayClick}
+      style={overlayAnimation}
+    >
+      <animated.div 
+        className={styles.modalContainer}
+        style={modalAnimation}
+      >
+        {/* <button
           onClick={handleDecline}
           className={styles.closeButton}
+          aria-label="Close modal"
         >
           <X size={20} />
-        </button>
+        </button> */}
 
         <div className={styles.modalContent}>
           <div className={styles.warningIconContainer}>
@@ -74,8 +119,8 @@ const ConfirmationModal = () => {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </animated.div>
+    </animated.div>
   );
 };
 

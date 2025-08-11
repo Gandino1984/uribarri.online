@@ -2,8 +2,9 @@ import { useEffect, useState, useRef } from 'react';
 import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
-import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx'; // ✨ UPDATE: Import Package context
+import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx';
 import ShopPackagesList from './components/shop_packages_list/ShopPackagesList.jsx';
+import PackageCreationForm from '../shop_products_list/components/package_creation_form/PackageCreationForm.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
 
@@ -16,13 +17,37 @@ import useFiltersForProducts from '../../../../../filters_for_products/FiltersFo
 
 import SearchBar from './components/SearchBar.jsx';
 import ActionButtons from './components/ActionButtons.jsx';
-import ProductsCount from './components/ProductsCount.jsx';
 import NoProductsMessage from './components/NoProductsMessage.jsx';
 import NoShopSelected from './components/NoShopSelected.jsx';
-import ProductsTable from './components/ProductsTable.jsx';
 import useScreenSize from '../../../shop_card/components/useScreenSize.js';
 
-// 🌟 UPDATE: Import React Spring for animations
+// Import icons for the card view
+import { 
+  ShoppingBag, 
+  Edit2, 
+  Trash2, 
+  ToggleLeft, 
+  ToggleRight,
+  Image,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  Tag,
+  MapPin,
+  Calendar,
+  Star,
+  Package,
+  DollarSign,
+  Info,
+  Clock,
+  Check,
+  CheckCircle
+} from 'lucide-react';
+
+// Import image utility
+import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
+
+// Import React Spring for animations
 import { useTransition, animated } from '@react-spring/web';
 import { formAnimation, fadeInScale } from '../../../../../../utils/animation/transitions.js';
 
@@ -33,6 +58,8 @@ const ShopProductsList = () => {
     isModalOpen, setIsModalOpen,
     isAccepted, setIsAccepted,
     isDeclined, setIsDeclined,
+    modalMessage, setModalMessage,
+    modalConfirmCallback, setModalConfirmCallback,
     isImageModalOpen, setIsImageModalOpen,
     setShowSuccessCard,
     setShowErrorCard,
@@ -54,24 +81,30 @@ const ShopProductsList = () => {
     setSelectedProductForImageUpload,
     productListKey,
     setShowProductManagement,
-    refreshProductList
+    refreshProductList,
+    categories,
+    subcategories,
+    fetchSubcategoriesByCategory
   } = useProduct();
 
-  // ✨ UPDATE: Package context
+  // Package context
   const {
     setNewPackageData,
     initNewPackageData,
     setShowPackageCreationForm,
-    setIsAddingPackage
+    setIsAddingPackage,
+    showPackageCreationForm,
+    isAddingPackage
   } = usePackage();
 
   const [showProductCard, setShowProductCard] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [displayedProducts, setDisplayedProducts] = useState([]);
-  // State to manage filter visibility
   const [showFilters, setShowFilters] = useState(false);
-  // State to track which product's actions menu is active (for mobile)
   const [activeActionsMenu, setActiveActionsMenu] = useState(null);
+  const [expandedProducts, setExpandedProducts] = useState(new Set());
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTogglingStatus, setIsTogglingStatus] = useState(null);
   
   // Get screen size for responsive behavior
   const isSmallScreen = useScreenSize(768);
@@ -88,11 +121,15 @@ const ShopProductsList = () => {
   // Add a ref to track what product we're deleting
   const currentDeletingProduct = useRef(null);
 
-  // 🌟 UPDATE: Add visibility state for component animation
+  // Add visibility state for component animation
   const [isVisible, setIsVisible] = useState(true);
   
-  // 🔄 UPDATE: Add state to control showing packages list
+  // Add state to control showing packages list
   const [showPackages, setShowPackages] = useState(false);
+  
+  //update: State for product actions
+  const [productForAction, setProductForAction] = useState(null);
+  const [actionType, setActionType] = useState(null); // 'delete' or 'toggle'
 
   // Get all Utils from ShopProductsListUtils
   const {
@@ -102,11 +139,11 @@ const ShopProductsList = () => {
     bulkDeleteProducts,
     confirmBulkDelete,
     handleSelectProduct,
-    handleDeleteProduct,
-    handleBulkDelete,
+    handleDeleteProduct: handleDeleteProductUtil,
+    handleBulkDelete: handleBulkDeleteUtil,
     handleAddProduct,
     handleUpdateProduct,
-    handleToggleActiveStatus,
+    handleToggleActiveStatus: handleToggleActiveStatusUtil,
     getImageUrl,
     handleProductImageDoubleClick,
     formatDate,
@@ -118,10 +155,11 @@ const ShopProductsList = () => {
     handleResetAllFilters: handleResetAllFiltersFn,
     handleSelectForImageUpload: handleSelectForImageUploadFn,
     handleBulkUpdate: handleBulkUpdateFn,
-    isNewProduct
+    isNewProduct,
+    allSubcategories
   } = ShopProductsListUtils();
 
-  // 🌟 UPDATE: Create animation transitions using React Spring
+  // Create animation transitions using React Spring
   const contentTransition = useTransition(isVisible, {
     ...formAnimation,
     config: {
@@ -131,7 +169,7 @@ const ShopProductsList = () => {
     }
   });
 
-  // 🌟 UPDATE: Create separate transition for ShopCard
+  // Create separate transition for ShopCard
   const shopCardTransition = useTransition(isVisible && selectedShop, {
     ...fadeInScale,
     config: {
@@ -140,6 +178,32 @@ const ShopProductsList = () => {
       friction: 24
     }
   });
+  
+  // Animation for products list
+  const productsTransition = useTransition(displayedProducts, {
+    from: { opacity: 0, transform: 'scale(0.9)' },
+    enter: { opacity: 1, transform: 'scale(1)' },
+    leave: { opacity: 0, transform: 'scale(0.9)' },
+    config: {
+      mass: 1,
+      tension: 280,
+      friction: 24
+    },
+    keys: item => item.id_product
+  });
+
+  // Toggle expanded state for a product
+  const toggleExpanded = (productId) => {
+    setExpandedProducts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
 
   // Wrapper Utils that use the ones from ShopProductsListUtils
   const handleSearchChange = (e) => {
@@ -169,8 +233,121 @@ const ShopProductsList = () => {
   const handleBulkUpdate = () => {
     handleBulkUpdateFn(selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard);
   };
+  
+  //update: Handle delete product with confirmation modal
+  const handleDeleteProduct = (product) => {
+    console.log('handleDeleteProduct called with product:', product);
+    setProductForAction(product);
+    setActionType('delete');
+    setModalMessage(`¿Estás seguro de que deseas eliminar el producto "${product.name_product}"?`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        console.log('User confirmed deletion, proceeding...');
+        try {
+          const result = await deleteProduct(product.id_product);
+          console.log('Delete result:', result);
+          
+          if (result.success) {
+            // Show success message
+            setSuccess(prev => ({
+              ...prev,
+              deleteSuccess: result.message || 'Producto eliminado correctamente',
+              productSuccess: '',
+              createSuccess: '',
+              updateSuccess: ''
+            }));
+            setShowSuccessCard(true);
+            
+            // Refresh the product list
+            await fetchProductsByShop();
+            refreshProductList();
+            
+            // Clear selected products if needed
+            if (selectedProducts.has(product.id_product)) {
+              setSelectedProducts(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(product.id_product);
+                return newSet;
+              });
+            }
+          } else {
+            // Show error message
+            console.error('Delete failed:', result.message);
+            setError(prevError => ({
+              ...prevError,
+              productError: result.message || 'Error al eliminar el producto'
+            }));
+            setShowErrorCard(true);
+          }
+        } catch (error) {
+          console.error('Exception during deletion:', error);
+          setError(prevError => ({
+            ...prevError,
+            productError: error.message || 'Error al eliminar el producto'
+          }));
+          setShowErrorCard(true);
+        }
+      } else {
+        console.log('User cancelled deletion');
+      }
+      setProductForAction(null);
+      setActionType(null);
+    });
+    setIsModalOpen(true);
+  };
+  
+  //update: Toggle product active status with confirmation modal
+  const handleToggleActiveStatus = (product) => {
+    console.log('handleToggleActiveStatus called with product:', product);
+    const action = product.active_product ? 'desactivar' : 'activar';
+    setProductForAction(product);
+    setActionType('toggle');
+    setModalMessage(`¿Estás seguro de que deseas ${action} el producto "${product.name_product}"?`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        try {
+          setIsTogglingStatus(product.id_product);
+          
+          const result = await handleToggleActiveStatusUtil(product.id_product);
+          
+          if (result.success) {
+            await fetchProductsByShop();
+            refreshProductList();
+          }
+        } finally {
+          setIsTogglingStatus(null);
+        }
+      }
+      setProductForAction(null);
+      setActionType(null);
+    });
+    setIsModalOpen(true);
+  };
 
-  // ✨ UPDATE: Added function to handle package creation
+  //update: Handle bulk delete with confirmation modal
+  const handleBulkDelete = () => {
+    if (selectedProducts.size === 0) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "No hay productos seleccionados para eliminar"
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    setModalMessage(`¿Estás seguro que deseas eliminar ${selectedProducts.size} producto${selectedProducts.size > 1 ? 's' : ''}?`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        const result = await bulkDeleteProducts();
+        if (result.success) {
+          // Success is already handled in bulkDeleteProducts
+        }
+      }
+    });
+    setIsModalOpen(true);
+  };
+
+  // Handle package creation
   const handleCreatePackage = () => {
     if (selectedProducts.size === 0) {
       setError(prevError => ({
@@ -191,10 +368,8 @@ const ShopProductsList = () => {
     }
 
     try {
-      // Get the selected product IDs as an array
       const selectedProductIds = Array.from(selectedProducts);
 
-      // Initialize new package data object
       const packageData = {
         id_shop: selectedShop.id_shop,
         id_product1: selectedProductIds[0] || '',
@@ -206,16 +381,10 @@ const ShopProductsList = () => {
         active_package: true
       };
 
-      // Set the package data in context
       setNewPackageData(packageData);
-      
-      // Set isAddingPackage to true
       setIsAddingPackage(true);
-      
-      // Show the package creation form
       setShowPackageCreationForm(true);
       
-      // Success message for log only
       console.log('Prepared package with selected products:', selectedProductIds);
     } catch (error) {
       console.error('Error preparing package creation:', error);
@@ -226,16 +395,40 @@ const ShopProductsList = () => {
       setShowErrorCard(true);
     }
   };
+  
+  // Helper function to get category name
+  const getCategoryName = (categoryId) => {
+    if (!categoryId || !categories || categories.length === 0) {
+      return null;
+    }
+    const category = categories.find(cat => cat.id_category === categoryId);
+    return category ? category.name_category : null;
+  };
+  
+  // Helper function to get subcategory name
+  const getSubcategoryName = (subcategoryId) => {
+    if (!subcategoryId || !allSubcategories) {
+      return null;
+    }
+    return allSubcategories[subcategoryId]?.name_subcategory || null;
+  };
+  
+  // Calculate discount price
+  const calculateDiscountPrice = (price, discount) => {
+    if (!discount || discount <= 0) return null;
+    const discountAmount = (price * discount) / 100;
+    return price - discountAmount;
+  };
 
-  // UPDATE: Enhanced product fetching with better error handling and state management
+  // Enhanced product fetching with better error handling and state management
   useEffect(() => {
     const loadProducts = async () => {
       console.log('ShopProductsList - Fetching products for shop:', selectedShop?.id_shop);
       if (selectedShop?.id_shop) {
         try {
+          setIsLoading(true);
           const fetchedProducts = await fetchProductsByShop();
           console.log(`Loaded ${fetchedProducts?.length || 0} products for shop ${selectedShop.id_shop}`);
-          // 🌟 UPDATE: Set visible to true once products are loaded
           setIsVisible(true);
         } catch (error) {
           console.error('Error loading products:', error);
@@ -244,6 +437,8 @@ const ShopProductsList = () => {
             productError: "Error al cargar los productos"
           }));
           setShowErrorCard(true);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -251,7 +446,7 @@ const ShopProductsList = () => {
     loadProducts();
   }, [selectedShop, productListKey, fetchProductsByShop, setError, setShowErrorCard]);
 
-  // UPDATE: Improved product filtering with active status check and explicit dependencies
+  // Improved product filtering with active status check and explicit dependencies
   useEffect(() => {
     if (!Array.isArray(products)) {
       console.log('Products is not an array:', products);
@@ -268,11 +463,13 @@ const ShopProductsList = () => {
     if (searchTerm && searchTerm.trim() !== '') {
       const term = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(product => {
-        // Search in all text and number fields (convert numbers to strings)
+        const categoryName = getCategoryName(product.id_category);
+        
         return (
           (product.name_product && product.name_product.toLowerCase().includes(term)) || 
           (product.type_product && product.type_product.toLowerCase().includes(term)) ||
           (product.subtype_product && product.subtype_product.toLowerCase().includes(term)) ||
+          (categoryName && categoryName.toLowerCase().includes(term)) ||
           (product.info_product && product.info_product.toLowerCase().includes(term)) ||
           (product.country_product && product.country_product.toLowerCase().includes(term)) ||
           (product.locality_product && product.locality_product.toLowerCase().includes(term)) ||
@@ -285,7 +482,7 @@ const ShopProductsList = () => {
       });
     }
     
-    // UPDATE: Only filter out inactive products if mostrar_inactivos is not enabled
+    // Only filter out inactive products if mostrar_inactivos is not enabled
     if (filters.mostrar_inactivos !== 'Sí') {
       filtered = filtered.filter(product => product.active_product === true || product.active_product === 1);
     }
@@ -293,118 +490,11 @@ const ShopProductsList = () => {
     console.log(`Displaying ${filtered.length} products after filtering`);
     setFilteredProducts(filtered);
     setDisplayedProducts(filtered);
-  }, [products, filters, searchTerm, filterProducts, setFilteredProducts]);
-
-  // Deletion handler
-  useEffect(() => {
-    // Only run if isAccepted changes to true and we're not already in the middle of deletion
-    if (isAccepted && !deletionInProgress.current) {
-      const handleConfirmedDelete = async () => {
-        try {
-          // Set flag to prevent duplicate deletions
-          deletionInProgress.current = true;
-          
-          // Clear any existing success messages
-          setSuccess(prev => ({
-            ...prev,
-            productSuccess: '',
-            createSuccess: '',
-            updateSuccess: '',
-            deleteSuccess: ''
-          }));
-          
-          console.log('Beginning product deletion process');
-          
-          if (productToDelete) {
-            // Store current product ID being deleted to avoid re-processing
-            currentDeletingProduct.current = productToDelete;
-            console.log('Deleting single product with ID:', productToDelete);
-            
-            const result = await deleteProduct(productToDelete);
-            console.log('Delete API result:', result);
-            
-            if (result.success) {
-              console.log('Product deleted successfully, fetching updated product list');
-              
-              // First fetch updated products
-              await fetchProductsByShop();
-              
-              // Set a success message for deletion
-              setSuccess(prev => ({
-                ...prev,
-                deleteSuccess: "Producto eliminado." 
-              }));
-              setShowSuccessCard(true);
-              
-              // Refresh UI
-              refreshProductList();
-            } else {
-              console.error('Product deletion failed:', result.message);
-              setError(prevError => ({
-                ...prevError,
-                productError: result.message || "Error al eliminar el producto"
-              }));
-            }
-          } else if (selectedProducts.size > 0) {
-            // Bulk deletion
-            console.log('Performing bulk deletion of products');
-            const bulkResult = await bulkDeleteProducts();
-            
-            if (bulkResult.success) {
-              console.log(`Bulk deletion successful: ${bulkResult.successCount} products deleted`);
-              
-              // Set success message for bulk deletion
-              setSuccess(prev => ({
-                ...prev,
-                deleteSuccess: `${bulkResult.successCount} productos eliminados.`
-              }));
-              setShowSuccessCard(true);
-              
-              // Refresh product list
-              refreshProductList();
-            } else {
-              console.error('Bulk deletion failed:', bulkResult.message);
-            }
-          }
-        } catch (error) {
-          console.error('Error during product deletion process:', error);
-          setError(prevError => ({
-            ...prevError,
-            productError: "Error al eliminar el producto: " + (error.message || "Error desconocido")
-          }));
-        } finally {
-          // Reset all delete-related state
-          setProductToDelete(null);
-          setIsAccepted(false);
-          clearError();
-          
-          // Reset our deletion flags
-          deletionInProgress.current = false;
-          currentDeletingProduct.current = null;
-        }
-      };
-
-      handleConfirmedDelete();
-    }
-  }, [isAccepted, productToDelete, selectedProducts, deleteProduct, bulkDeleteProducts, fetchProductsByShop, refreshProductList, setSuccess, setError, setProductToDelete, setIsAccepted, clearError, setShowSuccessCard]);
-
-  // Handle deletion cancellation
-  useEffect(() => {
-    if (isDeclined) {
-      setProductToDelete(null);
-      setIsDeclined(false);
-      clearError();
-      
-      // Reset deletion flags on cancel
-      deletionInProgress.current = false;
-      currentDeletingProduct.current = null;
-    }
-  }, [isDeclined, setProductToDelete, setIsDeclined, clearError]);
+  }, [products, filters, searchTerm, filterProducts, setFilteredProducts, categories, allSubcategories]);
 
   // Handle clicks outside active menu
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Only close menu if clicking outside of an actions cell
       if (activeActionsMenu !== null && !event.target.closest(`.${styles.actionsCellWrapper}`)) {
         setActiveActionsMenu(null);
       }
@@ -416,33 +506,47 @@ const ShopProductsList = () => {
     };
   }, [activeActionsMenu]);
 
+  //update: Reset modal state when accepted/declined changes
+  useEffect(() => {
+    if (isAccepted || isDeclined) {
+      // Reset states after modal action is processed
+      setIsAccepted(false);
+      setIsDeclined(false);
+    }
+  }, [isAccepted, isDeclined, setIsAccepted, setIsDeclined]);
+
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
     return <NoShopSelected setShowProductManagement={setShowProductManagement} />;
   }
   
-  // 🔄 UPDATE: If showPackages is true, render the ShopPackagesList component
+  // Check if we should show the PackageCreationForm
+  if (showPackageCreationForm && isAddingPackage) {
+    return <PackageCreationForm />;
+  }
+  
+  // If showPackages is true, render the ShopPackagesList component
   if (showPackages) {
     return (
       <ShopPackagesList 
-        onBack={() => setShowPackages(false)} // Function to return to products view
+        onBack={() => setShowPackages(false)}
       />
+    );
+  }
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <ShoppingBag size={48} className={styles.loadingIcon} />
+        <p>Cargando productos...</p>
+      </div>
     );
   }
 
   return (
     <>
-      <ConfirmationModal 
-        isOpen={isModalOpen}
-        onConfirm={() => {
-          setIsModalOpen(false);
-          setIsAccepted(true);
-        }}
-        onCancel={() => {
-          setIsModalOpen(false);
-          setIsDeclined(true);
-        }}
-      />
+      <ConfirmationModal />
 
       <ImageModal
         isOpen={isImageModalOpen}
@@ -466,7 +570,6 @@ const ShopProductsList = () => {
       {contentTransition((style, item) => 
         item && (
           <animated.div style={style} className={styles.container}>
-            {/* 🌟 UPDATE: Animated ShopCard */}
             {shopCardTransition((cardStyle, shop) => 
               shop && (
                 <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
@@ -480,63 +583,268 @@ const ShopProductsList = () => {
                 <h1 className={styles.listTitle}>Lista de Productos</h1>
               </div>
               
-              {/* 🌟 UPDATE: Removed extra container divs to eliminate any potential width constraints */}
-              <SearchBar 
-                searchTerm={searchTerm}
-                handleSearchChange={handleSearchChange}
-              />
-              
-              <div className={styles.buttonGroupContainer}>
-                {/* 🔄 UPDATE: ActionButtons container with navigateToPackages prop */}
-                <ActionButtons 
-                  handleAddProduct={handleAddProduct}
-                  handleBulkUpdate={handleBulkUpdate}
-                  handleBulkDelete={handleBulkDelete}
-                  handleCreatePackage={handleCreatePackage}
-                  toggleFilters={toggleFilters}
-                  showFilters={showFilters}
-                  selectedProducts={selectedProducts}
-                  activeFiltersCount={activeFiltersCount}
-                  navigateToPackages={() => setShowPackages(true)}
-                />
-              </div>
+              {isSmallScreen ? (
+                <div className={styles.searchAndMenuContainer}>
+                  <SearchBar 
+                    searchTerm={searchTerm}
+                    handleSearchChange={handleSearchChange}
+                  />
+                  
+                  <ActionButtons 
+                    handleAddProduct={handleAddProduct}
+                    handleBulkUpdate={handleBulkUpdate}
+                    handleBulkDelete={handleBulkDelete}
+                    handleCreatePackage={handleCreatePackage}
+                    toggleFilters={toggleFilters}
+                    showFilters={showFilters}
+                    selectedProducts={selectedProducts}
+                    activeFiltersCount={activeFiltersCount}
+                    navigateToPackages={() => setShowPackages(true)}
+                    isMobile={true}
+                  />
+                </div>
+              ) : (
+                <>
+                  <SearchBar 
+                    searchTerm={searchTerm}
+                    handleSearchChange={handleSearchChange}
+                  />
+                  
+                  <div className={styles.buttonGroupContainer}>
+                    <ActionButtons 
+                      handleAddProduct={handleAddProduct}
+                      handleBulkUpdate={handleBulkUpdate}
+                      handleBulkDelete={handleBulkDelete}
+                      handleCreatePackage={handleCreatePackage}
+                      toggleFilters={toggleFilters}
+                      showFilters={showFilters}
+                      selectedProducts={selectedProducts}
+                      activeFiltersCount={activeFiltersCount}
+                      navigateToPackages={() => setShowPackages(true)}
+                      isMobile={false}
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Pass searchTerm and setSearchTerm to FiltersForProducts */}
             {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
             
             {displayedProducts.length === 0 ? (
-              /* Use the NoProductsMessage component */
               <NoProductsMessage products={products} />
             ) : (       
-              <div className={styles.tableContainer}>
-                {/* Use the ProductsCount component */}
-                <ProductsCount 
-                  displayedProducts={displayedProducts}
-                  selectedProducts={selectedProducts}
-                />
+              <div className={styles.productsContainer}>
+                <div className={styles.header}>
+                  <h3 className={styles.title}>
+                    <ShoppingBag size={20} />
+                    Productos ({displayedProducts.length})
+                    {selectedProducts.size > 0 && ` | Seleccionados: ${selectedProducts.size}`}
+                  </h3>
+                </div>
                 
-                {/* Use the ProductsTable component */}
-                <ProductsTable 
-                  displayedProducts={displayedProducts}
-                  selectedProducts={selectedProducts}
-                  formatDate={formatDate}
-                  formatSecondHand={formatSecondHand}
-                  handleProductRowClick={handleProductRowClick}
-                  activeActionsMenu={activeActionsMenu}
-                  toggleActionsMenu={toggleActionsMenu}
-                  handleUpdateProduct={handleUpdateProduct}
-                  handleDeleteProduct={handleDeleteProduct}
-                  handleSelectProduct={handleSelectProduct}
-                  handleSelectForImageUpload={handleSelectForImageUpload}
-                  handleToggleActiveStatus={handleToggleActiveStatus}
-                  handleProductImageDoubleClick={handleProductImageDoubleClick}
-                  currentDeletingProduct={currentDeletingProduct}
-                />
+                <div className={styles.productsList}>
+                  {productsTransition((style, product) => (
+                    <animated.div 
+                      style={style} 
+                      className={`${styles.productCard} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
+                      key={product.id_product}
+                    >
+                      <div className={styles.productHeader}>
+                        <div className={styles.productMainInfo}>
+                          <div 
+                            className={styles.productImageContainer}
+                            onClick={() => {
+                              if (product.image_product) {
+                                setSelectedImageForModal(formatImageUrl(product.image_product));
+                                setIsImageModalOpen(true);
+                              }
+                            }}
+                            style={{ cursor: product.image_product ? 'pointer' : 'default' }}
+                          >
+                            {product.image_product ? (
+                              <>
+                                <img 
+                                  src={formatImageUrl(product.image_product)} 
+                                  alt={product.name_product || 'Producto'}
+                                  className={styles.productImage}
+                                  onError={(e) => {
+                                    console.error('Error loading product image:', product.image_product);
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                                <div className={styles.imageOverlay}>
+                                  <Image size={16} />
+                                </div>
+                              </>
+                            ) : (
+                              <div className={`${styles.productImageContainer} ${styles.noImage}`}>
+                                <ShoppingBag size={30} className={styles.placeholderIcon} />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className={styles.productInfo}>
+                            <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
+                            <div className={styles.productMeta}>
+                              <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
+                                {product.active_product ? 'Activo' : 'Inactivo'}
+                              </span>
+                              {product.discount_product > 0 && (
+                                <span className={styles.discountBadge}>
+                                  <Tag size={12} />
+                                  {product.discount_product}% dto
+                                </span>
+                              )}
+                              {product.second_hand && (
+                                <span className={styles.secondHandBadge}>
+                                  2ª Mano
+                                </span>
+                              )}
+                              <span className={styles.categoryBadge}>
+                                {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
+                              </span>
+                            </div>
+                            <div className={styles.productDetailsRow}>
+                              {product.season_product && (
+                                <span className={styles.seasonTag}>
+                                  <Calendar size={12} />
+                                  {product.season_product}
+                                </span>
+                              )}
+                              {product.country_product && (
+                                <span className={styles.locationTag}>
+                                  <MapPin size={12} />
+                                  {product.country_product}
+                                  {product.locality_product && `, ${product.locality_product}`}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className={styles.productPricing}>
+                          {product.discount_product > 0 && (
+                            <span className={styles.originalPrice}>€{product.price_product}</span>
+                          )}
+                          <span className={styles.finalPrice}>
+                            €{product.discount_product > 0 
+                              ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
+                              : product.price_product}
+                          </span>
+                          {product.discount_product > 0 && (
+                            <span className={styles.savings}>
+                              Ahorro: €{(product.price_product * product.discount_product / 100).toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className={styles.productActions}>
+                          <button
+                            onClick={() => handleToggleActiveStatus(product)}
+                            className={styles.actionButton}
+                            disabled={isTogglingStatus === product.id_product}
+                            title={product.active_product ? 'Desactivar' : 'Activar'}
+                          >
+                            {product.active_product ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                          </button>
+                          
+                          <button
+                            onClick={() => handleUpdateProduct(product.id_product)}
+                            className={styles.actionButton}
+                            title="Editar"
+                          >
+                            <Edit2 size={18} />
+                          </button>
+                          
+                          <button
+                            onClick={() => handleDeleteProduct(product)}
+                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                            title="Eliminar"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                          
+                          <button
+                            onClick={() => handleSelectProduct(product.id_product)}
+                            className={`${styles.actionButton} ${selectedProducts.has(product.id_product) ? styles.selectedButton : ''}`}
+                            title={selectedProducts.has(product.id_product) ? 'Deseleccionar' : 'Seleccionar'}
+                          >
+                            {selectedProducts.has(product.id_product) ? <CheckCircle size={18} /> : <Check size={18} />}
+                          </button>
+                          
+                          <button
+                            onClick={() => toggleExpanded(product.id_product)}
+                            className={styles.expandButton}
+                            title={expandedProducts.has(product.id_product) ? 'Contraer' : 'Expandir'}
+                          >
+                            {expandedProducts.has(product.id_product) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {expandedProducts.has(product.id_product) && (
+                        <div className={styles.productDetails}>
+                          <div className={styles.detailsSection}>
+                            <h5 className={styles.sectionTitle}>Información del Producto</h5>
+                            <div className={styles.detailsGrid}>
+                              {product.info_product && (
+                                <div className={styles.detailItem}>
+                                  <Info size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Descripción:</span>
+                                  <span className={styles.detailValue}>{product.info_product}</span>
+                                </div>
+                              )}
+                              {getSubcategoryName(product.id_subcategory) && (
+                                <div className={styles.detailItem}>
+                                  <Tag size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Subcategoría:</span>
+                                  <span className={styles.detailValue}>{getSubcategoryName(product.id_subcategory)}</span>
+                                </div>
+                              )}
+                              {product.sold_product > 0 && (
+                                <div className={styles.detailItem}>
+                                  <DollarSign size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Vendidos:</span>
+                                  <span className={styles.detailValue}>{product.sold_product}</span>
+                                </div>
+                              )}
+                              {product.surplus_product > 0 && (
+                                <div className={styles.detailItem}>
+                                  <Package size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Excedente:</span>
+                                  <span className={styles.detailValue}>{product.surplus_product}</span>
+                                </div>
+                              )}
+                              {product.calification_product > 0 && (
+                                <div className={styles.detailItem}>
+                                  <Star size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Calificación:</span>
+                                  <span className={styles.detailValue}>{product.calification_product}/5</span>
+                                </div>
+                              )}
+                              {product.expiration_product && (
+                                <div className={styles.detailItem}>
+                                  <Clock size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Caducidad:</span>
+                                  <span className={styles.detailValue}>{formatDate(product.expiration_product)}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className={styles.productFooter}>
+                            <span className={styles.productId}>ID: {product.id_product}</span>
+                            <span className={styles.creationDate}>
+                              Creado: {new Date(product.creation_product).toLocaleDateString('es-ES')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </animated.div>
+                  ))}
+                </div>
               </div>
             )}
-          
-
           </animated.div>
         )
       )}

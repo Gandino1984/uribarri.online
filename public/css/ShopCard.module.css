@@ -1,29 +1,58 @@
+/* ShopCard.module.css - Complete Updated Version */
+
+.shopCardWrapper {
+  outline: 2px solid var(--saturated-blue);
+  border-radius: 8px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  /* overflow: hidden; */
+}
+
+.shopCardWrapper.withMap {
+  flex-direction: row;
+  align-items: stretch;
+  height: 500px;
+}
+
+.withMap .container {
+  flex: 1;
+  width: 50%;
+  height: 100%;
+}
+
+.withMap .mapWrapper {
+  flex: 1;
+  width: 50%;
+  height: 100%;
+}
 
 .container {
   width: 100%;
   height: 100%;
   max-width: 100%;
-  min-height: 300px;
   margin: 0 auto;
   position: relative;
   transition: all 0.3s ease;
   overflow: hidden;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
-  border-radius: 8px; 
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
 }
 
-.container:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.01);
-}
-
-/* Added specific styles for minimized container to override min-height */
 .container.minimized {
   min-height: unset;
   height: auto;
+  max-height: 60px;
 }
 
-/* Added responsive container class to control width based on device size */
+.shopCardContainer {
+  width: 100%;
+}
+
 .responsiveContainer {
   width: 100%;
   height: 100%;
@@ -32,32 +61,30 @@
 
 .infoContainer {
   width: 100%;
-  /* background-color: white; */
-  /* border-radius: 0 0 0.5rem 0.5rem; */
-  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+  background-color: white;
   padding: .5rem;
-  transition: all 0.3s ease;
+  flex-shrink: 0;
+  overflow-y: auto;
+  min-height: 180px;
+  max-height: 250px;
 }
 
 .header {
   display: flex;
-  flex-direction: column;  
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-bottom: .5rem;
 }
 
-header p{
+.header p {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-
 .title {
-  /* font-size: 1.25rem; */
   font-weight: 700;
-  color: var(--superdark-orange);
+  color: black;
   word-break: break-word;
 }
 
@@ -71,7 +98,6 @@ header p{
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  /* margin-bottom: 0.75rem; */
   font-size: 0.8rem;
 }
 
@@ -81,13 +107,12 @@ header p{
   margin-top: 2px;
 }
 
-/* Added shop type styling */
+/* Shop type styling */
 .shopType {
   color: #4b5563;
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
   font-size: 0.8rem;
 }
 
@@ -100,25 +125,22 @@ header p{
 /* Schedule styles */
 .scheduleContainer {
   color: #4b5563;
-  margin-top: 0.75rem;
 }
 
 .scheduleInfo {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.4rem;
 }
 
 .scheduleTime {
   display: block;
   font-size: 0.8rem;
   color: #4b5563;
-  /* gap: 0.5rem; */
 }
 
-/* Estilos para el botón y control de minimizar */
+/* Header controls */
 .headerControls {
-  /* width: 100%; */
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -128,8 +150,8 @@ header p{
   justify-content: flex-end;
 }
 
-.scheduleIcon{  
-  color: var(--dark-orange);
+.icon {
+  color: var(--dark-gradient-purple-start);
   margin-right: .5rem;
 }
 
@@ -151,10 +173,9 @@ header p{
   opacity: 1;
   color: white;
   background-color: var(--saturated-blue);
-  /* transform: scale(1.05); */
 }
 
-/* Styles for the update button */
+/* Update button */
 .updateButtonContainer {
   margin-top: 1rem;
   padding-top: 0.75rem;
@@ -169,12 +190,9 @@ header p{
   padding: 0.5rem 0.75rem;
   background-color: rgba(59, 130, 246, 0.1);
   color: var(--saturated-blue, #3b82f6);
-  /* border: 1px solid rgba(59, 130, 246, 0.2); */
-  /* border-radius: 0.375rem; */
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  /* transition: all 0.2s ease; */
   width: fit-content;
 }
 
@@ -182,41 +200,32 @@ header p{
   opacity: 1;
   background-color: var(--saturated-blue, #3b82f6);
   color: white;
-  /* transform: translateY(-1px); */
 }
 
 .editIcon {
   transition: transform 0.2s ease;
 }
 
-.updateButton:hover .editIcon {
-  /* transform: scale(1.1); */
-}
-
 .updateButtonText {
   font-size: 0.85rem;
 }
 
-/* Improved styles for minimized state */
+/* Minimized state */
 .minimized {
   max-width: 200px;
   min-height: auto;
   height: auto;
   cursor: pointer;
   border-radius: 0.5rem;
-  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
 }
 
 .minimizedCard {
   background-color: white;
-  /* border-radius: 0.5rem; */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  /* transition: all 0.2s ease; */
 }
 
 .minimizedCard:hover {
-  /* transform: translateY(-2px); */
   box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.15);
 }
 
@@ -242,14 +251,13 @@ header p{
   transform: scale(1.1);
 }
 
-/* Improved responsive container classes to properly handle minimized state */
+/* Responsive container classes */
 .responsiveContainerColumn {
   display: flex;
   flex-direction: column;
   width: 100%;
   position: relative;
   gap: 10px;
-  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
 }
 
 .responsiveContainerRow {
@@ -259,50 +267,45 @@ header p{
   position: relative;
   gap: 10px;
   min-height: min-content;
-  padding: 0 2rem; /* 🧩 UPDATE: Added side padding of 2rem */
+  padding: 0 1rem;
 }
 
-/* Adjusted to allow minimized cards to take natural height */
-.responsiveContainerColumn:has(.minimized),
-.responsiveContainerRow:has(.minimized) {
-  min-height: auto;
-}
-
-/* Added map wrapper to control map dimensions better */
+/* Map wrapper - CRITICAL Z-INDEX FIXES */
 .mapWrapper {
-  height: 100%;
-  min-height: 300px;
   position: relative;
-  width: 60%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-/* Improved map container styles for better leaflet rendering */
+/* Map container base styles */
 .mapContainer {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 300px;
   overflow: hidden;
   border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
-  border-radius: 6px; /* 🧩 UPDATE: Added consistent border radius to map container */
+  border-radius: 6px;
+  z-index: 100;
+  overflow:hidden
 }
 
-/* Added specific map canvas styling */
+/* Map canvas styling */
 .mapCanvas {
   width: 100%;
   height: 100%;
-  min-height: 300px;
-
+  min-height: 200px;
 }
 
 /* Ensure popup appears above other elements */
 .mapContainer :global(.leaflet-popup) {
   margin-bottom: 1rem;
-  z-index: 9999999999999999999999;
+  z-index: 2147483640 !important;
 }
 
-/* Improved back button styles */
+/* Back button styles */
 .backButton {
   position: absolute;
   top: 10px;
@@ -326,9 +329,7 @@ header p{
   color: white;
 }
 
-/* Existing styles remain unchanged */
-
-/* 🌟 UPDATE: Added styles for star rating */
+/* Star rating */
 .starsContainer {
   display: flex;
   align-items: center;
@@ -341,11 +342,11 @@ header p{
 }
 
 .filledStar {
-  color: #FFD700; /* Gold color for filled stars */
+  color: #FFD700;
 }
 
 .emptyStar {
-  color: #d1d1d1; /* Light gray for empty stars */
+  color: #d1d1d1;
 }
 
 .ratingText {
@@ -354,12 +355,181 @@ header p{
   color: #666;
 }
 
-/* Optional hover effect for stars */
 .starsContainer:hover .starIcon {
   transform: scale(1.1);
 }
 
-/* Small tablets (640px and up) */
+/* Action button */
+.active {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: .3rem .4rem;
+  border-radius: 50%;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: .5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.active:hover {
+  color: white;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Schedule wrapper */
+.scheduleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Open/Closed status */
+.openStatus {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+.openStatus.open {
+  background-color: #10b981;
+  color: white;
+}
+
+.openStatus.closed {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Report button styling */
+.active[title="Reportar actividad inusual"] {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.active[title="Reportar actividad inusual"]:hover {
+  background-color: rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
+/* CRITICAL: Fullscreen map on mobile devices with maximum z-index */
+@media (max-width: 768px) {
+  .shopCardWrapper {
+    flex-direction: column !important;
+  }
+  
+  .shopCardWrapper.withMap {
+    height: auto;
+  }
+  
+  /* Map wrapper takes full screen on mobile with MAXIMUM Z-INDEX */
+  .mapWrapper {
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 2147483640 !important; /* Near maximum z-index */
+    background-color: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  /* Solid white backdrop to prevent any bleed-through */
+  .mapWrapper::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    z-index: -1;
+  }
+  
+  /* Ensure map container fills the wrapper */
+  .mapWrapper .mapContainer {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    z-index: 2147483641 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  
+  /* Map canvas should fill container */
+  .mapWrapper .mapCanvas {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    z-index: 2147483642 !important;
+  }
+  
+  /* Back button with maximum z-index */
+  .mapWrapper .backButton {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    z-index: 2147483647 !important; /* Maximum possible z-index */
+    background-color: white !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .responsiveContainerColumn,
+  .responsiveContainerRow {
+    padding: 0 1rem;
+  }
+}
+
+/* Desktop layout - normal z-index values */
+@media (min-width: 769px) {
+  .shopCardWrapper.withMap {
+    position: relative;
+    z-index: 10;
+  }
+  
+  .withMap .mapWrapper {
+    position: relative;
+    z-index: 100;
+  }
+  
+  .mapWrapper .mapContainer {
+    position: relative;
+    z-index: 101;
+  }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 639px) {
+  .container {
+    max-height: 400px;
+  }
+  
+  .infoContainer {
+    min-height: 150px;
+    max-height: 200px;
+  }
+}
+
 @media (min-width: 640px) {
   .responsiveContainer {
     max-width: 540px;
@@ -376,9 +546,12 @@ header p{
   .updateButton {
     padding: 0.5rem 0.875rem;
   }
+  
+  .container {
+    max-height: 450px;
+  }
 }
 
-/* Tablets (768px and up) */
 @media (min-width: 768px) {
   .responsiveContainer {
     max-width: 640px;
@@ -402,60 +575,25 @@ header p{
     font-size: 0.9375rem;
   }
   
-  /* Improved map layout for wider screens */
   .mapContainer {
-    border-radius: 6px; /* 🧩 UPDATE: Consistent border radius */
+    border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-}
-
-/* Fullscreen map on mobile devices */
-@media (max-width: 768px) {
-  .mapWrapper {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1050;
-    background-color: white;
+  
+  .container {
+    max-height: 480px;
   }
   
-  .mapContainer {
-    width: 100%;
-    height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
+  .infoContainer {
+    min-height: 160px;
+    max-height: 220px;
   }
   
-  .mapCanvas {
-    height: 100%;
-    width: 100%;
-  }
-  
-  .backButton {
-    top: 20px;
-    right: 20px;
-    background-color: white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1060;
-  }
-  
-  /* 🧩 UPDATE: Adjusted mobile padding to be smaller */
-  .responsiveContainerColumn,
-  .responsiveContainerRow {
-    padding: 0 1rem;
+  .shopCardWrapper.withMap {
+    height: 480px;
   }
 }
 
-/* Laptops/Desktops (1024px and up) */
 @media (min-width: 1024px) {
   .responsiveContainer {
     max-width: 700px;
@@ -466,35 +604,34 @@ header p{
   }
   
   .scheduleInfo {
-    flex-direction: row;
-    gap: 1.5rem;
+    gap: .7rem;
   }
   
-  /* Adjusted widescreen layout */
   .responsiveContainerRow:not(:has(.minimized)) {
     min-height: 400px;
   }
+  
+  .container {
+    max-height: 500px;
+  }
+  
+  .infoContainer {
+    max-height: 250px;
+  }
 }
 
-/* Large screens (1280px and up) */
 @media (min-width: 1280px) {
   .responsiveContainer {
     max-width: 800px;
   }
   
-  /* Adjusted large screen map styling */
-  .mapWrapper:not(:has(+ .minimized)) {
-    min-height: 450px;
-  }
-  
-  /* 🧩 UPDATE: Increased side padding for larger screens */
   .responsiveContainerColumn,
   .responsiveContainerRow {
-    padding: 0 3rem;
+    padding: 0 2rem;
   }
 }
 
-/* Print styles to ensure proper rendering when printing */
+/* Print styles */
 @media print {
   .container {
     box-shadow: none;
@@ -506,6 +643,6 @@ header p{
   }
   
   .mapContainer {
-    display: none; /* Hide map when printing */
+    display: none;
   }
 }

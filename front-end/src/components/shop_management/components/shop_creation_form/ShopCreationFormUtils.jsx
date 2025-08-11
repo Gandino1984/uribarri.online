@@ -12,7 +12,6 @@ import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 import { optimizeImage } from '../../../../utils/image/imageOptimizer.js';
 
 export const ShopCreationFormUtils = () => {
-  // UPDATE: Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   
   const {
@@ -31,7 +30,6 @@ export const ShopCreationFormUtils = () => {
     setSelectedShop,
     selectedShop,
     shops,
-    // ✨ UPDATE: Added animation control function from shop context
     startFormExitAnimation
   } = useShop();
 
@@ -44,19 +42,17 @@ export const ShopCreationFormUtils = () => {
       }
 
       console.log('Refrescando lista de tiendas para el usuario:', currentUser.id_user);
-      const response = await axiosInstance.get(`/shop/by-user-id/${currentUser.id_user}`);
+      
+      //update: Use POST endpoint as per original code
+      const response = await axiosInstance.post('/shop/by-user-id', {
+        id_user: currentUser.id_user
+      });
       
       if (response?.data?.data) {
         const fetchedShops = response.data.data;
         console.log(`Se encontraron ${fetchedShops.length} tiendas para el usuario:`, fetchedShops);
         
-        // Actualizar directamente el estado de tiendas (sin usar la función de estado anterior)
-        // Esto asegura que reemplazamos completamente el array de tiendas con los datos frescos
         setShops(fetchedShops);
-        
-        // Forzar un re-render del componente ShopsListBySeller
-        // Podríamos añadir un estado adicional en el contexto para este propósito
-        // setShopListRefreshKey(Date.now()); // Si tuvieras este estado en el contexto
         
         return fetchedShops;
       } else {
@@ -155,28 +151,48 @@ export const ShopCreationFormUtils = () => {
       // Primero validamos la imagen
       await validateImageFile(file);
       
-      // Siempre optimizamos y convertimos a WebP
+      //update: Always optimize and convert to WebP, enforcing 1MB limit
       let optimizedFile = file;
       try {
-        // Optimizar imagen usando la función de imageOptimizer.js
+        // Show initial info message
+        setInfo(prevInfo => ({
+          ...prevInfo,
+          imageInfo: "Optimizando imagen..."
+        }));
+        setShowInfoCard(true);
+        
+        //update: Optimize image with strict 1MB limit
         optimizedFile = await optimizeImage(file, {
           maxWidth: 1200,
           maxHeight: 1200,
           quality: 0.8,
           format: 'image/webp',
-          maxSizeKB: 1024 // Límite de 1MB
-          });
+          maxSizeKB: 1024 // Strict 1MB limit
+        });
+        
         console.log('Imagen optimizada:', {
           originalSize: Math.round(file.size / 1024) + 'KB',
-          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB'
+          optimizedSize: Math.round(optimizedFile.size / 1024) + 'KB',
+          originalFormat: file.type,
+          optimizedFormat: optimizedFile.type
         });
+        
+        //update: Verify the optimized file is under 1MB
+        if (optimizedFile.size > 1024 * 1024) {
+          console.warn('La imagen optimizada aún excede 1MB, pero procederemos con el mejor resultado posible');
+        }
       } catch (optimizeError) {
-        console.warn('Falló la optimización de imagen, usando archivo original:', optimizeError);
+        console.error('Error al optimizar imagen:', optimizeError);
+        setError(prevError => ({
+          ...prevError,
+          imageError: "Error al optimizar la imagen. Por favor, intente con otra imagen."
+        }));
+        setShowErrorCard(true);
+        return false;
       }
 
       setUploading(true);
       
-      // Usamos la función uploadShopCover de las utilidades existentes
       // Creamos FormData directamente para asegurarnos de que el campo tenga el nombre correcto
       const formData = new FormData();
       formData.append('shopCover', optimizedFile); // Este nombre debe coincidir con lo esperado en el backend
@@ -234,7 +250,7 @@ export const ShopCreationFormUtils = () => {
         
         setSuccess(prevSuccess => ({
           ...prevSuccess,
-          imageSuccess: "Imagen actualizada"
+          imageSuccess: "Imagen subida correctamente (formato WebP)"
         }));
         setShowSuccessCard(true);
         
@@ -270,20 +286,30 @@ export const ShopCreationFormUtils = () => {
         setShowErrorCard(true);
         return false;
       }
+      
+      //update: Validate that both type ID and subtype ID are provided
+      if (!formData.id_type || !formData.id_subtype) {
+        setError(prevError => ({
+          ...prevError,
+          shopError: 'Debe seleccionar un tipo y subtipo de comercio'
+        }));
+        setShowErrorCard(true);
+        return false;
+      }
   
       // Ensure the user ID matches the current user
       const shopData = {
         ...formData,
         id_user: currentUser.id_user,
-          // UPDATE: Ensure delivery and days of week fields are included with defaults if not present
-          has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
-          open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
-          open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
-          open_wednesday: formData.open_wednesday !== undefined ? formData.open_wednesday : true,
-          open_thursday: formData.open_thursday !== undefined ? formData.open_thursday : true,
-          open_friday: formData.open_friday !== undefined ? formData.open_friday : true,
-          open_saturday: formData.open_saturday !== undefined ? formData.open_saturday : true,
-          open_sunday: formData.open_sunday !== undefined ? formData.open_sunday : false
+        id_subtype: formData.id_subtype, //update: id_subtype is required
+        has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
+        open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
+        open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,
+        open_wednesday: formData.open_wednesday !== undefined ? formData.open_wednesday : true,
+        open_thursday: formData.open_thursday !== undefined ? formData.open_thursday : true,
+        open_friday: formData.open_friday !== undefined ? formData.open_friday : true,
+        open_saturday: formData.open_saturday !== undefined ? formData.open_saturday : true,
+        open_sunday: formData.open_sunday !== undefined ? formData.open_sunday : false
       };
   
       console.log('Creating shop with data:', shopData);
@@ -292,8 +318,7 @@ export const ShopCreationFormUtils = () => {
       const userShops = Array.isArray(shops) ? shops.filter(shop => shop.id_user === currentUser.id_user) : [];
       const shopCount = userShops.length;
       
-      // UPDATE: Get shop limits from environment variables instead of hardcoded values
-      const isSponsor = currentUser?.category_user === true;
+      const isSponsor = currentUser?.contributor_user === true;
       const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
       const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
       const maxShops = isSponsor ? maxSponsorShops : maxRegularShops;
@@ -302,7 +327,7 @@ export const ShopCreationFormUtils = () => {
         shopCount,
         isSponsor,
         maxShops,
-        currentUserCategory: currentUser?.category_user
+        currentUserCategory: currentUser?.contributor_user
       });
   
       if (shopCount >= maxShops) {
@@ -339,7 +364,6 @@ export const ShopCreationFormUtils = () => {
       }
       
       // Actualizar la lista de tiendas inmediatamente para que aparezca en la lista
-      // DEBUG: Mostrar la lista de tiendas antes de la actualización
       console.log('Estado actual de las tiendas antes de agregar:', shops);
       
       const updatedShops = Array.isArray(shops) ? [...shops, newShop] : [newShop];
@@ -388,16 +412,25 @@ export const ShopCreationFormUtils = () => {
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
         afternoon_close: formData.afternoon_close,
-         // UPDATE: Log new fields
-         has_delivery: formData.has_delivery,
-         open_monday: formData.open_monday,
-         open_tuesday: formData.open_tuesday,
-         open_wednesday: formData.open_wednesday,
-         open_thursday: formData.open_thursday,
-         open_friday: formData.open_friday,
-         open_saturday: formData.open_saturday,
-         open_sunday: formData.open_sunday
+        has_delivery: formData.has_delivery,
+        open_monday: formData.open_monday,
+        open_tuesday: formData.open_tuesday,
+        open_wednesday: formData.open_wednesday,
+        open_thursday: formData.open_thursday,
+        open_friday: formData.open_friday,
+        open_saturday: formData.open_saturday,
+        open_sunday: formData.open_sunday
       });
+      
+      //update: Validate that both type ID and subtype ID are provided
+      if (!formData.id_type || !formData.id_subtype) {
+        setError(prevError => ({
+          ...prevError,
+          shopError: 'Debe seleccionar un tipo y subtipo de comercio'
+        }));
+        setShowErrorCard(true);
+        return false;
+      }
   
       const isNameChanged = selectedShop && selectedShop.name_shop !== formData.name_shop;
       const endpoint = isNameChanged ? '/shop/update-with-folder' : '/shop/update';
@@ -405,8 +438,8 @@ export const ShopCreationFormUtils = () => {
       const updateData = {
         id_shop,
         name_shop: formData.name_shop,
-        type_shop: formData.type_shop,
-        subtype_shop: formData.subtype_shop,
+        id_type: formData.id_type,
+        id_subtype: formData.id_subtype, //update: id_subtype is required
         location_shop: formData.location_shop,
         id_user: currentUser.id_user,
         calification_shop: formData.calification_shop || 0,
@@ -415,7 +448,6 @@ export const ShopCreationFormUtils = () => {
         morning_close: formData.morning_close,
         afternoon_open: formData.afternoon_open,
         afternoon_close: formData.afternoon_close,
-        // UPDATE: Include new fields in update data
         has_delivery: formData.has_delivery !== undefined ? formData.has_delivery : false,
         open_monday: formData.open_monday !== undefined ? formData.open_monday : true,
         open_tuesday: formData.open_tuesday !== undefined ? formData.open_tuesday : true,

@@ -2,11 +2,15 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
-import { Box, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
-import { formAnimation } from '../../../../utils/animation/transitions.js'; // ✨ UPDATE: Using the unified formAnimation
+import { formAnimation } from '../../../../utils/animation/transitions.js';
+//update: Import formatImageUrl to properly handle image URLs
+import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
+//update: Import axios instance for debugging
+import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
 import ShopImageUpload from './components/ShopImageUpload.jsx';
 import ShopBasicInfo from './components/ShopBasicInfo.jsx';
@@ -25,9 +29,6 @@ const ShopCreationForm = () => {
     setUploading,
     setSuccess,
     setShowSuccessCard,
-    // setInfo,
-    // setShowInfoCard,
-    // 🔄 UPDATE: Added modal state and message setters for confirmation
     setIsModalOpen,
     setModalMessage,
     isAccepted,
@@ -43,9 +44,8 @@ const ShopCreationForm = () => {
     selectedShop,
     setShowShopCreationForm,
     setSelectedShop,
-    // ✨ UPDATE: Get notifyFormExit function from ShopContext if it exists
-    // This will be implemented in ShopContext to allow controlled exit animations
-    notifyFormExit
+    //update: Add typesLoading state
+    typesLoading
   } = useShop();
 
   const {
@@ -69,26 +69,15 @@ const ShopCreationForm = () => {
   // Add debug flag
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   
-  // 🔄 UPDATE: Added state to track if form reset is pending
   const [isResetPending, setIsResetPending] = useState(false);
   
-  // ✨ UPDATE: Added state to handle animation when component exits - same as LoginRegisterForm
+  // state to handle animation when component exits
   const [isExiting, setIsExiting] = useState(false);
   
-  // ✨ UPDATE: Function to handle closing the form with animation - same timing as LoginRegisterForm
-  const handleCloseForm = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setShowShopCreationForm(false);
-      setSelectedShop(null);
-    }, 500); // Match timing with animation duration and LoginRegisterForm
-  };
-
-  // 🧹 UPDATE: Default shop values for form reset
   const defaultShopValues = {
     name_shop: '',
-    type_shop: '',
-    subtype_shop: '',
+    id_type: '',
+    id_subtype: '', //update: Added back id_subtype
     location_shop: '',
     id_user: currentUser?.id_user || '',
     calification_shop: 0,
@@ -107,7 +96,6 @@ const ShopCreationForm = () => {
     open_sunday: false
   };
 
-  // Modified useEffect to properly handle user ID
   useEffect(() => {
     if (currentUser?.id_user) {
       setNewShop(prev => {
@@ -126,14 +114,18 @@ const ShopCreationForm = () => {
 
   useEffect(() => {
     if (selectedShop && currentUser?.id_user) {
+      console.log('ShopCreationForm - Setting up form for update mode');
+      console.log('Selected shop:', selectedShop);
+      console.log('Shop image_shop value:', selectedShop.image_shop);
+      
       // Detect if shop has continuous schedule
       const shopHasContinuousSchedule = !selectedShop.morning_close || !selectedShop.afternoon_open;
       setHasContinuousSchedule(shopHasContinuousSchedule);
       
       setNewShop({
         name_shop: selectedShop.name_shop,
-        type_shop: selectedShop.type_shop,
-        subtype_shop: selectedShop.subtype_shop,
+        id_type: selectedShop.id_type,
+        id_subtype: selectedShop.id_subtype || '', //update: Include id_subtype
         location_shop: selectedShop.location_shop,
         id_user: currentUser.id_user, // Ensure we always set the current user ID
         calification_shop: selectedShop.calification_shop,
@@ -152,39 +144,39 @@ const ShopCreationForm = () => {
         open_sunday: selectedShop.open_sunday !== undefined ? selectedShop.open_sunday : false
       });
 
-      // Set image preview if exists
+      //update: Enhanced debug logging for image preview
       if (selectedShop.image_shop) {
-        try {
-          // If the image is already a complete URL
-          if (selectedShop.image_shop.startsWith('http') || 
-              selectedShop.image_shop.startsWith('data:') || 
-              selectedShop.image_shop.startsWith('blob:')) {
-            setImagePreview(selectedShop.image_shop);
-          } else {
-            // Build the relative URL to the base
-            const baseUrl = window.location.origin;
-            const cleanPath = selectedShop.image_shop.replace(/^\/+/, '');
-            const imageUrl = `${baseUrl}/${cleanPath}`;
-            console.log('Setting preview URL:', imageUrl);
-            setImagePreview(imageUrl);
-          }
-        } catch (err) {
-          console.error('Error formatting image URL:', err);
+        console.log('Attempting to format image URL for preview');
+        console.log('axios baseURL:', axiosInstance.defaults.baseURL);
+        
+        const imageUrl = formatImageUrl(selectedShop.image_shop);
+        console.log('Formatted image URL:', imageUrl);
+        
+        if (imageUrl) {
+          setImagePreview(imageUrl);
+          
+          // Test if the image URL is accessible
+          const testImg = new Image();
+          testImg.onload = () => {
+            console.log('Image preview loaded successfully:', imageUrl);
+          };
+          testImg.onerror = (e) => {
+            console.error('Failed to load image preview:', imageUrl, e);
+            console.log('This might be a CORS issue or incorrect URL');
+          };
+          testImg.src = imageUrl;
+        } else {
+          console.warn('formatImageUrl returned null for:', selectedShop.image_shop);
+          setImagePreview(null);
         }
+      } else {
+        console.log('No image_shop value, clearing preview');
+        //update: Clear preview if no image
+        setImagePreview(null);
       }
-      
-      // Log the schedule data to ensure it's loaded correctly
-      console.log('Shop schedule data loaded:', {
-        morning_open: selectedShop.morning_open,
-        morning_close: selectedShop.morning_close,
-        afternoon_open: selectedShop.afternoon_open,
-        afternoon_close: selectedShop.afternoon_close,
-        hasContinuousSchedule: shopHasContinuousSchedule
-      });
     }
   }, [selectedShop, currentUser?.id_user, setNewShop]);
 
-  // 🔄 UPDATE: Added effect to handle modal confirmation for form reset
   useEffect(() => {
     if (isAccepted && isResetPending) {
       // Reset form if user confirmed
@@ -198,7 +190,6 @@ const ShopCreationForm = () => {
     }
   }, [isAccepted, isDeclined, isResetPending]);
 
-  // 🧹 UPDATE: Function to reset the form
   const resetForm = () => {
     // Reset form to initial step
     setCurrentStep(1);
@@ -225,18 +216,17 @@ const ShopCreationForm = () => {
     // Show info message
     setSuccess(prevSuccess => ({
       ...prevSuccess,
-      shopSuccess: "Formulario limpiado ."
+      shopSuccess: "El formulario está limpio."
     }));
     setShowSuccessCard(true);
     
     console.log('Form has been reset to default values');
   };
 
-  // 🔄 UPDATE: Updated confirmation method to use modal dialog
   const confirmResetForm = () => {
     // If form is empty, just reset without confirmation
     const isFormEmpty = !newShop.name_shop && 
-                        !newShop.type_shop && 
+                        !newShop.id_type && 
                         !newShop.location_shop && 
                         !selectedImage;
     
@@ -274,10 +264,11 @@ const ShopCreationForm = () => {
       case 1: // Image upload - optional, so always valid
         return true;
       case 2: // Basic info
-        if (!newShop.name_shop || !newShop.type_shop || !newShop.subtype_shop || !newShop.location_shop) {
+        //update: Check for all required fields including id_subtype
+        if (!newShop.name_shop || !newShop.id_type || !newShop.id_subtype || !newShop.location_shop) {
           setError(prevError => ({
             ...prevError,
-            shopError: "Completa todos los campos."
+            shopError: "Completa todos los campos obligatorios."
           }));
           setShowErrorCard(true);
           return false;
@@ -389,7 +380,6 @@ const ShopCreationForm = () => {
 
       let success = false;
       let shopId = null;
-      // let createdOrUpdatedShop = null;
 
       if (selectedShop) {
         // Updating existing shop
@@ -399,7 +389,6 @@ const ShopCreationForm = () => {
         
         if (success) {
           console.log('Shop updated successfully:', result);
-          // createdOrUpdatedShop = result;
           
           // Show success notification
           setSuccess(prevSuccess => ({
@@ -416,7 +405,6 @@ const ShopCreationForm = () => {
         if (success) {
           console.log('New shop created successfully:', result);
           shopId = result.id_shop;
-          // createdOrUpdatedShop = result;
           
           // Show success notification
           setSuccess(prevSuccess => ({
@@ -459,7 +447,6 @@ const ShopCreationForm = () => {
       
       // If successful, start exit animation then close the form
       if (success) {
-        // ✨ UPDATE: Trigger exit animation first, then close form after animation completes
         setIsExiting(true);
         setTimeout(() => {
           setShowShopCreationForm(false);
@@ -521,7 +508,6 @@ const ShopCreationForm = () => {
     }
   };
 
-  // ✨ UPDATE: Setup form animation using unified formAnimation
   const formTransition = useTransition(!isExiting, {
     from: formAnimation.from,
     enter: formAnimation.enter,
@@ -535,6 +521,19 @@ const ShopCreationForm = () => {
       }
     }
   });
+
+  //update: Show loading state if types are being loaded
+  if (typesLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.loadingMessage}>
+            Cargando tipos de comercio...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -559,11 +558,10 @@ const ShopCreationForm = () => {
                 {renderStepContent()}
                   
                 <div className={styles.buttonsContainer}>
-                  {/* 🧹 UPDATE: Added reset form button */}
                   <button
                     type="button"
                     onClick={confirmResetForm}
-                    className={styles.resetButton}
+                    className={styles.active}
                     title="Limpiar formulario"
                     disabled={uploading || isFormSubmitting}
                   >
@@ -579,7 +577,7 @@ const ShopCreationForm = () => {
                     isSubmitting={uploading || isFormSubmitting}
                     submitLabel={selectedShop ? 'Actualizar' : 'Crear'}
                     processingLabel="Procesando..."
-                    SubmitIcon={Box}
+                    SubmitIcon={Plus}
                     // Only show submit button on the last step
                     showSubmitButton={currentStep === totalSteps}
                   />

@@ -18,10 +18,10 @@ const ProductTableHeader = ({ showExtendedInfo, showMediumInfo, isSmallScreen })
         {isSmallScreen ? '€' : 'Precio'}
       </th>
       <th className={styles.tableHeaderCell}>
-        {isSmallScreen ? 'Tipo' : 'Tipo'}
+        {isSmallScreen ? 'Cat.' : 'Categoría'}
       </th>
       <th className={styles.tableHeaderCell}>
-        {isSmallScreen ? 'Sub' : 'Sub-tipo'}
+        {isSmallScreen ? 'Subcat.' : 'Subcategoría'}
       </th>
       {showMediumInfo && (
         <>

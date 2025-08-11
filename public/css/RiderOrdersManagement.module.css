@@ -1,0 +1,358 @@
+/* RiderOrdersManagement.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.ordersSection {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tabsContainer {
+  display: flex;
+  border-bottom: 2px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.tab {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tab:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.activeTab {
+  color: #2ecc71;
+  background: white;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #2ecc71;
+}
+
+.badge {
+  background: #2ecc71;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.ordersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.noOrders {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.orderCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.orderCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.selectedOrder {
+  border-color: #2ecc71;
+  box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+}
+
+.myOrderCard {
+  background: #f0f9ff;
+  border-color: #3498db;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.orderId {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.orderDate {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.orderStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  background: #f5f5f5;
+  border-radius: 20px;
+}
+
+.statusText {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.statusIconPending {
+  color: #f39c12;
+}
+
+.statusIconConfirmed {
+  color: #3498db;
+}
+
+.statusIconPreparing {
+  color: #9b59b6;
+}
+
+.statusIconReady {
+  color: #e74c3c;
+}
+
+.statusIconDelivered {
+  color: #2ecc71;
+}
+
+.statusIconCancelled {
+  color: #95a5a6;
+}
+
+.shopInfo, .customerInfo, .locationInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.shopInfo strong, .customerInfo strong {
+  font-weight: 600;
+}
+
+.locationInfo {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.deliveryInfo {
+  font-size: 0.9rem;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.deliveryAddress {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  color: #666;
+  font-size: 0.85rem;
+  padding-left: 1rem;
+}
+
+.pickupInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #3498db;
+  font-weight: 500;
+}
+
+.orderTotal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2ecc71;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.orderNotes {
+  font-size: 0.85rem;
+  color: #666;
+  padding: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 4px;
+  border-left: 3px solid #3498db;
+}
+
+.requestButton {
+  background: #2ecc71;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.requestButton:hover:not(:disabled) {
+  background: #27ae60;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+}
+
+.requestButton:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.deliverButton {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.deliverButton:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.declinedBadge {
+  background: #e74c3c;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.pendingBadge {
+  background: #f39c12;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.deliveryDetails {
+  background: #f9f9f9;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .ordersGrid {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .tab {
+    font-size: 0.9rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .orderCard {
+    padding: 1rem;
+  }
+}

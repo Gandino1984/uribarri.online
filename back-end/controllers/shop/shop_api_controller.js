@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import shop_model from "../../models/shop_model.js";
 
 const __filename = fileURLToPath(import.meta.url);
-
 const __dirname = path.dirname(__filename);
 
 async function getAll(req, res) {
@@ -38,16 +37,16 @@ async function getTypesOfShops(req, res) {
 
 async function getByType(req, res) {
   try {
-    const { type_shop } = req.body;
+    const { id_type } = req.body;
 
-    if (!type_shop) {
-        console.error('-> shop_api_controller.js - getByType() - Error = El parámetro type_shop es obligatorio');
+    if (!id_type) {
+        console.error('-> shop_api_controller.js - getByType() - Error = El parámetro id_type es obligatorio');
         res.status(400).json({ 
-            error: 'El parámetro type_shop es obligatorio', 
+            error: 'El parámetro id_type es obligatorio', 
         });
     }
   
-    const {error, data} = await shopController.getByType(type_shop);
+    const {error, data} = await shopController.getByType(id_type);
 
     res.json({error, data});
   }catch (err) {
@@ -69,31 +68,31 @@ async function create(req, res) {
         const { 
             name_shop, 
             location_shop, 
-            type_shop, 
-            subtype_shop, 
+            id_type,
+            id_subtype, 
             id_user,
             morning_open,
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Added delivery service field
             has_delivery,
-            // UPDATE: Added days of week fields
             open_monday,
             open_tuesday,
             open_wednesday,
             open_thursday,
             open_friday,
             open_saturday,
-            open_sunday
+            open_sunday,
+            //update: Add verified_shop field (defaults to false if not provided)
+            verified_shop
         } = req.body;
     
         // Provide default values for optional fields
         const calification_shop = req.body.calification_shop || 5;
         const image_shop = req.body.image_shop || '';
     
-        // Validate required fields
-        if (!name_shop || !location_shop || !type_shop || !subtype_shop || !id_user) {
+        // Validate required fields (removed id_subtype from required)
+        if (!name_shop || !location_shop || !id_type || !id_user) {
             console.error('-> shop_api_controller.js - create() - Error = Campos obligatorios faltantes');
             console.log(req.body);
             return res.status(400).json({
@@ -101,8 +100,7 @@ async function create(req, res) {
                 missingFields: {
                     name_shop: !name_shop,
                     location_shop: !location_shop,
-                    type_shop: !type_shop,
-                    subtype_shop: !subtype_shop,
+                    id_type: !id_type,
                     id_user: !id_user
                 }
             });
@@ -111,8 +109,8 @@ async function create(req, res) {
         const {error, data, success} = await shopController.create({
             name_shop, 
             location_shop, 
-            type_shop, 
-            subtype_shop, 
+            id_type, 
+            id_subtype,
             id_user, 
             calification_shop, 
             image_shop,
@@ -120,16 +118,15 @@ async function create(req, res) {
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Added delivery service field
             has_delivery,
-            // UPDATE: Added days of week fields
             open_monday,
             open_tuesday,
             open_wednesday,
             open_thursday,
             open_friday,
             open_saturday,
-            open_sunday
+            open_sunday,
+            verified_shop: verified_shop || false
         });
     
         res.json({error, data, success});
@@ -142,7 +139,6 @@ async function create(req, res) {
     }
 }
 
-
 async function update(req, res) {
     try {
         console.log('Received update request body:', req.body);
@@ -151,8 +147,8 @@ async function update(req, res) {
             id_shop,
             name_shop,
             location_shop,
-            type_shop,
-            subtype_shop,
+            id_type,
+            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -160,16 +156,16 @@ async function update(req, res) {
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Added delivery service field
             has_delivery,
-            // UPDATE: Added days of week fields
             open_monday,
             open_tuesday,
             open_wednesday,
             open_thursday,
             open_friday,
             open_saturday,
-            open_sunday
+            open_sunday,
+            //update: Add verified_shop field
+            verified_shop
         } = req.body;
 
         console.log('Schedule fields received:', {
@@ -177,7 +173,6 @@ async function update(req, res) {
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Log new schedule fields
             open_monday,
             open_tuesday,
             open_wednesday,
@@ -190,8 +185,8 @@ async function update(req, res) {
         const updateData = {
             name_shop,
             location_shop,
-            type_shop,
-            subtype_shop,
+            id_type,
+            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -199,16 +194,15 @@ async function update(req, res) {
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Added delivery service field
             has_delivery,
-            // UPDATE: Added days of week fields
             open_monday,
             open_tuesday,
             open_wednesday,
             open_thursday,
             open_friday,
             open_saturday,
-            open_sunday
+            open_sunday,
+            verified_shop
         };
 
         console.log('Update data being sent to controller:', updateData);
@@ -237,8 +231,8 @@ async function updateWithFolder(req, res) {
             id_shop,
             name_shop,
             location_shop,
-            type_shop,
-            subtype_shop,
+            id_type,
+            id_subtype,
             id_user,
             calification_shop,
             image_shop,
@@ -247,16 +241,16 @@ async function updateWithFolder(req, res) {
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Added delivery service field
             has_delivery,
-            // UPDATE: Added days of week fields
             open_monday,
             open_tuesday,
             open_wednesday,
             open_thursday,
             open_friday,
             open_saturday,
-            open_sunday
+            open_sunday,
+            //update: Add verified_shop field
+            verified_shop
         } = req.body;
 
         if (!id_shop || !name_shop || !old_name_shop) {
@@ -268,29 +262,27 @@ async function updateWithFolder(req, res) {
         const updateData = {
             name_shop,
             location_shop,
-            type_shop,
-            subtype_shop,
+            id_type,
+            id_subtype,
             id_user,
             calification_shop,
             image_shop,
-            old_name_shop, // Make sure to pass this through
             morning_open,
             morning_close,
             afternoon_open,
             afternoon_close,
-            // UPDATE: Added delivery service field
             has_delivery,
-            // UPDATE: Added days of week fields
             open_monday,
             open_tuesday,
             open_wednesday,
             open_thursday,
             open_friday,
             open_saturday,
-            open_sunday
+            open_sunday,
+            verified_shop
         };
 
-        const { error, data } = await shopController.updateWithFolder(id_shop, updateData);
+        const { error, data } = await shopController.updateWithFolder(id_shop, updateData, old_name_shop);
         
         if (error) {
             return res.status(400).json({ error });
@@ -330,7 +322,7 @@ async function removeById(req, res) {
         details: err.message 
       });
     }
-  }
+}
 
 async function removeByIdWithProducts(req, res) {
     try {
@@ -343,7 +335,7 @@ async function removeByIdWithProducts(req, res) {
             return;
         }
 
-        const { error, data, success, productsRemoved, packagesRemoved } = await shopController.removeByIdWithProducts(id_shop); // ✨ UPDATE: Added packagesRemoved to destructuring
+        const { error, data, success, productsRemoved, packagesRemoved } = await shopController.removeByIdWithProducts(id_shop);
 
         if (error) {
             res.status(400).json({ error });
@@ -354,12 +346,12 @@ async function removeByIdWithProducts(req, res) {
             data, 
             success,
             productsRemoved,
-            packagesRemoved // ✨ UPDATE: Added packagesRemoved to response
+            packagesRemoved
         });
-      } catch (err) {
+    } catch (err) {
         console.error("-> shop_api_controller.js - removeByIdWithProducts() - Error =", err);
         res.status(500).json({ 
-            error: "Error al eliminar el comercio, sus productos y paquetes", // ✨ UPDATE: Added packages to error message
+            error: "Error al eliminar el comercio, sus productos y paquetes",
         });
     }
 }
@@ -378,7 +370,6 @@ const getByUserId = async (req, res) => {
 
         const {error, data} = await shopController.getByUserId(id_user);
         
-   
         res.json({error, data});
     } catch (err) {
         console.error('-> Error al obtener los comercios del usuario = ', err);
@@ -416,10 +407,6 @@ async function uploadCoverImage(req, res) {
     }
 
     // Construct the relative path for storing in the database
-    // IMPORTANT: We're ensuring this path is relative to the public directory
-    // and doesn't include 'public/' in the path itself
-    // UPDATE: Use a more consistent path format without the filename to avoid
-    // inconsistencies when different file extensions are used
     const relativePath = path.join(
       'images', 
       'uploads', 
@@ -469,6 +456,73 @@ async function uploadCoverImage(req, res) {
     });
   }
 }
+
+async function getSubtypesForType(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+
+        const { error, data } = await shopController.getSubtypesForType(id_type);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+
+        res.json({ error, data });
+    } catch (err) {
+        console.error('Error getting subtypes for type:', err);
+        res.status(500).json({
+            error: 'Error al obtener subtipos',
+            details: err.message
+        });
+    }
+}
+
+//update: New function to verify/unverify a shop
+async function verifyShop(req, res) {
+    try {
+        const { id_shop } = req.params;
+        const { verified_shop } = req.body;
+        
+        // TODO: Add authentication middleware to check if user is admin or authorized
+        // For now, we'll assume the request is authorized
+        
+        if (!id_shop) {
+            return res.status(400).json({
+                error: 'El ID del comercio es obligatorio'
+            });
+        }
+        
+        if (verified_shop === undefined) {
+            return res.status(400).json({
+                error: 'El campo verified_shop es obligatorio'
+            });
+        }
+
+        const { error, data, message } = await shopController.verifyShop(id_shop, verified_shop, req.user);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+
+        res.json({ 
+            error: null, 
+            data,
+            message 
+        });
+    } catch (err) {
+        console.error('Error verifying shop:', err);
+        res.status(500).json({
+            error: 'Error al verificar el comercio',
+            details: err.message
+        });
+    }
+}
   
 export {
     getAll,
@@ -481,7 +535,9 @@ export {
     getByUserId,
     getTypesOfShops,
     updateWithFolder,
-    uploadCoverImage
+    uploadCoverImage,
+    getSubtypesForType,
+    verifyShop
 }
 
 export default {
@@ -495,5 +551,7 @@ export default {
     getByUserId,
     getTypesOfShops,
     updateWithFolder,
-    uploadCoverImage
+    uploadCoverImage,
+    getSubtypesForType,
+    verifyShop
 }

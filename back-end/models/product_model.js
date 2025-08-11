@@ -1,43 +1,43 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../config/sequelize.js";
+import { DataTypes } from 'sequelize';
+import db from '../config/sequelize.js';
 
-const product_model = sequelize.define("product", {
-    id_product: { 
+const product_model = db.define('product', {
+    id_product: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        allowNull: false
     },
     name_product: {
         type: DataTypes.STRING(100),
         allowNull: false
     },
     price_product: {
-        type: DataTypes.DECIMAL(10,2), 
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         defaultValue: 0.0
     },
     discount_product: {
         type: DataTypes.INTEGER,
-        allowNull: true, 
-        defaultValue: 0,
+        allowNull: true,
+        defaultValue: 0
     },
     season_product: {
         type: DataTypes.STRING(45),
         allowNull: false
     },
-    calification_product: { 
+    calification_product: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: 0
     },
-    type_product: {
-        type: DataTypes.STRING(45),
-        allowNull: false,
+    id_category: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true
     },
-    subtype_product: {
-        type: DataTypes.STRING(45),
-        allowNull: false,
+    id_subcategory: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true
     },
     sold_product: {
         type: DataTypes.INTEGER,
@@ -48,18 +48,18 @@ const product_model = sequelize.define("product", {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    id_shop: { 
+    id_shop: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+        allowNull: false
     },
     image_product: {
         type: DataTypes.STRING(255),
-        allowNull: true,
+        allowNull: true
     },
     second_hand: {
-        type: DataTypes.TINYINT(1),
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 0
+        defaultValue: false
     },
     expiration_product: {
         type: DataTypes.DATE,
@@ -79,18 +79,18 @@ const product_model = sequelize.define("product", {
         allowNull: true
     },
     active_product: {
-        type: DataTypes.TINYINT(1),
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 1
+        defaultValue: true
     },
     creation_product: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')  // UPDATE: Changed to sequelize.literal to ensure proper default value during migration
+        defaultValue: DataTypes.NOW
     }
 }, {
-    timestamps: false,
-    freezeTableName: true
+    tableName: 'product',
+    timestamps: false
 });
 
 export default product_model;

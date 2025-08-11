@@ -17,7 +17,10 @@ const ProductsTable = ({
   handleSelectForImageUpload,
   handleToggleActiveStatus,
   handleProductImageDoubleClick,
-  currentDeletingProduct
+  currentDeletingProduct,
+  //update: Added categories and subcategories props
+  categories,
+  subcategories
 }) => {
   // 📱 UPDATE: Enhanced window width tracking with initial state and breakpoints
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -81,6 +84,9 @@ const ProductsTable = ({
               showExtendedInfo={showExtendedInfo}
               showMediumInfo={showMediumInfo}
               isSmallScreen={isSmallScreen}
+              //update: Pass categories and subcategories to ProductTableRow
+              categories={categories}
+              subcategories={subcategories}
             />
           ))}
         </tbody>

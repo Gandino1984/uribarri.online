@@ -16,13 +16,13 @@ const shop_model = sequelize.define("shop", {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    type_shop: {
-        type: DataTypes.STRING(45),
-        allowNull: false,
+    id_type: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false
     },
-    subtype_shop: {
-        type: DataTypes.STRING(45),
-        allowNull: false,
+    id_subtype: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true
     },
     morning_open: {
         type: DataTypes.TIME,
@@ -53,13 +53,11 @@ const shop_model = sequelize.define("shop", {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false
     },
-    // UPDATE: Added delivery service field
     has_delivery: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
-    // UPDATE: Added days of the week fields
     open_monday: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -91,6 +89,12 @@ const shop_model = sequelize.define("shop", {
         defaultValue: true
     },
     open_sunday: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    //update: Added verified_shop field
+    verified_shop: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

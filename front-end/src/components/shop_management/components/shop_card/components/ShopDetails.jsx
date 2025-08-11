@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import { Store, MapPinned, Clock, Calendar, Bike, Star } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
-// 🌟 UPDATE: Created new component for star rating display
+
 const RatingStars = ({ rating }) => {
   // Convert rating to number and handle if it's not available
   const numericRating = parseFloat(rating) || 0;
@@ -32,60 +32,63 @@ const RatingStars = ({ rating }) => {
   return (
     <div className={styles.starsContainer}>
       {stars}
-      {/* <span className={styles.ratingText}>
-        {rating || 'No disponible'}
-      </span> */}
     </div>
   );
 };
 
-const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule, formatOpenDays }) => {
+const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSchedule, formatOpenDays, isOpen }) => {
   return (
     <div className={styles.infoContainer}>
       <div className={styles.header}>
         <h2 className={styles.title}>{shop?.name_shop}</h2>
         
-        {/* 🌟 UPDATE: Replaced numeric rating with star display */}
         <RatingStars rating={shop?.calification_shop} />
       </div>
-      <p className={styles.shopType}>
-        <Store size={14} className={styles.scheduleIcon} />
-        {formatShopType}
-      </p>
-      <p className={styles.location}>
-        <MapPinned size={14} className={styles.scheduleIcon} />
-        {shop?.location_shop}
-      </p>
-      <div className={styles.scheduleContainer}>
-        <div className={styles.scheduleInfo}>
+      
+      <div className={styles.scheduleInfo}>
+        <p className={styles.shopType}>
+          <Store size={14} className={styles.icon} />
+          {formatShopType}
+        </p>
+        
+        <p className={styles.location}>
+          <MapPinned size={14} className={styles.icon} />
+          {shop?.location_shop}
+        </p>
+        
+        {/*update: Added open/closed status indicator*/}
+        <div className={styles.scheduleWrapper}>
           {hasContinuousSchedule ? (
             <span className={styles.scheduleTime}>
-              <Clock size={14} className={styles.scheduleIcon} />
+              <Clock size={14} className={styles.icon} />
               {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
             </span>
           ) : (
             <>
               <span className={styles.scheduleTime}>
-                <Clock size={14} className={styles.scheduleIcon} />
+                <Clock size={14} className={styles.icon} />
                 Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
               </span>
               <span className={styles.scheduleTime}>
-                <Clock size={14} className={styles.scheduleIcon} />
+                <Clock size={14} className={styles.icon} />
                 Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
               </span>
             </>
           )}
-          
-          <span className={styles.scheduleTime}>
-            <Calendar size={14} className={styles.scheduleIcon} />
-            {formatOpenDays(shop)}
-          </span>
-          
-          <span className={styles.scheduleTime}>
-            <Bike size={14} className={styles.scheduleIcon} />
-            Delivery {shop?.has_delivery ? 'disponible' : 'no disponible'}
+          <span className={`${styles.openStatus} ${isOpen ? styles.open : styles.closed}`}>
+            {isOpen ? 'Abierto' : 'Cerrado'}
           </span>
         </div>
+        
+        <span className={styles.scheduleTime}>
+          <Calendar size={14} className={styles.icon} />
+          {formatOpenDays(shop)}
+        </span>
+        
+        <span className={styles.scheduleTime}>
+          <Bike size={14} className={styles.icon} />
+          Delivery {shop?.has_delivery ? 'disponible' : 'no disponible'}
+        </span>
       </div>
     </div>
   );

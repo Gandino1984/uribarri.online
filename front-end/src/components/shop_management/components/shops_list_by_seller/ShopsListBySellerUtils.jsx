@@ -142,13 +142,13 @@ const ShopsListBySellerUtils = () => {
   // UPDATE: Modified to accept shopLimit as a parameter instead of using internal state
   const handleAddShop = useCallback((shopLimit) => {
     // Get the shopLimit from the parent component through parameters if available
-    const effectiveShopLimit = shopLimit || (currentUser?.category_user ? 3 : 1);
+    const effectiveShopLimit = shopLimit || (currentUser?.contributor_user ? 3 : 1);
     
     // Verificar si el usuario ha alcanzado el límite
     if (shopCount >= effectiveShopLimit) {
       setError(prevError => ({ 
         ...prevError, 
-        shopError: `Has alcanzado el límite de ${effectiveShopLimit} comercios. ${!currentUser?.category_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+        shopError: `Has alcanzado el límite de ${effectiveShopLimit} comercios. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
       }));
       return;
     }
@@ -233,7 +233,7 @@ const ShopsListBySellerUtils = () => {
         }
         
         // Mostrar mensaje de éxito
-        setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado ." }));
+        setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado." }));
         setShowSuccessCard(true);
       } catch (err) {
         console.error('Error deleting shop:', err);

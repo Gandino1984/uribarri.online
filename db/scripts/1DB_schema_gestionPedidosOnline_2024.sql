@@ -14,13 +14,13 @@ CREATE SCHEMA IF NOT EXISTS `DB_gestionPedidosOnline_2024` DEFAULT CHARACTER SET
 USE `DB_gestionPedidosOnline_2024`;
 
 -- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`ip`
+-- Table `DB_gestionPedidosOnline_2024`.`ip_registry`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS ip_registry (
-    'ip_address' VARCHAR(45) PRIMARY KEY,
-    'registration_count' INT DEFAULT 0,
-    'last_attempt' TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_last_attempt (last_attempt)
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`ip_registry` (
+    `ip_address` VARCHAR(45) PRIMARY KEY,
+    `registration_count` INT DEFAULT 0,
+    `last_attempt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_last_attempt (`last_attempt`)
 );
 
 -- -----------------------------------------------------
@@ -34,9 +34,37 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `type_user` VARCHAR(45) NOT NULL,
   `image_user` VARCHAR(255) NULL,
   `calification_user` INT NOT NULL DEFAULT 5,
-  `category_user` TINYINT(1) NOT NULL DEFAULT 0,
+  `contributor_user` TINYINT(1) NOT NULL DEFAULT 0,
+  `age_user` INT NOT NULL DEFAULT 18,
   PRIMARY KEY (`id_user`),
-  UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE
+  UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE,
+  -- update: Add index for type_user to improve performance when filtering riders
+  INDEX `idx_type_user` (`type_user` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`type`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`type` (
+  `id_type` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name_type` VARCHAR(100) NOT NULL,
+  `verified_type` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdby_type` VARCHAR(20) NULL,
+  PRIMARY KEY (`id_type`),
+  UNIQUE INDEX `name_type_UNIQUE` (`name_type` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`subtype`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`subtype` (
+  `id_subtype` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name_subtype` VARCHAR(100) NOT NULL,
+  `id_type` INT UNSIGNED NOT NULL,
+  `verified_subtype` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdby_subtype` VARCHAR(20) NULL,
+  PRIMARY KEY (`id_subtype`),
+  UNIQUE INDEX `name_type_unique` (`name_subtype` ASC, `id_type` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -46,8 +74,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
   `id_shop` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name_shop` VARCHAR(100) NOT NULL,
   `location_shop` VARCHAR(100) NOT NULL,
-  `type_shop` VARCHAR(45) NOT NULL,
-  `subtype_shop` VARCHAR(45) NOT NULL,
+  `id_type` INT UNSIGNED NOT NULL,
+  `id_subtype` INT UNSIGNED NOT NULL,
   `morning_open` TIME NULL,
   `morning_close` TIME NULL,
   `afternoon_open` TIME NULL,
@@ -63,8 +91,44 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
   `open_friday` TINYINT(1) NOT NULL DEFAULT 1,
   `open_saturday` TINYINT(1) NOT NULL DEFAULT 1,
   `open_sunday` TINYINT(1) NOT NULL DEFAULT 0,
+  `verified_shop` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_shop`),
   UNIQUE INDEX `id_shop_UNIQUE` (`id_shop` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`category_subcategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`category_subcategory` (
+  `id_category_subcategory` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_category` INT UNSIGNED NOT NULL,
+  `id_subcategory` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_category_subcategory`),
+  UNIQUE INDEX `unique_category_subcategory` (`id_category`, `id_subcategory`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`product_category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_category` (
+  `id_category` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name_category` VARCHAR(100) NOT NULL,
+  `verified_category` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdby_category` VARCHAR(20) NULL,
+  PRIMARY KEY (`id_category`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`product_subcategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product_subcategory` (
+  `id_subcategory` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name_subcategory` VARCHAR(100) NOT NULL,
+  `id_category` INT UNSIGNED NOT NULL,
+  `verified_subcategory` TINYINT(1) NOT NULL DEFAULT 0,
+  `createdby_subcategory` VARCHAR(20) NULL,
+  PRIMARY KEY (`id_subcategory`),
+  UNIQUE INDEX `name_category_unique` (`name_subcategory` ASC, `id_category` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -77,8 +141,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
   `discount_product` INT NULL DEFAULT 0,
   `season_product` VARCHAR(45) NOT NULL,
   `calification_product` INT NOT NULL DEFAULT 0,
-  `type_product` VARCHAR(45) NOT NULL,
-  `subtype_product` VARCHAR(45) NOT NULL,
+  `id_category` INT UNSIGNED NULL,
+  `id_subcategory` INT UNSIGNED NULL,
   `sold_product` INT NOT NULL DEFAULT 0,
   `info_product` TEXT, 
   `id_shop` INT UNSIGNED NOT NULL,
@@ -95,6 +159,42 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`product` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`type_category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`type_category` (
+  `id_type_category` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_type` INT UNSIGNED NOT NULL,
+  `id_category` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_type_category`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`calification_product`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`calification_product` (
+  `id_calification` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_product` INT UNSIGNED NOT NULL,
+  `id_user` INT UNSIGNED NOT NULL,
+  `calification_product` INT NOT NULL,
+  `comment_calification` VARCHAR(200) NULL,
+  PRIMARY KEY (`id_calification`),
+  UNIQUE INDEX `unique_user_product` (`id_user`, `id_product`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`calification_shop`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`calification_shop` (
+  `id_calification` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_shop` INT UNSIGNED NOT NULL,
+  `id_user` INT UNSIGNED NOT NULL,
+  `calification_shop` INT NOT NULL,
+  `comment_calification` VARCHAR(200) NULL,
+  PRIMARY KEY (`id_calification`),
+  UNIQUE INDEX `unique_user_shop` (`id_user`, `id_shop`)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`package`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
@@ -106,6 +206,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
   `id_product4` INT UNSIGNED NULL,
   `id_product5` INT UNSIGNED NULL,
   `name_package` VARCHAR(100) NULL,
+  `discount_package` INT NULL DEFAULT 0 COMMENT 'Percentage discount applied to the total package price (0-100)',
   `creation_package` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `active_package` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_package`),
@@ -113,17 +214,61 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`orders`
+-- Table `DB_gestionPedidosOnline_2024`.`order_product`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`orders` (
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order_product` (
+  `id_order_product` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_product` INT UNSIGNED NOT NULL,
+  `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  `unit_price` DECIMAL(10,2) NOT NULL,
+  `total_price` DECIMAL(10,2) NOT NULL,
+  `product_notes` TEXT NULL,
+  PRIMARY KEY (`id_order_product`),
+  INDEX `idx_product` (`id_product` ASC)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`order_package`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order_package` (
+  `id_order_package` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_package` INT UNSIGNED NOT NULL,
+  `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  `unit_price` DECIMAL(10,2) NOT NULL,
+  `total_price` DECIMAL(10,2) NOT NULL,
+  `package_notes` TEXT NULL,
+  PRIMARY KEY (`id_order_package`),
+  INDEX `idx_package` (`id_package` ASC)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`order`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
   `id_order` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` INT UNSIGNED NOT NULL,
-  `id_product` INT UNSIGNED NOT NULL,
   `id_shop` INT UNSIGNED NOT NULL,
-  `delivery_date` DATETIME NOT NULL,
-  `order_date` DATETIME NOT NULL,
-  `finished` TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id_order`)
+  `id_rider` INT UNSIGNED NULL,
+  -- update: rider_accepted field to track rider request status
+  -- NULL = no request, FALSE = request declined, TRUE = request accepted
+  `rider_accepted` TINYINT(1) NULL DEFAULT NULL,
+  `id_order_products` JSON DEFAULT NULL,
+  `id_order_packages` JSON DEFAULT NULL,
+  `total_price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `order_status` ENUM('pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled') NOT NULL DEFAULT 'pending',
+  `delivery_type` ENUM('pickup', 'delivery') NOT NULL DEFAULT 'pickup',
+  `delivery_address` VARCHAR(255) NULL,
+  `order_notes` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_order`),
+  -- update: Add indexes for better query performance
+  INDEX `idx_order_status` (`order_status` ASC),
+  INDEX `idx_id_shop` (`id_shop` ASC),
+  INDEX `idx_id_user` (`id_user` ASC),
+  INDEX `idx_id_rider` (`id_rider` ASC),
+  INDEX `idx_rider_accepted` (`rider_accepted` ASC),
+  INDEX `idx_created_at` (`created_at` DESC)
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -139,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`provider` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`buys(inventory)`
+-- Table `DB_gestionPedidosOnline_2024`.`buys`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
   `id_buys` INT UNSIGNED NOT NULL AUTO_INCREMENT,

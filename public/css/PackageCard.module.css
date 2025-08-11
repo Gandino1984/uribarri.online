@@ -1,0 +1,386 @@
+/* PackageCard.module.css - Dedicated styles for Package Card component */
+
+.packageCardOverlay {
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background-color: rgba(0, 0, 0, 0.5);
+   backdrop-filter: blur(2px);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   z-index: 1000;
+   padding: 1rem;
+}
+
+.packageCard {
+   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+   border-radius: 12px;
+   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+   max-width: 800px;
+   width: 100%;
+   max-height: 90vh;
+   overflow-y: auto;
+   display: flex;
+   flex-direction: column;
+}
+
+/* Header Section */
+.packageCardHeader {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 1.5rem;
+   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+   background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end));
+   color: white;
+   border-radius: 12px 12px 0 0;
+   position: sticky;
+   top: 0;
+   z-index: 10;
+}
+
+.packageCardTitle {
+   display: flex;
+   align-items: center;
+   gap: 0.75rem;
+}
+
+.packageCardTitle h2 {
+   margin: 0;
+   font-size: 1.5rem;
+   font-weight: 600;
+   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.closeButton {
+   background: rgba(255, 255, 255, 0.2);
+   border: none;
+   color: white;
+   width: 40px;
+   height: 40px;
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+   transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+   background: rgba(255, 255, 255, 0.3);
+   transform: scale(1.1);
+}
+
+/* Body Section */
+.packageCardBody {
+   padding: 1.5rem;
+   flex: 1;
+   overflow-y: auto;
+}
+
+.packageCardSection {
+   margin-bottom: 2rem;
+}
+
+.packageCardSection:last-child {
+   margin-bottom: 0;
+}
+
+/* Section Titles */
+.sectionTitle {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   font-size: 1.1rem;
+   font-weight: 600;
+   color: #333;
+   margin-bottom: 1rem;
+   padding-bottom: 0.5rem;
+   border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle svg {
+   color: var(--saturated-blue);
+}
+
+/* Info Grid */
+.infoGrid {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+   gap: 1rem;
+   margin-bottom: 1.5rem;
+}
+
+.infoItem {
+   display: flex;
+   /* flex-direction: column; */
+   gap: 0.25rem;
+}
+
+.infoLabel {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   font-size: 0.875rem;
+   color: #666;
+   font-weight: 500;
+}
+
+.infoLabel svg {
+   width: 16px;
+   height: 16px;
+}
+
+.infoValue {
+   font-size: 1rem;
+   color: #333;
+   font-weight: 600;
+}
+
+/* Status Indicators */
+.statusActive {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   color: var(--saturated-blue);
+}
+
+.statusInactive {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   color: var(--gradient-red-mid);
+}
+
+/* Price Summary Section */
+.priceSummarySection {
+   background-color: rgba(0, 0, 0, 0.03);
+   border-radius: 8px;
+   padding: 1rem;
+   margin-top: 1rem;
+   border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.priceSummaryTitle {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   font-size: 1rem;
+   font-weight: 600;
+   color: #333;
+   margin-bottom: 0.75rem;
+}
+
+.priceSummaryTitle svg {
+   color: var(--saturated-orange);
+}
+
+.priceSummary {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.priceRow {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0.25rem 0;
+}
+
+.priceRow:last-child {
+   border-top: 1px solid rgba(0, 0, 0, 0.1);
+   padding-top: 0.5rem;
+   margin-top: 0.25rem;
+}
+
+.priceLabel {
+   font-size: 0.9rem;
+   color: #555;
+}
+
+.priceValue {
+   font-size: 1rem;
+   font-weight: 600;
+   color: #333;
+}
+
+.discountValue {
+   font-size: 1rem;
+   font-weight: 600;
+   color: var(--gradient-red-mid);
+}
+
+.finalPriceValue {
+   font-size: 1.1rem;
+   font-weight: 700;
+   color: var(--saturated-blue);
+}
+
+/* Discount Badge */
+.discountBadge {
+   background-color: var(--gradient-red-mid);
+   color: white;
+   padding: 0.125rem 0.5rem;
+   border-radius: 4px;
+   font-size: 0.75rem;
+   font-weight: 600;
+   margin-left: 0.5rem;
+}
+
+/* Products List */
+.productsList {
+   display: flex;
+   flex-direction: column;
+   gap: 1rem;
+}
+
+.packageProductItem {
+   display: flex;
+   gap: 1rem;
+   padding: 1rem;
+   background-color: rgba(0, 0, 0, 0.03);
+   border-radius: 8px;
+   border-left: 4px solid var(--saturated-blue);
+   transition: all 0.2s ease;
+}
+
+.packageProductItem:hover {
+   background-color: rgba(0, 0, 0, 0.05);
+   transform: translateX(4px);
+}
+
+.packageProductImageWrapper {
+   width: 80px;
+   height: 80px;
+   border-radius: 8px;
+   overflow: hidden;
+   flex-shrink: 0;
+   background-color: white;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.packageProductInfo {
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.packageProductInfo h4 {
+   margin: 0;
+   font-size: 1.1rem;
+   font-weight: 600;
+   color: #333;
+}
+
+.packageProductInfo p {
+   margin: 0;
+   font-size: 0.875rem;
+   color: #666;
+}
+
+.productLabel {
+   font-weight: 500;
+   color: #444;
+   margin-right: 0.5rem;
+}
+
+.productDescription {
+   font-style: italic;
+   color: #777;
+   line-height: 1.4;
+}
+
+.noProducts {
+   text-align: center;
+   color: #999;
+   font-style: italic;
+   padding: 2rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+   .packageCardHeader {
+      padding: 1rem;
+   }
+   
+   .packageCardTitle h2 {
+      font-size: 1.25rem;
+   }
+   
+   .packageCardBody {
+      padding: 1rem;
+   }
+   
+   .packageProductImageWrapper {
+      width: 60px;
+      height: 60px;
+   }
+   
+   .infoGrid {
+      grid-template-columns: 1fr;
+   }
+   
+   .priceSummarySection {
+      padding: 0.75rem;
+   }
+}
+
+@media (max-width: 480px) {
+   .packageCard {
+      margin: 0.5rem;
+      max-height: 95vh;
+   }
+   
+   .packageCardHeader {
+      padding: 0.75rem;
+   }
+   
+   .packageCardTitle h2 {
+      font-size: 1.1rem;
+   }
+   
+   .closeButton {
+      width: 35px;
+      height: 35px;
+   }
+   
+   .packageCardBody {
+      padding: 0.75rem;
+   }
+   
+   .sectionTitle {
+      font-size: 1rem;
+   }
+   
+   .packageProductItem {
+      padding: 0.75rem;
+      gap: 0.75rem;
+   }
+   
+   .packageProductImageWrapper {
+      width: 50px;
+      height: 50px;
+   }
+   
+   .packageProductInfo h4 {
+      font-size: 1rem;
+   }
+   
+   .priceLabel,
+   .priceValue,
+   .discountValue {
+      font-size: 0.875rem;
+   }
+   
+   .finalPriceValue {
+      font-size: 1rem;
+   }
+}

@@ -10,6 +10,13 @@ import { Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, D
 // Move the icons array outside the component to prevent recreation on each render
 const iconComponents = [Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich];
 
+// 🎨 UPDATE: Added gradient colors array based on CSS variables
+const gradientColors = [
+  '#6d48dd', // --gradient-purple-start
+  '#9c42dd', // --gradient-purple-mid
+  '#e9487e'  // --gradient-purple-end
+];
+
 const NumericKeyboard = ({ 
   value, 
   onChange, 
@@ -47,7 +54,21 @@ const NumericKeyboard = ({
 
   useEffect(() => {
     if (showMaskedPassword) {
-      setDisplayedPassword(passwordIcons.map((Icon, index) => <Icon key={index} size={18} />));
+      // 🎨 UPDATE: Create icons with gradient colors based on their position
+      setDisplayedPassword(passwordIcons.map((Icon, index) => {
+        // Calculate color based on position in the password
+        const colorIndex = Math.min(
+          Math.floor(index / (value.length || 1) * gradientColors.length),
+          gradientColors.length - 1
+        );
+        const color = gradientColors[colorIndex];
+        
+        return (
+          <div key={index} className={styles.iconWrapper}>
+            <Icon size={10} color={"black"} strokeWidth={2} />
+          </div>
+        );
+      }));
     } else {
       setDisplayedPassword(value);
     }
@@ -117,14 +138,14 @@ const NumericKeyboard = ({
             onClick={(e) => handleBackspaceClick(e)}
             title="Borrar"
           >
-            <Delete size={16} />
+            <Delete size={18} strokeWidth={3}/>
           </button>
           <button 
             className={styles.key} 
             onClick={clearUserSession}
             title="Borrar todo"
           >
-            <Eraser size={16} />
+            <Eraser size={18} strokeWidth={3}/>
           </button>
         </div>
       </div>

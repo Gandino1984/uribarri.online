@@ -1,0 +1,125 @@
+.oButton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-weight: 800;
+    text-shadow: 0 0 2px rgb(0, 0, 0);
+    cursor: pointer;
+    overflow: visible;
+    z-index: 1;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+    transform-origin: center center;
+    background-color: black;
+    /* perspective: 1000px; */
+  }
+  
+  /* 🔄 UPDATE: Ensuring the square with rounded corners is always present */
+  .oButton::before {
+    content: '';
+    position: absolute;
+    border: 2px solid black;
+    border-radius: 12px; /* Ensures rounded corners on the square */
+    background: conic-gradient(
+      from 0deg,
+      rgba(66, 142, 255, 0.8) 0%,
+      rgba(151, 71, 255, 0.8) 33%,
+      rgba(231, 61, 158, 0.8) 66%,
+      rgba(66, 142, 255, 0.8) 100%
+    );
+    z-index: -1;
+    /* box-shadow: 
+      0 0 15px 2px rgba(92, 37, 141, 0.5),
+      0 0 30px 5px rgba(92, 37, 141, 0.5); */
+    animation: rotateSquare 12s linear infinite; /* Always spinning animation */
+    transition: all 0.3s ease;
+    will-change: transform, filter;
+  }
+  
+  /* Size variations */
+  .default {
+    width: 80px;
+    height: 80px;
+    outline: 5px solid black;
+    font-size: 5rem;
+  }
+  
+  .default::before {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .small {
+    width: 60px;
+    height: 60px;
+    outline: 3px solid black;
+    font-size: 3.5rem;
+  }
+  
+  .small::before {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .extraSmall {
+    width: 30.4px;
+    height: 30px;
+    outline: 2px solid black;
+    font-size: 2rem;
+  }
+  
+  .extraSmall::before {
+    width: 30.75px;
+    height: 30.75px;
+  }
+  
+  .large {
+    width: 100px;
+    height: 100px;
+    outline: 6px solid black;
+    font-size: 6rem;
+  }
+  
+  .large::before {
+    width: 100px;
+    height: 100px;
+  }
+  
+  
+  .oButton:hover {
+    background-color: transparent;
+    text-shadow: 0 0 10px rgb(0, 0, 0);
+  }
+  
+  /* .oButton:hover::before {
+    filter: blur(4px) brightness(1.3);
+    box-shadow: 
+      0 0 25px 7px rgba(151, 71, 255, 0.7),
+      0 0 50px 15px rgba(151, 71, 255, 0.4);
+  } */
+  
+  /* Animation for the floating effect - only used when isFloating is true */
+  @keyframes zeroGravityBounce {
+    0% { transform: translateY(0) scale(1); }
+    20% { transform: translateY(-15px) scale(1.05); }
+    40% { transform: translateY(-30px) scale(0.95); }
+    60% { transform: translateY(-60px) scale(0.9); }
+    80% { transform: translateY(-90px) scale(0.6); }
+    100% { transform: translateY(-120px) scale(0.3); }
+  }
+  
+  /* Animation for the spinning square background - always present */
+  @keyframes rotateSquare {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+

@@ -1,5 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+// front-end/src/app_context/ProductContext.jsx
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useShop } from './ShopContext';
+import axiosInstance from '../utils/app/axiosConfig';
 
 const ProductContext = createContext();
 
@@ -15,22 +17,33 @@ export const ProductProvider = ({ children }) => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [selectedProductDetails, setSelectedProductDetails] = useState(null);
   const [selectedProductForImageUpload, setSelectedProductForImageUpload] = useState(null);
+
+  const [loadingSubcategories, setLoadingSubcategories] = useState(false);
+  
+
   
   // Product creation/editing
   const [newProductData, setNewProductData] = useState({
     name_product: '',
     price_product: '',
     discount_product: 0,
-    season_product: '',
+    season_product: 'Todo el Año',
     calification_product: 0,
-    type_product: '',
-    subtype_product: '',
+    //update: Added category and subcategory IDs
+    id_category: '',
+    id_subcategory: '',
+    type_product: '', // Keep for backward compatibility
+    subtype_product: '', // Keep for backward compatibility
     sold_product: 0,
     info_product: '',
     id_shop: '',
-    second_hand: false,
+    second_hand: 0,
     surplus_product: 0,
-    expiration_product: null
+    expiration_product: null,
+    country_product: '',
+    locality_product: '',
+    active_product: true,
+    price_unit: 'Euros/unidad' //update: Added price_unit field
   });
   
   // Refresh control
@@ -52,7 +65,7 @@ export const ProductProvider = ({ children }) => {
     },
     tipo: {
       label: 'Tipo',
-      options: ['Ropa', 'Comida', 'Bebida', 'Electrónica', 'Accesorio', 'Joyería', 'Muebles', 'Salud', 'Belleza', 'Complemento', 'Servicio', 'No Clasificado', 'Regular', 'Vegetariano', 'Vegano', 'Sin gluten', 'Kosher', 'Sin lactosa', 'Varios'],
+      options: [], // Will be populated from database
     },
     oferta: {
       label: 'Descuento',
@@ -64,23 +77,15 @@ export const ProductProvider = ({ children }) => {
     },
   });
   
-  const [productTypesAndSubtypes, setProductTypesAndSubtypes] = useState({
-    'Accesorios': ['Bolso', 'Gafas', 'Joyería', 'Reloj', 'Cinturón', 'Varios'],
-    'Artesanía': ['Anillo', 'Collar', 'Pendientes', 'Pulsera', 'Varios'],
-    'Belleza': ['Productos de Belleza', 'Productos para Cabello', 'Maquillaje', 'Perfume', 'Productos para Piel', 'Skincare'],
-    'Bebida': ['Alcohol', 'Café', 'Refresco', 'Té', 'Zumo', 'Agua', 'Varios'],
-    'Calzado': ['Bailarinas', 'Botas', 'Deportivas', 'Zapatillas', 'Sandalias',  'Varios'],
-    'Comida': ['Bebida', 'Entrante', 'Plato Principal', 'Postre', 'Snack', 'Panadería', 'Varios'],
-    'Educativo': ['Asesoría', 'Charla', "Clases privadas", 'Clases de música', 'Clases de pintura', 'Curso', 'Investigación', 'Librería', 'Presentación', 'Varios'],
-    'Electrónica': ['Accesorios', 'Audio', 'Móvil', 'Ordenador', 'Tablet', 'Varios'],
-    'Joyería': ['Anillo', 'Collar', 'Pendientes', 'Pulsera', 'Varios'],
-    'Muebles': ['Baño', 'Cocina', 'Dormitorio', 'Jardín', 'Salón', 'Varios'],
-    'Sesión': ['Escape room', 'Hall game', 'Juegos pórtatiles', 'Escape de ciudad', 'Varios'],
-    'Ropa': ['Abrigo', 'Accesorios', 'Calcetines', 'Calzado', 'Camiseta', 'Chaqueta', 'Falda', 'Lencería', 'Pantalón', 'Pantaloneta', 'Pijama', 'Ropa de deporte', 'Ropa de maternidad', 'Ropa de trabajo', 'Vestido', 'Varios'],
-    'Salud': ['Cuidado Personal', 'Higiene', 'Medicina', 'Suplementos'],
-    'Servicio': ['Asesoría', 'Informático', 'Instalación', 'Limpieza', 'Mantenimiento', 'Reparación'],
-    'Varios': ['General', 'Otros']
-  });
+  //update: Remove hardcoded categories and add dynamic ones
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [categoriesWithSubcategories, setCategoriesWithSubcategories] = useState({});
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [categoriesError, setCategoriesError] = useState(null);
+  
+  // Remove hardcoded productTypesAndSubtypes
+  const [productTypesAndSubtypes, setProductTypesAndSubtypes] = useState({});
   
   const [shopToProductTypesMap, setShopToProductTypesMap] = useState({
     'Artesanía': ['Artesanía', 'Accesorios', 'Joyería'],
@@ -96,21 +101,145 @@ export const ProductProvider = ({ children }) => {
     'Técnico': ['Servicio', 'Electrónica', 'Muebles']
   });
   
+  //update: Fetch categories based on selected shop
+  useEffect(() => {
+    const fetchCategoriesForShop = async () => {
+      if (!selectedShop?.id_shop) {
+        console.log('No shop selected, skipping category fetch');
+        setCategories([]);
+        return;
+      }
+      
+      console.log(`Fetching categories for shop ${selectedShop.id_shop} (${selectedShop.name_shop})`);
+      setLoadingCategories(true);
+      setCategoriesError(null);
+      
+      try {
+        //update: Use the new endpoint to get categories filtered by shop
+        const response = await axiosInstance.get(`/product-category/shop/${selectedShop.id_shop}`);
+        console.log('Categories response for shop:', response.data);
+        
+        if (response.data && response.data.data) {
+          setCategories(response.data.data);
+          console.log(`Set ${response.data.data.length} categories for shop ${selectedShop.id_shop}`);
+          
+          // Build categoriesWithSubcategories for the filtered categories
+          const filteredCategoriesWithSubs = {};
+          for (const category of response.data.data) {
+            try {
+              const subResponse = await axiosInstance.get(`/product-subcategory/shop/${selectedShop.id_shop}/category/${category.id_category}`);
+              if (subResponse.data && subResponse.data.data) {
+                filteredCategoriesWithSubs[category.name_category] = subResponse.data.data.map(sub => sub.name_subcategory);
+              }
+            } catch (subError) {
+              console.error(`Error fetching subcategories for category ${category.id_category}:`, subError);
+              filteredCategoriesWithSubs[category.name_category] = [];
+            }
+          }
+          
+          setCategoriesWithSubcategories(filteredCategoriesWithSubs);
+          setProductTypesAndSubtypes(filteredCategoriesWithSubs); // For backward compatibility
+          
+          // Extract category names for filter options
+          const categoryNames = Object.keys(filteredCategoriesWithSubs);
+          setFilterOptions(prev => ({
+            ...prev,
+            tipo: {
+              ...prev.tipo,
+              options: categoryNames
+            }
+          }));
+        } else {
+          console.error('No categories data in response');
+          setCategories([]);
+        }
+        
+      } catch (error) {
+        console.error('Error fetching categories for shop:', error);
+        console.error('Error details:', error.response || error);
+        setCategoriesError('Error al cargar las categorías para este comercio');
+        setCategories([]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    
+    fetchCategoriesForShop();
+  }, [selectedShop]); // Re-fetch when selected shop changes
+  
+  
+  //update: Modified to fetch subcategories filtered by shop type with enhanced logging
+  const fetchSubcategoriesByCategory = useCallback(async (categoryId) => {
+    if (!categoryId) {
+        console.log('No category ID provided, clearing subcategories');
+        setSubcategories([]);
+        return;
+    }
+    
+    try {
+        setLoadingSubcategories(true);
+        setSubcategories([]); // Clear existing subcategories while loading
+        
+        // If we have a selected shop, use the filtered endpoint
+        if (selectedShop?.id_shop) {
+            console.log(`Fetching subcategories for shop ${selectedShop.id_shop} and category ${categoryId}`);
+            console.log(`Shop type: ${selectedShop.type_shop} (ID: ${selectedShop.id_type})`);
+            
+            const response = await axiosInstance.get(`/product-subcategory/shop/${selectedShop.id_shop}/category/${categoryId}`);
+            
+            console.log('Subcategories response:', response.data);
+            
+            if (response.data.error) {
+                console.error('Error fetching subcategories:', response.data.error);
+                setSubcategories([]);
+            } else {
+                const subcategoriesData = response.data.data || [];
+                console.log(`Received ${subcategoriesData.length} subcategories:`, subcategoriesData.map(s => s.name_subcategory));
+                setSubcategories(subcategoriesData);
+            }
+        } else {
+            // Fallback to regular endpoint if no shop is selected
+            console.log(`No shop selected, fetching all subcategories for category ${categoryId}`);
+            const response = await axiosInstance.get(`/product-subcategory/by-category/${categoryId}`);
+            
+            if (response.data.error) {
+                console.error('Error fetching subcategories:', response.data.error);
+                setSubcategories([]);
+            } else {
+                setSubcategories(response.data.data || []);
+            }
+        }
+    } catch (error) {
+        console.error('Error in fetchSubcategoriesByCategory:', error);
+        setSubcategories([]);
+    } finally {
+        setLoadingSubcategories(false);
+    }
+  }, [selectedShop]);
+  
   // Helper functions
   const refreshProductList = () => {
     setProductListKey(prevKey => prevKey + 1);
   };
   
   const getAvailableProductTypesForShop = (shopType) => {
-    return shopToProductTypesMap[shopType] || [];
+    // Get the category names allowed for this shop type
+    const allowedCategoryNames = shopToProductTypesMap[shopType] || [];
+    
+    // Filter categories based on the allowed names
+    return categories.filter(cat => allowedCategoryNames.includes(cat.name_category));
   };
   
   const resetProductTypeFields = () => {
     setNewProductData(prev => ({
       ...prev,
+      id_category: '',
+      id_subcategory: '',
       type_product: '',
-      subtype_product: ''
+      subtype_product: '',
+      price_unit: 'Euros/unidad' //update: Reset price unit to default
     }));
+    setSubcategories([]);
   };
 
   const value = {
@@ -130,6 +259,14 @@ export const ProductProvider = ({ children }) => {
     shopToProductTypesMap, setShopToProductTypesMap,
     getAvailableProductTypesForShop,
     resetProductTypeFields,
+    //update: Add new category-related state and functions
+    categories,
+    subcategories,
+    categoriesWithSubcategories,
+    loadingCategories,
+    categoriesError,
+    fetchSubcategoriesByCategory,
+    loadingSubcategories,
   };
 
   return (

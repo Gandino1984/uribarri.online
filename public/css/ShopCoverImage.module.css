@@ -1,9 +1,11 @@
-
 .container {
   position: relative;
   width: 100%;
   overflow: hidden;
-  aspect-ratio: 4.5/1;
+  aspect-ratio: 3/1;
+  flex-shrink: 0;
+  flex-grow: 1;
+  max-height: 250px;
 }
 
 .imageWrapper {
@@ -192,7 +194,13 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
-/* UPDATE: Adjusted responsive styles for 900x200 (4.5:1) aspect ratio */
+@media (max-width: 639px) {
+  .container {
+    aspect-ratio: 2.5/1;
+    max-height: 150px;
+  }
+}
+
 /* Small tablets (640px and up) */
 @media (min-width: 640px) {
   .uploadText {
@@ -201,6 +209,11 @@
 
   .uploadButtonContainer {
     padding: 14px;
+  }
+  
+  .container {
+    aspect-ratio: 3/1;
+    max-height: 180px;
   }
 }
 
@@ -214,6 +227,10 @@
   .editText {
     font-size: 16px;
   }
+  
+  .container {
+    max-height: 200px;
+  }
 }
 
 /* Laptops/Desktops (1024px and up) */
@@ -225,13 +242,16 @@
   .uploadButton {
     padding: 12px;
   }
+  
+  .container {
+    max-height: 250px;
+  }
 }
 
-/* UPDATE: In very narrow portrait mode, adjust to a slightly less extreme ratio for better viewing */
 @media (orientation: portrait) and (max-width: 639px) {
   .container {
-    /* Still wide but not as extreme in portrait mode on small screens */
-    aspect-ratio: 3.5/1;
+    aspect-ratio: 2.5/1;
+    max-height: 140px;
   }
   
   .uploadButtonContainer {

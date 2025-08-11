@@ -1,19 +1,84 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import axiosInstance from '../../../../../utils/app/axiosConfig.js';
 
 const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
-  // Get the list of shop types
-  const shopTypes = Object.keys(shopTypesAndSubtypes);
-  const subtypes = newShop.type_shop ? shopTypesAndSubtypes[newShop.type_shop] : [];
+  //update: Add state to store types with their IDs
+  const [typesWithIds, setTypesWithIds] = useState([]);
+  //update: Add state for subtypes of selected type
+  const [availableSubtypes, setAvailableSubtypes] = useState([]);
+  const [loadingSubtypes, setLoadingSubtypes] = useState(false);
+  
+  //update: Fetch types with IDs when component mounts
+  useEffect(() => {
+    fetchTypesWithIds();
+  }, []);
+  
+  //update: Fetch subtypes when type changes
+  useEffect(() => {
+    if (newShop.id_type) {
+      fetchSubtypesForType(newShop.id_type);
+    } else {
+      setAvailableSubtypes([]);
+    }
+  }, [newShop.id_type]);
+  
+  //update: Function to fetch types with their IDs
+  const fetchTypesWithIds = async () => {
+    try {
+      const response = await axiosInstance.get('/type/verified');
+      if (response.data && !response.data.error) {
+        setTypesWithIds(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching types:', error);
+    }
+  };
+
+  //update: Function to fetch subtypes for a specific type
+  const fetchSubtypesForType = async (typeId) => {
+    try {
+      setLoadingSubtypes(true);
+      const response = await axiosInstance.get(`/type/${typeId}/subtypes`);
+      if (response.data && !response.data.error) {
+        setAvailableSubtypes(response.data.data);
+      } else {
+        setAvailableSubtypes([]);
+      }
+    } catch (error) {
+      console.error('Error fetching subtypes:', error);
+      setAvailableSubtypes([]);
+    } finally {
+      setLoadingSubtypes(false);
+    }
+  };
+
+  //update: Handle type change - now sets id_type and resets subtype
+  const handleTypeChange = (e) => {
+    const selectedTypeId = e.target.value;
+    setNewShop({
+      ...newShop, 
+      id_type: selectedTypeId,
+      id_subtype: '' // Reset subtype when type changes
+    });
+  };
+
+  //update: Handle subtype change
+  const handleSubtypeChange = (e) => {
+    const selectedSubtypeId = e.target.value;
+    setNewShop({
+      ...newShop, 
+      id_subtype: selectedSubtypeId
+    });
+  };
 
   return (
     <section className={styles.formFields}>
-      <h2 className={styles.sectionTitle}>Información básica</h2>
+      <h2 className={styles.sectionTitle}>Paso 2: Información básica</h2>
       <p className={styles.sectionDescription}>
-        Proporciona los detalles principales de tu comercio
+        Proporciona los detalles principales de tu comercio. Esta información será visible para todos los usuarios.
       </p>
       
-      {/* 🚀 UPDATE: Added wrapper div for better centering and max-width control */}
       <div className={styles.basicInfoInputWrapper}>
         <div className={styles.formField}>
           <input
@@ -28,35 +93,42 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
         
         <div className={styles.formField}>
           <select
-            value={newShop.type_shop || ""}
-            onChange={(e) => {
-              setNewShop({
-                ...newShop, 
-                type_shop: e.target.value,
-                subtype_shop: ''
-              })
-            }}
-            className={`${styles.input} ${newShop.type_shop ? 'has-value' : ''}`}
+            value={newShop.id_type || ""}
+            onChange={handleTypeChange}
+            className={`${styles.input} ${newShop.id_type ? 'has-value' : ''}`}
             required
           >
-            <option value="" disabled>Categoría</option>
-            {shopTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
+            <option value="" disabled>Tipo de comercio</option>
+            {typesWithIds.map(type => (
+              <option key={type.id_type} value={type.id_type}>
+                {type.name_type}
+              </option>
             ))}
           </select>
         </div>
-
-        {newShop.type_shop && (
+        
+        {/* Show subtype select only when a type is selected and subtypes are available */}
+        {newShop.id_type && (
           <div className={styles.formField}>
             <select
-              value={newShop.subtype_shop || ""}
-              onChange={(e) => setNewShop({...newShop, subtype_shop: e.target.value})}
-              className={`${styles.input} ${newShop.subtype_shop ? 'has-value' : ''}`}
+              value={newShop.id_subtype || ""}
+              onChange={handleSubtypeChange}
+              className={`${styles.input} ${newShop.id_subtype ? 'has-value' : ''}`}
               required
+              disabled={loadingSubtypes || availableSubtypes.length === 0}
             >
-              <option value="" disabled>Subcategoría</option>
-              {subtypes.map(subtype => (
-                <option key={subtype} value={subtype}>{subtype}</option>
+              <option value="" disabled>
+                {loadingSubtypes 
+                  ? "Cargando subtipos..." 
+                  : availableSubtypes.length === 0 
+                    ? "Sin subtipos disponibles" 
+                    : "Selecciona un subtipo"
+                }
+              </option>
+              {availableSubtypes.map(subtype => (
+                <option key={subtype.id_subtype} value={subtype.id_subtype}>
+                  {subtype.name_subtype}
+                </option>
               ))}
             </select>
           </div>
