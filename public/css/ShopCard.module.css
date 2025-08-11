@@ -8,6 +8,7 @@
   flex-direction: column;
   gap: 1rem;
   position: relative;
+  /* overflow: hidden; */
 }
 
 .shopCardWrapper.withMap {
@@ -288,6 +289,7 @@
   transition: all 0.3s ease;
   border-radius: 6px;
   z-index: 100;
+  overflow:hidden
 }
 
 /* Map canvas styling */

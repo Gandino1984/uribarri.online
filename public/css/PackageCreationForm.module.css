@@ -1,6 +1,7 @@
-/* PackageCreationForm.module.css - Updated to match app style */
+/* ProductCreationForm.module.css - Matching PackageCreationForm style */
 
-.formContainer {
+/* Main Container - Matching PackageCreationForm gradient style */
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,32 +15,14 @@
   border-radius: 15px;
 }
 
-.formHeader {
+/* Header Section */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: .5rem;
   padding-bottom: .5rem;
   width: 100%;
-}
-
-.backButton {
-  display: flex;
-  align-items: center;
-  padding: 8px 15px;
-  margin-top: 10px;
-  background-color: #f1f1f1;
-  color: #333;
-  border: 1px solid #ddd;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.backButton:hover {
-  background-color: #e5e5e5;
-  color: white;
-  background-color: var(--saturated-orange);
 }
 
 .formTitle {
@@ -52,10 +35,6 @@
   margin-bottom: .5rem;
   font-size: 1.8rem;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 }
 
 .formTitle::after {
@@ -77,26 +56,7 @@
   );
 }
 
-.formTitleIcon {
-  color: var(--saturated-blue);
-}
-
-.form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.formSection {
-  width: 100%;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 1rem;
-}
-
+/* Section Titles and Descriptions */
 .sectionTitle {
   font-size: 1.2rem;
   font-weight: 600;
@@ -105,71 +65,63 @@
   text-align: center;
 }
 
-.selectedProductsList {
+.sectionDescription {
+  text-align: center;
+  font-size: 0.8rem;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* Step Tracker Styles - matching PackageCreationForm */
+.stepTracker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 25px;
+  position: relative;
+}
+
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 15px;
+  z-index: 2;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+}
+
+.stepDot.active {
+  background-color: var(--saturated-blue);
+  color: white;
+  transform: scale(1.4);
+}
+
+/* Form Styles */
+.form {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 0.5rem;
-}
-
-.selectedProductsList::-webkit-scrollbar {
-  width: 6px;
-}
-
-.selectedProductsList::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-.selectedProductsList::-webkit-scrollbar-thumb {
-  background: var(--saturated-orange);
-  border-radius: 3px;
-}
-
-.selectedProductItem {
-  display: flex;
   align-items: center;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  border-left: 3px solid var(--saturated-blue);
-  transition: all 0.2s ease;
 }
 
-.selectedProductItem:hover {
-  transform: translateX(4px);
-  background: rgba(255, 255, 255, 0.3);
+/* Form Sections - matching PackageCreationForm */
+.imageSection,
+.basicInfoSection,
+.detailsSection {
+  width: 100%;
+  margin-bottom: 20px;
 }
 
-.productNumber {
-  font-weight: 700;
-  margin-right: 0.75rem;
-  color: var(--saturated-blue);
-  min-width: 20px;
-}
-
-.productName {
-  flex: 1;
-  font-weight: 500;
-  color: white;
-}
-
-.productPrice {
-  font-weight: 700;
-  color: var(--light-orange);
-  margin-left: 0.75rem;
-}
-
-.noProductsMessage {
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
-  text-align: center;
-  padding: 1.5rem;
-  font-size: 0.9rem;
-}
-
+/* Form Fields - matching PackageCreationForm style */
 .formField {
   display: flex;
   justify-content: center;
@@ -181,230 +133,66 @@
   width: 100%;
 }
 
-.label {
+.formField label {
   display: block;
   margin-bottom: 4px;
   font-size: .9rem;
   font-weight: 500;
   color: white;
-  align-self: flex-start;
 }
 
-.input {
+/* Date Input Specific */
+.dateInput {
   width: 100%;
-  padding: 8px 16px;
-  border: none;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* Product Limit Info - matching PackageCreationForm section style */
+.productLimitInfo {
+  padding-top: .5rem;
+  padding-left: 1rem;
   border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  background-color: white;
-  transition: all 0.2s ease;
-  color: black;
-  outline: none;
-}
-
-.input::placeholder {
-  color: var(--light-gray);
-  opacity: 1;
-}
-
-.input:focus {
-  border: 2px solid white;
-  background-color: white;
-  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
-}
-
-.input:hover {
-  border: 2px solid white;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
-}
-
-.inputError {
-  border: 2px solid var(--gradient-red-mid) !important;
-}
-
-.inputError:focus {
-  box-shadow: 0 0 13px 1px rgba(229, 57, 53, 0.3) !important;
-}
-
-.errorText {
-  color: var(--gradient-red-mid);
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  align-self: flex-start;
-}
-
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 500;
-  color: white;
-  font-size: 0.9rem;
-}
-
-.checkbox {
-  margin-right: 0.5rem;
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--saturated-blue);
-}
-
-/* Image upload styles */
-.imageUploadContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
   width: 100%;
-  margin-top: 1rem;
 }
 
-.imagePreviewContainer {
-  position: relative;
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-.imagePreview {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.imagePreview:hover {
-  border-color: var(--saturated-blue);
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-  transform: scale(1.02);
-}
-
-.removeImageButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
+.limitHeader {
   display: flex;
+  font-size: .85rem;
   align-items: center;
   justify-content: center;
-  background: var(--gradient-red-mid);
-  color: white;
-  border: none;
+  gap: .5rem;
+  font-weight: 500;
+  margin-bottom: .5rem;
+}
+
+.alertIcon {
   border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background-color: var(--light-green);
 }
 
-.removeImageButton:hover {
-  background: var(--gradient-red-dark);
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.upgradeMessage {
+  font-size: 0.85rem;
+  color: var(--light-orange);
+  margin-top: 5px;
 }
 
-.imageUploadLabel {
-  display: block;
-  cursor: pointer;
-  width: 100%;
-}
-
-.hiddenFileInput {
-  display: none;
-}
-
-.uploadPlaceholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  min-height: 150px;
-}
-
-.imageUploadLabel:hover .uploadPlaceholder {
-  border-color: var(--saturated-blue);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.uploadIcon {
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.2s ease;
-}
-
-.imageUploadLabel:hover .uploadIcon {
-  color: var(--saturated-blue);
-}
-
-.uploadText {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: white;
-  text-align: center;
-}
-
-.uploadHint {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-}
-
-.uploadProgress {
-  position: relative;
-  width: 100%;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-top: 0.5rem;
-}
-
-.uploadProgressBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: var(--saturated-blue);
-  transition: width 0.3s ease;
-  border-radius: 10px;
-}
-
-.uploadProgressText {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-/* Form actions */
-.formActions {
+/* Buttons and navigation styles - matching PackageCreationForm */
+.navigationButtons {
   display: flex;
   justify-content: space-between;
   margin-top: 1rem;
   width: 100%;
-  gap: 1rem;
 }
 
-.button {
+.navButton {
   display: flex;
   align-items: center;
   padding: 8px 15px;
@@ -413,33 +201,23 @@
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--dark-orange);
-  gap: 0.5rem;
-  border: none;
-  border-radius: 5px;
-  font-weight: 500;
 }
 
-.button:hover {
+.navButton:hover {
   color: white;
   background-color: var(--saturated-orange);
-}
-
-.cancelButton {
-  background-color: #f1f1f1;
-  color: #333;
-  border: 1px solid #ddd;
-}
-
-.cancelButton:hover {
-  background-color: #e5e5e5;
-  color: #333;
-  border-color: #ccc;
 }
 
 .submitButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
   background-color: var(--saturated-orange);
   color: white;
   border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .submitButton:hover {
@@ -453,116 +231,373 @@
   opacity: 0.65;
 }
 
-/* Loading state */
-.loadingContainer {
+.backButton {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: #e5e5e5;
+}
+
+/* Shop Type Guidance */
+.shopTypeGuidance {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Image upload container styles - matching PackageCreationForm */
+.imageUploadContainer {
+  cursor: pointer;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 5px;
+  border: 2px dashed #ddd;
+  width: 100%;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.imageUploadContainer:hover {
+  border-color: var(--saturated-orange);
+}
+
+.imageUploadContainer:hover .editOverlay {
+  opacity: 1;
+}
+
+/* Image preview box styles */
+.imagePreviewBox {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.noImagePlaceholder {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  color: #999;
+  font-size: 14px;
+}
+
+.placeholderIcon {
+  margin-bottom: 0.75rem;
+  color: #aaa;
+  opacity: 0.5;
+}
+
+/* Upload button overlay styles */
+.editOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.5);
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.uploadButtonOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(0,0,0,0.7);
+  transition: all 0.3s ease;
+}
+
+.loaderOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 10;
+}
+
+/* Buttons for image upload */
+.imageButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #4A90E2;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.imageButton:hover {
+  background-color: #3A7BC8;
+}
+
+.clearImageButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #E25549;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.clearImageButton:hover {
+  background-color: #C43A30;
+}
+
+.clearImageButton:disabled,
+.imageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Buttons Container */
+.buttonsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+/* Reset Button */
+.resetButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resetIcon {
+  transition: transform 0.3s ease;
+}
+
+.resetButton:hover .resetIcon {
+  transform: rotate(90deg);
+}
+
+/* Remove button overlay */
+.removeButtonOverlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.imageUploadContainer:hover .removeButtonOverlay {
+  opacity: 1;
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background-color: rgba(220, 53, 69, 0.8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+}
+
+.removeButton:hover {
+  background-color: rgb(220, 53, 69);
+}
+
+/* Animation for spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .spinner {
   animation: spin 1.5s linear infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Price summary styles */
-.priceSummary {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.priceRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  color: white;
+/* Error Message */
+.errorMessage {
+  color: #d32f2f;
   font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  width: 100%;
 }
 
-.priceRow:not(:last-child) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Toggle Switch Container */
+.toggleSwitchContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem;
 }
 
-.priceLabel {
+.toggleLabel {
+  font-size: 0.85rem;
+  color: #666;
   font-weight: 500;
 }
 
-.priceValue {
-  font-weight: 600;
-  color: var(--light-orange);
+/* Checkbox Container */
+.checkboxContainer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.discountValue {
-  font-weight: 600;
-  color: var(--light-green);
+/* Price Container for Price + Unit */
+.priceContainer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
 }
 
-.finalPriceValue {
-  font-weight: 700;
-  color: var(--saturated-blue);
-  font-size: 1.1rem;
+.priceInput {
+  flex: 1;
+  min-width: 100px;
+}
+
+.priceUnitSelect {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+
+/* Input Label */
+.inputLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: white;
+}
+
+.loadingContainer p {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+/* Error Container */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  background: rgba(254, 226, 226, 0.3);
+  border-radius: 12px;
+  margin: 1rem;
+}
+
+.errorContainer p {
+  color: #ef4444;
+  font-weight: 500;
+  text-align: center;
+}
+
+.retryButton {
+  padding: 0.625rem 1.25rem;
+  background: var(--gradient-red-mid);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.retryButton:hover {
+  background: var(--gradient-red-start);
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+  transform: translateY(-2px);
 }
 
 /* Responsive styles */
 @media screen and (max-width: 600px) {
-  .formContainer {
+  .formField {
+    flex-direction: row;
+  }
+  
+  .container {
     padding: 15px;
     max-width: 100%;
-    margin: 0 0.5rem;
   }
   
-  .formTitle {
-    font-size: 1.5rem;
+  .stepDot {
+    width: 24px;
+    height: 24px;
+    margin: 0 10px;
+    font-size: 0.8rem;
   }
   
-  .sectionTitle {
-    font-size: 1.1rem;
-  }
-  
-  .formActions {
+  /* Adjust toggle switch container for mobile */
+  .toggleSwitchContainer {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   
-  .button {
+  .priceContainer {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .priceInput,
+  .priceUnitSelect {
     width: 100%;
-    justify-content: center;
-  }
-  
-  .selectedProductItem {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-  }
-  
-  .productName {
-    font-size: 0.85rem;
-  }
-  
-  .productPrice {
-    font-size: 0.85rem;
-  }
-  
-  .imagePreview {
-    height: 150px;
-  }
-  
-  .uploadPlaceholder {
-    padding: 1.5rem;
-    min-height: 120px;
-  }
-  
-  .uploadIcon {
-    width: 32px;
-    height: 32px;
   }
 }

@@ -40,6 +40,7 @@ import {
   DollarSign,
   Info,
   Clock,
+  Check,
   CheckCircle
 } from 'lucide-react';
 
@@ -57,6 +58,8 @@ const ShopProductsList = () => {
     isModalOpen, setIsModalOpen,
     isAccepted, setIsAccepted,
     isDeclined, setIsDeclined,
+    modalMessage, setModalMessage,
+    modalConfirmCallback, setModalConfirmCallback,
     isImageModalOpen, setIsImageModalOpen,
     setShowSuccessCard,
     setShowErrorCard,
@@ -124,10 +127,9 @@ const ShopProductsList = () => {
   // Add state to control showing packages list
   const [showPackages, setShowPackages] = useState(false);
   
-  // Add state for delete modal
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [productToDeleteModal, setProductToDeleteModal] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  //update: State for product actions
+  const [productForAction, setProductForAction] = useState(null);
+  const [actionType, setActionType] = useState(null); // 'delete' or 'toggle'
 
   // Get all Utils from ShopProductsListUtils
   const {
@@ -138,7 +140,7 @@ const ShopProductsList = () => {
     confirmBulkDelete,
     handleSelectProduct,
     handleDeleteProduct: handleDeleteProductUtil,
-    handleBulkDelete,
+    handleBulkDelete: handleBulkDeleteUtil,
     handleAddProduct,
     handleUpdateProduct,
     handleToggleActiveStatus: handleToggleActiveStatusUtil,
@@ -232,144 +234,117 @@ const ShopProductsList = () => {
     handleBulkUpdateFn(selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard);
   };
   
-  //update: Handle delete product with browser confirm for testing
-  const handleDeleteProduct = async (product) => {
+  //update: Handle delete product with confirmation modal
+  const handleDeleteProduct = (product) => {
     console.log('handleDeleteProduct called with product:', product);
-    
-    // Use browser confirm for testing
-    const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el producto "${product.name_product}"?`);
-    
-    if (confirmDelete) {
-      console.log('User confirmed deletion, proceeding...');
-      try {
-        setIsDeleting(true);
-        
-        // Call the delete function directly
-        const result = await deleteProduct(product.id_product);
-        console.log('Delete result:', result);
-        
-        if (result.success) {
-          // Show success message
-          setSuccess(prev => ({
-            ...prev,
-            deleteSuccess: result.message || 'Producto eliminado correctamente',
-            productSuccess: '',
-            createSuccess: '',
-            updateSuccess: ''
-          }));
-          setShowSuccessCard(true);
+    setProductForAction(product);
+    setActionType('delete');
+    setModalMessage(`¿Estás seguro de que deseas eliminar el producto "${product.name_product}"?`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        console.log('User confirmed deletion, proceeding...');
+        try {
+          const result = await deleteProduct(product.id_product);
+          console.log('Delete result:', result);
           
-          // Refresh the product list
-          await fetchProductsByShop();
-          refreshProductList();
-          
-          // Clear selected products if needed
-          if (selectedProducts.has(product.id_product)) {
-            setSelectedProducts(prev => {
-              const newSet = new Set(prev);
-              newSet.delete(product.id_product);
-              return newSet;
-            });
+          if (result.success) {
+            // Show success message
+            setSuccess(prev => ({
+              ...prev,
+              deleteSuccess: result.message || 'Producto eliminado correctamente',
+              productSuccess: '',
+              createSuccess: '',
+              updateSuccess: ''
+            }));
+            setShowSuccessCard(true);
+            
+            // Refresh the product list
+            await fetchProductsByShop();
+            refreshProductList();
+            
+            // Clear selected products if needed
+            if (selectedProducts.has(product.id_product)) {
+              setSelectedProducts(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(product.id_product);
+                return newSet;
+              });
+            }
+          } else {
+            // Show error message
+            console.error('Delete failed:', result.message);
+            setError(prevError => ({
+              ...prevError,
+              productError: result.message || 'Error al eliminar el producto'
+            }));
+            setShowErrorCard(true);
           }
-        } else {
-          // Show error message
-          console.error('Delete failed:', result.message);
+        } catch (error) {
+          console.error('Exception during deletion:', error);
           setError(prevError => ({
             ...prevError,
-            productError: result.message || 'Error al eliminar el producto'
+            productError: error.message || 'Error al eliminar el producto'
           }));
           setShowErrorCard(true);
         }
-      } catch (error) {
-        console.error('Exception during deletion:', error);
-        setError(prevError => ({
-          ...prevError,
-          productError: error.message || 'Error al eliminar el producto'
-        }));
-        setShowErrorCard(true);
-      } finally {
-        setIsDeleting(false);
+      } else {
+        console.log('User cancelled deletion');
       }
-    } else {
-      console.log('User cancelled deletion');
-    }
+      setProductForAction(null);
+      setActionType(null);
+    });
+    setIsModalOpen(true);
   };
   
-  //update: Confirm delete product - not used with browser confirm but keeping for future modal implementation
-  const confirmDeleteProduct = async () => {
-    if (!productToDeleteModal) {
-      console.error('No product selected for deletion');
-      return;
-    }
-    
-    try {
-      setIsDeleting(true);
-      console.log('Starting deletion for product:', productToDeleteModal.id_product);
-      
-      const result = await deleteProduct(productToDeleteModal.id_product);
-      console.log('Delete result:', result);
-      
-      if (result.success) {
-        setSuccess(prev => ({
-          ...prev,
-          deleteSuccess: result.message || 'Producto eliminado correctamente',
-          productSuccess: '',
-          createSuccess: '',
-          updateSuccess: ''
-        }));
-        setShowSuccessCard(true);
-        
-        await fetchProductsByShop();
-        refreshProductList();
-        
-        setShowDeleteModal(false);
-        setProductToDeleteModal(null);
-        
-        if (selectedProducts.has(productToDeleteModal.id_product)) {
-          setSelectedProducts(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(productToDeleteModal.id_product);
-            return newSet;
-          });
+  //update: Toggle product active status with confirmation modal
+  const handleToggleActiveStatus = (product) => {
+    console.log('handleToggleActiveStatus called with product:', product);
+    const action = product.active_product ? 'desactivar' : 'activar';
+    setProductForAction(product);
+    setActionType('toggle');
+    setModalMessage(`¿Estás seguro de que deseas ${action} el producto "${product.name_product}"?`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        try {
+          setIsTogglingStatus(product.id_product);
+          
+          const result = await handleToggleActiveStatusUtil(product.id_product);
+          
+          if (result.success) {
+            await fetchProductsByShop();
+            refreshProductList();
+          }
+        } finally {
+          setIsTogglingStatus(null);
         }
-      } else {
-        console.error('Delete failed:', result.message);
-        setError(prevError => ({
-          ...prevError,
-          productError: result.message || 'Error al eliminar el producto'
-        }));
-        setShowErrorCard(true);
-        setShowDeleteModal(false);
-        setProductToDeleteModal(null);
       }
-    } catch (error) {
-      console.error('Exception during product deletion:', error);
+      setProductForAction(null);
+      setActionType(null);
+    });
+    setIsModalOpen(true);
+  };
+
+  //update: Handle bulk delete with confirmation modal
+  const handleBulkDelete = () => {
+    if (selectedProducts.size === 0) {
       setError(prevError => ({
         ...prevError,
-        productError: error.message || 'Error al eliminar el producto'
+        productError: "No hay productos seleccionados para eliminar"
       }));
       setShowErrorCard(true);
-      setShowDeleteModal(false);
-      setProductToDeleteModal(null);
-    } finally {
-      setIsDeleting(false);
+      return;
     }
-  };
-  
-  //update: Toggle product active status
-  const handleToggleActiveStatus = async (product) => {
-    try {
-      setIsTogglingStatus(product.id_product);
-      
-      const result = await handleToggleActiveStatusUtil(product.id_product);
-      
-      if (result.success) {
-        await fetchProductsByShop();
-        refreshProductList();
+
+    setModalMessage(`¿Estás seguro que deseas eliminar ${selectedProducts.size} producto${selectedProducts.size > 1 ? 's' : ''}?`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        const result = await bulkDeleteProducts();
+        if (result.success) {
+          // Success is already handled in bulkDeleteProducts
+        }
       }
-    } finally {
-      setIsTogglingStatus(null);
-    }
+    });
+    setIsModalOpen(true);
   };
 
   // Handle package creation
@@ -531,6 +506,15 @@ const ShopProductsList = () => {
     };
   }, [activeActionsMenu]);
 
+  //update: Reset modal state when accepted/declined changes
+  useEffect(() => {
+    if (isAccepted || isDeclined) {
+      // Reset states after modal action is processed
+      setIsAccepted(false);
+      setIsDeclined(false);
+    }
+  }, [isAccepted, isDeclined, setIsAccepted, setIsDeclined]);
+
   if (!selectedShop) {
     console.log('No shop selected in ShopProductsList');
     return <NoShopSelected setShowProductManagement={setShowProductManagement} />;
@@ -562,19 +546,7 @@ const ShopProductsList = () => {
 
   return (
     <>
-      <ConfirmationModal 
-        isOpen={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setProductToDeleteModal(null);
-        }}
-        onConfirm={confirmDeleteProduct}
-        title="Eliminar Producto"
-        message={`¿Estás seguro de que deseas eliminar el producto "${productToDeleteModal?.name_product || 'Sin nombre'}"? Esta acción no se puede deshacer.`}
-        confirmText="Eliminar"
-        cancelText="Cancelar"
-        isLoading={isDeleting}
-      />
+      <ConfirmationModal />
 
       <ImageModal
         isOpen={isImageModalOpen}
@@ -788,7 +760,6 @@ const ShopProductsList = () => {
                             onClick={() => handleDeleteProduct(product)}
                             className={`${styles.actionButton} ${styles.deleteButton}`}
                             title="Eliminar"
-                            disabled={isDeleting}
                           >
                             <Trash2 size={18} />
                           </button>
@@ -798,7 +769,7 @@ const ShopProductsList = () => {
                             className={`${styles.actionButton} ${selectedProducts.has(product.id_product) ? styles.selectedButton : ''}`}
                             title={selectedProducts.has(product.id_product) ? 'Deseleccionar' : 'Seleccionar'}
                           >
-                            {selectedProducts.has(product.id_product) ? <CheckCircle size={18} /> : <Package size={18} />}
+                            {selectedProducts.has(product.id_product) ? <CheckCircle size={18} /> : <Check size={18} />}
                           </button>
                           
                           <button

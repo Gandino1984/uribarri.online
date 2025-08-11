@@ -111,11 +111,11 @@ input[type="text"] {
 
 input[type="text"]::placeholder {
   color: lightgray;
-  opacity: 1; 
+  opacity: 1;   
 }
 
 input[type="text"]:focus {
-  color: black; 
+  color: blue; 
   outline: 2px solid black;
   border: none;
   background-color: white;
@@ -201,20 +201,20 @@ input[type="time"].hasValue {
 input[type="number"] {
   width: auto;
   min-width: 3rem;
-    border-radius: 8px;
+  border-radius: 8px;
   /* border: 2px solid var(--medium-gray); */
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
   font-size: 0.9rem;
   min-height: 2.5rem;
   font-weight: 500;
-  color: var(--saturated-blue); 
+  color: blue; 
   transition: all 0.2s ease;
   -moz-appearance: textfield;
 }
 
 
 input[type="number"]::placeholder {
-  color: var(--light-gray);
+  color: lightgray;
   opacity: 1; /* Firefox needs this */
 }
 
@@ -250,29 +250,29 @@ input[type="number"] {
 textarea {
   min-height: 2.5rem;
   width: 100%;
-  border: 2px solid var(--medium-gray);
+  border: 2px solid lightgray;
   padding: var(--spacing-sm);
   font-size: 0.9rem;
   font-weight: 500;
-  color: black; /* Blue color for entered text */
+  color: black; 
   resize: vertical;
 }
 
 /* Styling for textarea placeholders */
 textarea::placeholder {
-  color: var(--light-gray);
+  color: lightgray;
   opacity: 1; /* Firefox needs this */
 }
 
 textarea:focus {
   color: black; /* Keep blue color when focused */
-  border: 2px solid var(--saturated-orange);
+  border: 2px solid blue;
   outline: none;
   box-shadow: var(--focus-shadow);
 }
 
 textarea:hover {
-  border: 2px solid var(--saturated-blue);
+  border: 2px solid blue;
 }
 
 
@@ -294,15 +294,15 @@ button {
   touch-action: manipulation;
   transition: all 0.25s ease;
 }
-
+º
 button:hover {
   /* border: none; */
   color: white;
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated);
 }
 
 button:active {
-  background-color: var(--saturated-blue);
+  background-color: var(--saturated);
   color: white;
 }
 
@@ -317,7 +317,7 @@ select {
   padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
   font-size: 0.9rem;
   font-weight: 600;
-  color: gray !important; 
+  color: lightgray !important; 
   background-color: white;
   border-radius: 8px;
   margin-bottom: .5rem;

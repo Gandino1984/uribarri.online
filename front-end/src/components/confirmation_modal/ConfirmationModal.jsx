@@ -81,13 +81,13 @@ const ConfirmationModal = () => {
         className={styles.modalContainer}
         style={modalAnimation}
       >
-        <button
+        {/* <button
           onClick={handleDecline}
           className={styles.closeButton}
           aria-label="Close modal"
         >
           <X size={20} />
-        </button>
+        </button> */}
 
         <div className={styles.modalContent}>
           <div className={styles.warningIconContainer}>

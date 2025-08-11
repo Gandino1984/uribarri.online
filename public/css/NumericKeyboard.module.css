@@ -49,16 +49,15 @@
     border: 1px solid rgba(255, 255, 255, 0.6);
     user-select: none;
     margin: .1rem;
-    color: var(--dark-gradient-purple-start);
+    color: gray;
     background-color: rgba(255, 255, 255, 0.3);
     transition: all .15s ease;
 }
 
 .key:hover{
     color: white;
-    border: 2px solid white;
-    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent);
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: var(--saturated);
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent); 
 }
 
 .row{

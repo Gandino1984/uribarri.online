@@ -28,10 +28,10 @@
   width: 100%;
   max-width: 28rem;
   margin: 0 1rem;
-  background-color: white;
+  background-color: var(--light-gray);
   border-radius: 12px;
-  background: linear-gradient(to bottom, #ffffff, var(--superlight-orange));
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* background: linear-gradient(to bottom, #ffffff, var(--saturated-blue-transparent)); */
+  /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); */
 }
 
 .closeButton {
