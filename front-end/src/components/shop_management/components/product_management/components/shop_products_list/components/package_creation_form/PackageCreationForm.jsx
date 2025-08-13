@@ -92,47 +92,84 @@ const PackageCreationForm = () => {
       try {
         //update: If in edit mode, populate form with existing package data
         if (isEditMode && selectedPackage) {
-          setNewPackageData({
+          // Set the package data
+          const packageData = {
             id_shop: selectedPackage.id_shop,
-            id_product1: selectedPackage.id_product1,
-            id_product2: selectedPackage.id_product2,
-            id_product3: selectedPackage.id_product3,
-            id_product4: selectedPackage.id_product4,
-            id_product5: selectedPackage.id_product5,
+            id_product1: selectedPackage.id_product1 || '',
+            id_product2: selectedPackage.id_product2 || null,
+            id_product3: selectedPackage.id_product3 || null,
+            id_product4: selectedPackage.id_product4 || null,
+            id_product5: selectedPackage.id_product5 || null,
             name_package: selectedPackage.name_package || '',
             discount_package: selectedPackage.discount_package || 0,
-            active_package: selectedPackage.active_package,
-            image_package: selectedPackage.image_package //update: Include existing image
-          });
+            active_package: selectedPackage.active_package !== undefined ? selectedPackage.active_package : true,
+            image_package: selectedPackage.image_package || null
+          };
+          
+          setNewPackageData(packageData);
           
           //update: Set image preview if package has an image
           if (selectedPackage.image_package) {
             const imageUrl = formatImageUrl(selectedPackage.image_package);
             setImagePreview(imageUrl);
           }
+          
+          // Get product IDs from the package
+          const productIds = [
+            selectedPackage.id_product1,
+            selectedPackage.id_product2,
+            selectedPackage.id_product3,
+            selectedPackage.id_product4,
+            selectedPackage.id_product5
+          ].filter(id => id !== null && id !== undefined && id !== '');
+          
+          // Fetch details for these products
+          if (productIds.length > 0) {
+            const details = await getProductDetails(productIds);
+            setSelectedProductDetails(details);
+            
+            // Calculate prices
+            const total = details.reduce((sum, product) => {
+              if (product && product.price_product) {
+                return sum + (parseFloat(product.price_product) || 0);
+              }
+              return sum;
+            }, 0);
+            setTotalPrice(total);
+            
+            const discount = parseInt(selectedPackage.discount_package) || 0;
+            const discounted = total * (1 - discount / 100);
+            setDiscountedPrice(discounted);
+          }
+        } else {
+          // For new packages, get products from selected products
+          const productIds = [
+            newPackageData.id_product1,
+            newPackageData.id_product2,
+            newPackageData.id_product3,
+            newPackageData.id_product4,
+            newPackageData.id_product5
+          ].filter(id => id !== null && id !== undefined && id !== '');
+          
+          if (productIds.length > 0) {
+            const details = await getProductDetails(productIds);
+            setSelectedProductDetails(details);
+            
+            // Calculate total price
+            const total = details.reduce((sum, product) => {
+              if (product && product.price_product) {
+                return sum + (parseFloat(product.price_product) || 0);
+              }
+              return sum;
+            }, 0);
+            setTotalPrice(total);
+            
+            // Calculate discounted price
+            const discount = parseInt(newPackageData.discount_package) || 0;
+            const discounted = total * (1 - discount / 100);
+            setDiscountedPrice(discounted);
+          }
         }
-        
-        // Get array of selected product IDs
-        const productIds = [
-          newPackageData.id_product1,
-          newPackageData.id_product2,
-          newPackageData.id_product3,
-          newPackageData.id_product4,
-          newPackageData.id_product5
-        ].filter(id => id !== null && id !== '');
-        
-        // Fetch details for selected products
-        const details = await getProductDetails(productIds);
-        setSelectedProductDetails(details);
-        
-        //update: Calculate total price
-        const total = details.reduce((sum, product) => sum + (parseFloat(product.price_product) || 0), 0);
-        setTotalPrice(total);
-        
-        //update: Calculate discounted price
-        const discount = parseInt(newPackageData.discount_package) || 0;
-        const discounted = total * (1 - discount / 100);
-        setDiscountedPrice(discounted);
         
         // Set visibility for animation
         setIsVisible(true);
@@ -148,10 +185,15 @@ const PackageCreationForm = () => {
     };
     
     initForm();
-  }, [isEditMode, selectedPackage]);
+  }, [isEditMode, selectedPackage]); // Removed dependencies that could cause loops
   
-  // Update product details when newPackageData changes
+  // Update product details when newPackageData changes (but not on initial load)
   useEffect(() => {
+    // Skip if we're in edit mode and this is the initial load
+    if (isEditMode && selectedProductDetails.length === 0) {
+      return;
+    }
+    
     const updateProductDetails = async () => {
       // Get array of selected product IDs
       const productIds = [
@@ -160,26 +202,42 @@ const PackageCreationForm = () => {
         newPackageData.id_product3,
         newPackageData.id_product4,
         newPackageData.id_product5
-      ].filter(id => id !== null && id !== '');
+      ].filter(id => id !== null && id !== undefined && id !== '');
       
       if (productIds.length > 0) {
         // Fetch details for selected products
         const details = await getProductDetails(productIds);
-        setSelectedProductDetails(details);
         
-        // Calculate total price
-        const total = details.reduce((sum, product) => sum + (parseFloat(product.price_product) || 0), 0);
-        setTotalPrice(total);
-        
-        // Calculate discounted price
-        const discount = parseInt(newPackageData.discount_package) || 0;
-        const discounted = total * (1 - discount / 100);
-        setDiscountedPrice(discounted);
+        // Only update if we got valid details
+        if (details && details.length > 0) {
+          setSelectedProductDetails(details);
+          
+          // Calculate total price
+          const total = details.reduce((sum, product) => {
+            if (product && product.price_product) {
+              return sum + (parseFloat(product.price_product) || 0);
+            }
+            return sum;
+          }, 0);
+          setTotalPrice(total);
+          
+          // Calculate discounted price
+          const discount = parseInt(newPackageData.discount_package) || 0;
+          const discounted = total * (1 - discount / 100);
+          setDiscountedPrice(discounted);
+        }
+      } else {
+        // No products selected, clear details
+        setSelectedProductDetails([]);
+        setTotalPrice(0);
+        setDiscountedPrice(0);
       }
     };
     
     updateProductDetails();
-  }, [newPackageData, getProductDetails]);
+  }, [newPackageData.id_product1, newPackageData.id_product2, newPackageData.id_product3, 
+      newPackageData.id_product4, newPackageData.id_product5, newPackageData.discount_package,
+      getProductDetails]);
   
   //update: Enhanced image file selection with optimization
   const handleImageChange = async (e) => {
@@ -439,13 +497,28 @@ const PackageCreationForm = () => {
     }
   };
   
-  // Render selected products list
+  //update: Fixed renderSelectedProducts to handle undefined/null products
   const renderSelectedProducts = () => {
-    return selectedProductDetails.map((product, index) => (
+    // Filter out any null/undefined products before rendering
+    const validProducts = selectedProductDetails.filter(product => 
+      product && product.id_product && product.name_product
+    );
+    
+    if (validProducts.length === 0) {
+      return (
+        <p className={styles.noProductsMessage}>
+          No se pudieron cargar los detalles de los productos
+        </p>
+      );
+    }
+    
+    return validProducts.map((product, index) => (
       <div key={product.id_product} className={styles.selectedProductItem}>
         <span className={styles.productNumber}>{index + 1}.</span>
-        <span className={styles.productName}>{product.name_product}</span>
-        <span className={styles.productPrice}>€{product.price_product}</span>
+        <span className={styles.productName}>{product.name_product || 'Producto sin nombre'}</span>
+        <span className={styles.productPrice}>
+          €{product.price_product ? parseFloat(product.price_product).toFixed(2) : '0.00'}
+        </span>
       </div>
     ));
   };
@@ -471,7 +544,9 @@ const PackageCreationForm = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Selected products section */}
           <div className={styles.formSection}>
-            <h3 className={styles.sectionTitle}>Productos Seleccionados ({selectedProductDetails.length})</h3>
+            <h3 className={styles.sectionTitle}>
+              Productos Seleccionados ({selectedProductDetails.filter(p => p && p.id_product).length})
+            </h3>
             <div className={styles.selectedProductsList}>
               {selectedProductDetails.length > 0 ? (
                 renderSelectedProducts()
@@ -644,7 +719,7 @@ const PackageCreationForm = () => {
             <button
               type="submit"
               className={`${styles.button} ${styles.submitButton}`}
-              disabled={isSubmitting || isUploadingImage}
+              disabled={isSubmitting || isUploadingImage || selectedProductDetails.filter(p => p && p.id_product).length === 0}
             >
               <Save size={18} />
               {isSubmitting ? (isEditMode ? 'Actualizando...' : 'Creando...') : (isEditMode ? 'Actualizar Paquete' : 'Crear Paquete')}

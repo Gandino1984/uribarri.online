@@ -12,7 +12,6 @@ async function getAll(req, res) {
     }
 }
 
-//update: New function to get only verified subtypes
 async function getVerified(req, res) {
     try {
         const { error, data } = await subtypeController.getVerified();
@@ -25,7 +24,6 @@ async function getVerified(req, res) {
     }
 }
 
-//update: New function to get only unverified subtypes
 async function getUnverified(req, res) {
     try {
         const { error, data } = await subtypeController.getUnverified();
@@ -78,7 +76,6 @@ async function getById(req, res) {
     }
 }
 
-//update: Modified to remove verified_subtype from request body since it's always false on creation
 async function create(req, res) {
     try {
         const { 
@@ -112,6 +109,7 @@ async function create(req, res) {
     }
 }
 
+//update: Modified to include warning when shops are using the subtype
 async function update(req, res) {
     try {
         const { id_subtype } = req.params;
@@ -132,13 +130,18 @@ async function update(req, res) {
         if (id_type !== undefined) updateData.id_type = id_type;
         if (verified_subtype !== undefined) updateData.verified_subtype = verified_subtype;
         
-        const { error, data } = await subtypeController.update(id_subtype, updateData);
+        const { error, data, success, warning, affectedShops } = await subtypeController.update(id_subtype, updateData);
         
         if (error) {
-            return res.status(400).json({ error });
+            //update: Return appropriate status based on warning
+            return res.status(warning ? 409 : 400).json({ 
+                error,
+                warning,
+                affectedShops 
+            });
         }
         
-        res.json({ error, data });
+        res.json({ error, data, success });
     } catch (err) {
         console.error("-> subtype_api_controller.js - update() - Error =", err);
         res.status(500).json({
@@ -148,6 +151,50 @@ async function update(req, res) {
     }
 }
 
+//update: New endpoint for cascade update
+async function updateCascade(req, res) {
+    try {
+        const { id_subtype } = req.params;
+        const {
+            name_subtype,
+            id_type,
+            verified_subtype
+        } = req.body;
+        
+        if (!id_subtype) {
+            return res.status(400).json({ 
+                error: 'El ID del subtipo es obligatorio'
+            });
+        }
+        
+        const updateData = {};
+        if (name_subtype !== undefined) updateData.name_subtype = name_subtype;
+        if (id_type !== undefined) updateData.id_type = id_type;
+        if (verified_subtype !== undefined) updateData.verified_subtype = verified_subtype;
+        
+        const { error, data, success, affectedShops, affectedShopsList } = await subtypeController.updateCascade(id_subtype, updateData);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ 
+            error, 
+            data, 
+            success,
+            affectedShops,
+            affectedShopsList 
+        });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - updateCascade() - Error =", err);
+        res.status(500).json({
+            error: "Error al actualizar el subtipo en cascada",
+            details: err.message
+        });
+    }
+}
+
+//update: Modified to include warning when shops are using the subtype
 async function removeById(req, res) {
     try {
         const { id_subtype } = req.params;
@@ -158,13 +205,18 @@ async function removeById(req, res) {
             });
         }
         
-        const { error, data, message } = await subtypeController.removeById(id_subtype);
+        const { error, data, success, warning, affectedShops } = await subtypeController.removeById(id_subtype);
         
         if (error) {
-            return res.status(400).json({ error });
+            //update: Return appropriate status based on warning
+            return res.status(warning ? 409 : 400).json({ 
+                error,
+                warning,
+                affectedShops 
+            });
         }
         
-        res.json({ data, message });
+        res.json({ data, success });
     } catch (err) {
         console.error("-> subtype_api_controller.js - removeById() - Error =", err);
         res.status(500).json({ 
@@ -174,7 +226,39 @@ async function removeById(req, res) {
     }
 }
 
-//update: New function to remove all subtypes by type ID
+//update: New endpoint for cascade delete
+async function removeCascade(req, res) {
+    try {
+        const { id_subtype } = req.params;
+        
+        if (!id_subtype) {
+            return res.status(400).json({ 
+                error: 'El ID del subtipo es obligatorio'
+            });
+        }
+        
+        const { error, data, success, warning, deletedShops } = await subtypeController.removeCascade(id_subtype);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ 
+            data, 
+            success,
+            warning,
+            deletedShops 
+        });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - removeCascade() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al eliminar el subtipo en cascada",
+            details: err.message 
+        });
+    }
+}
+
+//update: Modified to include warning when shops are using the subtypes
 async function removeByTypeId(req, res) {
     try {
         const { id_type } = req.params;
@@ -185,17 +269,118 @@ async function removeByTypeId(req, res) {
             });
         }
         
-        const { error, data, message } = await subtypeController.removeByTypeId(id_type);
+        const { error, data, success, warning, affectedShops } = await subtypeController.removeByTypeId(id_type);
+        
+        if (error) {
+            //update: Return appropriate status based on warning
+            return res.status(warning ? 409 : 400).json({ 
+                error,
+                warning,
+                affectedShops 
+            });
+        }
+        
+        res.json({ data, success });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - removeByTypeId() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al eliminar los subtipos del tipo",
+            details: err.message 
+        });
+    }
+}
+
+//update: New endpoint for cascade delete by type
+async function removeByTypeIdCascade(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({ 
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+        
+        const { error, data, success, warning, deletedShops } = await subtypeController.removeByTypeIdCascade(id_type);
         
         if (error) {
             return res.status(400).json({ error });
         }
         
-        res.json({ data, message });
+        res.json({ 
+            data, 
+            success,
+            warning,
+            deletedShops 
+        });
     } catch (err) {
-        console.error("-> subtype_api_controller.js - removeByTypeId() - Error =", err);
+        console.error("-> subtype_api_controller.js - removeByTypeIdCascade() - Error =", err);
         res.status(500).json({ 
-            error: "Error al eliminar los subtipos del tipo",
+            error: "Error al eliminar los subtipos del tipo en cascada",
+            details: err.message 
+        });
+    }
+}
+
+//update: New endpoint to check affected shops before operations
+async function checkAffectedShops(req, res) {
+    try {
+        const { id_subtype } = req.params;
+        
+        if (!id_subtype) {
+            return res.status(400).json({ 
+                error: 'El ID del subtipo es obligatorio'
+            });
+        }
+        
+        const { count, shops } = await subtypeController.checkAffectedShops(id_subtype);
+        
+        res.json({ 
+            count,
+            shops
+        });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - checkAffectedShops() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al verificar comercios afectados",
+            details: err.message 
+        });
+    }
+}
+
+//update: New endpoint to migrate shops from one subtype to another
+async function migrateShops(req, res) {
+    try {
+        const { oldSubtypeId, newSubtypeId } = req.body;
+        
+        if (!oldSubtypeId || !newSubtypeId) {
+            return res.status(400).json({ 
+                error: 'Los IDs del subtipo origen y destino son obligatorios'
+            });
+        }
+        
+        if (oldSubtypeId === newSubtypeId) {
+            return res.status(400).json({ 
+                error: 'El subtipo origen y destino no pueden ser el mismo'
+            });
+        }
+        
+        const { error, success, migratedShops, fromSubtype, toSubtype } = await subtypeController.migrateShopsToNewSubtype(oldSubtypeId, newSubtypeId);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ 
+            success,
+            migratedShops,
+            fromSubtype,
+            toSubtype
+        });
+    } catch (err) {
+        console.error("-> subtype_api_controller.js - migrateShops() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al migrar comercios entre subtipos",
             details: err.message 
         });
     }
@@ -209,8 +394,13 @@ export {
     getById,
     create,
     update,
+    updateCascade,
     removeById,
-    removeByTypeId
+    removeCascade,
+    removeByTypeId,
+    removeByTypeIdCascade,
+    checkAffectedShops,
+    migrateShops
 }
 
 export default {
@@ -221,6 +411,11 @@ export default {
     getById,
     create,
     update,
+    updateCascade,
     removeById,
-    removeByTypeId
+    removeCascade,
+    removeByTypeId,
+    removeByTypeIdCascade,
+    checkAffectedShops,
+    migrateShops
 }

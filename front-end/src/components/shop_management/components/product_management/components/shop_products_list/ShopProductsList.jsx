@@ -684,25 +684,22 @@ const ShopProductsList = () => {
                           </div>
                           
                           <div className={styles.productInfo}>
-                            <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
+                            
                             <div className={styles.productMeta}>
-                              <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
-                                {product.active_product ? 'Activo' : 'Inactivo'}
-                              </span>
-                              {product.discount_product > 0 && (
-                                <span className={styles.discountBadge}>
-                                  <Tag size={12} />
-                                  {product.discount_product}% dto
+                              <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
+                            
+                              <div className={styles.productMeta2}>
+                                <span className={styles.categoryBadge}>
+                                  {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
                                 </span>
-                              )}
-                              {product.second_hand && (
-                                <span className={styles.secondHandBadge}>
-                                  2ª Mano
-                                </span>
-                              )}
-                              <span className={styles.categoryBadge}>
-                                {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
-                              </span>
+
+                                {product.second_hand && (
+                                  <span className={styles.secondHandBadge}>
+                                    2ª Mano
+                                  </span>
+                                )}
+                                
+                              </div>
                             </div>
                             <div className={styles.productDetailsRow}>
                               {product.season_product && (
@@ -723,6 +720,7 @@ const ShopProductsList = () => {
                         </div>
                         
                         <div className={styles.productPricing}>
+                          <span><strong>Precio</strong></span>
                           {product.discount_product > 0 && (
                             <span className={styles.originalPrice}>€{product.price_product}</span>
                           )}
@@ -731,14 +729,15 @@ const ShopProductsList = () => {
                               ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
                               : product.price_product}
                           </span>
-                          {product.discount_product > 0 && (
+                          {/* {product.discount_product > 0 && (
                             <span className={styles.savings}>
                               Ahorro: €{(product.price_product * product.discount_product / 100).toFixed(2)}
                             </span>
-                          )}
+                          )} */}
                         </div>
-                        
-                        <div className={styles.productActions}>
+                      </div>
+
+                      <div className={styles.productActions}>
                           <button
                             onClick={() => handleToggleActiveStatus(product)}
                             className={styles.actionButton}
@@ -780,13 +779,21 @@ const ShopProductsList = () => {
                             {expandedProducts.has(product.id_product) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                           </button>
                         </div>
-                      </div>
                       
                       {expandedProducts.has(product.id_product) && (
                         <div className={styles.productDetails}>
                           <div className={styles.detailsSection}>
                             <h5 className={styles.sectionTitle}>Información del Producto</h5>
                             <div className={styles.detailsGrid}>
+                              <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
+                                {product.active_product ? 'Activo' : 'Inactivo'}
+                              </span> 
+                              {product.discount_product > 0 && (
+                                <span className={styles.discountBadge}>
+                                  <Tag size={12} />
+                                  {product.discount_product}% dto
+                                </span>
+                              )}
                               {product.info_product && (
                                 <div className={styles.detailItem}>
                                   <Info size={14} className={styles.detailIcon} />

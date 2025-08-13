@@ -98,14 +98,17 @@
 
 .productsList {
   display: flex;
+  flex: 1;
+  flex-wrap: wrap;
   flex-direction: column;
   gap: 1rem;
   padding: 0 1rem 1rem 1rem;
 }
 
 .productCard {
+  display: flex;
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.3s ease;
@@ -125,8 +128,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   padding: 1rem;
-  gap: 1rem;
+  gap: .5rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
 }
 
@@ -208,11 +212,14 @@
 }
 
 .productInfo {
-  flex: 1;
+  display: flex;
+  /* flex: 1; */
+  flex-wrap: wrap;
   min-width: 0;
 }
 
 .productName {
+  width: 100%;
   font-size: 1.125rem;
   font-weight: 600;
   color: #1f2937;
@@ -224,11 +231,24 @@
 
 .productMeta {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  width: 100%;
+  gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 0.5rem;
 }
+
+.productMeta2 {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+
 
 .statusBadge {
   padding: 0.25rem 0.75rem;
@@ -287,7 +307,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   font-size: 0.875rem;
   color: #6b7280;
 }
@@ -303,8 +323,8 @@
 
 .productPricing {
   display: flex;
-  /* flex-direction: column; */
   align-items: flex-end;
+  justify-content:flex-end;
   gap: 0.7rem;
   padding: 0 1rem;
 }
@@ -332,10 +352,17 @@
 
 .productActions {
   display: flex;
-  gap: 0.5rem;
+  flex: 1;
+  height: auto;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.3rem;
 }
 
 .actionButton {
+  max-height: 2rem;
+  
   padding: 0.5rem;
   background: white;
   border: 1px solid #e5e7eb;
@@ -625,7 +652,7 @@
   }
   
   .productHeader {
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: flex-start;
   }
   
@@ -639,16 +666,17 @@
   }
   
   .productPricing {
-    align-items: flex-start;
+    /* align-items: flex-start; */
     width: 100%;
     padding: 0;
     margin-top: 0.5rem;
   }
   
   .productActions {
-    width: 100%;
-    justify-content: flex-end;
-    padding-top: 0.5rem;
+    /* width: 100%; */
+    /* flex-direction: column; */
+    justify-content: flex-start;
+    /* padding-top: 0.5rem; */
   }
   
   .detailsGrid {
@@ -681,11 +709,12 @@
   }
   
   .productCard {
-    border-radius: 8px;
+    flex-direction: row;
   }
   
   .productHeader {
-    padding: 0.75rem;
+    flex-direction: column;
+    padding: 0.7rem;
   }
   
   .productImageContainer {
@@ -694,7 +723,7 @@
   }
   
   .productName {
-    font-size: 1rem;
+    font-size: .8rem;
   }
   
   .finalPrice {
@@ -723,7 +752,7 @@
   }
   
   .productName {
-    font-size: 0.875rem;
+    font-size: 0.7rem;
   }
   
   .statusBadge,
