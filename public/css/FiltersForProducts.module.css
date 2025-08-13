@@ -128,8 +128,8 @@
 .toggleSwitchContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: center;
+  /* width: 100%; */
   gap: 1rem;
   padding: 0.5rem 0.75rem;
   background-color: rgba(255, 255, 255, 0.1);
