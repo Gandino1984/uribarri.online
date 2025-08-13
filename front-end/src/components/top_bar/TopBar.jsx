@@ -59,7 +59,7 @@ function TopBar() {
   //update: Function to determine if back button should be shown
   const shouldShowBackButton = () => {
     // Show back button in various scenarios
-    if (showShopStore) return true; // Add this line
+    if (showShopStore) return true;
     if (showShopCreationForm) return true;
     if (selectedShop && showProductManagement) return true;
     if (showShopsListBySeller && currentUser?.type_user === 'seller') return true;
@@ -89,34 +89,6 @@ function TopBar() {
       clearTimeout(timer);
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [mobileMenuOpen]);
-  
-  useEffect(() => {
-    if (mobileMenuOpen && mobileMenuRef.current) {
-      const menu = mobileMenuRef.current;
-      const rect = menu.getBoundingClientRect();
-      
-      const viewportHeight = window.innerHeight;
-      if (rect.bottom > viewportHeight) {
-        menu.style.top = 'auto';
-        menu.style.bottom = '100%';
-        menu.style.marginTop = '0';
-        menu.style.marginBottom = '0.5rem';
-        menu.style.setProperty('--triangle-direction', 'down');
-      } else {
-        menu.style.top = '100%';
-        menu.style.bottom = 'auto';
-        menu.style.marginTop = '0.5rem';
-        menu.style.marginBottom = '0';
-        menu.style.setProperty('--triangle-direction', 'up');
-      }
-      
-      const viewportWidth = window.innerWidth;
-      if (rect.right > viewportWidth) {
-        menu.style.right = '0';
-        menu.style.left = 'auto';
-      }
-    }
   }, [mobileMenuOpen]);
 
   return (
@@ -170,56 +142,60 @@ function TopBar() {
 
           {/* Show burger menu for both logged in users and non-logged in users in ShopWindow */}
           {(currentUser || (!currentUser && showShopWindow)) && (
-            <button 
-              // className={styles.burgerButton} 
-              onClick={toggleMobileMenu}
-              aria-label="Menu"
-              ref={burgerButtonRef}
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          )}
+            <div className={styles.mobileMenuContainer}>
+              <button 
+                className={`${styles.burgerButton} ${mobileMenuOpen ? styles.active : ''}`}
+                onClick={toggleMobileMenu}
+                aria-label="Menu"
+                ref={burgerButtonRef}
+              >
+                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
 
-          {mobileMenuOpen && (
-            <div 
-              className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}
-              ref={mobileMenuRef}
-            >
-              {shouldShowBackButton() && (
-                <button
-                className={styles.active}
-                  onClick={() => {
-                    handleBack();
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <ArrowLeft size={16} className={styles.buttonIcon} />
-                  <span className={styles.buttonText}>Volver</span>
-                </button>
-              )}
+              <div 
+                className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}
+                ref={mobileMenuRef}
+              >
+                {shouldShowBackButton() && (
+                  <>
+                    <button
+                      className={styles.backButton}
+                      onClick={() => {
+                        handleBack();
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <ArrowLeft size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Volver</span>
+                    </button>
+                    
+                    {currentUser && <div className={styles.menuDivider}></div>}
+                  </>
+                )}
 
-              {currentUser ? (
-                <button 
-                className={styles.active}
-                  onClick={() => {
-                    clearUserSession();
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <DoorClosed size={16} className={styles.buttonIcon} />
-                  <span className={styles.buttonText}>Cerrar sesión</span>
-                </button>
-              ) : (
-                showShopWindow && (
+                {currentUser ? (
                   <button 
-                    className={styles.loginButton}
-                    onClick={handleLoginClick}
+                    className={styles.logoutButton}
+                    onClick={() => {
+                      clearUserSession();
+                      setMobileMenuOpen(false);
+                    }}
                   >
-                    <LogIn size={16} className={styles.buttonIcon} />
-                    <span className={styles.buttonText}>Registrarse o iniciar sesión</span>
+                    <DoorClosed size={16} className={styles.buttonIcon} />
+                    <span className={styles.buttonText}>Cerrar sesión</span>
                   </button>
-                )
-              )}
+                ) : (
+                  showShopWindow && (
+                    <button 
+                      className={styles.loginButton}
+                      onClick={handleLoginClick}
+                    >
+                      <LogIn size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Registrarse o iniciar sesión</span>
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           )}
       </div>

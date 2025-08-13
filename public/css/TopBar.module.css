@@ -22,8 +22,8 @@
     font-weight: 800;
     color: white;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
-    position: relative; /* 🔤 UPDATE: Added relative positioning */
-    display: flex; /* 🔤 UPDATE: Using flexbox for better letter alignment */
+    position: relative;
+    display: flex;
     align-items: center;
 }
 
@@ -34,9 +34,10 @@
     width: 100%;
     gap: 1rem;
     padding: 0.25rem 0; 
+    position: relative;
 }
 
-/* 🍔 UPDATE: Added styles for the buttons container */
+/* Buttons container */
 .buttonsContainer {
     display: flex;
     align-items: center;
@@ -45,13 +46,11 @@
 
 .backButton {
     color: gray;
-    /* border: 1px solid rgba(255, 255, 255, 0.25); */
     background-color: white;
 }
 
 .backButton:hover {
     color: white;
-    /* border: 1px solid white; */
     background-color: var(--saturated-blue) !important;
     box-shadow: 0px 0px 4px 1px var(--saturated-blue-transparent) !important;
 }
@@ -60,107 +59,151 @@
     color: gray;
     font-weight: 500;
     background-color: white;
-    /* border: 1px solid rgba(255, 255, 255, 0.25); */
-    /* background-color: rgba(255, 255, 255, 0.2); */
 }
   
 .active:hover {
     color: white;
-    /* border: 1px solid white; */
     background-color: var(--saturated-blue);
-    /* text-shadow: 0px 0px 8px 1px var(--saturated-blue-transparent) !important; */
     box-shadow: 0px 0px 4px 1px var(--saturated-blue-transparent) !important;
 }
 
-/* .burgerButton {
+/* Burger Button - Styled like dropdown buttons */
+.burgerButton {
     display: none;
-    color: black;
-    background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background-color: rgba(255, 255, 255, 0.2);
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
     cursor: pointer;
-    padding: 0.3rem;
-    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
 .burgerButton:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+    border-color: var(--saturated-blue);
+    color: var(--saturated-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.burgerButton.active {
+    background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
     color: white;
-    border: 1px solid white;
-    background-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
-} */
+    border-color: var(--saturated-blue);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Mobile Menu - Styled like dropdown menus */
+.mobileMenuContainer {
+    position: relative;
+    z-index: 10001;
+}
 
 .mobileMenu {
     display: none;
     position: absolute;
-    top: 100%;
-    right: -4rem;
-    background-color: rgb(7, 7, 7);
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 220px;
+    background: white;
+    border: 2px solid #e5e7eb;
     border-radius: 8px;
-    flex-direction: column;
-    padding: 0.3rem;
-    width: auto;
-    min-width: 150px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1001;
-}
-
-/* .mobileMenu:hover{
-    background-color: var(--light-gradient-purple-start);
-} */
-
-
-.mobileMenu:before {
-    content: "";
-    position: absolute;
-    top: -8px;
-    right: 16px;
-    transform: translateX(-100%);
-    border-width: 0 8px 8px 8px;
-    border-style: solid;
-    border-color: transparent transparent rgb(7, 7, 7) transparent;
-}
-
-.mobileMenu:before:hover{
-border-color: transparent transparent var(--light-gradient-purple-start) transparent;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 10002;
+    padding: 0.5rem;
 }
 
 .mobileMenu.open {
     display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
-/* 🔻 UPDATE: Updated button styles inside mobile menu to match UserInfoCard */
+/* Mobile Menu Items - Matching dropdown menu items */
 .mobileMenu button {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    border-radius: 0.25rem;
-    pointer-events: auto;
-    background-color: transparent;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
     border: none;
-    color: white;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .mobileMenu button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+    color: var(--saturated-blue);
+    transform: translateX(4px);
 }
 
-/* 🔻 UPDATE: Added button icon and text styles */
+/* Special button styles */
+.mobileMenu button.backButton {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+    color: var(--saturated-blue);
+}
+
+.mobileMenu button.backButton:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15));
+}
+
+.mobileMenu button.logoutButton {
+    color: #dc2626;
+}
+
+.mobileMenu button.logoutButton:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+.mobileMenu button.loginButton {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+    color: #059669;
+    font-weight: 600;
+}
+
+.mobileMenu button.loginButton:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+    color: #047857;
+}
+
+/* Menu divider */
+.menuDivider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 0.25rem 0;
+}
+
+/* Button icon and text */
 .buttonIcon {
-    color: #aaa;
+    color: currentColor;
+    flex-shrink: 0;
 }
 
 .buttonText {
-    color: rgb(255, 255, 255);
-    font-size: 0.8rem;
+    flex: 1;
+    color: currentColor;
 }
 
-/* 🍔 UPDATE: Add responsive media query for mobile view */
+/* Responsive media queries */
 @media (max-width: 500px) {
     .container {
         padding: 0.4rem 1rem; 

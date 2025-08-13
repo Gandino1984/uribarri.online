@@ -38,6 +38,7 @@ import {
   Star,
   Package,
   DollarSign,
+  Search,
   Info,
   Clock,
   Check,
@@ -570,6 +571,7 @@ const ShopProductsList = () => {
       {contentTransition((style, item) => 
         item && (
           <animated.div style={style} className={styles.container}>
+            <span className={styles.cardInfo}>Tienda seleccionada: </span>
             {shopCardTransition((cardStyle, shop) => 
               shop && (
                 <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
@@ -585,10 +587,13 @@ const ShopProductsList = () => {
               
               {isSmallScreen ? (
                 <div className={styles.searchAndMenuContainer}>
+                  <div className={styles.searchContainer}>
+                  <Search size={16} color='gray'></Search>
                   <SearchBar 
                     searchTerm={searchTerm}
                     handleSearchChange={handleSearchChange}
                   />
+                  </div>
                   
                   <ActionButtons 
                     handleAddProduct={handleAddProduct}
@@ -600,7 +605,6 @@ const ShopProductsList = () => {
                     selectedProducts={selectedProducts}
                     activeFiltersCount={activeFiltersCount}
                     navigateToPackages={() => setShowPackages(true)}
-                    isMobile={true}
                   />
                 </div>
               ) : (
@@ -621,7 +625,6 @@ const ShopProductsList = () => {
                       selectedProducts={selectedProducts}
                       activeFiltersCount={activeFiltersCount}
                       navigateToPackages={() => setShowPackages(true)}
-                      isMobile={false}
                     />
                   </div>
                 </>
@@ -636,7 +639,7 @@ const ShopProductsList = () => {
               <div className={styles.productsContainer}>
                 <div className={styles.header}>
                   <h3 className={styles.title}>
-                    <ShoppingBag size={20} />
+                    {/* <ShoppingBag size={20} /> */}
                     Productos ({displayedProducts.length})
                     {selectedProducts.size > 0 && ` | Seleccionados: ${selectedProducts.size}`}
                   </h3>
@@ -649,151 +652,158 @@ const ShopProductsList = () => {
                       className={`${styles.productCard} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
                       key={product.id_product}
                     >
-                      <div className={styles.productHeader}>
-                        <div className={styles.productMainInfo}>
-                          <div 
-                            className={styles.productImageContainer}
-                            onClick={() => {
-                              if (product.image_product) {
-                                setSelectedImageForModal(formatImageUrl(product.image_product));
-                                setIsImageModalOpen(true);
-                              }
-                            }}
-                            style={{ cursor: product.image_product ? 'pointer' : 'default' }}
-                          >
-                            {product.image_product ? (
-                              <>
-                                <img 
-                                  src={formatImageUrl(product.image_product)} 
-                                  alt={product.name_product || 'Producto'}
-                                  className={styles.productImage}
-                                  onError={(e) => {
-                                    console.error('Error loading product image:', product.image_product);
-                                    e.target.style.display = 'none';
-                                  }}
-                                />
-                                <div className={styles.imageOverlay}>
-                                  <Image size={16} />
-                                </div>
-                              </>
-                            ) : (
-                              <div className={`${styles.productImageContainer} ${styles.noImage}`}>
-                                <ShoppingBag size={30} className={styles.placeholderIcon} />
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className={styles.productInfo}>
-                            
-                            <div className={styles.productMeta}>
-                              <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
-                            
-                              <div className={styles.productMeta2}>
-                                <span className={styles.categoryBadge}>
-                                  {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
-                                </span>
-
-                                {product.second_hand && (
-                                  <span className={styles.secondHandBadge}>
-                                    2ª Mano
-                                  </span>
+                      
+                      <div className={styles.headerActionsWrapper}>
+                          <div className={styles.productHeader}>
+                            <div className={styles.productMainInfo}>
+                              <div 
+                                className={styles.productImageContainer}
+                                onClick={() => {
+                                  if (product.image_product) {
+                                    setSelectedImageForModal(formatImageUrl(product.image_product));
+                                    setIsImageModalOpen(true);
+                                  }
+                                }}
+                                style={{ cursor: product.image_product ? 'pointer' : 'default' }}
+                              >
+                                {product.image_product ? (
+                                  <>
+                                    <img 
+                                      src={formatImageUrl(product.image_product)} 
+                                      alt={product.name_product || 'Producto'}
+                                      className={styles.productImage}
+                                      onError={(e) => {
+                                        console.error('Error loading product image:', product.image_product);
+                                        e.target.style.display = 'none';
+                                      }}
+                                    />
+                                    <div className={styles.imageOverlay}>
+                                      <Image size={16} />
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className={`${styles.productImageContainer} ${styles.noImage}`}>
+                                    <ShoppingBag size={30} className={styles.placeholderIcon} />
+                                  </div>
                                 )}
+                              </div>
+                              
+                              <div className={styles.productInfo}>
                                 
+                                <div className={styles.productMeta}>
+                                  <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
+                                
+                                  <div className={styles.productMeta2}>
+                                    <span className={styles.categoryBadge}>
+                                      {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
+                                    </span>
+
+                                    {product.second_hand && (
+                                      <span className={styles.secondHandBadge}>
+                                        2ª Mano
+                                      </span>
+                                    )}
+                                    
+                                  </div>
+                                </div>
+                                <div className={styles.productDetailsRow}>
+                                  {product.season_product && (
+                                    <span className={styles.seasonTag}>
+                                      <Calendar size={12} />
+                                      {product.season_product}
+                                    </span>
+                                  )}
+                                  {product.country_product && (
+                                    <span className={styles.locationTag}>
+                                      <MapPin size={12} />
+                                      {product.country_product}
+                                      {product.locality_product && `, ${product.locality_product}`}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                            <div className={styles.productDetailsRow}>
-                              {product.season_product && (
-                                <span className={styles.seasonTag}>
-                                  <Calendar size={12} />
-                                  {product.season_product}
-                                </span>
+                            
+                            <div className={styles.productPricing}>
+                              <span><strong>Precio</strong></span>
+                              {product.discount_product > 0 && (
+                                <span className={styles.originalPrice}>€{product.price_product}</span>
                               )}
-                              {product.country_product && (
-                                <span className={styles.locationTag}>
-                                  <MapPin size={12} />
-                                  {product.country_product}
-                                  {product.locality_product && `, ${product.locality_product}`}
+                              <span className={styles.finalPrice}>
+                                €{product.discount_product > 0 
+                                  ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
+                                  : product.price_product}
+                              </span>
+                              {/* {product.discount_product > 0 && (
+                                <span className={styles.savings}>
+                                  Ahorro: €{(product.price_product * product.discount_product / 100).toFixed(2)}
                                 </span>
-                              )}
+                              )} */}
                             </div>
                           </div>
-                        </div>
-                        
-                        <div className={styles.productPricing}>
-                          <span><strong>Precio</strong></span>
-                          {product.discount_product > 0 && (
-                            <span className={styles.originalPrice}>€{product.price_product}</span>
-                          )}
-                          <span className={styles.finalPrice}>
-                            €{product.discount_product > 0 
-                              ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
-                              : product.price_product}
-                          </span>
-                          {/* {product.discount_product > 0 && (
-                            <span className={styles.savings}>
-                              Ahorro: €{(product.price_product * product.discount_product / 100).toFixed(2)}
-                            </span>
-                          )} */}
-                        </div>
-                      </div>
 
-                      <div className={styles.productActions}>
-                          <button
-                            onClick={() => handleToggleActiveStatus(product)}
-                            className={styles.actionButton}
-                            disabled={isTogglingStatus === product.id_product}
-                            title={product.active_product ? 'Desactivar' : 'Activar'}
-                          >
-                            {product.active_product ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                          </button>
-                          
-                          <button
-                            onClick={() => handleUpdateProduct(product.id_product)}
-                            className={styles.actionButton}
-                            title="Editar"
-                          >
-                            <Edit2 size={18} />
-                          </button>
-                          
-                          <button
-                            onClick={() => handleDeleteProduct(product)}
-                            className={`${styles.actionButton} ${styles.deleteButton}`}
-                            title="Eliminar"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                          
-                          <button
-                            onClick={() => handleSelectProduct(product.id_product)}
-                            className={`${styles.actionButton} ${selectedProducts.has(product.id_product) ? styles.selectedButton : ''}`}
-                            title={selectedProducts.has(product.id_product) ? 'Deseleccionar' : 'Seleccionar'}
-                          >
-                            {selectedProducts.has(product.id_product) ? <CheckCircle size={18} /> : <Check size={18} />}
-                          </button>
-                          
-                          <button
-                            onClick={() => toggleExpanded(product.id_product)}
-                            className={styles.expandButton}
-                            title={expandedProducts.has(product.id_product) ? 'Contraer' : 'Expandir'}
-                          >
-                            {expandedProducts.has(product.id_product) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                          </button>
-                        </div>
+                          <div className={styles.productActions}>
+                              <button
+                                onClick={() => handleToggleActiveStatus(product)}
+                                className={styles.actionButton}
+                                disabled={isTogglingStatus === product.id_product}
+                                title={product.active_product ? 'Desactivar' : 'Activar'}
+                              >
+                                {product.active_product ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                              </button>
+                              
+                              <button
+                                onClick={() => handleUpdateProduct(product.id_product)}
+                                className={styles.actionButton}
+                                title="Editar"
+                              >
+                                <Edit2 size={18} />
+                              </button>
+                              
+                              <button
+                                onClick={() => handleDeleteProduct(product)}
+                                className={`${styles.actionButton} ${styles.deleteButton}`}
+                                title="Eliminar"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                              
+                              <button
+                                onClick={() => handleSelectProduct(product.id_product)}
+                                className={`${styles.actionButton} ${selectedProducts.has(product.id_product) ? styles.selectedButton : ''}`}
+                                title={selectedProducts.has(product.id_product) ? 'Deseleccionar' : 'Seleccionar'}
+                              >
+                                {selectedProducts.has(product.id_product) ? <CheckCircle size={18} /> : <Check size={18} />}
+                              </button>
+                              
+                              <button
+                                onClick={() => toggleExpanded(product.id_product)}
+                                className={styles.expandButton}
+                                title={expandedProducts.has(product.id_product) ? 'Contraer' : 'Expandir'}
+                              >
+                                {expandedProducts.has(product.id_product) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                              </button>
+                          </div>
+                      </div>
                       
                       {expandedProducts.has(product.id_product) && (
                         <div className={styles.productDetails}>
                           <div className={styles.detailsSection}>
                             <h5 className={styles.sectionTitle}>Información del Producto</h5>
                             <div className={styles.detailsGrid}>
-                              <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
-                                {product.active_product ? 'Activo' : 'Inactivo'}
-                              </span> 
-                              {product.discount_product > 0 && (
-                                <span className={styles.discountBadge}>
-                                  <Tag size={12} />
-                                  {product.discount_product}% dto
-                                </span>
-                              )}
+
+                              <div className={styles.badgesContainer}>
+                                  <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
+                                    {product.active_product ? 'Activo' : 'Inactivo'}
+                                  </span> 
+                                  {product.discount_product > 0 && (
+                                    <span className={styles.discountBadge}>
+                                      <Tag size={12} />
+                                      {product.discount_product}% dto
+                                    </span>
+                                  )}
+                              </div>
+
                               {product.info_product && (
                                 <div className={styles.detailItem}>
                                   <Info size={14} className={styles.detailIcon} />
