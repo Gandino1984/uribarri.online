@@ -121,31 +121,31 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: white;
-  border: 2px solid #e5e7eb;
+  background: var(--saturated-blue);
+  /* border: 2px solid #e5e7eb; */
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: .9rem;
   font-weight: 600;
-  color: #374151;
+  color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   position: relative;
   min-width: 140px;
 }
 
 .dropdownButton:hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
-  border-color: var(--saturated-blue);
+  background-color: white;
+  outline: 2px solid var(--saturated-blue);
   color: var(--saturated-blue);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 12px var(--saturated-blue-transparent);
 }
 
 .dropdownButton.active {
   background: var(--saturated-blue);
   color: white;
   border-color: var(--saturated-blue);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px var(--saturated-blue-transparent);
 }
 
 .dropdownButton.active svg {
@@ -336,6 +336,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.3s ease;
+  position: relative; /*update: Added for product number positioning */
 }
 
 .productCard:hover {
@@ -348,6 +349,34 @@
   border: 2px solid var(--saturated-blue);
 }
 
+/*update: Product number badge styles */
+.productNumber {
+  position: absolute;
+  /* top: 20px; */
+  margin-left: .6rem;
+  margin-top: .5rem;
+  /* margin-bottom: 3rem; */
+  /* left: 2px; */
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  color: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+  /* box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); */
+  z-index: 2;
+  outline: 2px solid black;
+}
+
+.productCard.selected .productNumber {
+  background: linear-gradient(135deg, var(--saturated-orange), var(--dark-orange));
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.3);
+}
+
 .productHeader {
   display: flex;
   align-items: center;
@@ -355,7 +384,7 @@
   flex-wrap: wrap;
   padding: 1rem;
   gap: .5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
+  background-color: white;
 }
 
 .productMainInfo {
@@ -379,9 +408,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   border: 2px solid rgba(59, 130, 246, 0.2);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2.5rem;
 }
 
 .productImageContainer:hover {
@@ -857,6 +887,13 @@
     left: 0;
     right: 0;
   }
+
+  /*update: Adjust product number size for smaller screens */
+  .productNumber {
+    width: 18px;
+    height: 18px;
+    font-size: 0.75rem;
+  }
 }
 
 /* Responsive Design */
@@ -932,7 +969,7 @@
   }
   
   .productCard {
-    flex-direction: row;
+    flex-direction: column;
   }
   
   .productHeader {
@@ -951,6 +988,15 @@
   
   .finalPrice {
     font-size: 1.125rem;
+  }
+
+  /*update: Smaller product number for mobile */
+  .productNumber {
+    width: 17px;
+    height: 17px;
+    font-size: 0.7rem;
+    top: 4px;
+    left: 4px;
   }
 }
 
@@ -978,6 +1024,11 @@
   .productName {
     font-size: 0.7rem;
   }
+
+    .productCard {
+    flex-direction: column;
+    /* padding: 0.7rem; */
+  }
   
   .statusBadge,
   .discountBadge,
@@ -993,5 +1044,13 @@
   
   .listTitle {
     font-size: 1.25rem;
+  }
+
+  /*update: Even smaller product number for tiny screens */
+  .productNumber {
+    width: 16px;
+    height: 16px;
+    font-size: 0.625rem;
+    border-width: 1px;
   }
 }

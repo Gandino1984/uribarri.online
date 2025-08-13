@@ -646,12 +646,16 @@ const ShopProductsList = () => {
                 </div>
                 
                 <div className={styles.productsList}>
-                  {productsTransition((style, product) => (
+                  {productsTransition((style, product, _, index) => (
                     <animated.div 
                       style={style} 
                       className={`${styles.productCard} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
                       key={product.id_product}
                     >
+                      {/*update: Added product number badge */}
+                      <div className={styles.productNumber}>
+                        {displayedProducts.findIndex(p => p.id_product === product.id_product) + 1}
+                      </div>
                       
                       <div className={styles.headerActionsWrapper}>
                           <div className={styles.productHeader}>
