@@ -12,7 +12,7 @@
     overflow-x: hidden;
     width: 100%;
     max-width: 100%;
-    background-color: var(--light-gray);
+    /* background-color: var(--light-gray); */
     /* background-size: 200% 200%; */
     /* background: linear-gradient(135deg, var(--gradient-red-start), var(--gradient-red-mid), var(--gradient-red-end)); */
     position: relative; 

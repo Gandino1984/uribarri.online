@@ -1,6 +1,7 @@
 :root {
   --light-gray: rgb(240, 240, 240);
-  --saturated-orange: #efa345;  
+  --saturated-orange: #efa345;
+  --light-yellow: rgb(255, 250, 223);  
   --light-orange: #ffe1bc;
   --dark-orange: #965101;
   --superdark-orange: #3f2100;
@@ -115,14 +116,14 @@ input[type="text"]::placeholder {
 }
 
 input[type="text"]:focus {
-  color: blue; 
+  color: var(--saturated-blue); 
   outline: 2px solid black;
   border: none;
   background-color: white;
 }
 
 input[type="text"]:hover {
-  border: 2px solid blue;    
+  border: 2px solid var(--saturated-blue);    
   outline: none;
   /* border: 2px solid white; */
   background-color: rgba(255, 255, 255, 0.9);

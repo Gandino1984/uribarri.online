@@ -9,7 +9,7 @@
   margin-top: 11rem;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: var(--light-gray);
+  /* background-color: var(--light-gray); */
   position: relative;
   z-index: 1;
 }

@@ -571,7 +571,7 @@ const ShopProductsList = () => {
       {contentTransition((style, item) => 
         item && (
           <animated.div style={style} className={styles.container}>
-            <span className={styles.cardInfo}>Tienda seleccionada: </span>
+            {/* <span className={styles.cardInfo}>Tienda seleccionada: </span> */}
             {shopCardTransition((cardStyle, shop) => 
               shop && (
                 <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>

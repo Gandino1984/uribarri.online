@@ -292,6 +292,12 @@
   overflow:hidden
 }
 
+.infoCardText{
+  width: 100%;
+  margin-bottom: .5rem;
+  color: var(--saturated-blue);
+}
+
 /* Map canvas styling */
 .mapCanvas {
   width: 100%;
