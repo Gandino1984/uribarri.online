@@ -4,7 +4,8 @@ import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../../public/css/LandingPage.module.css';
-import OButton from '../Obutton/Obutton.jsx';
+//update: Import Lucide icons for polished scroll indicators
+import { Mouse, MoveDown, ChevronDown, Hand } from 'lucide-react';
 
 const LandingPage = () => {
   //update: Navigation context and user authentication
@@ -19,14 +20,38 @@ const LandingPage = () => {
   const [showButton, setShowButton] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  //update: Add button hover and press states
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [isButtonPressed, setIsButtonPressed] = useState(false);
+  //update: Add device type detection state
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
   
-  //update: Portrait images array - PNG format
+  //update: Extended portrait images array - 8 portraits total
   const portraits = [
     '/images/portraits/user1.png',
     '/images/portraits/user2.png', 
     '/images/portraits/user3.png',
-    '/images/portraits/user4.png'
+    '/images/portraits/user4.png',
+    '/images/portraits/user5.png',
+    '/images/portraits/user6.png',
+    '/images/portraits/user7.png',
+    '/images/portraits/user8.png'
   ];
+  
+  //update: Device detection for scroll icon
+  useEffect(() => {
+    const checkDevice = () => {
+      // Check if it's a touch device or small screen
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobileDevice(isTouchDevice || isSmallScreen);
+    };
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
   
   //update: Random interval for portrait transitions (4-6 seconds)
   const getRandomInterval = () => 4000 + Math.random() * 2000;
@@ -109,13 +134,31 @@ const LandingPage = () => {
     exitBeforeEnter: false // Allow overlap for smoother transition
   });
   
-  //update: Button entrance animation
+  //update: Enhanced button animation with hover and press effects
   const buttonSpring = useSpring({
     opacity: showButton ? 1 : 0,
     transform: showButton 
-      ? 'translateY(0px) scale(1)' 
+      ? `translateY(0px) scale(${isButtonPressed ? 0.95 : isButtonHovered ? 1.05 : 1})` 
       : 'translateY(50px) scale(0.8)',
     config: config.gentle
+  });
+  
+  //update: Button glow effect animation
+  const buttonGlowSpring = useSpring({
+    boxShadow: isButtonHovered 
+      ? '0 0 30px rgba(151, 71, 255, 0.6), 0 0 60px rgba(151, 71, 255, 0.3), inset 0 0 20px rgba(151, 71, 255, 0.2)'
+      : '0 0 15px rgba(151, 71, 255, 0.4), 0 0 30px rgba(151, 71, 255, 0.2)',
+    background: isButtonHovered
+      ? 'linear-gradient(135deg, rgba(151, 71, 255, 0.9) 0%, rgba(120, 50, 220, 0.9) 100%)'
+      : 'linear-gradient(135deg, rgba(151, 71, 255, 0.8) 0%, rgba(120, 50, 220, 0.8) 100%)',
+    config: config.wobbly
+  });
+  
+  //update: Button text animation
+  const buttonTextSpring = useSpring({
+    letterSpacing: isButtonHovered ? '0.3rem' : '0.2rem',
+    transform: isButtonHovered ? 'scale(1.1)' : 'scale(1)',
+    config: config.wobbly
   });
   
   //update: Overlay gradient animation
@@ -141,8 +184,8 @@ const LandingPage = () => {
   });
   
   const subtitleSpring = useSpring({
-    from: { opacity: 0, letterSpacing: '0rem' },
-    to: { opacity: 1, letterSpacing: '0.5rem' },
+    from: { opacity: 0 },
+    to: { opacity: 1},
     delay: 800,
     config: config.molasses
   });
@@ -158,6 +201,7 @@ const LandingPage = () => {
   
   //update: Handle button click and navigation
   const handleButtonClick = () => {
+    if (isExiting) return;
     setIsExiting(true);
     
     setTimeout(() => {
@@ -204,38 +248,114 @@ const LandingPage = () => {
       {/* Hero content */}
       <div className={styles.heroSection}>
         <div className={styles.heroContent}>
-               <animated.p style={subtitleSpring}>
-            Participa, transforma y crea.
+          <animated.p style={subtitleSpring}>
+            Participa, transforma y crea tu barrio.
           </animated.p>
           <animated.h1 style={titleSpring}>
             Uribarri
           </animated.h1>
-     
         </div>
         
-        {/* Scroll hint */}
+        {/* update: Polished scroll hint with Lucide icons */}
         <animated.div 
           className={styles.scrollHint}
           style={scrollHintSpring}
         >
           <span className={styles.scrollText}>Desliza para entrar</span>
-          <div className={styles.scrollIcon}>
-            <div className={styles.scrollDot} />
-          </div>
+          {isMobileDevice ? (
+            // Touch gesture indicator for mobile
+            <div className={styles.mobileScrollIndicator}>
+              <div className={styles.handIconWrapper}>
+                <Hand 
+                  className={styles.handIcon}
+                  size={28}
+                  color="rgba(255, 255, 255, 0.7)"
+                  strokeWidth={1.5}
+                />
+                <div className={styles.swipeIndicator}>
+                  <MoveDown 
+                    className={styles.swipeArrow}
+                    size={20}
+                    color="#D1FF1F"
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
+              <div className={styles.pulseDots}>
+                <span className={styles.pulseDot}></span>
+                <span className={styles.pulseDot}></span>
+                <span className={styles.pulseDot}></span>
+              </div>
+            </div>
+          ) : (
+            // Mouse scroll indicator for desktop
+            <div className={styles.desktopScrollIndicator}>
+              <div className={styles.mouseWrapper}>
+                <Mouse 
+                  className={styles.mouseIcon}
+                  size={24}
+                  color="rgba(255, 255, 255, 0.6)"
+                  strokeWidth={1.5}
+                />
+                <div className={styles.scrollWheel}></div>
+              </div>
+              <div className={styles.chevronWrapper}>
+                <ChevronDown 
+                  className={styles.chevron1}
+                  size={16}
+                  color="rgba(151, 71, 255, 0.6)"
+                  strokeWidth={2}
+                />
+                <ChevronDown 
+                  className={styles.chevron2}
+                  size={16}
+                  color="#D1FF1F"
+                  strokeWidth={2}
+                />
+                <ChevronDown 
+                  className={styles.chevron3}buttonTextSpring
+                  size={16}
+                  color="#D1FF1F"
+                  strokeWidth={2}
+                />
+              </div>
+            </div>
+          )}
         </animated.div>
         
-        {/* Enter button */}
+        {/* Custom animated ENTRAR button */}
         <animated.div 
           className={styles.buttonWrapper}
           style={buttonSpring}
         >
-          <OButton 
+          <animated.button
             ref={buttonRef}
+            className={styles.enterButton}
+            style={buttonGlowSpring}
             onClick={handleButtonClick}
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => {
+              setIsButtonHovered(false);
+              setIsButtonPressed(false);
+            }}
+            onMouseDown={() => setIsButtonPressed(true)}
+            onMouseUp={() => setIsButtonPressed(false)}
+            onTouchStart={() => setIsButtonPressed(true)}
+            onTouchEnd={() => {
+              setIsButtonPressed(false);
+              setIsButtonHovered(false);
+            }}
             disabled={isExiting}
-            isExiting={isExiting}
-            ariaLabel="Entrar al Escaparate"
-          />
+            aria-label="Entrar al Escaparate"
+          >
+            <animated.span 
+              className={styles.buttonText}
+              style={buttonTextSpring}
+            >
+              ENTRAR
+            </animated.span>
+            <div className={styles.buttonShine} />
+          </animated.button>
         </animated.div>
       </div>
     </animated.div>

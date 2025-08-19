@@ -7,7 +7,8 @@
   width: 100%;
   max-width: 100vw;
   min-width: 330px;
-  background-color: var(--light-yellow);
+  
+  background-color: var(--light-gray);
   overflow-x: hidden;
   overflow-y: auto;
   /* position: relative; */

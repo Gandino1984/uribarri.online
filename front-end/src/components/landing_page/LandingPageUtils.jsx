@@ -1,8 +1,8 @@
 // src/components/landing_page/LandingPageUtils.jsx
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSpring, config } from '@react-spring/web';
 
-//update: Portrait slideshow management hook
+//update: Enhanced portrait slideshow management hook with 8 portraits
 export const usePortraitSlideshow = (portraits, intervalRange = { min: 3000, max: 5000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -41,11 +41,14 @@ export const usePortraitSlideshow = (portraits, intervalRange = { min: 3000, max
   };
 };
 
-//update: Scroll detection and button reveal hook
-export const useScrollReveal = (threshold = 50) => {
+//update: Enhanced scroll detection with parallax support
+export const useParallaxScroll = (threshold = 50) => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
+  const [showEnterButton, setShowEnterButton] = useState(false);
   
   useEffect(() => {
     // Detect if device is mobile
@@ -63,13 +66,25 @@ export const useScrollReveal = (threshold = 50) => {
     let touchStartY = 0;
     
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const progress = Math.min(scrollY / threshold, 1);
+      const currentScrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
       
+      setScrollY(currentScrollY);
+      
+      // Calculate overall scroll progress
+      const progress = Math.min(currentScrollY / (documentHeight - windowHeight), 1);
       setScrollProgress(progress);
       
-      if (scrollY > threshold && !hasScrolled) {
+      // Show features after initial scroll
+      if (currentScrollY > threshold && !hasScrolled) {
         setHasScrolled(true);
+        setShowFeatures(true);
+      }
+      
+      // Show enter button after scrolling through features
+      if (currentScrollY > windowHeight * 0.8 && !showEnterButton) {
+        setShowEnterButton(true);
       }
     };
     
@@ -83,6 +98,7 @@ export const useScrollReveal = (threshold = 50) => {
       
       if (touchDelta > 30 && !hasScrolled) {
         setHasScrolled(true);
+        setShowFeatures(true);
       }
     };
     
@@ -90,6 +106,7 @@ export const useScrollReveal = (threshold = 50) => {
     const handleWheel = (e) => {
       if (e.deltaY > 0 && !hasScrolled) {
         setHasScrolled(true);
+        setShowFeatures(true);
       }
     };
     
@@ -107,12 +124,59 @@ export const useScrollReveal = (threshold = 50) => {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [hasScrolled, threshold, isMobile]);
+  }, [hasScrolled, showEnterButton, threshold, isMobile]);
   
   return {
     hasScrolled,
     scrollProgress,
-    isMobile
+    scrollY,
+    isMobile,
+    showFeatures,
+    showEnterButton
+  };
+};
+
+//update: Parallax animation configurations for features
+export const useParallaxAnimations = (scrollY, showFeatures) => {
+  // Hero section parallax
+  const heroParallax = useSpring({
+    transform: `translateY(${scrollY * 0.5}px)`,
+    opacity: Math.max(1 - (scrollY / 800), 0),
+    config: config.slow
+  });
+  
+  // Feature cards with staggered parallax
+  const feature1Animation = useSpring({
+    opacity: showFeatures ? 1 : 0,
+    transform: showFeatures 
+      ? `translateY(${-scrollY * 0.3}px) translateX(0px) scale(1)` 
+      : `translateY(100px) translateX(-50px) scale(0.9)`,
+    config: config.molasses
+  });
+  
+  const feature2Animation = useSpring({
+    opacity: showFeatures ? 1 : 0,
+    transform: showFeatures 
+      ? `translateY(${-scrollY * 0.2}px) translateX(0px) scale(1)` 
+      : `translateY(100px) translateX(50px) scale(0.9)`,
+    delay: 200,
+    config: config.molasses
+  });
+  
+  const feature3Animation = useSpring({
+    opacity: showFeatures ? 1 : 0,
+    transform: showFeatures 
+      ? `translateY(${-scrollY * 0.25}px) translateX(0px) scale(1)` 
+      : `translateY(100px) translateX(-50px) scale(0.9)`,
+    delay: 400,
+    config: config.molasses
+  });
+  
+  return {
+    heroParallax,
+    feature1Animation,
+    feature2Animation,
+    feature3Animation
   };
 };
 
@@ -143,6 +207,38 @@ export const usePageTransition = () => {
     transitionPhase,
     startExit,
     exitAnimation
+  };
+};
+
+//update: Enhanced button animation hook
+export const useEnterButtonAnimation = (show) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  
+  const buttonAnimation = useSpring({
+    opacity: show ? 1 : 0,
+    transform: show 
+      ? `translateY(0px) scale(${isPressed ? 0.95 : isHovered ? 1.05 : 1})` 
+      : 'translateY(50px) scale(0.8)',
+    boxShadow: isHovered 
+      ? '0 20px 40px rgba(151, 71, 255, 0.4)' 
+      : '0 10px 20px rgba(151, 71, 255, 0.2)',
+    config: config.wobbly
+  });
+  
+  const glowAnimation = useSpring({
+    opacity: isHovered ? 1 : 0,
+    transform: `scale(${isHovered ? 1.2 : 1})`,
+    config: config.gentle
+  });
+  
+  return {
+    buttonAnimation,
+    glowAnimation,
+    isHovered,
+    setIsHovered,
+    isPressed,
+    setIsPressed
   };
 };
 
@@ -306,4 +402,44 @@ export const useReducedMotion = () => {
   }, []);
   
   return prefersReducedMotion;
+};
+
+//update: Intersection Observer for feature cards
+export const useIntersectionObserver = (options = {}) => {
+  const [entries, setEntries] = useState({});
+  const [elements, setElements] = useState([]);
+  
+  useEffect(() => {
+    if (elements.length === 0) return;
+    
+    const observer = new IntersectionObserver((observerEntries) => {
+      const newEntries = {};
+      observerEntries.forEach((entry) => {
+        newEntries[entry.target.id] = entry;
+      });
+      setEntries((prev) => ({ ...prev, ...newEntries }));
+    }, {
+      threshold: options.threshold || 0.1,
+      rootMargin: options.rootMargin || '0px',
+      ...options
+    });
+    
+    elements.forEach((element) => {
+      if (element) observer.observe(element);
+    });
+    
+    return () => {
+      elements.forEach((element) => {
+        if (element) observer.unobserve(element);
+      });
+    };
+  }, [elements, options.threshold, options.rootMargin]);
+  
+  const observe = useCallback((element) => {
+    if (element && !elements.includes(element)) {
+      setElements((prev) => [...prev, element]);
+    }
+  }, [elements]);
+  
+  return { entries, observe };
 };

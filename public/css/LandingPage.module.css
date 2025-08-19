@@ -15,6 +15,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
   will-change: opacity, transform, filter;
 }
 
@@ -90,27 +92,25 @@
 }
 
 .heroContent h1 {
-  font-family: Merriweather;
+  font-family: Montserrat;
   color: white;
   font-size: 3.5rem;
-  font-weight: 300;
+  font-weight: 700;
   letter-spacing: 0.6rem;
-  /* padding-bottom: 7rem; */
   margin-bottom: 13rem;
-  text-shadow: 
+  /* text-shadow: 
     0 2px 10px rgba(0, 0, 0, 0.5),
-    0 4px 20px rgba(0, 0, 0, 0.3);
+    0 4px 20px rgba(0, 0, 0, 0.3); */
   line-height: 5rem;
   will-change: opacity, transform;
 }
 
 .heroContent p {
   color: rgb(151, 71, 255);
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 500;
-  /* letter-spacing: 0.05rem; */
+  letter-spacing: .1rem;
   text-transform: uppercase;
-  /* opacity: 0.95; */
   text-shadow: 
     0 2px 10px rgba(151, 71, 255, 0.3),
     0 4px 20px rgba(151, 71, 255, 0.2);
@@ -124,36 +124,166 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   pointer-events: none;
   will-change: opacity, transform;
 }
 
 .scrollText {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
   font-weight: 400;
-  letter-spacing: 0.05rem;
-  animation: pulse 2s ease-in-out infinite;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+  animation: textPulse 3s ease-in-out infinite;
 }
 
-.scrollIcon {
-  width: 24px;
-  height: 36px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 12px;
+/* update: Polished mobile scroll indicator */
+.mobileScrollIndicator {
   position: relative;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.handIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding-top: 6px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(151, 71, 255, 0.1) 0%, transparent 70%);
+  animation: handFloat 3s ease-in-out infinite;
+}
+
+.handIcon {
+  animation: handRotate 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.swipeIndicator {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: swipeDown 2s ease-in-out infinite;
+}
+
+.swipeArrow {
+  filter: drop-shadow(0 2px 8px rgba(151, 71, 255, 0.5));
+}
+
+.pulseDots {
+  display: flex;
+  gap: 4px;
+  margin-top: -4px;
+}
+
+.pulseDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(151, 71, 255, 0.6);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+.pulseDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.pulseDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* update: Polished desktop scroll indicator */
+.desktopScrollIndicator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mouseWrapper {
+  position: relative;
+  padding: 8px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  animation: mouseGlow 3s ease-in-out infinite;
+}
+
+.mouseIcon {
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.scrollWheel {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(151, 71, 255, 0.8);
+  animation: wheelScroll 1.5s ease-in-out infinite;
+}
+
+.chevronWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -8px;
+}
+
+.chevron1,
+.chevron2,
+.chevron3 {
+  position: absolute;
+  animation: chevronFlow 2s ease-in-out infinite;
+}
+
+.chevron1 {
+  top: 0;
+  animation-delay: 0s;
+}
+
+.chevron2 {
+  top: 8px;
+  animation-delay: 0.3s;
+}
+
+.chevron3 {
+  top: 16px;
+  animation-delay: 0.6s;
+}
+
+/* Mouse scroll icon for desktop - REMOVE OLD STYLES */
+.scrollIcon {
+  display: none;
 }
 
 .scrollDot {
-  width: 4px;
-  height: 8px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
-  animation: scrollAnimation 1.5s ease-in-out infinite;
+  display: none;
+}
+
+/* Hand scroll icon for mobile/touch devices - REMOVE OLD STYLES */
+.handIcon {
+  display: none;
+}
+
+.handPath {
+  display: none;
+}
+
+.touchPoint {
+  display: none;
 }
 
 /* Button wrapper */
@@ -168,7 +298,167 @@
   will-change: opacity, transform;
 }
 
+/* update: Custom animated ENTRAR button */
+.enterButton {
+  position: relative;
+  padding: 1.2rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.2rem;
+  color: white;
+  background: linear-gradient(135deg, rgba(151, 71, 255, 0.8) 0%, rgba(120, 50, 220, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 0 15px rgba(151, 71, 255, 0.4),
+    0 0 30px rgba(151, 71, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  will-change: transform, box-shadow, background;
+}
+
+.enterButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.enterButton:not(:disabled):hover {
+  border-color: #D1FF1F;
+}
+
+.enterButton:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+/* update: Button text animation */
+.buttonText {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  transition: all 0.3s ease;
+  will-change: transform, letter-spacing;
+}
+
+/* update: Button shine effect */
+.buttonShine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.enterButton:not(:disabled):hover .buttonShine {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
+  transition: transform 0.8s ease;
+}
+
 /* Animations */
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* update: Mobile scroll animations */
+@keyframes handFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes handRotate {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes swipeDown {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(15px);
+    opacity: 0;
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* update: Desktop scroll animations */
+@keyframes mouseGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(151, 71, 255, 0.1),
+      inset 0 0 10px rgba(151, 71, 255, 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(151, 71, 255, 0.2),
+      inset 0 0 15px rgba(151, 71, 255, 0.1);
+  }
+}
+
+@keyframes wheelScroll {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(8px);
+    opacity: 0;
+  }
+}
+
+@keyframes chevronFlow {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Old animations - keeping these for reference but they're not used anymore */
 @keyframes pulse {
   0%, 100% {
     opacity: 0.7;
@@ -193,6 +483,35 @@
   }
 }
 
+@keyframes handBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes handSwipe {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes touchPulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
 /* Tablet styles (641px - 1024px) */
 @media (min-width: 641px) and (max-width: 1024px) {
   .portraitImage {
@@ -200,23 +519,34 @@
     max-width: 85vw;
   }
   
-  /* .heroContent h1 {
-    font-size: 2.75rem;
-    margin-bottom: 0.75rem;
-  } */
-  
   .heroContent p {
     font-size: 1.25rem;
     letter-spacing: 0.4rem;
   }
   
   .scrollText {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   
-  .scrollIcon {
+  /* update: Larger scroll indicators for tablets */
+  .mouseWrapper {
+    padding: 10px;
+  }
+  
+  .mouseIcon {
     width: 28px;
-    height: 42px;
+    height: 28px;
+  }
+  
+  .handIcon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  /* update: Larger button for tablets */
+  .enterButton {
+    padding: 1.4rem 3.5rem;
+    font-size: 1.2rem;
   }
   
   .buttonWrapper {
@@ -235,31 +565,37 @@
     margin-top: -6rem;
   }
   
-  /* .heroContent h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-    letter-spacing: 0.03rem;
-  } */
-  
   .heroContent p {
     font-size: 1.5rem;
     letter-spacing: 0.5rem;
   }
   
   .scrollText {
-    font-size: 1rem;
-    letter-spacing: 0.08rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.1rem;
   }
   
-  .scrollIcon {
+  /* update: Larger scroll indicators for desktop */
+  .mouseWrapper {
+    padding: 12px;
+  }
+  
+  .mouseIcon {
     width: 32px;
-    height: 48px;
-    border-radius: 16px;
+    height: 32px;
   }
   
-  .scrollDot {
-    width: 5px;
-    height: 10px;
+  .scrollWheel {
+    width: 4px;
+    height: 8px;
+    top: 22px;
+  }
+  
+  /* update: Larger button for desktop */
+  .enterButton {
+    padding: 1.5rem 4rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.25rem;
   }
   
   .buttonWrapper {
@@ -274,13 +610,16 @@
     max-width: 60vw;
   }
   
-  /* .heroContent h1 {
-    font-size: 4rem;
-  } */
-  
   .heroContent p {
     font-size: 1.75rem;
     letter-spacing: 0.6rem;
+  }
+  
+  /* update: Even larger button for large screens */
+  .enterButton {
+    padding: 1.6rem 4.5rem;
+    font-size: 1.4rem;
+    letter-spacing: 0.3rem;
   }
 }
 
@@ -312,11 +651,6 @@
     margin-top: 0;
   }
   
-  /* .heroContent h1 {
-    font-size: 1.75rem;
-    margin-bottom: 0.25rem;
-  } */
-  
   .heroContent p {
     font-size: 0.9rem;
   }
@@ -328,6 +662,13 @@
   
   .scrollHint {
     bottom: 1rem;
+  }
+  
+  /* update: Smaller button for landscape phones */
+  .enterButton {
+    padding: 0.8rem 2rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.15rem;
   }
   
   .buttonWrapper {
@@ -350,13 +691,28 @@
     min-height: 67vh !important;
   }
 }
+
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .scrollDot,
-  .scrollText {
+  .scrollText,
+  .handIcon,
+  .swipeArrow,
+  .pulseDot,
+  .mouseIcon,
+  .scrollWheel,
+  .chevron1,
+  .chevron2,
+  .chevron3 {
     animation: none;
   }
   
   .portraitImage {
     transition: opacity 0.5s ease;
+  }
+  
+  .enterButton,
+  .buttonText,
+  .buttonShine {
+    transition: none;
   }
 }
