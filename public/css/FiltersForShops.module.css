@@ -11,6 +11,10 @@
   animation: slideDown 0.3s ease-out;
 }
 
+.filtersContainer:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -31,36 +35,31 @@
   position: relative;
   display: flex;
   align-items: center;
+  padding: .5rem;
+  border-radius: 8px;
   width: 100%;
 }
 
+.searchInputWrapper:hover {
+  background-color: var(--light-gray);
+}
+
 .searchIcon {
-  position: absolute;
-  left: 12px;
-  color: #6b7280;
+  margin-right: .5rem;
+  color: lightgray;
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  padding: 0.75rem 2.5rem;
-  padding-left: 2.5rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-  background: white;
 }
 
-.searchInput:focus {
-  outline: none;
-  border-color: var(--saturated-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+
 
 .searchInput::placeholder {
-  color: #9ca3af;
-  font-size: 0.813rem;
+  /* padding-left: 1rem; */
+  color: lightgray;
+  font-size: .9rem;
 }
 
 .clearSearchButton {
@@ -102,6 +101,12 @@
   display: flex;
   align-items: center;
   width: 100%;
+  padding: .5rem;
+  border-radius: 8px;
+}
+
+.filterWrapper:hover {
+  background-color: var(--light-gray);
 }
 
 .filterIcon {
@@ -114,39 +119,9 @@
 
 .filterSelect {
   width: 100%;
-  padding: 0.625rem 1rem;
-  padding-left: 2.5rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  background: white;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
 }
 
-.filterSelect:hover {
-  border-color: #d1d5db;
-  background-color: #f9fafb;
-}
-
-.filterSelect:focus {
-  outline: none;
-  border-color: var(--saturated-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.filterSelect.hasValue {
-  background-color: #eff6ff;
-  border-color: var(--saturated-blue);
-  color: var(--saturated-blue);
-  font-weight: 500;
-}
 
 /* Toggle Filters Row */
 .checkboxFiltersRow {
@@ -192,32 +167,16 @@
 }
 
 .resetButton {
-  width: 100%;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--light-gray);
+  color: black;
+  border: 2px solid transparent;
   gap: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
 }
 
 .resetButton:hover {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-}
-
-.resetButton:active {
-  transform: translateY(0);
+  background-color: lightgray;
+  box-shadow: 0 4px 12px rgba(173, 168, 168, 0.25);
 }
 
 .filterCount {

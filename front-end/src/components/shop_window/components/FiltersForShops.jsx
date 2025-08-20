@@ -43,8 +43,9 @@ const FiltersForShops = ({
             type="text"
             value={searchTerm}
             onChange={handleSearch}
-            placeholder="Buscar comercios por nombre, tipo o ubicación..."
+            placeholder="Buscar comercios por nombre, tipo, etc"
             className={styles.searchInput}
+            title='Buscar comercios por nombre, tipo o ubicación...'
             aria-label="Buscar comercios"
           />
           {searchTerm && (
@@ -65,7 +66,7 @@ const FiltersForShops = ({
         <div className={styles.selectFiltersRow}>
           {/* Shop Type Filter */}
           <div className={styles.filterWrapper}>
-            <Store size={16} className={styles.filterIcon} />
+            {/* <Store size={16} className={styles.filterIcon} /> */}
             <select
               value={filters.tipo_comercio || ""}
               onChange={(e) => handleFilterChange('tipo_comercio', e.target.value)}
@@ -100,7 +101,7 @@ const FiltersForShops = ({
 
           {/* Day of Week Filter */}
           <div className={styles.filterWrapper}>
-            <Calendar size={16} className={styles.filterIcon} />
+            {/* <Calendar size={16} className={styles.filterIcon} /> */}
             <select
               value={filters.dia_semana || ""}
               onChange={(e) => handleDayChange(e.target.value)}
@@ -163,7 +164,7 @@ const FiltersForShops = ({
             <div className={styles.toggleSwitchContainer}>
               <span className={styles.toggleIconLabel}>
                 <Star size={14} />
-                <span>Mejor valorados (4+)</span>
+                <span>Mejor valorados</span>
               </span>
               <CustomToggleSwitch 
                 checked={filters.mejor_valorados === 'Sí'}

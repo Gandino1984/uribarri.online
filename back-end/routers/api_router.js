@@ -16,6 +16,8 @@ import calificationShopApiRouter from "./calification_shop_api_router.js";
 import orderApiRouter from "./order_api_router.js";
 import orderProductApiRouter from "./order_product_api_router.js";
 import orderPackageApiRouter from "./order_package_api_router.js";
+//update: Import shop valoration router
+import shopValorationApiRouter from "./shop_valoration_api_router.js";
 
 const router = Router();
 
@@ -49,5 +51,8 @@ router.use("/order", orderApiRouter);
 router.use("/order-product", orderProductApiRouter);
 
 router.use("/order-package", orderPackageApiRouter);
+
+//update: Add shop valoration routes
+router.use("/shop-valoration", shopValorationApiRouter);
 
 export default router;
