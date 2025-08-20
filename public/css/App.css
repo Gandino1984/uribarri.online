@@ -282,26 +282,28 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: .5rem .7rem;
   outline: none;
-  border: none;
+  border: 2px solid transparent;
   background-color: white;
   color: black;
+  gap: .5rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: .9rem;
   font-weight: 600;
   cursor: pointer;
   touch-action: manipulation;
   text-transform: uppercase;
   transition: all 0.15s ease;
 }
-º
+
 button:hover {
   border: 2px solid lightgray;
   background-color: var(--light-gray);
 }
 
 button:active {
-  background-color: var(--app-purple);
+  border: 2px solid var(--app-purple);
 }
 
 select {
@@ -319,7 +321,7 @@ select {
   padding-left: 1rem;
   cursor: pointer;
   outline: none;
-  border-color: transparent;
+  border: 2px solid lightgray;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;

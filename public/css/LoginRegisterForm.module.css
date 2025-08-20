@@ -116,19 +116,19 @@ background-color: white;
   gap: .6rem;
   width: 100%;
 }
-
+/* 
 .submitButton {
   min-width: 80px;
   align-self: flex-start;
-}
+} */
 
-.toggleButton {
+/* .toggleButton {
   min-width: 80px;
-}
+} */
 
-.toggleButton:hover {
-  text-shadow: 0 0 8px var(--saturated-blue);
-}
+/* .toggleButton:hover {
+ 
+} */
 
 .inputError {
   border: 2px solid red;
@@ -137,15 +137,15 @@ background-color: white;
 
 .active {
   color: black;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid transparent;
   background-color: rgba(255, 255, 255, 0.2);
 }
 
 .active:hover {
-  color: white;
-  border: 1px solid white;
-  background-color: rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
+  color: black;
+  border: 2px solid lightgray;
+  background-color: var(--light-gray);
+  /* box-shadow: 0px 0px 15px 1px var(--satur-blue-transparent) !important; */
 }
 
 .inactive {
