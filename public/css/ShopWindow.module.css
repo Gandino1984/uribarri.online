@@ -164,7 +164,7 @@
   padding: 0.5rem 1rem;
   background: var(--app-purple);
   color: white;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
