@@ -868,6 +868,71 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Add these styles to the existing ShopProductsList.module.css file */
+
+/*update: Styles for category management button */
+.listTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.categoryManagementButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
+
+.categoryManagementButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.categoryManagementButton:active {
+  transform: translateY(0);
+}
+
+.categoryManagementButton span {
+  font-size: 13px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .listTitleWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .categoryManagementButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .categoryManagementButton {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .categoryManagementButton span {
+    font-size: 12px;
+  }
+}
+
 /* Responsive adjustments for action buttons */
 @media (max-width: 768px) {
   .actionButtonsWrapper {

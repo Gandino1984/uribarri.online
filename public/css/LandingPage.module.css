@@ -307,7 +307,7 @@
   letter-spacing: 0.2rem;
   color: white;
   background: linear-gradient(135deg, rgba(151, 71, 255, 0.8) 0%, rgba(120, 50, 220, 0.8) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* border: 1px solid rgba(255, 255, 255, 0.3); */
   border-radius: 8px;
   cursor: pointer;
   overflow: hidden;
@@ -325,12 +325,12 @@
   opacity: 0.5;
 }
 
-.enterButton:not(:disabled):hover {
+/* .enterButton:not(:disabled):hover {
   border-color: #D1FF1F;
-}
+} */
 
 .enterButton:not(:disabled):active {
-  transform: scale(0.95);
+  transform: scale(0.5);
 }
 
 /* update: Button text animation */
@@ -338,7 +338,7 @@
   position: relative;
   z-index: 2;
   display: inline-block;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   will-change: transform, letter-spacing;
 }
 
@@ -356,7 +356,7 @@
     transparent 70%
   );
   transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  transition: transform 0.6s ease;
+  transition: transform 0.3s ease;
   pointer-events: none;
 }
 

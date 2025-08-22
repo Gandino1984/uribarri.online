@@ -1,12 +1,17 @@
+// front-end/src/components/shop_management/components/product_management/components/shop_products_list/ShopProductsList.jsx
 import { useEffect, useState, useRef } from 'react';
 import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
 import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx';
+//update: Import auth context for checking sponsor status
+import { useAuth } from '../../../../../../../src/app_context/AuthContext.jsx';
 import ShopPackagesList from './components/shop_packages_list/ShopPackagesList.jsx';
 import PackageCreationForm from '../shop_products_list/components/package_creation_form/PackageCreationForm.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
+//update: Import the new ProductCategoryManagementForm
+import ProductCategoryManagementForm from './components/ProductCategoryManagementForm.jsx';
 
 import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
 import ImageModal from '../../../../../image_modal/ImageModal.jsx';
@@ -42,7 +47,9 @@ import {
   Info,
   Clock,
   Check,
-  CheckCircle
+  CheckCircle,
+  //update: Add Layers icon for category management
+  Layers
 } from 'lucide-react';
 
 // Import image utility
@@ -53,6 +60,9 @@ import { useTransition, animated } from '@react-spring/web';
 import { formAnimation, fadeInScale } from '../../../../../../utils/animation/transitions.js';
 
 const ShopProductsList = () => {
+  //update: Add auth context
+  const { currentUser } = useAuth();
+  
   // UI context
   const {
     clearError, setError,
@@ -106,6 +116,8 @@ const ShopProductsList = () => {
   const [expandedProducts, setExpandedProducts] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(null);
+  //update: Add state for showing category management
+  const [showCategoryManagement, setShowCategoryManagement] = useState(false);
   
   // Get screen size for responsive behavior
   const isSmallScreen = useScreenSize(768);
@@ -192,6 +204,8 @@ const ShopProductsList = () => {
     },
     keys: item => item.id_product
   });
+
+  // [... rest of the existing functions remain the same until the render ...]
 
   // Toggle expanded state for a product
   const toggleExpanded = (productId) => {
@@ -421,6 +435,8 @@ const ShopProductsList = () => {
     return price - discountAmount;
   };
 
+  // [... rest of the existing useEffects remain the same ...]
+
   // Enhanced product fetching with better error handling and state management
   useEffect(() => {
     const loadProducts = async () => {
@@ -568,10 +584,20 @@ const ShopProductsList = () => {
         />
       )}
 
+      {/*update: Add the ProductCategoryManagementForm modal */}
+      {showCategoryManagement && (
+        <ProductCategoryManagementForm 
+          onClose={() => {
+            setShowCategoryManagement(false);
+            // Refresh categories after closing
+            fetchProductsByShop();
+          }} 
+        />
+      )}
+
       {contentTransition((style, item) => 
         item && (
           <animated.div style={style} className={styles.container}>
-            {/* <span className={styles.cardInfo}>Tienda seleccionada: </span> */}
             {shopCardTransition((cardStyle, shop) => 
               shop && (
                 <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
@@ -582,7 +608,18 @@ const ShopProductsList = () => {
 
             <div className={styles.listHeaderTop}>
               <div className={styles.listTitleWrapper}>
-                <h1 className={styles.listTitle}>Lista de Productos</h1>
+                <h1 className={styles.listTitle}>Gestión de productos</h1>
+                {/*update: Add category management button for sponsor users */}
+                {currentUser?.contributor_user && (
+                  <button 
+                    onClick={() => setShowCategoryManagement(true)}
+                    className={styles.categoryManagementButton}
+                    title="Gestionar categorías de productos"
+                  >
+                    <Layers size={18} />
+                    <span>Categorías</span>
+                  </button>
+                )}
               </div>
               
               {isSmallScreen ? (
@@ -639,7 +676,6 @@ const ShopProductsList = () => {
               <div className={styles.productsContainer}>
                 <div className={styles.header}>
                   <h3 className={styles.title}>
-                    {/* <ShoppingBag size={20} /> */}
                     Productos ({displayedProducts.length})
                     {selectedProducts.size > 0 && ` | Seleccionados: ${selectedProducts.size}`}
                   </h3>
@@ -738,11 +774,6 @@ const ShopProductsList = () => {
                                   ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
                                   : product.price_product}
                               </span>
-                              {/* {product.discount_product > 0 && (
-                                <span className={styles.savings}>
-                                  Ahorro: €{(product.price_product * product.discount_product / 100).toFixed(2)}
-                                </span>
-                              )} */}
                             </div>
                           </div>
 

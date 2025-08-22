@@ -537,6 +537,9 @@ const ShopCreationForm = () => {
 
   return (
     <>
+       <p className={styles.headerTitle}>
+                  {selectedShop ? 'Actualizar tu comercio' : 'Crea un comercio'}
+      </p>
       {formTransition((style, show) => 
         show && (
           <animated.div 
@@ -545,10 +548,6 @@ const ShopCreationForm = () => {
           >
             <div className={styles.content}>
               <div className={styles.header}>   
-                <h2 className={styles.headerTitle}>
-                  {selectedShop ? 'Actualizar comercio' : 'Crear un comercio'}
-                </h2>
-
                 <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
               </div>   
               

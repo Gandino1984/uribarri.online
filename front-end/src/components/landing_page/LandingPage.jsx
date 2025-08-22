@@ -151,14 +151,14 @@ const LandingPage = () => {
     background: isButtonHovered
       ? 'linear-gradient(135deg, rgba(151, 71, 255, 0.9) 0%, rgba(120, 50, 220, 0.9) 100%)'
       : 'linear-gradient(135deg, rgba(151, 71, 255, 0.8) 0%, rgba(120, 50, 220, 0.8) 100%)',
-    config: config.wobbly
+    config: config.gentle
   });
   
-  //update: Button text animation
+  //update: Button text animationgentle
   const buttonTextSpring = useSpring({
     letterSpacing: isButtonHovered ? '0.3rem' : '0.2rem',
     transform: isButtonHovered ? 'scale(1.1)' : 'scale(1)',
-    config: config.wobbly
+    config: config.gentle
   });
   
   //update: Overlay gradient animation
@@ -313,7 +313,7 @@ const LandingPage = () => {
                   strokeWidth={2}
                 />
                 <ChevronDown 
-                  className={styles.chevron3}buttonTextSpring
+                  className={styles.chevron3}
                   size={16}
                   color="#D1FF1F"
                   strokeWidth={2}

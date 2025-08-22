@@ -9,8 +9,7 @@ import { useTransition, useSpring, animated } from '@react-spring/web';
 import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
 import { 
-  Plus,
-  ListOrdered, 
+  Plus, 
   ShoppingBag, 
   Store, 
   MapPin, 
@@ -171,6 +170,28 @@ const ShopsListBySeller = () => {
     setExpandedShop(prev => prev === shopId ? null : shopId);
   };
 
+  //update: Helper function to render star rating
+  const renderStarRating = (rating) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    
+    return (
+      <span className={styles.starsContainer}>
+        {[...Array(fullStars)].map((_, i) => (
+          <Star key={`full-${i}`} size={14} className={styles.filledStar} fill="currentColor" />
+        ))}
+        {hasHalfStar && (
+          <Star key="half" size={14} className={styles.halfStar} />
+        )}
+        {[...Array(emptyStars)].map((_, i) => (
+          <Star key={`empty-${i}`} size={14} className={styles.emptyStar} />
+        ))}
+        <span className={styles.ratingText}>({rating})</span>
+      </span>
+    );
+  };
+
   const renderShopCard = (shop, style) => {
     const isSelected = isShopSelected(shop.id_shop);
     const isExpanded = expandedShop === shop.id_shop;
@@ -228,8 +249,7 @@ const ShopsListBySeller = () => {
                   {shop.location_shop}
                 </span>
                 <span className={styles.shopRating}>
-                  <Star size={14} />
-                  {shop.calification_shop}/5
+                  {renderStarRating(shop.calification_shop || 0)}
                 </span>
               </div>
             </div>
@@ -290,7 +310,7 @@ const ShopsListBySeller = () => {
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
             <h1 className={styles.title}>
-              Gestiona tus comercios
+              Gestiona tus actividades comerciales en el barrio
             </h1>
             
             <div className={styles.headerButtons}>
@@ -322,7 +342,7 @@ const ShopsListBySeller = () => {
                   className={styles.active}
                   title="Ver pedidos del comercio"
                 >
-                  <ListOrdered size={screenWidth > 480 ? 16 : 20} />
+                  <ShoppingBag size={screenWidth > 480 ? 16 : 20} />
                   <span>Pedidos</span>
                   {pendingOrdersCount > 0 && (
                     <span className={styles.notificationBadge}>{pendingOrdersCount}</span>
@@ -332,7 +352,7 @@ const ShopsListBySeller = () => {
             </div>
           </animated.div>
         
-       
+          
         </div>
 
         <div className={styles.shopManagementContainer}>
@@ -348,11 +368,11 @@ const ShopsListBySeller = () => {
                 ) : (
                   <div className={styles.listHeaderContainer}>
                     <div className={styles.listHeader}>
-                      <p className={styles.listTitle}>
+                      <span className={styles.listTitle}>
                         {/* <Store size={20} /> */}
                         {/*update: Add username to the title */}
                         Comercios{currentUser?.name_user ? ` de ${currentUser.name_user}` : ''} ({shops.length})
-                      </p>
+                      </span>
                     </div>
                     
                     <div className={styles.shopsList}>
@@ -361,13 +381,13 @@ const ShopsListBySeller = () => {
                       )}
                     </div>
 
-                      <animated.div style={titleAnimation}>
-                          <ShopLimitIndicator 
-                            shopCount={shopCount} 
-                            shopLimit={shopLimit} 
-                            isUserSponsor={!!currentUser?.contributor_user} 
-                          />
-                      </animated.div>
+                    <animated.div style={titleAnimation}>
+                        <ShopLimitIndicator 
+                          shopCount={shopCount} 
+                          shopLimit={shopLimit} 
+                          isUserSponsor={!!currentUser?.contributor_user} 
+                        />
+                  </animated.div>
                   </div>
                 )}
               </animated.div>

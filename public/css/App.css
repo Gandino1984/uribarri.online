@@ -131,35 +131,34 @@ input[type="text"]:hover {
   border: 2px solid var(--app-purple);    
 }
 
-/* ⏰ UPDATE: Time inputs with consistent styling */
 input[type="time"] {
-  width: 100%;
+  /* width: 100%; */
   max-width: 150px;
   color: gray;
   padding: 0.5rem;
-  border: 1px solid var(--medium-gray);
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  font-size: 0.9rem;
   min-height: 2.5rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s ease;
   cursor: pointer;
-  background-color: rgb(238, 249, 255);
+  background-color: var(--light-gray);
 }
 
 input[type="time"]:focus {
-  border-color: var(--saturated-orange);
-  color: black;
-  background-color: white;
+  border: 2px solid var(--app-purple);
+  color: var(--app-purple);
+  background-color: var(--app-purple-transparent);
   outline: none;
-  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+  /* box-shadow: 0 0 13px 1px var(--saturated-blue-transparent); */
   /* box-shadow: 0 0 0 2px rgba(var(--saturated-orange-rgb), 0.2); */
 }
 
 input[type="time"]:hover {
-  background-color: white;
-  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
-  /* border-color: var(--saturated-blue); */
+  /* background-color: white; */
+  /* box-shadow: 0 0 13px 1px var(--saturated-blue-transparent); */
+  border: 2px solid var(--app-purple);
 
 }
 
@@ -172,7 +171,9 @@ input[type="time"].hasValue {
 
 .timeFieldContainer, .timeFieldGroup {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* flex-direction: column; */
   margin-bottom: 0.75rem;
   position: relative;
   width: 100%;
@@ -182,9 +183,10 @@ input[type="time"].hasValue {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-right: 1rem;
+  /* margin-bottom: 0.25rem; */
   font-size: 0.875rem;
-  color: white;
+  color: gray;
 }
 
 .timeIcon {
