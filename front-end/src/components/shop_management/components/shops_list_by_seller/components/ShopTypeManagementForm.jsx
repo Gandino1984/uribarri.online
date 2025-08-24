@@ -157,7 +157,7 @@ const ShopTypeManagementForm = ({ onClose }) => {
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h2>Gestionar Tipos de Comercio</h2>
+          <h2>Gestiona tus tipos de comercio</h2>
           <button onClick={onClose} className={styles.closeButton}>
             <X size={20} />
           </button>
@@ -165,7 +165,7 @@ const ShopTypeManagementForm = ({ onClose }) => {
 
         {error && (
           <div className={styles.errorMessage}>
-            <AlertCircle size={16} />
+            <AlertCircle size={20} />
             {error}
           </div>
         )}
@@ -181,16 +181,16 @@ const ShopTypeManagementForm = ({ onClose }) => {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3>
-                <Tag size={18} />
-                Tipos de Comercio
+                <Tag size={20} />
+                Tipos
               </h3>
               <button
                 onClick={() => setShowCreateType(!showCreateType)}
                 className={styles.addButton}
                 disabled={loading}
               >
-                <Plus size={16} />
-                Crear Tipo
+                <Plus size={20} />
+                tipo
               </button>
             </div>
 
@@ -224,8 +224,8 @@ const ShopTypeManagementForm = ({ onClose }) => {
               </div>
             )}
 
-            <div className={styles.searchBox}>
-              <Search size={16} />
+            {/* <div className={styles.searchBox}>
+              <Search size={20} color='lightgray'/>
               <input
                 type="text"
                 placeholder="Buscar tipo..."
@@ -233,7 +233,7 @@ const ShopTypeManagementForm = ({ onClose }) => {
                 onChange={(e) => setSearchType(e.target.value)}
                 className={styles.searchInput}
               />
-            </div>
+            </div> */}
 
             <div className={styles.typesList}>
               {loading ? (
@@ -284,13 +284,13 @@ const ShopTypeManagementForm = ({ onClose }) => {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3>
-                <Tags size={18} />
+                <Tags size={20} />
                 Subtipos
-                {selectedType && (
+                {/* {selectedType && (
                   <span className={styles.selectedTypeLabel}>
                     ({selectedType.name_type})
                   </span>
-                )}
+                )} */}
               </h3>
               <button
                 onClick={() => setShowCreateSubtype(!showCreateSubtype)}
@@ -298,8 +298,8 @@ const ShopTypeManagementForm = ({ onClose }) => {
                 disabled={!selectedTypeForSubtype || loading}
                 title={!selectedTypeForSubtype ? 'Selecciona un tipo primero' : ''}
               >
-                <Plus size={16} />
-                Crear Subtipo
+                <Plus size={20} />
+                Subtipo
               </button>
             </div>
 
@@ -336,7 +336,7 @@ const ShopTypeManagementForm = ({ onClose }) => {
               </div>
             )}
 
-            {selectedType && (
+            {/* {selectedType && (
               <div className={styles.searchBox}>
                 <Search size={16} />
                 <input
@@ -347,7 +347,7 @@ const ShopTypeManagementForm = ({ onClose }) => {
                   className={styles.searchInput}
                 />
               </div>
-            )}
+            )} */}
 
             <div className={styles.subtypesMainList}>
               {!selectedType ? (

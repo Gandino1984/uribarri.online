@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--light-gray);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,6 +35,10 @@
   animation: slideUp 0.3s ease;
 }
 
+.modal:hover{
+box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(20px);
@@ -47,36 +51,36 @@
 }
 
 .header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  /* padding: 20px 24px; */
+  border-bottom: 1px solid var(--light-gray);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .header h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: black;
+  /* margin: 0; */
 }
 
 .closeButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  color: #6b7280;
-  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--light-gray);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: .5rem;
+  border-radius: 8px;
+  color: black;
+  transition: all 0.2s ease;
 }
 
 .closeButton:hover {
-  background-color: #f3f4f6;
-  color: #111827;
+  background-color: lightgray;
+  /* color: #111827; */
 }
 
 .errorMessage {
@@ -122,6 +126,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  /* background-color: var(--light-gray); */
 }
 
 .section {
@@ -134,8 +139,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  /* background-color: var(--light-gray); */
+  /* padding-bottom: 12px; */
+  /* border-bottom: 1px solid #e5e7eb; */
 }
 
 .sectionHeader h3 {
@@ -149,20 +155,20 @@
 }
 
 .selectedTypeLabel {
-  font-size: 14px;
+  font-size: .7rem;
   font-weight: 400;
   color: #6b7280;
   margin-left: 8px;
 }
 
 .addButton {
-  padding: 8px 16px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: .2rem .3rem;
+  background-color: var(--light-gray);
+  color: black;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-size: .9rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -170,14 +176,18 @@
   transition: all 0.2s;
 }
 
-.addButton:hover:not(:disabled) {
-  background-color: #2563eb;
-  transform: translateY(-1px);
+.addButton:hover{
+background-color: lightgray;
 }
 
+/* .addButton:hover:not(:disabled) {
+
+
+} */
+
 .addButton:disabled {
-  background-color: #e5e7eb;
-  color: #9ca3af;
+  /* background-color: white; */
+  color: lightgray;
   cursor: not-allowed;
 }
 
@@ -220,18 +230,18 @@
 
 .confirmButton {
   padding: 8px 16px;
-  background-color: #10b981;
-  color: white;
-  border: none;
+  background-color: var(--light-gray);
+  color: black;
+  border: 2px solid transparent;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: .9rem;
+  font-weight: 600;  
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .confirmButton:hover:not(:disabled) {
-  background-color: #059669;
+  background-color: lightgray;
 }
 
 .confirmButton:disabled {
@@ -242,19 +252,19 @@
 
 .cancelButton {
   padding: 8px 16px;
-  background-color: white;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
+  background-color: var(--light-gray);
+  color: black;
+  border: 2px solid transparent;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: .9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .cancelButton:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  background-color: lightgray;
+  /* border-color: #9ca3af; */
 }
 
 .searchBox {
@@ -262,14 +272,18 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: white;
+  border: 2px solid transparent;
   border-radius: 8px;
+}
+
+.searchBox:hover{
+  background-color: var(--light-gray);
 }
 
 .searchInput {
   flex: 1;
-  background: none;
+  background-color: white;
   border: none;
   outline: none;
   font-size: 14px;
@@ -290,19 +304,19 @@
 }
 
 .typeItem {
-  border: 1px solid #e5e7eb;
+  border: 2px solid transparent;
   border-radius: 8px;
   background-color: white;
   transition: all 0.2s;
 }
 
 .typeItem:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--app-purple);
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
 }
 
 .typeItem.selected {
-  border-color: #3b82f6;
+  border-color: var(--app-purple);
   background-color: #eff6ff;
 }
 
@@ -313,24 +327,28 @@
   align-items: center;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  color: #111827;
+  font-weight: 600;
+  outline: none;
+  border-radius: 8px;
+  border: 2px solid var(--light-gray);
+  color: black;
 }
 
 .expandButton {
-  background: none;
-  border: none;
+  background-color: var(--light-gray);
+  border: 2px solid transparent;
   cursor: pointer;
   padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: black;
   transition: all 0.2s;
 }
 
 .expandButton:hover {
-  color: #111827;
+    border: 2px solid transparent;
+  background-color: lightgray;
 }
 
 .subtypesList {
@@ -339,6 +357,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border-radius: 8px;
   background-color: #f9fafb;
   animation: slideDown 0.3s ease;
 }
@@ -386,8 +405,8 @@
 }
 
 .subtypeMainItem:hover {
-  border-color: #3b82f6;
-  background-color: #f9fafb;
+  /* border-color: #3b82f6; */
+  background-color: var(--light-gray);
 }
 
 .noTypeSelected {
@@ -432,19 +451,19 @@
 }
 
 .closeModalButton {
-  padding: 10px 20px;
-  background-color: #6b7280;
-  color: white;
-  border: none;
+  padding: .2rem .4rem;
+  background-color: var(--light-gray);
+  color: black;
+  border: 2px solid transparent;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: .9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .closeModalButton:hover {
-  background-color: #4b5563;
+  background-color: lightgray;
 }
 
 /* Responsive Design */

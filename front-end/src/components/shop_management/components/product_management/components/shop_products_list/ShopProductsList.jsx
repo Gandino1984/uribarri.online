@@ -608,18 +608,8 @@ const ShopProductsList = () => {
 
             <div className={styles.listHeaderTop}>
               <div className={styles.listTitleWrapper}>
-                <h1 className={styles.listTitle}>Gestión de productos</h1>
-                {/*update: Add category management button for sponsor users */}
-                {currentUser?.contributor_user && (
-                  <button 
-                    onClick={() => setShowCategoryManagement(true)}
-                    className={styles.categoryManagementButton}
-                    title="Gestionar categorías de productos"
-                  >
-                    <Layers size={18} />
-                    <span>Categorías</span>
-                  </button>
-                )}
+                <p className={styles.listTitle}>Gestión de productos</p>
+                
               </div>
               
               {isSmallScreen ? (
@@ -643,6 +633,8 @@ const ShopProductsList = () => {
                     activeFiltersCount={activeFiltersCount}
                     navigateToPackages={() => setShowPackages(true)}
                   />
+
+                  
                 </div>
               ) : (
                 <>
@@ -666,6 +658,16 @@ const ShopProductsList = () => {
                   </div>
                 </>
               )}
+              {currentUser?.contributor_user && (
+                  <button 
+                    onClick={() => setShowCategoryManagement(true)}
+                    className={styles.categoryManagementButton}
+                    title="Gestionar categorías de productos"
+                  >
+                    <Layers size={18} />
+                    <span>Categorías</span>
+                  </button>
+                )}
             </div>
 
             {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
@@ -675,10 +677,10 @@ const ShopProductsList = () => {
             ) : (       
               <div className={styles.productsContainer}>
                 <div className={styles.header}>
-                  <h3 className={styles.title}>
+                  <p className={styles.title}>
                     Productos ({displayedProducts.length})
                     {selectedProducts.size > 0 && ` | Seleccionados: ${selectedProducts.size}`}
-                  </h3>
+                  </p>
                 </div>
                 
                 <div className={styles.productsList}>
