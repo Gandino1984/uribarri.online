@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../../../../../utils/app/axiosConfig.js';
 import { useAuth } from '../../../../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../../../../app_context/ShopContext.jsx';
-import { X, Plus, Search, ChevronDown, ChevronUp, Tag, Tags, AlertCircle, Layers } from 'lucide-react';
+import { X, Plus, Layers2, Search, ChevronDown, ChevronUp, Tag, Tags, AlertCircle, Layers } from 'lucide-react';
 import styles from '../../../../../../../../../public/css/ProductCategoryManagementForm.module.css';
 
 const ProductCategoryManagementForm = ({ onClose }) => {
@@ -238,10 +238,9 @@ const ProductCategoryManagementForm = ({ onClose }) => {
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h2>
-            <Layers size={20} />
+          <p>
             Gestionar Categorías de Productos
-          </h2>
+          </p>
           <button onClick={onClose} className={styles.closeButton}>
             <X size={20} />
           </button>
@@ -265,7 +264,7 @@ const ProductCategoryManagementForm = ({ onClose }) => {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3>
-                <Tag size={18} />
+                <Layers2 size={20} />
                 Categorías de Productos
               </h3>
               <button
@@ -273,8 +272,8 @@ const ProductCategoryManagementForm = ({ onClose }) => {
                 className={styles.addButton}
                 disabled={loading}
               >
-                <Plus size={16} />
-                Crear Categoría
+                <Plus size={20} />
+                Categoría
               </button>
             </div>
 
@@ -330,7 +329,7 @@ const ProductCategoryManagementForm = ({ onClose }) => {
             )}
 
             <div className={styles.searchBox}>
-              <Search size={16} />
+              <Search size={20} color='lightgray' />
               <input
                 type="text"
                 placeholder="Buscar categoría..."
@@ -392,13 +391,13 @@ const ProductCategoryManagementForm = ({ onClose }) => {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3>
-                <Tags size={18} />
-                Subcategorías
-                {selectedCategory && (
+                <Layers size={20} />
+                Subcategorías de producto
+                {/* {selectedCategory && (
                   <span className={styles.selectedTypeLabel}>
                     ({selectedCategory.name_category})
                   </span>
-                )}
+                )} */}
               </h3>
               <button
                 onClick={() => setShowCreateSubcategory(!showCreateSubcategory)}
@@ -407,7 +406,7 @@ const ProductCategoryManagementForm = ({ onClose }) => {
                 title={!selectedCategoryForSubcategory ? 'Selecciona una categoría primero' : ''}
               >
                 <Plus size={16} />
-                Crear Subcategoría
+                Subcategoría
               </button>
             </div>
 
@@ -446,7 +445,7 @@ const ProductCategoryManagementForm = ({ onClose }) => {
 
             {selectedCategory && (
               <div className={styles.searchBox}>
-                <Search size={16} />
+                <Search size={20} color='lightgray' />
                 <input
                   type="text"
                   placeholder="Buscar subcategoría..."

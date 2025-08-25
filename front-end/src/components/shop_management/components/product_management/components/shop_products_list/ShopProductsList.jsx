@@ -608,14 +608,14 @@ const ShopProductsList = () => {
 
             <div className={styles.listHeaderTop}>
               <div className={styles.listTitleWrapper}>
-                <p className={styles.listTitle}>Gestión de productos</p>
+                <p className={styles.listTitle}>Gestiona los productos de tu comercio</p>
                 
               </div>
               
               {isSmallScreen ? (
                 <div className={styles.searchAndMenuContainer}>
                   <div className={styles.searchContainer}>
-                  <Search size={16} color='gray'></Search>
+                  <Search size={20} color='lightgray'></Search>
                   <SearchBar 
                     searchTerm={searchTerm}
                     handleSearchChange={handleSearchChange}
