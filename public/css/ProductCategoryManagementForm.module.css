@@ -145,7 +145,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
 }
 
 .sectionHeader h3 {
@@ -336,14 +336,14 @@
 }
 
 .typeItem {
-  border: 1px solid #e5e7eb;
+  border: 2px solid transparent;
   border-radius: 8px;
   background-color: white;
   transition: all 0.2s;
 }
 
 .typeItem:hover {
-  border-color: #3b82f6;
+  border: 2px solid var(--app-purple);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
