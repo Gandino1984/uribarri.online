@@ -4,13 +4,11 @@ import { useUI } from '../../../../../../../src/app_context/UIContext.jsx';
 import { useShop } from '../../../../../../../src/app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../../src/app_context/ProductContext.jsx';
 import { usePackage } from '../../../../../../../src/app_context/PackageContext.jsx';
-//update: Import auth context for checking sponsor status
 import { useAuth } from '../../../../../../../src/app_context/AuthContext.jsx';
 import ShopPackagesList from './components/shop_packages_list/ShopPackagesList.jsx';
 import PackageCreationForm from '../shop_products_list/components/package_creation_form/PackageCreationForm.jsx';
 import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
-//update: Import the new ProductCategoryManagementForm
 import ProductCategoryManagementForm from './components/ProductCategoryManagementForm.jsx';
 
 import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
@@ -21,7 +19,8 @@ import ConfirmationModal from '../../../../../confirmation_modal/ConfirmationMod
 import useFiltersForProducts from '../../../../../filters_for_products/FiltersForProductsUtils.jsx';
 
 import SearchBar from './components/SearchBar.jsx';
-import ActionButtons from './components/ActionButtons.jsx';
+//update: Import new UnifiedActionsMenu instead of ActionButtons
+import UnifiedActionsMenu from './components/UnifiedActionsMenu.jsx';
 import NoProductsMessage from './components/NoProductsMessage.jsx';
 import NoShopSelected from './components/NoShopSelected.jsx';
 import useScreenSize from '../../../shop_card/components/useScreenSize.js';
@@ -48,8 +47,9 @@ import {
   Clock,
   Check,
   CheckCircle,
-  //update: Add Layers icon for category management
-  Layers
+  Layers,
+  MoreVertical,
+  Layers2
 } from 'lucide-react';
 
 // Import image utility
@@ -60,7 +60,6 @@ import { useTransition, animated } from '@react-spring/web';
 import { formAnimation, fadeInScale } from '../../../../../../utils/animation/transitions.js';
 
 const ShopProductsList = () => {
-  //update: Add auth context
   const { currentUser } = useAuth();
   
   // UI context
@@ -116,8 +115,8 @@ const ShopProductsList = () => {
   const [expandedProducts, setExpandedProducts] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(null);
-  //update: Add state for showing category management
   const [showCategoryManagement, setShowCategoryManagement] = useState(false);
+  const [activeProductMenu, setActiveProductMenu] = useState(null);
   
   // Get screen size for responsive behavior
   const isSmallScreen = useScreenSize(768);
@@ -125,7 +124,7 @@ const ShopProductsList = () => {
   // Use the hook from FiltersForProductsUtils for consistent counting
   const { getActiveFiltersCount, handleResetFilters } = useFiltersForProducts();
   
-  // Use the function to get active filters count
+  // Get the function to get active filters count
   const activeFiltersCount = getActiveFiltersCount();
   
   // Add a ref to track deletion in progress
@@ -140,7 +139,6 @@ const ShopProductsList = () => {
   // Add state to control showing packages list
   const [showPackages, setShowPackages] = useState(false);
   
-  //update: State for product actions
   const [productForAction, setProductForAction] = useState(null);
   const [actionType, setActionType] = useState(null); // 'delete' or 'toggle'
 
@@ -205,8 +203,6 @@ const ShopProductsList = () => {
     keys: item => item.id_product
   });
 
-  // [... rest of the existing functions remain the same until the render ...]
-
   // Toggle expanded state for a product
   const toggleExpanded = (productId) => {
     setExpandedProducts(prev => {
@@ -218,6 +214,16 @@ const ShopProductsList = () => {
       }
       return newSet;
     });
+  };
+
+  // Toggle product menu
+  const toggleProductMenu = (productId, e) => {
+    e.stopPropagation();
+    if (activeProductMenu === productId) {
+      setActiveProductMenu(null);
+    } else {
+      setActiveProductMenu(productId);
+    }
   };
 
   // Wrapper Utils that use the ones from ShopProductsListUtils
@@ -249,7 +255,7 @@ const ShopProductsList = () => {
     handleBulkUpdateFn(selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard);
   };
   
-  //update: Handle delete product with confirmation modal
+  // Handle delete product with confirmation modal
   const handleDeleteProduct = (product) => {
     console.log('handleDeleteProduct called with product:', product);
     setProductForAction(product);
@@ -311,7 +317,7 @@ const ShopProductsList = () => {
     setIsModalOpen(true);
   };
   
-  //update: Toggle product active status with confirmation modal
+  // Toggle product active status with confirmation modal
   const handleToggleActiveStatus = (product) => {
     console.log('handleToggleActiveStatus called with product:', product);
     const action = product.active_product ? 'desactivar' : 'activar';
@@ -339,7 +345,7 @@ const ShopProductsList = () => {
     setIsModalOpen(true);
   };
 
-  //update: Handle bulk delete with confirmation modal
+  // Handle bulk delete with confirmation modal
   const handleBulkDelete = () => {
     if (selectedProducts.size === 0) {
       setError(prevError => ({
@@ -435,8 +441,6 @@ const ShopProductsList = () => {
     return price - discountAmount;
   };
 
-  // [... rest of the existing useEffects remain the same ...]
-
   // Enhanced product fetching with better error handling and state management
   useEffect(() => {
     const loadProducts = async () => {
@@ -515,15 +519,18 @@ const ShopProductsList = () => {
       if (activeActionsMenu !== null && !event.target.closest(`.${styles.actionsCellWrapper}`)) {
         setActiveActionsMenu(null);
       }
+      // Also close product menu
+      if (activeProductMenu !== null && !event.target.closest(`.${styles.productActionMenu}`)) {
+        setActiveProductMenu(null);
+      }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [activeActionsMenu]);
+  }, [activeActionsMenu, activeProductMenu]);
 
-  //update: Reset modal state when accepted/declined changes
   useEffect(() => {
     if (isAccepted || isDeclined) {
       // Reset states after modal action is processed
@@ -584,7 +591,6 @@ const ShopProductsList = () => {
         />
       )}
 
-      {/*update: Add the ProductCategoryManagementForm modal */}
       {showCategoryManagement && (
         <ProductCategoryManagementForm 
           onClose={() => {
@@ -609,20 +615,20 @@ const ShopProductsList = () => {
             <div className={styles.listHeaderTop}>
               <div className={styles.listTitleWrapper}>
                 <p className={styles.listTitle}>Gestiona los productos de tu comercio</p>
-                
               </div>
               
               {isSmallScreen ? (
                 <div className={styles.searchAndMenuContainer}>
                   <div className={styles.searchContainer}>
-                  <Search size={20} color='lightgray'></Search>
-                  <SearchBar 
-                    searchTerm={searchTerm}
-                    handleSearchChange={handleSearchChange}
-                  />
+                    <Search size={20} color='lightgray'></Search>
+                    <SearchBar 
+                      searchTerm={searchTerm}
+                      handleSearchChange={handleSearchChange}
+                    />
                   </div>
                   
-                  <ActionButtons 
+                  {/*update: Use UnifiedActionsMenu instead of ActionButtons and separate category button */}
+                  <UnifiedActionsMenu 
                     handleAddProduct={handleAddProduct}
                     handleBulkUpdate={handleBulkUpdate}
                     handleBulkDelete={handleBulkDelete}
@@ -632,9 +638,9 @@ const ShopProductsList = () => {
                     selectedProducts={selectedProducts}
                     activeFiltersCount={activeFiltersCount}
                     navigateToPackages={() => setShowPackages(true)}
+                    showCategoryManagement={() => setShowCategoryManagement(true)}
+                    currentUser={currentUser}
                   />
-
-                  
                 </div>
               ) : (
                 <>
@@ -644,7 +650,8 @@ const ShopProductsList = () => {
                   />
                   
                   <div className={styles.buttonGroupContainer}>
-                    <ActionButtons 
+                    {/*update: Use UnifiedActionsMenu for desktop as well */}
+                    <UnifiedActionsMenu 
                       handleAddProduct={handleAddProduct}
                       handleBulkUpdate={handleBulkUpdate}
                       handleBulkDelete={handleBulkDelete}
@@ -654,20 +661,12 @@ const ShopProductsList = () => {
                       selectedProducts={selectedProducts}
                       activeFiltersCount={activeFiltersCount}
                       navigateToPackages={() => setShowPackages(true)}
+                      showCategoryManagement={() => setShowCategoryManagement(true)}
+                      currentUser={currentUser}
                     />
                   </div>
                 </>
               )}
-              {currentUser?.contributor_user && (
-                  <button 
-                    onClick={() => setShowCategoryManagement(true)}
-                    className={styles.categoryManagementButton}
-                    title="Gestionar categorías de productos"
-                  >
-                    <Layers size={18} />
-                    <span>Categorías</span>
-                  </button>
-                )}
             </div>
 
             {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
@@ -690,157 +689,154 @@ const ShopProductsList = () => {
                       className={`${styles.productCard} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
                       key={product.id_product}
                     >
-                      {/*update: Added product number badge */}
-                      <div className={styles.productNumber}>
-                        {displayedProducts.findIndex(p => p.id_product === product.id_product) + 1}
-                      </div>
-                      
-                      <div className={styles.headerActionsWrapper}>
-                          <div className={styles.productHeader}>
-                            <div className={styles.productMainInfo}>
-                              <div 
-                                className={styles.productImageContainer}
-                                onClick={() => {
-                                  if (product.image_product) {
-                                    setSelectedImageForModal(formatImageUrl(product.image_product));
-                                    setIsImageModalOpen(true);
-                                  }
+                      {/* Simplified product card header */}
+                      <div className={styles.productCardHeader}>
+                        <div className={styles.productNumber}>
+                          {displayedProducts.findIndex(p => p.id_product === product.id_product) + 1}
+                        </div>
+                        
+                        <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
+                        
+                        <span className={styles.productPrice}>
+                          €{product.discount_product > 0 
+                            ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
+                            : product.price_product}
+                        </span>
+                        
+                        {/* Burger menu for actions */}
+                        <div className={styles.productActionMenu}>
+                          <button
+                            onClick={(e) => toggleProductMenu(product.id_product, e)}
+                            className={`${styles.burgerMenuButton} ${activeProductMenu === product.id_product ? styles.active : ''}`}
+                            title="Acciones"
+                          >
+                            <MoreVertical size={18} />
+                          </button>
+                          
+                          {activeProductMenu === product.id_product && (
+                            <div className={styles.actionDropdown}>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleActiveStatus(product);
+                                  setActiveProductMenu(null);
                                 }}
-                                style={{ cursor: product.image_product ? 'pointer' : 'default' }}
-                              >
-                                {product.image_product ? (
-                                  <>
-                                    <img 
-                                      src={formatImageUrl(product.image_product)} 
-                                      alt={product.name_product || 'Producto'}
-                                      className={styles.productImage}
-                                      onError={(e) => {
-                                        console.error('Error loading product image:', product.image_product);
-                                        e.target.style.display = 'none';
-                                      }}
-                                    />
-                                    <div className={styles.imageOverlay}>
-                                      <Image size={16} />
-                                    </div>
-                                  </>
-                                ) : (
-                                  <div className={`${styles.productImageContainer} ${styles.noImage}`}>
-                                    <ShoppingBag size={30} className={styles.placeholderIcon} />
-                                  </div>
-                                )}
-                              </div>
-                              
-                              <div className={styles.productInfo}>
-                                
-                                <div className={styles.productMeta}>
-                                  <h4 className={styles.productName}>{product.name_product || 'Producto sin nombre'}</h4>
-                                
-                                  <div className={styles.productMeta2}>
-                                    <span className={styles.categoryBadge}>
-                                      {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
-                                    </span>
-
-                                    {product.second_hand && (
-                                      <span className={styles.secondHandBadge}>
-                                        2ª Mano
-                                      </span>
-                                    )}
-                                    
-                                  </div>
-                                </div>
-                                <div className={styles.productDetailsRow}>
-                                  {product.season_product && (
-                                    <span className={styles.seasonTag}>
-                                      <Calendar size={12} />
-                                      {product.season_product}
-                                    </span>
-                                  )}
-                                  {product.country_product && (
-                                    <span className={styles.locationTag}>
-                                      <MapPin size={12} />
-                                      {product.country_product}
-                                      {product.locality_product && `, ${product.locality_product}`}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className={styles.productPricing}>
-                              <span><strong>Precio</strong></span>
-                              {product.discount_product > 0 && (
-                                <span className={styles.originalPrice}>€{product.price_product}</span>
-                              )}
-                              <span className={styles.finalPrice}>
-                                €{product.discount_product > 0 
-                                  ? calculateDiscountPrice(product.price_product, product.discount_product).toFixed(2)
-                                  : product.price_product}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className={styles.productActions}>
-                              <button
-                                onClick={() => handleToggleActiveStatus(product)}
-                                className={styles.actionButton}
+                                className={styles.dropdownItem}
                                 disabled={isTogglingStatus === product.id_product}
-                                title={product.active_product ? 'Desactivar' : 'Activar'}
                               >
-                                {product.active_product ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                                {product.active_product ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                                <span>{product.active_product ? 'Desactivar' : 'Activar'}</span>
                               </button>
                               
                               <button
-                                onClick={() => handleUpdateProduct(product.id_product)}
-                                className={styles.actionButton}
-                                title="Editar"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateProduct(product.id_product);
+                                  setActiveProductMenu(null);
+                                }}
+                                className={styles.dropdownItem}
                               >
-                                <Edit2 size={18} />
+                                <Edit2 size={16} />
+                                <span>Editar</span>
                               </button>
                               
                               <button
-                                onClick={() => handleDeleteProduct(product)}
-                                className={`${styles.actionButton} ${styles.deleteButton}`}
-                                title="Eliminar"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteProduct(product);
+                                  setActiveProductMenu(null);
+                                }}
+                                className={`${styles.dropdownItem} ${styles.deleteItem}`}
                               >
-                                <Trash2 size={18} />
+                                <Trash2 size={16} />
+                                <span>Eliminar</span>
                               </button>
                               
                               <button
-                                onClick={() => handleSelectProduct(product.id_product)}
-                                className={`${styles.actionButton} ${selectedProducts.has(product.id_product) ? styles.selectedButton : ''}`}
-                                title={selectedProducts.has(product.id_product) ? 'Deseleccionar' : 'Seleccionar'}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectProduct(product.id_product);
+                                  setActiveProductMenu(null);
+                                }}
+                                className={`${styles.dropdownItem} ${selectedProducts.has(product.id_product) ? styles.selectedItem : ''}`}
                               >
-                                {selectedProducts.has(product.id_product) ? <CheckCircle size={18} /> : <Check size={18} />}
+                                {selectedProducts.has(product.id_product) ? <CheckCircle size={16} /> : <Check size={16} />}
+                                <span>{selectedProducts.has(product.id_product) ? 'Deseleccionar' : 'Seleccionar'}</span>
                               </button>
-                              
-                              <button
-                                onClick={() => toggleExpanded(product.id_product)}
-                                className={styles.expandButton}
-                                title={expandedProducts.has(product.id_product) ? 'Contraer' : 'Expandir'}
-                              >
-                                {expandedProducts.has(product.id_product) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                              </button>
-                          </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Expand button stays separate */}
+                        <button
+                          onClick={() => toggleExpanded(product.id_product)}
+                          className={styles.expandButton}
+                          title={expandedProducts.has(product.id_product) ? 'Contraer' : 'Expandir'}
+                        >
+                          {expandedProducts.has(product.id_product) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </button>
                       </div>
                       
+                      {/* All detailed information moved to expanded section */}
                       {expandedProducts.has(product.id_product) && (
                         <div className={styles.productDetails}>
+                          {/* Product image section */}
+                          {product.image_product && (
+                            <div 
+                              className={styles.productImageExpanded}
+                              onClick={() => {
+                                setSelectedImageForModal(formatImageUrl(product.image_product));
+                                setIsImageModalOpen(true);
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <img 
+                                src={formatImageUrl(product.image_product)} 
+                                alt={product.name_product || 'Producto'}
+                                className={styles.productImage}
+                                onError={(e) => {
+                                  console.error('Error loading product image:', product.image_product);
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                              <div className={styles.imageOverlay}>
+                                <Image size={16} />
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Status and badges */}
+                          <div className={styles.badgesContainer}>
+                            <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
+                              {product.active_product ? 'Activo' : 'Inactivo'}
+                            </span>
+                            
+                            {product.discount_product > 0 && (
+                              <>
+                                <span className={styles.discountBadge}>
+                                  <Tag size={12} />
+                                  {product.discount_product}% dto
+                                </span>
+                                <span className={styles.originalPrice}>€{product.price_product}</span>
+                              </>
+                            )}
+                            
+                            {product.second_hand && (
+                              <span className={styles.secondHandBadge}>
+                                2ª Mano
+                              </span>
+                            )}
+                            
+                            <span className={styles.categoryBadge}>
+                              {getCategoryName(product.id_category) || product.type_product || 'Sin categoría'}
+                            </span>
+                          </div>
+                          
+                          {/* Main details section */}
                           <div className={styles.detailsSection}>
                             <h5 className={styles.sectionTitle}>Información del Producto</h5>
                             <div className={styles.detailsGrid}>
-
-                              <div className={styles.badgesContainer}>
-                                  <span className={`${styles.statusBadge} ${product.active_product ? styles.active : styles.inactive}`}>
-                                    {product.active_product ? 'Activo' : 'Inactivo'}
-                                  </span> 
-                                  {product.discount_product > 0 && (
-                                    <span className={styles.discountBadge}>
-                                      <Tag size={12} />
-                                      {product.discount_product}% dto
-                                    </span>
-                                  )}
-                              </div>
-
+                              
                               {product.info_product && (
                                 <div className={styles.detailItem}>
                                   <Info size={14} className={styles.detailIcon} />
@@ -848,6 +844,7 @@ const ShopProductsList = () => {
                                   <span className={styles.detailValue}>{product.info_product}</span>
                                 </div>
                               )}
+                              
                               {getSubcategoryName(product.id_subcategory) && (
                                 <div className={styles.detailItem}>
                                   <Tag size={14} className={styles.detailIcon} />
@@ -855,6 +852,26 @@ const ShopProductsList = () => {
                                   <span className={styles.detailValue}>{getSubcategoryName(product.id_subcategory)}</span>
                                 </div>
                               )}
+                              
+                              {product.season_product && (
+                                <div className={styles.detailItem}>
+                                  <Calendar size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Temporada:</span>
+                                  <span className={styles.detailValue}>{product.season_product}</span>
+                                </div>
+                              )}
+                              
+                              {(product.country_product || product.locality_product) && (
+                                <div className={styles.detailItem}>
+                                  <MapPin size={14} className={styles.detailIcon} />
+                                  <span className={styles.detailLabel}>Origen:</span>
+                                  <span className={styles.detailValue}>
+                                    {product.country_product}
+                                    {product.locality_product && `, ${product.locality_product}`}
+                                  </span>
+                                </div>
+                              )}
+                              
                               {product.sold_product > 0 && (
                                 <div className={styles.detailItem}>
                                   <DollarSign size={14} className={styles.detailIcon} />
@@ -862,6 +879,7 @@ const ShopProductsList = () => {
                                   <span className={styles.detailValue}>{product.sold_product}</span>
                                 </div>
                               )}
+                              
                               {product.surplus_product > 0 && (
                                 <div className={styles.detailItem}>
                                   <Package size={14} className={styles.detailIcon} />
@@ -869,6 +887,7 @@ const ShopProductsList = () => {
                                   <span className={styles.detailValue}>{product.surplus_product}</span>
                                 </div>
                               )}
+                              
                               {product.calification_product > 0 && (
                                 <div className={styles.detailItem}>
                                   <Star size={14} className={styles.detailIcon} />
@@ -876,6 +895,7 @@ const ShopProductsList = () => {
                                   <span className={styles.detailValue}>{product.calification_product}/5</span>
                                 </div>
                               )}
+                              
                               {product.expiration_product && (
                                 <div className={styles.detailItem}>
                                   <Clock size={14} className={styles.detailIcon} />

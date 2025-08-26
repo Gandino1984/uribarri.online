@@ -296,11 +296,12 @@ button {
   cursor: pointer;
   touch-action: manipulation;
   text-transform: uppercase;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  border: 2px solid lightgray;
+  /* border: 2px solid lightgray; */
+  transform: translateY(2px);
   background-color: var(--light-gray);
 }
 

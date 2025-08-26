@@ -265,7 +265,7 @@ const ProductCategoryManagementForm = ({ onClose }) => {
             <div className={styles.sectionHeader}>
               <h3>
                 <Layers2 size={20} />
-                Categorías de Productos
+                Categorías
               </h3>
               <button
                 onClick={() => setShowCreateCategory(!showCreateCategory)}
@@ -392,7 +392,7 @@ const ProductCategoryManagementForm = ({ onClose }) => {
             <div className={styles.sectionHeader}>
               <h3>
                 <Layers size={20} />
-                Subcategorías de producto
+                Subcategorías
                 {/* {selectedCategory && (
                   <span className={styles.selectedTypeLabel}>
                     ({selectedCategory.name_category})
