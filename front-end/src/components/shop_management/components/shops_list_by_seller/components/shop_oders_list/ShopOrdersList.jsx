@@ -48,16 +48,11 @@ const ShopOrdersList = ({ onClose }) => {
     config: { tension: 280, friction: 25 }
   });
 
-  //update: Animation for orders section height adjustment
-  const ordersAnimation = useSpring({
-    height: showRidersList ? 'calc(100vh - 400px)' : 'calc(100vh - 100px)',
-    config: { tension: 280, friction: 25 }
-  });
-
-  //update: Animation for riders panel slide up from bottom
-  const ridersPanelAnimation = useSpring({
-    transform: showRidersList ? 'translateY(0%)' : 'translateY(100%)',
-    opacity: showRidersList ? 1 : 0,
+  //update: Animation for riders list
+  const ridersListAnimation = useTransition(showRidersList, {
+    from: { opacity: 0, transform: 'translateX(100%)' },
+    enter: { opacity: 1, transform: 'translateX(0%)' },
+    leave: { opacity: 0, transform: 'translateX(100%)' },
     config: { tension: 280, friction: 25 }
   });
 
@@ -159,11 +154,6 @@ const ShopOrdersList = ({ onClose }) => {
       }
       return newSet;
     });
-  };
-
-  //update: Select order for rider assignment
-  const handleSelectOrder = (order) => {
-    setSelectedOrder(order);
   };
 
   const getStatusIcon = (status) => {
@@ -295,7 +285,7 @@ const ShopOrdersList = ({ onClose }) => {
 
   if (loadingOrders) {
     return (
-      <animated.div style={animation} className={styles.mainContainer}>
+      <animated.div style={animation} className={styles.container}>
         <div className={styles.header}>
           <h2 className={styles.title}>Pedidos del Comercio</h2>
           <div className={styles.headerActions}>
@@ -313,34 +303,32 @@ const ShopOrdersList = ({ onClose }) => {
   }
 
   return (
-    <animated.div style={animation} className={styles.mainContainer}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>
-          Pedidos del Comercio
-          {pendingRiderRequests.length > 0 && (
-            <span className={styles.pendingRequestsBadge}>
-              {pendingRiderRequests.length} solicitud{pendingRiderRequests.length > 1 ? 'es' : ''} de repartidor
-            </span>
-          )}
-        </h2>
-        <div className={styles.headerActions}>
-          <button 
-            onClick={handleToggleRidersList}
-            className={`${styles.ridersButton} ${showRidersList ? styles.active : ''}`}
-            title="Ver repartidores disponibles"
-          >
-            <Users size={20} />
-            <span>Repartidores</span>
-            {showRidersList ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          </button>
-          <button onClick={onClose} className={styles.closeButton}>
-            <X size={24} />
-          </button>
+    <>
+      <animated.div style={animation} className={styles.container}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>
+            Pedidos del Comercio
+            {pendingRiderRequests.length > 0 && (
+              <span className={styles.pendingRequestsBadge}>
+                {pendingRiderRequests.length} solicitud{pendingRiderRequests.length > 1 ? 'es' : ''} de repartidor
+              </span>
+            )}
+          </h2>
+          <div className={styles.headerActions}>
+            <button 
+              onClick={handleToggleRidersList}
+              className={styles.ridersButton}
+              title="Ver repartidores disponibles"
+            >
+              <Users size={20} />
+              <span>Repartidores disponibles</span>
+            </button>
+            <button onClick={onClose} className={styles.closeButton}>
+              <X size={24} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/*update: Orders section with dynamic height */}
-      <animated.div style={ordersAnimation} className={styles.ordersSection}>
         {shopOrders.length === 0 ? (
           <div className={styles.noOrders}>
             <Package size={48} className={styles.noOrdersIcon} />
@@ -352,7 +340,6 @@ const ShopOrdersList = ({ onClose }) => {
               <div 
                 key={order.id_order} 
                 className={`${styles.orderCard} ${selectedOrder?.id_order === order.id_order ? styles.selectedOrder : ''} ${order.id_rider && order.rider_accepted === null ? styles.orderWithRiderRequest : ''}`}
-                onClick={() => handleSelectOrder(order)}
               >
                 {/*update: Added order number badge */}
                 <div className={styles.orderNumber}>
@@ -483,10 +470,7 @@ const ShopOrdersList = ({ onClose }) => {
                 {/* Expand/Collapse button */}
                 <button
                   className={styles.expandButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleExpandedOrder(order.id_order);
-                  }}
+                  onClick={() => toggleExpandedOrder(order.id_order)}
                 >
                   {expandedOrders.has(order.id_order) ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   <span>{expandedOrders.has(order.id_order) ? 'Ver menos' : 'Ver más'}</span>
@@ -523,94 +507,87 @@ const ShopOrdersList = ({ onClose }) => {
         )}
       </animated.div>
 
-      {/*update: Riders panel sliding from bottom */}
-      <animated.div style={ridersPanelAnimation} className={styles.ridersPanel}>
-        <div className={styles.ridersPanelHeader}>
-          <div className={styles.ridersPanelTitle}>
-            <h3>Repartidores Disponibles</h3>
-            {selectedOrder && (
-              <span className={styles.selectedOrderBadge}>
-                Asignando a pedido #{selectedOrder.id_order}
-              </span>
-            )}
-          </div>
-          <button onClick={() => setShowRidersList(false)} className={styles.closePanelButton}>
-            <X size={24} />
-          </button>
-        </div>
-        
-        <div className={styles.ridersPanelContent}>
-          {loadingRiders ? (
-            <div className={styles.loadingRiders}>
-              <Users size={32} className={styles.loadingIcon} />
-              <p>Cargando repartidores...</p>
+      {/*update: Riders list panel */}
+      {ridersListAnimation((style, item) =>
+        item && (
+          <animated.div style={style} className={styles.ridersPanel}>
+            <div className={styles.ridersPanelHeader}>
+              <h3>Repartidores Disponibles</h3>
+              <button onClick={() => setShowRidersList(false)} className={styles.closePanelButton}>
+                <X size={24} />
+              </button>
             </div>
-          ) : availableRiders.length === 0 ? (
-            <div className={styles.noRiders}>
-              <Users size={32} />
-              <p>No hay repartidores disponibles</p>
-            </div>
-          ) : (
-            <div className={styles.ridersList}>
-              {availableRiders.map(rider => (
-                <div key={rider.id_user} className={styles.riderCard}>
-                  <div className={styles.riderCardHeader}>
-                    <div className={styles.riderAvatar}>
-                      {rider.image_user ? (
-                        <img src={`/${rider.image_user}`} alt={rider.name_user} />
-                      ) : (
-                        <User size={24} />
+            
+            {loadingRiders ? (
+              <div className={styles.loadingRiders}>
+                <Users size={32} className={styles.loadingIcon} />
+                <p>Cargando repartidores...</p>
+              </div>
+            ) : availableRiders.length === 0 ? (
+              <div className={styles.noRiders}>
+                <Users size={32} />
+                <p>No hay repartidores disponibles</p>
+              </div>
+            ) : (
+              <div className={styles.ridersList}>
+                {availableRiders.map(rider => (
+                  <div key={rider.id_user} className={styles.riderCard}>
+                    <div className={styles.riderCardHeader}>
+                      <div className={styles.riderAvatar}>
+                        {rider.image_user ? (
+                          <img src={`/${rider.image_user}`} alt={rider.name_user} />
+                        ) : (
+                          <User size={24} />
+                        )}
+                      </div>
+                      <div className={styles.riderCardInfo}>
+                        <h4>{rider.name_user}</h4>
+                        <div className={styles.riderLocation}>
+                          <MapPin size={14} />
+                          <span>{rider.location_user}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.riderCardDetails}>
+                      {rider.calification_user && (
+                        <div className={styles.riderRating}>
+                          <Star size={14} />
+                          <span>{rider.calification_user}/5</span>
+                        </div>
+                      )}
+                      {rider.age_user && (
+                        <div className={styles.riderAge}>
+                          <Calendar size={14} />
+                          <span>{rider.age_user} años</span>
+                        </div>
                       )}
                     </div>
-                    <div className={styles.riderCardInfo}>
-                      <h4>{rider.name_user}</h4>
-                      <div className={styles.riderLocation}>
-                        <MapPin size={14} />
-                        <span>{rider.location_user}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.riderCardDetails}>
-                    {rider.calification_user && (
-                      <div className={styles.riderRating}>
-                        <Star size={14} />
-                        <span>{rider.calification_user}/5</span>
-                      </div>
-                    )}
-                    {rider.age_user && (
-                      <div className={styles.riderAge}>
-                        <Calendar size={14} />
-                        <span>{rider.age_user} años</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <button
-                    className={styles.assignRiderButton}
-                    onClick={() => {
-                      if (selectedOrder) {
-                        handleAssignRider(selectedOrder.id_order, rider.id_user);
-                      } else {
-                        setError({ orderError: 'Selecciona un pedido primero' });
-                        setShowErrorCard(true);
-                      }
-                    }}
-                    disabled={assigningRider === `${selectedOrder?.id_order}-${rider.id_user}` || !selectedOrder}
-                  >
-                    {!selectedOrder 
-                      ? 'Selecciona un pedido'
-                      : assigningRider === `${selectedOrder?.id_order}-${rider.id_user}` 
+                    
+                    <button
+                      className={styles.assignRiderButton}
+                      onClick={() => {
+                        if (selectedOrder) {
+                          handleAssignRider(selectedOrder.id_order, rider.id_user);
+                        } else {
+                          setError({ orderError: 'Selecciona un pedido primero' });
+                          setShowErrorCard(true);
+                        }
+                      }}
+                      disabled={assigningRider === `${selectedOrder?.id_order}-${rider.id_user}`}
+                    >
+                      {assigningRider === `${selectedOrder?.id_order}-${rider.id_user}` 
                         ? 'Asignando...' 
                         : 'Asignar a pedido'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </animated.div>
-    </animated.div>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </animated.div>
+        )
+      )}
+    </>
   );
 };
 

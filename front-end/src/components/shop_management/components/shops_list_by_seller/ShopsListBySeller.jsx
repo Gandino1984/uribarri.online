@@ -17,9 +17,7 @@ import {
   Edit, 
   Trash2,
   ChevronDown,
-  ChevronUp,
-  //update: Add Tag icon for the new button
-  Tag
+  ChevronUp
 } from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
@@ -27,8 +25,6 @@ import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopOrdersList from '../shops_list_by_seller/components/shop_oders_list/ShopOrdersList.jsx';
-//update: Import the new ShopTypeManagementForm component
-import ShopTypeManagementForm from './components/ShopTypeManagementForm.jsx';
 
 const ShopsListBySeller = () => {
   const [isExiting, setIsExiting] = useState(false);
@@ -37,8 +33,6 @@ const ShopsListBySeller = () => {
   const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
   const [expandedShop, setExpandedShop] = useState(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  //update: Add state for showing the type management form
-  const [showTypeManagement, setShowTypeManagement] = useState(false);
 
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
@@ -135,7 +129,7 @@ const ShopsListBySeller = () => {
     if (shops && shops.length > 0 && isVisible) {
       setInfo(prevInfo => ({
         ...prevInfo,
-        shopInstructions: "Haz clic en una comercio para administrar sus productos"
+        shopInstructions: "Haz clic en un comercio para administrar sus productos"
       }));
       setShowInfoCard(true);
     }
@@ -168,28 +162,6 @@ const ShopsListBySeller = () => {
 
   const toggleExpanded = (shopId) => {
     setExpandedShop(prev => prev === shopId ? null : shopId);
-  };
-
-  //update: Helper function to render star rating
-  const renderStarRating = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
-    return (
-      <span className={styles.starsContainer}>
-        {[...Array(fullStars)].map((_, i) => (
-          <Star key={`full-${i}`} size={14} className={styles.filledStar} fill="currentColor" />
-        ))}
-        {hasHalfStar && (
-          <Star key="half" size={14} className={styles.halfStar} />
-        )}
-        {[...Array(emptyStars)].map((_, i) => (
-          <Star key={`empty-${i}`} size={14} className={styles.emptyStar} />
-        ))}
-        <span className={styles.ratingText}>({rating})</span>
-      </span>
-    );
   };
 
   const renderShopCard = (shop, style) => {
@@ -227,7 +199,7 @@ const ShopsListBySeller = () => {
               </div>
             ) : (
               <div className={`${styles.shopImageContainer} ${styles.noImage}`}>
-                <Store size={20} className={styles.placeholderIcon} />
+                <Store size={30} className={styles.placeholderIcon} />
               </div>
             )}
             
@@ -249,7 +221,8 @@ const ShopsListBySeller = () => {
                   {shop.location_shop}
                 </span>
                 <span className={styles.shopRating}>
-                  {renderStarRating(shop.calification_shop || 0)}
+                  <Star size={14} />
+                  {shop.calification_shop}/5
                 </span>
               </div>
             </div>
@@ -310,30 +283,18 @@ const ShopsListBySeller = () => {
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
             <h1 className={styles.title}>
-              Gestiona tus actividades comerciales en el barrio
+              Maneja tus comercios
             </h1>
             
             <div className={styles.headerButtons}>
-              {/*update: Add the new "Tipo de comercio" button for sponsor users */}
-              {currentUser?.contributor_user && (
-                <button 
-                  onClick={() => setShowTypeManagement(true)}
-                  className={styles.active}
-                  title="Gestionar tipos de comercio"
-                >
-                  <Tag size={screenWidth > 480 ? 16 : 20} />
-                  <span>Tipos</span>
-                </button>
-              )}
-              
               <button 
                 onClick={() => handleAddShop(shopLimit)}
                 className={`${styles.active} ${shopCount >= shopLimit ? styles.inactive : 'Crear'}`}
                 title="Crear nuevo comercio"
                 disabled={shopCount >= shopLimit}
               >
-                <Store size={screenWidth > 480 ? 16 : 20} />
-                <span>Nuevo</span>
+                <Plus size={screenWidth > 480 ? 16 : 20} />
+                <span>Crear comercio</span>
               </button>
               
               {selectedShop && (
@@ -352,7 +313,13 @@ const ShopsListBySeller = () => {
             </div>
           </animated.div>
         
-          
+          <animated.div style={titleAnimation}>
+            <ShopLimitIndicator 
+              shopCount={shopCount} 
+              shopLimit={shopLimit} 
+              isUserSponsor={!!currentUser?.contributor_user} 
+            />
+          </animated.div>
         </div>
 
         <div className={styles.shopManagementContainer}>
@@ -370,8 +337,7 @@ const ShopsListBySeller = () => {
                     <div className={styles.listHeader}>
                       <span className={styles.listTitle}>
                         {/* <Store size={20} /> */}
-                        {/*update: Add username to the title */}
-                        Comercios{currentUser?.name_user ? ` de ${currentUser.name_user}` : ''} ({shops.length})
+                        Comercios ({shops.length})
                       </span>
                     </div>
                     
@@ -380,14 +346,6 @@ const ShopsListBySeller = () => {
                         shop && renderShopCard(shop, style)
                       )}
                     </div>
-
-                    <animated.div style={titleAnimation}>
-                        <ShopLimitIndicator 
-                          shopCount={shopCount} 
-                          shopLimit={shopLimit} 
-                          isUserSponsor={!!currentUser?.contributor_user} 
-                        />
-                  </animated.div>
                   </div>
                 )}
               </animated.div>
@@ -398,11 +356,6 @@ const ShopsListBySeller = () => {
       
       {showOrdersList && selectedShop && (
         <ShopOrdersList onClose={() => setShowOrdersList(false)} />
-      )}
-      
-      {/*update: Add the ShopTypeManagementForm modal */}
-      {showTypeManagement && (
-        <ShopTypeManagementForm onClose={() => setShowTypeManagement(false)} />
       )}
     </div>
   );

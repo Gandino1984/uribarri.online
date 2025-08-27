@@ -26,11 +26,10 @@ export const TopBarUtils = () => {
         setShowLandingPage,
         setShowImageModal,
         setShowShopsListBySeller,
-        //update: Added showShopWindow to destructuring
-        showShopWindow,
         setShowShopWindow,
         showShopsListBySeller,
         showProductManagement,
+        //update: Add shop store related states
         showShopStore,
         setShowShopStore,
         selectedShopForStore,
@@ -62,15 +61,9 @@ export const TopBarUtils = () => {
         closePackageFormWithAnimation
     } = usePackage();
 
+    //update: Enhanced handleBack with shop store navigation
     const handleBack = async () => {
-        //update: Check ShopWindow navigation first (higher priority)
-        if (showShopWindow && !showShopStore) {
-            console.log('Navigating from ShopWindow back to LandingPage');
-            setShowShopWindow(false);
-            setShowLandingPage(true);
-            return;
-        }
-        
+        //update: Add navigation from ShopStore back to ShopWindow
         if (showShopStore) {
             console.log('Navigating from ShopStore back to ShopWindow');
             setShowShopStore(false);
@@ -121,8 +114,17 @@ export const TopBarUtils = () => {
             setSelectedShop(null);
             return;
         }
+        
+        // If we're in ShopWindow, go back to LandingPage
+        if (showShopWindow) {
+            console.log('Navigating from ShopWindow back to LandingPage');
+            setShowShopWindow(false);
+            setShowLandingPage(true);
+            return;
+        }
     };
 
+    //update: Enhanced clearUserSession with more cleanup
     const clearUserSession = () => {
         // Handle Auth context cleanup
         if (currentUser) {
@@ -156,6 +158,7 @@ export const TopBarUtils = () => {
         setShowImageModal(false);
         setShowShopsListBySeller(false);
         setShowShopWindow(false);
+        //update: Also clear shop store states
         setShowShopStore(false);
         setSelectedShopForStore(null);
         

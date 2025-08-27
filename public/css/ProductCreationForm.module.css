@@ -6,32 +6,42 @@
   justify-content: center;
   width: 100%;
   max-width: 600px;
-  border-radius: 12px;
   /* margin-top: 2rem; */
-  /* background: white; */
+  background: white;
   border-radius: 12px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
-/* .container:hover {
+.container:hover {
+  /* outline: 2px solid blue; */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-} */
+  /* transform: translateY(-2px); */
+}
 
+/* Header Section */
 .header {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  padding: 1.5rem 1rem 1rem 1rem;
+background: linear-gradient( to right,  rgba(255, 255, 255, 0) ,  var( --gradient-purple-end) , var(--saturated-orange) , rgba(255, 255, 255, 0) 100%);
 }
 
 .formTitle {
-  font-size: 2rem;
-  font-weight: 800;
-  color: black;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
   text-align: center;
+  margin: 0;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
 }
 
+/* Step Tracker Styles */
 .stepTracker {
   display: flex;
   justify-content: center;
@@ -82,7 +92,7 @@
 .sectionDescription {
   text-align: center;
   font-size: 0.875rem;
-  color: black;
+  color: #6b7280;
   font-weight: 500;
   margin-bottom: 1.5rem;
   padding: 0 1rem;
@@ -95,8 +105,6 @@
   flex-direction: column;
   align-items: center;
   padding: 1rem 1.5rem 1.5rem 1.5rem;
-  border-radius: 12px;
-  background-color: white;
 }
 
 /* Form Sections */
@@ -119,7 +127,54 @@
   }
 }
 
+/* Form Fields - Matching app input styles */
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
 
+.formField label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.formField input[type="text"],
+.formField input[type="number"],
+.formField input[type="date"],
+.formField select,
+.formField textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1f2937;
+  background-color: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.formField input:hover,
+.formField select:hover,
+.formField textarea:hover {
+  border-color: var(--saturated-blue);
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+}
+
+.formField input:focus,
+.formField select:focus,
+.formField textarea:focus {
+  outline: none;
+  border-color: var(--saturated-blue);
+  background-color: white;
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+}
 
 /* Date Input Specific */
 .dateInput {
@@ -197,21 +252,21 @@
 .shopTypeGuidance {
   width: 100%;
   padding: 0.75rem 1rem;
-  /* background-color: var(--app-purple-transparent);  */
-  /* border-top: 1px solid rgba(30, 64, 175, 0.1); */
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.5), rgba(191, 219, 254, 0.5));
+  border-top: 1px solid rgba(30, 64, 175, 0.1);
   margin-bottom: 1rem;
 }
 
 .shopTypeGuidance p {
   margin: 0.25rem 0;
   font-size: 0.875rem;
-  color: gray;
-  text-align: left;
+  color: #1e40af;
+  text-align: center;
 }
 
 .shopTypeGuidance strong {
   font-weight: 600;
-  color: gray;
+  color: #1e3a8a;
 }
 
 /* Image Upload Container - Card style */
@@ -220,17 +275,17 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
   border-radius: 12px;
   padding: 0.5rem;
-  border: 2px dashed lightgray;
+  border: 2px dashed rgba(209, 213, 219, 0.8);
   width: 100%;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   margin-bottom: 1.5rem;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .imageUploadContainer:hover {
-  border-color: var(--app-purple);
-  /* box-shadow: 0 0 15px var(--saturated-blue-transparent); */
-  /* transform: translateY(-2px); */
+  border-color: var(--saturated-blue);
+  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+  transform: translateY(-2px);
 }
 
 .imagePreviewBox {
@@ -265,12 +320,12 @@
 }
 
 .placeholderIcon {
-  color: lightgray;
+  color: rgba(156, 163, 175, 0.6);
   transition: all 0.3s ease;
 }
 
 .imageUploadContainer:hover .placeholderIcon {
-  color: var(--app-purple);
+  color: var(--saturated-blue);
   transform: scale(1.1);
 }
 
@@ -283,7 +338,7 @@
   padding: 0.75rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
   color: white;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -443,23 +498,25 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: var(--light-gray);
-  color: black;
-  border: 2px solid transparent;
+  background-color: var(--saturated-blue);
+  color: white;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .resetButton:hover {
-  background-color: lightgray;
+  background-color: white;
+  color: var(--saturated-blue);
+  outline: 2px solid var(--saturated-blue);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
 }
 
 .resetButton:disabled {
-  /* opacity: 0.5; */
-  color: lightgray;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -608,7 +665,7 @@
   }
   
   .formTitle {
-    font-size: 1.7rem;
+    font-size: 1.25rem;
   }
   
   .form {
@@ -657,7 +714,7 @@
   .navButton,
   .submitButton,
   .resetButton {
-    /* width: 100%; */
+    width: 100%;
     justify-content: center;
   }
 }
@@ -673,7 +730,7 @@
   }
   
   .formTitle {
-    font-size: 2rem;
+    font-size: 1.125rem;
   }
   
   .sectionTitle {

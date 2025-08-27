@@ -83,7 +83,7 @@ const ShopCard = ({ shop }) => {
 
   return (
     <>
-    {/* <p className={styles.infoCardText}>Tarjeta de tienda: </p> */}
+    <p className={styles.infoCardText}>Tarjeta de tienda: </p>
     <div className={`${styles.shopCardWrapper} ${showMap && !minimized && !isSmallScreen ? styles.withMap : ''}`}>
      
       <div 

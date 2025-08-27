@@ -37,17 +37,7 @@ export const FormFields = () => {
 
         {!isLoggingIn && (
           <>
-            <input
-              id="location_user"
-              type="text"
-              value={location_user}
-              onChange={handleUserLocationChange}
-              className={userlocationError ? styles.inputError : ''}
-              placeholder={type_user === 'seller' ? 'Dirección de vendedor:' : 'Dirección de usuari@:'}
-              required 
-            />
-
-               <select 
+            <select 
               value={type_user} 
               onChange={handleUserTypeChange}
               className={type_user ? 'has-value' : ''}
@@ -60,6 +50,16 @@ export const FormFields = () => {
               <option value="handler" disabled>Gestor/a de tienda</option>
               <option value="provider" disabled>Mayorista</option>
             </select>
+          
+            <input
+              id="location_user"
+              type="text"
+              value={location_user}
+              onChange={handleUserLocationChange}
+              className={userlocationError ? styles.inputError : ''}
+              placeholder={type_user === 'seller' ? 'Dirección de vendedor:' : 'Dirección de usuari@:'}
+              required 
+            />
           </>
         )}
       </div>

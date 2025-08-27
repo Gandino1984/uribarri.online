@@ -116,19 +116,19 @@ background-color: white;
   gap: .6rem;
   width: 100%;
 }
-/* 
+
 .submitButton {
   min-width: 80px;
   align-self: flex-start;
-} */
+}
 
-/* .toggleButton {
+.toggleButton {
   min-width: 80px;
-} */
+}
 
-/* .toggleButton:hover {
- 
-} */
+.toggleButton:hover {
+  text-shadow: 0 0 8px var(--saturated-blue);
+}
 
 .inputError {
   border: 2px solid red;
@@ -137,21 +137,21 @@ background-color: white;
 
 .active {
   color: black;
-  border: 2px solid transparent;
-  background-color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .active:hover {
-  color: black;
-  border: 2px solid lightgray;
-  background-color: var(--light-gray);
-  /* box-shadow: 0px 0px 15px 1px var(--satur-blue-transparent) !important; */
+  color: white;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
 }
 
 .inactive {
-  color: lightgray;
+  color: var(--gray);
   cursor: not-allowed;
-  /* opacity: 0.3; */
+  opacity: 0.3;
 }
 
 @media screen and (min-width: 500px) {
