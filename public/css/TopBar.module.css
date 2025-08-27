@@ -1,11 +1,11 @@
+/* Mobile-First Base Styles */
 .container {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 0.4rem 1.5rem;
-    background: linear-gradient(to Bottom, rgba(0, 0, 0, 0.3) 10%, rgba(255, 255, 255, 0));
+    padding: 0.4rem 1rem;
     z-index: 1000; 
     height: auto; 
     position: fixed; 
@@ -15,95 +15,83 @@
     margin-bottom: 0; 
 }
 
-.title{
+.contentWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    width: 100%;
+    /* flex-grow: 1; */
+    /* gap: 1rem; */
+    /* padding: 0.5rem 0; */
+    position: relative;
+}
+
+.titleWrapper{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+}
+
+.title {
     user-select: none;
     font-size: 1.5rem;
     letter-spacing: .1rem;
     font-weight: 800;
-    color: white;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+    color: black;
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.contentWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 1rem;
-    padding: 0.25rem 0; 
-    position: relative;
-}
-
-/* Buttons container */
-.buttonsContainer {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.backButton {
-    color: gray;
-    background-color: white;
-}
-
-.backButton:hover {
-    color: white;
-    background-color: var(--saturated-blue) !important;
-    box-shadow: 0px 0px 4px 1px var(--saturated-blue-transparent) !important;
-}
-
-.active {
-    color: gray;
-    font-weight: 500;
-    background-color: white;
-}
-  
-.active:hover {
-    color: white;
-    background-color: var(--saturated-blue);
-    box-shadow: 0px 0px 4px 1px var(--saturated-blue-transparent) !important;
-}
-
-/* Burger Button - Styled like dropdown buttons */
-.burgerButton {
+/* User Info Wrapper - Mobile hidden by default */
+.userInfoWrapper {
     display: none;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.burgerButton:hover {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
-    border-color: var(--saturated-blue);
-    color: var(--saturated-blue);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+/* Buttons Container - Mobile hidden by default */
+.buttonsContainer {
+    display: none;
 }
 
-.burgerButton.active {
-    background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
-    color: white;
-    border-color: var(--saturated-blue);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-/* Mobile Menu - Styled like dropdown menus */
+/* Mobile Menu Container - Always visible on mobile */
 .mobileMenuContainer {
     position: relative;
     z-index: 10001;
 }
 
+/* Burger Button - Visible on mobile */
+.burgerButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: black;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.burgerButton:hover {
+    color: black;
+    background-color: var(--light-gray);
+    border: 2px solid lightgray;
+    box-shadow: 0px 3px 8px lightgray;
+}
+
+.burgerButton.active {
+    background-color: var(--light-gray);
+    color: black;
+    border: 2px solid var(--app-purple);
+    box-shadow: 0 3px 10px lightgray;
+}
+
+/* Mobile Menu Dropdown */
 .mobileMenu {
     display: none;
     position: absolute;
@@ -111,7 +99,7 @@
     right: 0;
     min-width: 220px;
     background: white;
-    border: 2px solid #e5e7eb;
+    border: 2px solid transparent;
     border-radius: 8px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     opacity: 0;
@@ -131,7 +119,7 @@
     transform: translateY(0);
 }
 
-/* Mobile Menu Items - Matching dropdown menu items */
+/* Mobile Menu Buttons */
 .mobileMenu button {
     display: flex;
     align-items: center;
@@ -139,95 +127,144 @@
     padding: 0.75rem 1rem;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
+    font-weight: 600;
+    color: black;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
-    width: 100%;
+    /* width: auto; */
 }
 
 .mobileMenu button:hover {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
-    color: var(--saturated-blue);
+    /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)); */
+    /* color: var(--saturated-blue); */
     transform: translateX(4px);
 }
 
-/* Special button styles */
-.mobileMenu button.backButton {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+/* Back Button */
+.backButton {
+    /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05)); */
     color: var(--saturated-blue);
 }
 
-.mobileMenu button.backButton:hover {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15));
+.backButton:hover {
+    background-color: var(--light-gray);
 }
 
-.mobileMenu button.logoutButton {
+/* Logout Button */
+.logoutButton {
     color: #dc2626;
 }
 
-.mobileMenu button.logoutButton:hover {
-    background: rgba(239, 68, 68, 0.1);
+.logoutButton:hover {
+    background: var(--light-gray);
     color: #b91c1c;
 }
 
-.mobileMenu button.loginButton {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-    color: #059669;
+/* Login Button */
+.loginButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
+    color: black;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.mobileMenu button.loginButton:hover {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
-    color: #047857;
+.loginButton:hover {
+    background-color: var(--light-gray);
+    border-color: lightgray;
+    box-shadow: 0 3px 12px rgba(128, 128, 128, 0.15);
 }
 
-/* Menu divider */
+/* Login Icon */
+.loginIcon {
+    display: inline-block;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+/* Active Button State (for desktop) */
+.active {
+    border-radius: 8px;
+    color: black;
+    font-weight: 600;
+    background-color: white;
+    border: 2px solid transparent;
+}
+  
+.active:hover {
+    color: black;
+    background-color: var(--light-gray);
+    border: 2px solid lightgray;
+    box-shadow: 0px 0px 10px 2px var(--light-gray);
+}
+
+/* Menu Divider */
 .menuDivider {
     height: 1px;
     background: #e5e7eb;
     margin: 0.25rem 0;
 }
 
-/* Button icon and text */
+/* Button Icons */
 .buttonIcon {
-    color: currentColor;
+    color: black;
     flex-shrink: 0;
 }
 
+/* Button Text */
 .buttonText {
     flex: 1;
-    color: currentColor;
+    color: black;
 }
 
-/* Responsive media queries */
-@media (max-width: 500px) {
+
+/* Tablet Breakpoint */
+@media (min-width: 501px) {
     .container {
-        padding: 0.4rem 1rem; 
+        padding: 0.4rem 1.5rem;
     }
     
     .contentWrapper {
-        padding: 0.5rem 0;
+        padding: 0.25rem 0;
     }
+}
 
+/* Desktop Breakpoint */
+@media (min-width: 769px) {
+    /* Show desktop elements */
+    .userInfoWrapper {
+        display: block;
+    }
+    
     .buttonsContainer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    /* Hide burger button on desktop */
+    .burgerButton {
         display: none;
     }
-
-    .burgerButton {
-        display: flex;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 0.4rem 1rem; 
+    
+    /* Desktop-specific button styles */
+    .buttonsContainer .backButton {
+        font-weight: 600;
+        color: black;
+        background-color: white;
     }
     
-    .contentWrapper {
-        padding: 0.5rem 0;
+    .buttonsContainer .backButton:hover {
+        background-color: var(--light-gray);
     }
 }

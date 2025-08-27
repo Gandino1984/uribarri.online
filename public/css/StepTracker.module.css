@@ -30,8 +30,8 @@
   .stepDot.active {
     margin-right: .5rem;
     margin-left: .5rem;
-    border: 1px solid var(--saturated-blue);
-    background-color: var(--gradient-purple-mid);
+    /* border: 1px solid var(--app-purple); */
+    background-color: var(--app-purple);
     color: white;
     transform: scale(1.4);
   }

@@ -1,8 +1,13 @@
+/* ProductImage.module.css - Mobile First Design */
+
+/* ===============================================
+   BASE STYLES (MOBILE FIRST - up to 480px)
+   =============================================== */
+
 .progressBar {
   width: 100%;
   height: 4px;
   background-color: #e0e0e0;
-  /* border-radius: 2px; */
   margin-top: 4px;
   overflow: hidden;
 }
@@ -16,9 +21,14 @@
 .productImageContainer {
   position: relative;
   width: 70%;
-  max-width: 150px;
+  min-width: 60px;
+  max-width: 120px;
   margin: 0 auto;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #ccc;
 }
 
 .productImageContainer::before {
@@ -48,8 +58,8 @@
   bottom: 8px;
   right: 8px;
   background-color: var(--saturated-orange);
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -68,20 +78,10 @@
   background-color: var(--dark-orange);
 }
 
-/* Optional: Add a loading spinner or placeholder */
-.productImageContainer{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed #ccc;
-}
-
 .productImageContainer.loading {
-  /* background-color: #f0f0f0; */
   display: flex;
   align-items: center;
   justify-content: center;
-
 }
 
 .productImageContainer.loading::after {
@@ -94,27 +94,31 @@
   font-size: .6rem;
 }
 
-/* Media queries for responsive behavior */
-@media (max-width: 768px) {
+/* ===============================================
+   SMALL TABLETS (481px - 768px)
+   =============================================== */
+@media (min-width: 481px) {
   .productImageContainer {
-      min-width: 70px;
-      max-width: 140px;
+    min-width: 70px;
+    max-width: 140px;
   }
   
   .uploadButton {
-      width: 28px;
-      height: 28px;
+    width: 28px;
+    height: 28px;
   }
 }
 
-@media (max-width: 480px) {
+/* ===============================================
+   LARGE TABLETS & DESKTOPS (769px and up)
+   =============================================== */
+@media (min-width: 769px) {
   .productImageContainer {
-      min-width: 60px;
-      max-width: 120px;
+    max-width: 150px;
   }
   
   .uploadButton {
-      width: 24px;
-      height: 24px;
+    width: 32px;
+    height: 32px;
   }
 }

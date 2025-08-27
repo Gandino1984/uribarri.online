@@ -1,0 +1,256 @@
+/*update: New styles for UnifiedActionsMenu with slide-down animation */
+
+/* Main container */
+.menuContainer {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Burger button */
+.burgerButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1001;
+}
+
+.burgerButton:hover {
+  background: lightgray;
+  /* border-color: var(--app-purple); */
+}
+
+.burgerButton.active {
+  /* background: var(--app-purple); */
+  border-color: var(--app-purple);
+  /* color: white; */
+}
+
+/* Dropdown menu */
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 280px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transform-origin: top right;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.dropdownMenu.open {
+  pointer-events: auto;
+}
+
+/* Menu content */
+.menuContent {
+  padding: 0.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Menu sections */
+.menuSection {
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--light-gray);
+}
+
+.menuSection:last-child {
+  margin-bottom: 0;
+}
+
+/* Section button */
+.sectionButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-align: left;
+}
+
+.sectionButton:hover {
+  background: rgba(147, 51, 234, 0.05);
+}
+
+.sectionButton.active {
+  background: white;
+  color: var(--app-purple);
+}
+
+.sectionButton span {
+  flex: 1;
+}
+
+/* Chevron animation */
+.chevron {
+  transition: transform 0.3s ease;
+  margin-left: auto;
+}
+
+.chevron.rotated {
+  transform: rotate(90deg);
+}
+
+/* Submenu */
+.submenu {
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 0.25rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Submenu items */
+.submenuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.submenuItem:hover {
+  background: var(--light-gray);
+  color: #1f2937;
+}
+
+.submenuItem.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submenuItem.disabled:hover {
+  background: transparent;
+  color: #4b5563;
+}
+
+.submenuItem.deleteItem {
+  color: #dc2626;
+}
+
+.submenuItem.deleteItem:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+}
+
+.submenuItem.filterActive {
+  background: rgba(147, 51, 234, 0.1);
+  color: var(--app-purple);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, var(--saturated-orange), var(--dark-orange));
+  color: white;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .dropdownMenu {
+    left: 0;
+    right: 0;
+    min-width: unset;
+    width: calc(100vw - 2rem);
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  
+  .burgerButton {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .sectionButton {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.9rem;
+  }
+  
+  .submenuItem {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.825rem;
+  }
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .dropdownMenu {
+    min-width: 320px;
+  }
+  
+  .menuContent {
+    max-height: 80vh;
+  }
+}
+
+/* Scrollbar styling */
+.menuContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menuContent::-webkit-scrollbar-track {
+  background: var(--light-gray);
+  border-radius: 3px;
+}
+
+.menuContent::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.menuContent::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}

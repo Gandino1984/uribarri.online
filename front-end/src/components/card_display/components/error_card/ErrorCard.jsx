@@ -28,7 +28,7 @@ const ErrorCard = () => {
   return (
     latestError && (
       <div className={styles.container}>
-        <div className={styles.iconContainer}>
+        {/* <div className={styles.iconContainer}>
           <OButton 
             size="extraSmall" 
             text="O" 
@@ -36,7 +36,7 @@ const ErrorCard = () => {
             className={styles.errorButton}
             onClick={() => {}}
           />
-        </div>
+        </div> */}
         <div className={styles.errorList}>
           <div className={styles.errorItem}>
             {latestError}

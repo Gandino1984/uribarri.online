@@ -1,34 +1,45 @@
-/* ShopOrdersList.module.css - Updated to match app design */
+/* ShopOrdersList.module.css - Updated with bottom panel layout */
 
-.container {
+/*update: Main container for the entire component */
+.mainContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
-  /* background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 1)); */
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: white;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/*update: Orders section with dynamic height */
+.ordersSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
-  /* margin-top: 5rem; */
   overflow-y: auto;
-  position: relative;
-  z-index: 100;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 1));
+  transition: height 0.3s ease;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  /* padding: 1.5rem; */
-  /* background: linear-gradient(to right, rgba(255, 255, 255, 0), var(--gradient-purple-end), var(--saturated-orange), rgba(255, 255, 255, 0) 100%); */
-  border-radius: 12px;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 2px solid rgba(229, 231, 235, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 .title {
   font-size: 2rem;
   font-weight: 700;
   color: rgb(20, 20, 20);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   margin: 0;
   display: flex;
   align-items: center;
@@ -72,20 +83,28 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   background: white;
-  /* border: 2px solid var(--saturated-blue); */
+  border: 2px solid var(--saturated-blue);
   border-radius: 8px;
-  color: gray;
+  color: var(--saturated-blue);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.ridersButton:hover {
+.ridersButton:hover,
+.ridersButton.active {
   background: var(--saturated-blue);
   color: white;
-  /* transform: translateY(-2px); */
   box-shadow: 0 4px 12px var(--saturated-blue-transparent);
+}
+
+.ridersButton svg:last-child {
+  transition: transform 0.3s ease;
+}
+
+.ridersButton.active svg:last-child {
+  transform: rotate(180deg);
 }
 
 .closeButton {
@@ -121,12 +140,18 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
 }
 
 .loadingIcon,
 .noOrdersIcon {
   color: var(--saturated-blue);
-  animation: pulse 2s infinite;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .loading p,
@@ -141,7 +166,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 1.5rem;
-  max-width: 100%;
+  width: 100%;
+  padding-bottom: 2rem;
 }
 
 /* Order Card */
@@ -154,6 +180,7 @@
   transition: all 0.3s ease;
   border: 2px solid transparent;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-height: fit-content;
 }
 
 .orderCard:hover {
@@ -165,6 +192,7 @@
 .selectedOrder {
   border-color: var(--saturated-blue);
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .orderWithRiderRequest {
@@ -551,36 +579,50 @@
   transform: translateX(4px);
 }
 
-/* Riders Panel */
+/*update: Riders Panel - Now positioned at bottom */
 .ridersPanel {
-  /* position: fixed;
-  top: 0;
-  right: 0;
+  position: fixed;
   bottom: 0;
-  padding-top: 1rem; */
-  width: 400px;
+  left: 0;
+  right: 0;
+  height: 350px;
   background: white;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
-  z-index: 200;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  border-top: 3px solid var(--saturated-blue);
+  z-index: 20;
 }
 
 .ridersPanelHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem 2rem;
   background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.ridersPanelHeader h3 {
+.ridersPanelTitle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ridersPanelTitle h3 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
+}
+
+.selectedOrderBadge {
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .closePanelButton {
@@ -602,6 +644,12 @@
   transform: rotate(90deg);
 }
 
+.ridersPanelContent {
+  flex: 1;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 1));
+}
+
 .loadingRiders,
 .noRiders {
   display: flex;
@@ -611,13 +659,16 @@
   padding: 3rem;
   gap: 1rem;
   color: #6b7280;
+  height: 100%;
 }
 
 .ridersList {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
+  overflow-y: auto;
+  max-height: calc(350px - 80px);
 }
 
 .riderCard {
@@ -626,6 +677,7 @@
   border-radius: 12px;
   padding: 1rem;
   transition: all 0.3s ease;
+  height: fit-content;
 }
 
 .riderCard:hover {
@@ -737,12 +789,17 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-    margin-top: 4rem;
+@media (max-width: 1024px) {
+  .ordersGrid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
+  
+  .ridersList {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
 
+@media (max-width: 768px) {
   .header {
     flex-direction: column;
     gap: 1rem;
@@ -758,7 +815,12 @@
   }
 
   .ridersPanel {
-    width: 100%;
+    height: 60vh;
+  }
+
+  .ridersList {
+    grid-template-columns: 1fr;
+    max-height: calc(60vh - 80px);
   }
 
   .actionButtons {
@@ -791,5 +853,27 @@
     width: 30px;
     height: 30px;
     font-size: 0.875rem;
+  }
+
+  .ridersPanel {
+    height: 70vh;
+  }
+
+  .ridersPanelHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .ridersPanelTitle h3 {
+    font-size: 1rem;
+  }
+
+  .selectedOrderBadge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .ridersList {
+    padding: 1rem;
+    max-height: calc(70vh - 70px);
   }
 }
