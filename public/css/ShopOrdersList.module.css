@@ -1,15 +1,16 @@
+/* ShopOrdersList.module.css - Updated to match app design */
+
 .container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-  overflow-y: auto;
-  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  /* background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 1)); */
   padding: 2rem;
+  /* margin-top: 5rem; */
+  overflow-y: auto;
+  position: relative;
+  z-index: 100;
 }
 
 .header {
@@ -17,76 +18,187 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  /* padding: 1.5rem; */
+  /* background: linear-gradient(to right, rgba(255, 255, 255, 0), var(--gradient-purple-end), var(--saturated-orange), rgba(255, 255, 255, 0) 100%); */
+  border-radius: 12px;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
 }
 
 .title {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: white;
+  color: rgb(20, 20, 20);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pendingRequestsBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, var(--saturated-orange), var(--dark-orange));
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ridersButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  /* border: 2px solid var(--saturated-blue); */
+  border-radius: 8px;
+  color: gray;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ridersButton:hover {
+  background: var(--saturated-blue);
+  color: white;
+  /* transform: translateY(-2px); */
+  box-shadow: 0 4px 12px var(--saturated-blue-transparent);
 }
 
 .closeButton {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: white;
+  border: 2px solid rgba(239, 68, 68, 0.3);
   border-radius: 50%;
-  transition: background-color 0.2s;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.loading {
-  text-align: center;
+  background: #ef4444;
   color: white;
-  font-size: 1.2rem;
-  padding: 4rem;
+  transform: rotate(90deg);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
+/* Loading and Empty States */
+.loading,
 .noOrders {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 4rem;
+  gap: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.loadingIcon,
+.noOrdersIcon {
+  color: var(--saturated-blue);
+  animation: pulse 2s infinite;
+}
+
+.loading p,
+.noOrders p {
+  font-size: 1.125rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Orders Grid */
 .ordersGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 100%;
 }
 
+/* Order Card */
 .orderCard {
-  background-color: rgba(255, 255, 255, 0.95);
+  position: relative;
+  background: white;
   border-radius: 12px;
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .orderCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border-color: var(--light-gradient-purple-start);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--saturated-blue);
 }
 
 .selectedOrder {
-  border-color: var(--light-gradient-purple-start);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--saturated-blue);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+}
+
+.orderWithRiderRequest {
+  border-color: var(--saturated-orange);
+  animation: borderPulse 2s infinite;
+}
+
+@keyframes borderPulse {
+  0%, 100% {
+    border-color: var(--saturated-orange);
+  }
+  50% {
+    border-color: var(--dark-orange);
+  }
+}
+
+/* Order Number Badge */
+.orderNumber {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  z-index: 2;
+  border: 3px solid white;
 }
 
 .orderHeader {
@@ -94,6 +206,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .orderInfo {
@@ -103,14 +217,14 @@
 }
 
 .orderId {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #333;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #1f2937;
 }
 
 .orderDate {
-  font-size: 0.85rem;
-  color: #666;
+  font-size: 0.875rem;
+  color: #6b7280;
 }
 
 .orderStatus {
@@ -118,13 +232,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
-  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(243, 244, 246, 1), rgba(229, 231, 235, 0.5));
 }
 
 .statusText {
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 /* Status colors */
@@ -143,9 +258,19 @@
 .statusIconCancelled { color: #ef4444; }
 
 .customerInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 0.5));
+  border-radius: 8px;
   font-size: 0.95rem;
-  color: #333;
+  color: #1f2937;
+}
+
+.customerInfo svg {
+  color: var(--saturated-blue);
 }
 
 .orderDetails {
@@ -157,30 +282,163 @@
 
 .deliveryInfo {
   font-size: 0.9rem;
-  color: #555;
+  color: #4b5563;
 }
 
 .deliveryAddress {
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
-  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  border-left: 3px solid var(--saturated-blue);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.deliveryAddress svg {
+  color: var(--saturated-blue);
+  flex-shrink: 0;
 }
 
 .orderTotal {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--saturated-blue);
+  text-align: right;
 }
 
 .orderNotes {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   padding: 0.75rem;
-  background-color: rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.3), rgba(253, 230, 138, 0.2));
+  border: 1px solid rgba(251, 191, 36, 0.3);
   border-radius: 8px;
-  font-size: 0.85rem;
-  color: #555;
+  font-size: 0.875rem;
+  color: #92400e;
   margin-bottom: 1rem;
 }
 
+.orderNotes svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Rider Request Section */
+.riderRequestSection {
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(251, 113, 133, 0.1));
+  border: 2px solid var(--saturated-orange);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.riderRequestHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #ea580c;
+}
+
+.requestIcon {
+  color: var(--saturated-orange);
+}
+
+.riderInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #4b5563;
+}
+
+.riderRequestButtons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.acceptButton,
+.declineButton {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.acceptButton {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.acceptButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.declineButton {
+  background: white;
+  color: #ef4444;
+  border: 2px solid #ef4444;
+}
+
+.declineButton:hover:not(:disabled) {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.acceptButton:disabled,
+.declineButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Accepted/Rejected Rider Info */
+.acceptedRiderInfo,
+.rejectedRiderInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.acceptedRiderInfo {
+  background: linear-gradient(135deg, rgba(209, 250, 229, 1), rgba(167, 243, 208, 0.5));
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.acceptedRiderInfo svg {
+  color: #10b981;
+}
+
+.rejectedRiderInfo {
+  background: linear-gradient(135deg, rgba(254, 226, 226, 1), rgba(254, 202, 202, 0.5));
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.rejectedRiderInfo svg {
+  color: #ef4444;
+}
+
+/* Action Buttons */
 .actionButtons {
   display: flex;
   gap: 0.75rem;
@@ -193,33 +451,32 @@
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .updateButton {
-  background-color: var(--light-gradient-purple-start);
+  background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
   color: white;
 }
 
 .updateButton:hover:not(:disabled) {
-  background-color: var(--dark-gradient-purple-start);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .cancelButton {
-  background-color: rgba(239, 68, 68, 0.1);
+  background: white;
   color: #ef4444;
-  border: 1px solid #ef4444;
+  border: 2px solid #ef4444;
 }
 
 .cancelButton:hover:not(:disabled) {
-  background-color: #ef4444;
+  background: #ef4444;
   color: white;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
@@ -227,18 +484,47 @@
 .cancelButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* Expand Button */
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background: transparent;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.expandButton:hover {
+  background: var(--saturated-blue);
+  color: white;
+  border-color: var(--saturated-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Expanded Details */
 .expandedDetails {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 2px solid rgba(229, 231, 235, 0.5);
 }
 
 .expandedDetails h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: #1f2937;
   margin-bottom: 0.75rem;
   margin-top: 1rem;
 }
@@ -251,23 +537,228 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 0.5));
+  border-radius: 6px;
   font-size: 0.9rem;
-  color: #555;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-.orderItem:not(:last-child) {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+.orderItem:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+  transform: translateX(4px);
 }
 
-/* Responsive */
+/* Riders Panel */
+.ridersPanel {
+  /* position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding-top: 1rem; */
+  width: 400px;
+  background: white;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.ridersPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ridersPanelHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.closePanelButton {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closePanelButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.loadingRiders,
+.noRiders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: #6b7280;
+}
+
+.ridersList {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.riderCard {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.riderCard:hover {
+  border-color: var(--saturated-blue);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+.riderCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.riderAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--light-blue), rgba(59, 130, 246, 0.2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid var(--saturated-blue);
+}
+
+.riderAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.riderAvatar svg {
+  color: var(--saturated-blue);
+}
+
+.riderCardInfo {
+  flex: 1;
+}
+
+.riderCardInfo h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.riderLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.riderLocation svg {
+  color: var(--saturated-blue);
+}
+
+.riderCardDetails {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.riderRating,
+.riderAge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 0.5));
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.riderRating svg {
+  color: #fbbf24;
+}
+
+.riderAge svg {
+  color: var(--saturated-blue);
+}
+
+.assignRiderButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.assignRiderButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.assignRiderButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
+    margin-top: 4rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
   }
 
   .ordersGrid {
     grid-template-columns: 1fr;
+  }
+
+  .ridersPanel {
+    width: 100%;
   }
 
   .actionButtons {
@@ -281,7 +772,7 @@
   }
 
   .title {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
   }
 
   .orderStatus {
@@ -289,6 +780,16 @@
   }
 
   .statusText {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .ridersButton span {
+    display: none;
+  }
+
+  .orderNumber {
+    width: 30px;
+    height: 30px;
+    font-size: 0.875rem;
   }
 }

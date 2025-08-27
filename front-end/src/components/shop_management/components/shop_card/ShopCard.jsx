@@ -82,7 +82,10 @@ const ShopCard = ({ shop }) => {
   const shopTypeFormatted = formatShopType(shop);
 
   return (
+    <>
+    <p className={styles.infoCardText}>Tarjeta de tienda: </p>
     <div className={`${styles.shopCardWrapper} ${showMap && !minimized && !isSmallScreen ? styles.withMap : ''}`}>
+     
       <div 
         className={`${styles.container} ${minimized ? styles.minimized : ''}`}
       >
@@ -123,6 +126,7 @@ const ShopCard = ({ shop }) => {
         </div>    
       )}
     </div>
+    </>
   );
 };
 

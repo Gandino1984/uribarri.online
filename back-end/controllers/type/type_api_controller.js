@@ -68,7 +68,6 @@ async function getById(req, res) {
     }
 }
 
-//update: New function to get all subtypes for a specific type
 async function getSubtypesByTypeId(req, res) {
     try {
         const { id_type } = req.params;
@@ -89,7 +88,6 @@ async function getSubtypesByTypeId(req, res) {
     }
 }
 
-//update: Modified to remove verified_type from request body since it's always false on creation
 async function create(req, res) {
     try {
         const { 
@@ -121,6 +119,7 @@ async function create(req, res) {
     }
 }
 
+//update: Modified to include warning when shops are using the type
 async function update(req, res) {
     try {
         const { id_type } = req.params;
@@ -139,13 +138,18 @@ async function update(req, res) {
         if (name_type !== undefined) updateData.name_type = name_type;
         if (verified_type !== undefined) updateData.verified_type = verified_type;
         
-        const { error, data } = await typeController.update(id_type, updateData);
+        const { error, data, success, warning, affectedShops } = await typeController.update(id_type, updateData);
         
         if (error) {
-            return res.status(400).json({ error });
+            //update: Return appropriate status based on warning
+            return res.status(warning ? 409 : 400).json({ 
+                error, 
+                warning,
+                affectedShops 
+            });
         }
         
-        res.json({ error, data });
+        res.json({ error, data, success });
     } catch (err) {
         console.error("-> type_api_controller.js - update() - Error =", err);
         res.status(500).json({
@@ -155,6 +159,47 @@ async function update(req, res) {
     }
 }
 
+//update: New endpoint for cascade update
+async function updateCascade(req, res) {
+    try {
+        const { id_type } = req.params;
+        const {
+            name_type,
+            verified_type
+        } = req.body;
+        
+        if (!id_type) {
+            return res.status(400).json({ 
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+        
+        const updateData = {};
+        if (name_type !== undefined) updateData.name_type = name_type;
+        if (verified_type !== undefined) updateData.verified_type = verified_type;
+        
+        const { error, data, success, affectedShops } = await typeController.updateCascade(id_type, updateData);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ 
+            error, 
+            data, 
+            success,
+            affectedShops 
+        });
+    } catch (err) {
+        console.error("-> type_api_controller.js - updateCascade() - Error =", err);
+        res.status(500).json({
+            error: "Error al actualizar el tipo en cascada",
+            details: err.message
+        });
+    }
+}
+
+//update: Modified to include warning when shops are using the type
 async function removeById(req, res) {
     try {
         const { id_type } = req.params;
@@ -165,17 +210,85 @@ async function removeById(req, res) {
             });
         }
         
-        const { error, data, message } = await typeController.removeById(id_type);
+        const { error, data, success, warning, affectedShops, deletedSubtypes } = await typeController.removeById(id_type);
+        
+        if (error) {
+            //update: Return appropriate status based on warning
+            return res.status(warning ? 409 : 400).json({ 
+                error,
+                warning,
+                affectedShops 
+            });
+        }
+        
+        res.json({ 
+            data, 
+            success,
+            deletedSubtypes 
+        });
+    } catch (err) {
+        console.error("-> type_api_controller.js - removeById() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al eliminar el tipo",
+            details: err.message 
+        });
+    }
+}
+
+//update: New endpoint for cascade delete
+async function removeCascade(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({ 
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+        
+        const { error, data, success, warning, deletedShops, deletedSubtypes } = await typeController.removeCascade(id_type);
         
         if (error) {
             return res.status(400).json({ error });
         }
         
-        res.json({ data, message });
+        res.json({ 
+            data, 
+            success,
+            warning,
+            deletedShops,
+            deletedSubtypes 
+        });
     } catch (err) {
-        console.error("-> type_api_controller.js - removeById() - Error =", err);
+        console.error("-> type_api_controller.js - removeCascade() - Error =", err);
         res.status(500).json({ 
-            error: "Error al eliminar el tipo",
+            error: "Error al eliminar el tipo en cascada",
+            details: err.message 
+        });
+    }
+}
+
+//update: New endpoint to check affected shops before operations
+async function checkAffectedShops(req, res) {
+    try {
+        const { id_type } = req.params;
+        
+        if (!id_type) {
+            return res.status(400).json({ 
+                error: 'El ID del tipo es obligatorio'
+            });
+        }
+        
+        const { count, shops } = await typeController.checkAffectedShops(id_type);
+        
+        res.json({ 
+            count,
+            shops
+        });
+    } catch (err) {
+        console.error("-> type_api_controller.js - checkAffectedShops() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al verificar comercios afectados",
             details: err.message 
         });
     }
@@ -190,7 +303,10 @@ export {
     getSubtypesByTypeId,
     create,
     update,
-    removeById
+    updateCascade,
+    removeById,
+    removeCascade,
+    checkAffectedShops
 }
 
 export default {
@@ -202,5 +318,8 @@ export default {
     getSubtypesByTypeId,
     create,
     update,
-    removeById
+    updateCascade,
+    removeById,
+    removeCascade,
+    checkAffectedShops
 }

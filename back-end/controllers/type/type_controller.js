@@ -112,7 +112,6 @@ async function getById(id_type) {
     }
 }
 
-//update: New function to get all subtypes for a specific type
 async function getSubtypesByTypeId(id_type) {
     try {
         // Verify that the type exists
@@ -156,10 +155,9 @@ async function getSubtypesByTypeId(id_type) {
     }
 }
 
-//update: Modified to create types with verified_type: false by default
 async function create(typeData) {
     try {
-        //update: Check if type already exists (regardless of verified status)
+        // Check if type already exists (regardless of verified status)
         const existingType = await shop_type_model.findOne({ 
             where: { 
                 name_type: typeData.name_type
@@ -189,6 +187,7 @@ async function create(typeData) {
     }
 }
 
+//update: Modified to check for shops using this type
 async function update(id, typeData) {
     try {
         const type = await shop_type_model.findByPk(id);
@@ -203,8 +202,7 @@ async function update(id, typeData) {
             const existingType = await shop_type_model.findOne({ 
                 where: { 
                     name_type: typeData.name_type,
-                    id_type: { [Op.ne]: id },
-                    verified_type: true
+                    id_type: { [Op.ne]: id }
                 } 
             });
 
@@ -213,21 +211,83 @@ async function update(id, typeData) {
             }
         }
 
+        //update: Check if there are shops using this type
+        const shopsUsingType = await shop_model.findAll({
+            where: { id_type: id }
+        });
+        
+        if (shopsUsingType && shopsUsingType.length > 0) {
+            return { 
+                error: `No se puede actualizar el tipo porque hay ${shopsUsingType.length} comercio(s) que lo utilizan`,
+                warning: true,
+                affectedShops: shopsUsingType.length
+            };
+        }
+
         await type.update(typeData);
         
         const updatedType = await shop_type_model.findByPk(id);
         
-        return { data: updatedType };
+        return { 
+            data: updatedType,
+            success: "Tipo actualizado correctamente"
+        };
     } catch (err) {
         console.error("Error al actualizar el tipo =", err);
         return { error: "Error al actualizar el tipo" };
     }
 }
 
-async function removeById(id_type, cascadeDelete = false) {
+//update: New function for cascade update
+async function updateCascade(id, typeData) {
+    try {
+        const type = await shop_type_model.findByPk(id);
+        
+        if (!type) {
+            console.log("Tipo no encontrado con id:", id);
+            return { error: "Tipo no encontrado" };
+        }
+
+        // Check if new name already exists (if name is being changed)
+        if (typeData.name_type && typeData.name_type !== type.name_type) {
+            const existingType = await shop_type_model.findOne({ 
+                where: { 
+                    name_type: typeData.name_type,
+                    id_type: { [Op.ne]: id }
+                } 
+            });
+
+            if (existingType) {
+                return { error: "Ya existe un tipo con ese nombre" };
+            }
+        }
+
+        //update: Check how many shops will be affected
+        const shopsUsingType = await shop_model.findAll({
+            where: { id_type: id }
+        });
+
+        // Update the type
+        await type.update(typeData);
+        
+        const updatedType = await shop_type_model.findByPk(id);
+        
+        return { 
+            data: updatedType,
+            success: `Tipo actualizado correctamente. ${shopsUsingType.length} comercio(s) mantienen este tipo.`,
+            affectedShops: shopsUsingType.length
+        };
+    } catch (err) {
+        console.error("Error al actualizar el tipo en cascada =", err);
+        return { error: "Error al actualizar el tipo en cascada" };
+    }
+}
+
+//update: Modified to check for shops using this type
+async function removeById(id_type) {
     try {
         if (!id_type) {
-            return { error: "Tipo no encontrado" };
+            return { error: "ID del tipo no proporcionado" };
         }
 
         const type = await shop_type_model.findByPk(id_type);
@@ -238,35 +298,30 @@ async function removeById(id_type, cascadeDelete = false) {
             };
         }
 
-        // Manually check if there are shops using this type
+        //update: Check if there are shops using this type
         const shops = await shop_model.findAll({
             where: { id_type: id_type }
         });
         
         if (shops && shops.length > 0) {
             return { 
-                error: "No se puede eliminar el tipo porque hay comercios que lo utilizan"
+                error: `No se puede eliminar el tipo porque hay ${shops.length} comercio(s) que lo utilizan`,
+                warning: true,
+                affectedShops: shops.length
             };
         }
 
-        // Manually check if there are subtypes for this type
+        // Check if there are subtypes for this type
         const subtypes = await shop_subtype_model.findAll({
             where: { id_type: id_type }
         });
         
         if (subtypes && subtypes.length > 0) {
-            if (cascadeDelete) {
-                // Delete all subtypes associated with this type
-                console.log(`Eliminando ${subtypes.length} subtipos asociados al tipo ${id_type}`);
-                
-                //update: Since shops don't have id_subtype anymore, we can safely delete all subtypes
-                for (const subtype of subtypes) {
-                    await subtype.destroy();
-                }
-            } else {
-                return { 
-                    error: "No se puede eliminar el tipo porque tiene subtipos asociados. Use cascadeDelete=true para eliminar también los subtipos."
-                };
+            // Delete all subtypes associated with this type
+            console.log(`Eliminando ${subtypes.length} subtipos asociados al tipo ${id_type}`);
+            
+            for (const subtype of subtypes) {
+                await subtype.destroy();
             }
         }
 
@@ -275,14 +330,76 @@ async function removeById(id_type, cascadeDelete = false) {
 
         return { 
             data: id_type,
-            message: cascadeDelete && subtypes.length > 0 
+            success: subtypes.length > 0 
                 ? `El tipo y sus ${subtypes.length} subtipos han sido eliminados.`
-                : "El tipo se ha eliminado.",
-            deletedSubtypes: cascadeDelete ? subtypes.length : 0
+                : "El tipo se ha eliminado correctamente.",
+            deletedSubtypes: subtypes.length
         };
     } catch (err) {
         console.error("-> type_controller.js - removeById() - Error = ", err);
         return { error: "Error al eliminar el tipo" };
+    }
+}
+
+//update: New function for cascade delete (deletes type and all shops using it)
+async function removeCascade(id_type) {
+    try {
+        if (!id_type) {
+            return { error: "ID del tipo no proporcionado" };
+        }
+
+        const type = await shop_type_model.findByPk(id_type);
+        
+        if (!type) {
+            return { 
+                error: "Tipo no encontrado",
+            };
+        }
+
+        //update: Get all shops using this type before deletion
+        const shops = await shop_model.findAll({
+            where: { id_type: id_type }
+        });
+        
+        const shopCount = shops ? shops.length : 0;
+        
+        //update: Delete all shops using this type
+        if (shops && shops.length > 0) {
+            console.log(`Eliminando ${shops.length} comercio(s) que usan el tipo ${id_type}`);
+            
+            for (const shop of shops) {
+                await shop.destroy();
+            }
+        }
+
+        // Delete all subtypes associated with this type
+        const subtypes = await shop_subtype_model.findAll({
+            where: { id_type: id_type }
+        });
+        
+        const subtypeCount = subtypes ? subtypes.length : 0;
+        
+        if (subtypes && subtypes.length > 0) {
+            console.log(`Eliminando ${subtypes.length} subtipos asociados al tipo ${id_type}`);
+            
+            for (const subtype of subtypes) {
+                await subtype.destroy();
+            }
+        }
+
+        // Delete the type
+        await type.destroy();
+
+        return { 
+            data: id_type,
+            success: `El tipo ha sido eliminado junto con ${shopCount} comercio(s) y ${subtypeCount} subtipo(s).`,
+            warning: shopCount > 0 ? `ADVERTENCIA: Se han eliminado ${shopCount} comercio(s) permanentemente.` : null,
+            deletedShops: shopCount,
+            deletedSubtypes: subtypeCount
+        };
+    } catch (err) {
+        console.error("-> type_controller.js - removeCascade() - Error = ", err);
+        return { error: "Error al eliminar el tipo en cascada" };
     }
 }
 
@@ -302,6 +419,27 @@ async function isTypeValid(id_type) {
     }
 }
 
+//update: New function to check shops affected by type operations
+async function checkAffectedShops(id_type) {
+    try {
+        const shops = await shop_model.findAll({
+            where: { id_type: id_type },
+            attributes: ['id_shop', 'name_shop']
+        });
+        
+        return {
+            count: shops ? shops.length : 0,
+            shops: shops || []
+        };
+    } catch (err) {
+        console.error("-> type_controller.js - checkAffectedShops() - Error = ", err);
+        return {
+            count: 0,
+            shops: []
+        };
+    }
+}
+
 export { 
     getAll, 
     getVerified,
@@ -310,9 +448,12 @@ export {
     getById,
     getSubtypesByTypeId,
     create, 
-    update, 
+    update,
+    updateCascade,
     removeById,
-    isTypeValid
+    removeCascade,
+    isTypeValid,
+    checkAffectedShops
 }
 
 export default { 
@@ -323,7 +464,10 @@ export default {
     getById,
     getSubtypesByTypeId,
     create, 
-    update, 
+    update,
+    updateCascade,
     removeById,
-    isTypeValid
+    removeCascade,
+    isTypeValid,
+    checkAffectedShops
 }
