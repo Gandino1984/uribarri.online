@@ -529,16 +529,16 @@ const PackageCreationForm = () => {
         <div className={styles.formHeader}>
           <button 
             onClick={handleBackClick}
-            className={styles.backButton}
+            className={styles.button}
             type="button"
             title="Volver"
           >
             <ArrowLeft size={20} />
           </button>
-          <h2 className={styles.formTitle}>
-            <PackagePlus size={24} className={styles.formTitleIcon} />
+          <p className={styles.formTitle}>
+            {/* <PackagePlus size={24} className={styles.formTitleIcon} /> */}
             {isEditMode ? 'Editar Paquete' : 'Crear Paquete'}
-          </h2>
+          </p>
         </div>
         
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -562,7 +562,7 @@ const PackageCreationForm = () => {
             
             <div className={styles.formField}>
               <label htmlFor="name_package" className={styles.label}>
-                Nombre del Paquete*
+                Nombre del Paquete
               </label>
               <input
                 type="text"
@@ -709,7 +709,7 @@ const PackageCreationForm = () => {
             <button
               type="button"
               onClick={handleBackClick}
-              className={`${styles.button} ${styles.cancelButton}`}
+              // className={`${styles.button} ${styles.cancelButton}`}
               disabled={isSubmitting || isUploadingImage}
             >
               <X size={18} />
@@ -718,7 +718,7 @@ const PackageCreationForm = () => {
             
             <button
               type="submit"
-              className={`${styles.button} ${styles.submitButton}`}
+              // className={`${styles.button} ${styles.submitButton}`}
               disabled={isSubmitting || isUploadingImage || selectedProductDetails.filter(p => p && p.id_product).length === 0}
             >
               <Save size={18} />

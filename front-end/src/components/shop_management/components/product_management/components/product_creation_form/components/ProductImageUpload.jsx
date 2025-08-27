@@ -16,9 +16,6 @@ const ProductImageUpload = ({
   setError,
   setShowErrorCard
 }) => {
-  // 🔄 UPDATE: Removed showImageUploadButton state as we'll trigger the input directly
-
-  // 🔄 UPDATE: Simplified to trigger file input directly
   const handleImageContainerClick = () => {
     if (!uploading && fileInputRef.current) {
       fileInputRef.current.click();
@@ -97,7 +94,7 @@ const ProductImageUpload = ({
 
   return (
     <section className={styles.imageSection}>
-      <h2 className={styles.sectionTitle}>Imagen del producto</h2>
+      {/* <h2 className={styles.sectionTitle}>Imagen del producto</h2> */}
       <p className={styles.sectionDescription}>
         Sube una imagen para tu producto
       </p>

@@ -110,7 +110,9 @@ input[type="text"] {
   font-size: .9rem;
   border-radius: 8px;
   min-height: 2.5rem;
-  max-width: 20rem;
+  width: 100%;
+  margin-bottom: .5rem;
+  /* max-width: 20rem; */
   font-weight: 600;
   border: 2px solid lightgray;
 }
@@ -203,15 +205,14 @@ input[type="time"].hasValue {
 
 /* Number inputs with blue for entered text */
 input[type="number"] {
-  width: auto;
-  min-width: 3rem;
+  width: 100%;
+  margin-bottom: .5rem;
   border-radius: 8px;
-  /* border: 2px solid var(--medium-gray); */
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
+  border: 2px solid lightgray;
   font-size: 0.9rem;
   min-height: 2.5rem;
-  font-weight: 500;
-  color: blue; 
+  font-weight: 600;
+  padding-left: 1rem;
   transition: all 0.2s ease;
   -moz-appearance: textfield;
 }
@@ -223,20 +224,18 @@ input[type="number"]::placeholder {
 }
 
 input[type="number"]:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--app-purple);
 }
 
 input[type="number"]:focus {
-  color: black; 
-  background-color: white;
+  color: var(--app-purple); 
+  border: 2px solid var(--app-purple);
+  background-color: var(--app-purple-transparent);
   outline: none;
-  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 input[type="number"].hasValue {
-  /* border-color: var(--saturated-orange); */
   color: black;
-  /* background-color: rgba(255, 255, 255, 0.95); */
 }
 
 
@@ -284,16 +283,18 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: .5rem .7rem;
-  outline: none;
-  border: 2px solid transparent;
+  /* max-width: 3.5rem; */
+  /* flex-wrap: wrap; */
   background-color: white;
   color: black;
-  gap: .5rem;
-  border-radius: 8px;
-  font-size: .9rem;
-  font-weight: 600;
+  border: 2px solid transparent;
+  outline: none;
   cursor: pointer;
+  padding: .5rem .7rem;
+  font-weight: 600;
+  font-size: .9rem;
+  gap: .2rem;
+  border-radius: 8px;
   touch-action: manipulation;
   text-transform: uppercase;
   transition: all 0.2s ease;
@@ -301,8 +302,9 @@ button {
 
 button:hover {
   /* border: 2px solid lightgray; */
-  transform: translateY(2px);
+  /* transform: translateY(2px); */
   background-color: var(--light-gray);
+  border: 2px solid lightgray;
 }
 
 button:active {
@@ -310,10 +312,12 @@ button:active {
 }
 
 select {
+  width: 100%;
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
-  max-width: 20rem;
+  margin-bottom: .5rem;
+  /* max-width: 20rem; */
   max-height: 2.5rem;
   font-size: .9rem;
   font-weight: 600;
@@ -344,7 +348,7 @@ select:focus:not(.has-value) {
 
 /* Selected state with blue color */
 select.has-value {
-  color: var(--app-purple);
+  color: black;
 }
 
 /* Ensure hovering a selected value keeps it blue */
@@ -392,9 +396,9 @@ select.inputSuccess {
 
 /* Blue styling for checkboxes */
 input[type="checkbox"] {
-  accent-color: var(--saturated-blue); /* Make checkboxes blue when checked */
-  width: 1rem;
-  height: 1rem;
+  accent-color: var(--app-purple); /* Make checkboxes blue when checked */
+  width: 1.2rem;
+  height: 1.2rem;
   cursor: pointer;
 }
 
@@ -415,46 +419,6 @@ input[type="radio"] {
   padding: 0 0.5rem;
 }
 
-/* Responsive columns for different screen sizes */
-.col-12 { flex: 0 0 100%; max-width: 100%; }
-.col-6 { flex: 0 0 50%; max-width: 50%; }
-.col-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
-.col-3 { flex: 0 0 25%; max-width: 25%; }
-
-/* Spacing utilities */
-.m-0 { margin: 0; }
-.m-1 { margin: var(--spacing-xs); }
-.m-2 { margin: var(--spacing-sm); }
-.m-3 { margin: var(--spacing-md); }
-.m-4 { margin: var(--spacing-lg); }
-.m-5 { margin: var(--spacing-xl); }
-
-.mx-auto { margin-left: auto; margin-right: auto; }
-.my-auto { margin-top: auto; margin-bottom: auto; }
-
-.p-0 { padding: 0; }
-.p-1 { padding: var(--spacing-xs); }
-.p-2 { padding: var(--spacing-sm); }
-.p-3 { padding: var(--spacing-md); }
-.p-4 { padding: var(--spacing-lg); }
-.p-5 { padding: var(--spacing-xl); }
-
-/* Responsive flexbox utilities */
-.d-flex { display: flex; }
-.flex-column { flex-direction: column; }
-.flex-row { flex-direction: row; }
-.flex-wrap { flex-wrap: wrap; }
-.justify-content-center { justify-content: center; }
-.justify-content-between { justify-content: space-between; }
-.align-items-center { align-items: center; }
-.align-items-start { align-items: flex-start; }
-.align-items-end { align-items: flex-end; }
-
-/* Responsive Hide/Show Classes */
-.d-none { display: none !important; }
-.d-block { display: block !important; }
-.d-flex { display: flex !important; }
-.d-grid { display: grid !important; }
 
 /* Enhanced Media Queries */
 

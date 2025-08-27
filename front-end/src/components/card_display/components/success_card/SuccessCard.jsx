@@ -30,7 +30,7 @@ const SuccessCard = () => {
   return (
     latestSuccess && (
       <div className={styles.container}>
-        <div className={styles.iconContainer}>
+        {/* <div className={styles.iconContainer}>
           <OButton 
             size="extraSmall" 
             text="O" 
@@ -38,7 +38,7 @@ const SuccessCard = () => {
             className={styles.successButton}
             onClick={() => {}}
           />
-        </div>
+        </div> */}
         <div className={styles.successList}>
           <div className={styles.successItem}>
             {latestSuccess}
