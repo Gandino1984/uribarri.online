@@ -1,15 +1,5 @@
 :root {
-
-  --app-purple:  #9747ff;
-  --app-purple-darker:  #813cdb;
-  --app-purple-transparent:  #af71ff15;  
-  --app-green: #D1FF1F;
-  --app-darkGreen: #0d2516;
-
-    --app-orange: #FFA200;
-
-
-  --light-gray: rgb(243, 243, 243);
+  --light-gray: rgb(240, 240, 240);
   --saturated-orange: #efa345;
   --light-yellow: rgb(255, 250, 223);  
   --light-orange: #ffe1bc;
@@ -66,7 +56,7 @@
 
 html, body {
   font-family: 'Montserrat';
-  /* background-color: var(--light-gray); */
+  background-color: var(--light-gray);
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -105,62 +95,70 @@ html, body {
 
 input[type="text"] {
   color: black;
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
   cursor: pointer;
-  padding-left: 1rem;
-  font-size: .9rem;
+  font-size: 0.9rem;
   border-radius: 8px;
   min-height: 2.5rem;
-  width: 100%;
-  margin-bottom: .5rem;
-  /* max-width: 20rem; */
+  max-width: 20rem;
   font-weight: 600;
+  margin-bottom: .5rem;
+  width: 100%;
+  /* outline: none; */
   border: 2px solid lightgray;
+  /* border: none; */
+  /* background-color: rgb(220, 228, 255) */
 }
 
 input[type="text"]::placeholder {
   color: lightgray;
+  opacity: 1;   
 }
 
 input[type="text"]:focus {
-  color: var(--app-purple); 
-  border: 2px solid var(--app-purple);
-  outline: none;
-  /* border: none; */
-  background-color: var(--app-purple-transparent);
+  color: var(--saturated-blue); 
+  outline: 2px solid black;
+  border: none;
+  background-color: white;
 }
 
 input[type="text"]:hover {
-  border: 2px solid var(--app-purple);    
+  border: 2px solid var(--saturated-blue);    
+  outline: none;
+  /* border: 2px solid white; */
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px lightblue;
 }
 
+/* ⏰ UPDATE: Time inputs with consistent styling */
 input[type="time"] {
-  /* width: 100%; */
+  width: 100%;
   max-width: 150px;
   color: gray;
   padding: 0.5rem;
-  border: 2px solid var(--light-gray);
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border: 1px solid var(--medium-gray);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
   min-height: 2.5rem;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.2s ease;
   cursor: pointer;
-  background-color: var(--light-gray);
+  background-color: rgb(238, 249, 255);
 }
 
 input[type="time"]:focus {
-  border: 2px solid var(--app-purple);
-  color: var(--app-purple);
-  background-color: var(--app-purple-transparent);
+  /* border-color: var(--saturated-orange); */
+  color: black;
+  background-color: white;
   outline: none;
-  /* box-shadow: 0 0 13px 1px var(--saturated-blue-transparent); */
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
   /* box-shadow: 0 0 0 2px rgba(var(--saturated-orange-rgb), 0.2); */
 }
 
 input[type="time"]:hover {
-  /* background-color: white; */
-  /* box-shadow: 0 0 13px 1px var(--saturated-blue-transparent); */
-  border: 2px solid var(--app-purple);
+  background-color: white;
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
+  /* border-color: var(--saturated-blue); */
 
 }
 
@@ -173,9 +171,7 @@ input[type="time"].hasValue {
 
 .timeFieldContainer, .timeFieldGroup {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  /* flex-direction: column; */
+  flex-direction: column;
   margin-bottom: 0.75rem;
   position: relative;
   width: 100%;
@@ -185,10 +181,9 @@ input[type="time"].hasValue {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-right: 1rem;
-  /* margin-bottom: 0.25rem; */
+  margin-bottom: 0.25rem;
   font-size: 0.875rem;
-  color: gray;
+  color: white;
 }
 
 .timeIcon {
@@ -205,14 +200,15 @@ input[type="time"].hasValue {
 
 /* Number inputs with blue for entered text */
 input[type="number"] {
-  width: 100%;
-  margin-bottom: .5rem;
+  width: auto;
+  min-width: 3rem;
   border-radius: 8px;
-  border: 2px solid lightgray;
+  /* border: 2px solid var(--medium-gray); */
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
   font-size: 0.9rem;
   min-height: 2.5rem;
-  font-weight: 600;
-  padding-left: 1rem;
+  font-weight: 500;
+  color: blue; 
   transition: all 0.2s ease;
   -moz-appearance: textfield;
 }
@@ -224,18 +220,20 @@ input[type="number"]::placeholder {
 }
 
 input[type="number"]:hover {
-    border: 2px solid var(--app-purple);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 input[type="number"]:focus {
-  color: var(--app-purple); 
-  border: 2px solid var(--app-purple);
-  background-color: var(--app-purple-transparent);
+  color: black; 
+  background-color: white;
   outline: none;
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 input[type="number"].hasValue {
+  /* border-color: var(--saturated-orange); */
   color: black;
+  /* background-color: rgba(255, 255, 255, 0.95); */
 }
 
 
@@ -283,52 +281,50 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* max-width: 3.5rem; */
-  /* flex-wrap: wrap; */
-  background-color: white;
-  color: black;
-  border: 2px solid transparent;
   outline: none;
-  cursor: pointer;
-  padding: .5rem .7rem;
-  font-weight: 600;
+  border: none;
+  background-color: white;
+  color: gray;
+  border-radius: 5px;
+  padding: 0.3rem 0.3rem;
   font-size: .9rem;
-  gap: .2rem;
-  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  gap: var(--spacing-sm);
+  letter-spacing: 0.03rem;
   touch-action: manipulation;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
-
+º
 button:hover {
-  /* border: 2px solid lightgray; */
-  /* transform: translateY(2px); */
-  background-color: var(--light-gray);
-  border: 2px solid lightgray;
+  /* border: none; */
+  color: white;
+  background-color: var(--saturated);
 }
 
 button:active {
-  border: 2px solid var(--app-purple);
+  background-color: var(--saturated);
+  color: white;
 }
 
 select {
-  width: 100%;
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
-  margin-bottom: .5rem;
-  /* max-width: 20rem; */
-  max-height: 2.5rem;
-  font-size: .9rem;
+  width: 100%;
+  max-width: 20rem;
+  max-height: 2rem;
+  min-height: 2.5rem;
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md); /* 🔧 UPDATE: Consistent left padding */
+  font-size: 0.9rem;
   font-weight: 600;
   color: lightgray !important; 
   background-color: white;
   border-radius: 8px;
-  padding: 0.625rem 1rem;
-  padding-left: 1rem;
+  margin-bottom: .5rem;
   cursor: pointer;
   outline: none;
-  border: 2px solid lightgray;
+  border: none;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
@@ -336,30 +332,34 @@ select {
 }
 
 select:hover {
-  border: 2px solid var(--app-purple);
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 /* Clear any default selected styling */
 select:focus:not(.has-value) {
-  color: var(--app-purple) !important;
-  border-color: var(--app-purple);
-  background-color: var(--app-purple-transparent);
+  color: var(--saturated-blue) !important;
+  border-color: none;
+  background-color: var(--superlight-blue) !important;
+  outline: none;
+  border: none;
 }
 
 /* Selected state with blue color */
 select.has-value {
-  color: black;
+  color: black !important;
 }
 
 /* Ensure hovering a selected value keeps it blue */
 select.has-value:hover {
-  color: var(--app-purple);
-  /* border: none; */
+  color: black;
+  border: none;
 }
 
 /* Option styling */
 select option {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 /* First option (placeholder) stays light gray */
@@ -396,9 +396,9 @@ select.inputSuccess {
 
 /* Blue styling for checkboxes */
 input[type="checkbox"] {
-  accent-color: var(--app-purple); /* Make checkboxes blue when checked */
-  width: 1.2rem;
-  height: 1.2rem;
+  accent-color: var(--saturated-blue); /* Make checkboxes blue when checked */
+  width: 1rem;
+  height: 1rem;
   cursor: pointer;
 }
 
@@ -419,6 +419,46 @@ input[type="radio"] {
   padding: 0 0.5rem;
 }
 
+/* Responsive columns for different screen sizes */
+.col-12 { flex: 0 0 100%; max-width: 100%; }
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+.col-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+.col-3 { flex: 0 0 25%; max-width: 25%; }
+
+/* Spacing utilities */
+.m-0 { margin: 0; }
+.m-1 { margin: var(--spacing-xs); }
+.m-2 { margin: var(--spacing-sm); }
+.m-3 { margin: var(--spacing-md); }
+.m-4 { margin: var(--spacing-lg); }
+.m-5 { margin: var(--spacing-xl); }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: var(--spacing-xs); }
+.p-2 { padding: var(--spacing-sm); }
+.p-3 { padding: var(--spacing-md); }
+.p-4 { padding: var(--spacing-lg); }
+.p-5 { padding: var(--spacing-xl); }
+
+/* Responsive flexbox utilities */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.align-items-start { align-items: flex-start; }
+.align-items-end { align-items: flex-end; }
+
+/* Responsive Hide/Show Classes */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-grid { display: grid !important; }
 
 /* Enhanced Media Queries */
 

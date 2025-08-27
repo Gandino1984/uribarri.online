@@ -4,11 +4,9 @@ import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
-import FiltersForShops from './components/FiltersForShops.jsx';
-import useFiltersForShops from './components/FiltersForShopsUtils.jsx';
+import OButton from '../Obutton/Obutton.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 import styles from '../../../../public/css/ShopWindow.module.css';
-import { Filter, ChevronDown } from 'lucide-react';
 
 const ShopWindow = () => {
   const { currentUser } = useAuth();
@@ -19,32 +17,10 @@ const ShopWindow = () => {
     setSelectedShopForStore,
     setShowLandingPage
   } = useUI();
-  const { shops, setShops, shopTypesAndSubtypes } = useShop();
+  const { shops, setShops } = useShop();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  //update: Add filter visibility state
-  const [showFilters, setShowFilters] = useState(false);
-  
-  //update: Use the filters hook with shops and shopTypesAndSubtypes
-  const {
-    searchTerm,
-    setSearchTerm,
-    filters,
-    filteredShops,
-    handleFilterChange,
-    handleSearchChange,
-    handleDeliveryChange,
-    handleOpenNowChange,
-    handleTopRatedChange,
-    handleDayChange,
-    handleResetFilters,
-    getAvailableSubtypes,
-    getActiveFiltersCount
-  } = useFiltersForShops(shops, shopTypesAndSubtypes);
-  
-  //update: Get active filters count
-  const activeFiltersCount = getActiveFiltersCount();
   
   // Load all shops when component mounts
   useEffect(() => {
@@ -77,6 +53,7 @@ const ShopWindow = () => {
     // This will trigger the LoginRegisterForm to show
   };
   
+  //update: Handle shop card click
   const handleShopClick = (shop) => {
     if (!currentUser) {
       // If user is not logged in, redirect to login/register
@@ -92,22 +69,8 @@ const ShopWindow = () => {
     }
     // If user is seller or other type, do nothing on click
   };
-  
-  //update: Toggle filters visibility
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
-  
-  //update: Handle reset all filters
-  const handleResetAllFilters = () => {
-    handleResetFilters();
-  };
-  
-  //update: Determine which shops to display - always use filteredShops when filters/search are active
-  const hasActiveFilters = getActiveFiltersCount() > 0;
-  const displayedShops = hasActiveFilters || searchTerm ? filteredShops : shops;
 
-  const transitions = useTransition(displayedShops, {
+  const transitions = useTransition(shops, {
     from: { opacity: 0, transform: 'translateY(20px)' },
     enter: { opacity: 1, transform: 'translateY(0px)' },
     leave: { opacity: 0, transform: 'translateY(-20px)' },
@@ -120,41 +83,17 @@ const ShopWindow = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
         
-        {/*update: Add filter toggle button */}
-        <button
-          onClick={toggleFilters}
-          className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
-          title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
-        >
-          <Filter size={18} />
-          <span>Filtros</span>
-          {activeFiltersCount > 0 && (
-            <span className={styles.filterBadge}>{activeFiltersCount}</span>
-          )}
-          <ChevronDown 
-            size={16} 
-            className={`${styles.filterArrow} ${showFilters ? styles.rotated : ''}`}
-          />
-        </button>
+        {/* {!currentUser && (
+          <div>
+            <button 
+              onClick={handleRegisterClick}
+              className={styles.registerButton}
+            >
+              Registrarse o iniciar
+            </button>
+          </div>
+        )} */}
       </div>
-      
-      {/*update: Add filters component - pass all hook functions and state */}
-      {showFilters && (
-        <FiltersForShops 
-          searchTerm={searchTerm}
-          filters={filters}
-          shopTypesAndSubtypes={shopTypesAndSubtypes}
-          activeFilterCount={activeFiltersCount}
-          handleFilterChange={handleFilterChange}
-          handleSearchChange={handleSearchChange}
-          handleDeliveryChange={handleDeliveryChange}
-          handleOpenNowChange={handleOpenNowChange}
-          handleTopRatedChange={handleTopRatedChange}
-          handleDayChange={handleDayChange}
-          handleResetFilters={handleResetAllFilters}
-          getAvailableSubtypes={getAvailableSubtypes}
-        />
-      )}
 
       {loading && (
         <div className={styles.loadingContainer}>
@@ -172,58 +111,43 @@ const ShopWindow = () => {
         </div>
       )}
 
-      {!loading && !error && displayedShops.length === 0 && (
+      {!loading && !error && shops.length === 0 && (
         <div className={styles.emptyContainer}>
-          <p className={styles.emptyText}>
-            {activeFiltersCount > 0 || searchTerm 
-              ? "No se encontraron comercios que coincidan con tu búsqueda."
-              : "No hay comercios disponibles en este momento"}
-          </p>
-          {(activeFiltersCount > 0 || searchTerm) && (
-            <button onClick={handleResetAllFilters} className={styles.resetButton}>
-              Limpiar filtros
-            </button>
-          )}
+          <p className={styles.emptyText}>No hay comercios disponibles en este momento</p>
         </div>
       )}
 
-      {!loading && !error && displayedShops.length > 0 && (
-        <>
-          {/*update: Add shops count */}
-          <div className={styles.shopsCount}>
-            <p>Mostrando {displayedShops.length} {displayedShops.length === 1 ? 'comercio' : 'comercios'}</p>
-          </div>
-          
-          <div className={styles.shopsGrid}>
-            {transitions((style, shop) => 
-              shop && (
-                <animated.div 
-                  key={shop.id_shop} 
-                  style={style} 
-                  className={styles.shopCardWrapper}
+      {!loading && !error && shops.length > 0 && (
+        <div className={styles.shopsGrid}>
+          {transitions((style, shop) => 
+            shop && (
+              <animated.div 
+                key={shop.id_shop} 
+                style={style} 
+                className={styles.shopCardWrapper}
+              >
+                {/* update: Wrap ShopCard in a clickable div */}
+                <div 
+                  onClick={() => handleShopClick(shop)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleShopClick(shop);
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
                 >
-                  <div 
-                    onClick={() => handleShopClick(shop)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        handleShopClick(shop);
-                      }
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <ShopCard 
-                      shop={shop} 
-                      isClickable={false} // Disable internal card functionality
-                      hideActions={true} // Hide action buttons
-                    />
-                  </div>
-                </animated.div>
-              )
-            )}
-          </div>
-        </>
+                  <ShopCard 
+                    shop={shop} 
+                    isClickable={false} // Disable internal card functionality
+                    hideActions={true} // Hide action buttons
+                  />
+                </div>
+              </animated.div>
+            )
+          )}
+        </div>
       )}
     </div>
   );

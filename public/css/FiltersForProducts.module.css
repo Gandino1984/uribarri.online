@@ -5,8 +5,8 @@
   max-width: 100%;
   margin-bottom: 1.5rem;
   padding: 0;
-
-
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   overflow: visible;
   min-height: fit-content;
@@ -21,17 +21,11 @@
 .filterControls {
   display: flex;
   flex-direction: column;
-    background-color: white;
-      border-radius: 12px;
   gap: 1rem;
   width: 100%;
   padding: 1rem;
   min-height: fit-content;
   will-change: transform, opacity;
-}
-
-.filterControls:hover {
- box-shadow: 0 0 10px 2px lightgray;
 }
 
 /* Row for select filters */
@@ -65,18 +59,18 @@
 
 /* Select styling matching app theme */
 .filterSelect {
-  width: 100%;
+  /* width: 100%; */
   max-width: 100%;
   min-height: 2.5rem;
   padding: 0.5rem 1rem 0.5rem 1rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: lightgray;
+  color: var(--light-gray);
   background-color: white;
   border-radius: 8px;
   cursor: pointer;
   outline: none;
-  border: 2px solid transparent;
+  border: none;
   transition: all 0.2s ease;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -86,17 +80,17 @@
 
 /* Hover state */
 .filterSelect:hover {
-  border: 2px solid var(--app-purple);
-  /* background-color: ; */
-  /* box-shadow: 0 0 13px 1px var(--saturated-blue-transparent); */
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 13px 1px var(--saturated-blue-transparent);
 }
 
 .filterSelect:focus {
-  background-color: var(--app-purple-transparent);
-  border-color: 2px solid var(--app-purple);
-  /* background-color: var(--superlight-blue); */
+  color: var(--lighter-gray);
+  border-color: none;
+  background-color: var(--superlight-blue);
   outline: none;
-  /* border: none; */
+  border: none;
 }
 
 /* Selected values with blue color */
@@ -134,8 +128,8 @@
 .toggleSwitchContainer {
   display: flex;
   align-items: center;
-  justify-content:space-around;
-  width: 100%;
+  justify-content: center;
+  /* width: 100%; */
   gap: 1rem;
   padding: 0.5rem 0.75rem;
   background-color: white;
@@ -146,9 +140,9 @@
 }
 
 .toggleSwitchContainer:hover {
-  background-color: var(--light-gray);
-  /* outline: 2px solid var(--saturated-blue); */
-  /* box-shadow: 0 0 10px var(--saturated-blue-transparent); */
+  background-color: rgba(0, 0, 255, 0.096);
+  outline: 2px solid var(--saturated-blue);
+  box-shadow: 0 0 10px var(--saturated-blue-transparent);
 }
 
 /* Toggle icon and label */
@@ -158,8 +152,8 @@
   align-items: center;
   gap: 0.5rem;
   color: gray;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .toggleIconLabel svg {
@@ -174,7 +168,6 @@
   justify-content: center;
   width: 100%;
   margin-top: 0.5rem;
-
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
 }
 
@@ -186,21 +179,21 @@
   gap: 0.5rem;
   padding: 0.3rem 0.4rem;
   border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 500;
+  font-size: 0.875rem;
   cursor: pointer;
-    background-color: var(--light-gray);
-  color: black;
+  background-color: white;
+  color: gray;
   transition: all 0.2s ease;
   /* border: 1px solid rgba(255, 255, 255, 0.3); */
   outline: none;
 }
 
 .resetButton:hover {
-  /* color: white; */
+  color: white;
   /* border: 1px solid white; */
-  background-color: lightgray;
-  /* box-shadow: 0 0 12px var(--saturated-blue-transparent); */
+  background-color: var(--saturated-blue);
+  box-shadow: 0 0 12px var(--saturated-blue-transparent);
 }
 
 /* Active (pressed) state for reset button */

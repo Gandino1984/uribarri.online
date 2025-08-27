@@ -17,15 +17,16 @@
   
   /* Button states */
   .active {
-    color: black;
-    background-color: var(--light-gray);
+    color: white;
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+    background-color: var(--saturated-blue);
   }
   
   .active:hover {
-    /* color: var(--saturated-blue); */
-    /* border: 2px solid var(--saturated-blue); */
-    background-color: lightgray;
-    /* box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important; */
+    color: var(--saturated-blue);
+    border: 2px solid var(--saturated-blue);
+    background-color: white !important;
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent) !important;
   }
   
   .inactive {

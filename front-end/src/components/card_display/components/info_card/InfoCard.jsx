@@ -65,7 +65,7 @@ const InfoCard = () => {
     <div className={styles.container}>
       {shouldShowPasswordMessage ? (
         <>
-          {/* <div className={styles.iconContainer}>
+          <div className={styles.iconContainer}>
             <div className={styles.iconOverlay}>
               <KeyRound size={18} color="var(--saturated-orange)" />
             </div>
@@ -76,7 +76,7 @@ const InfoCard = () => {
               className={styles.infoButton}
               onClick={() => {}}
             />
-          </div> */}
+          </div>
           <div className={styles.infoList}>
             <div className={styles.infoItem}>
               Confirma la contraseña
@@ -86,7 +86,7 @@ const InfoCard = () => {
       ) : (
         latestInfo && (
           <>
-            {/* <div className={styles.iconContainer}>
+            <div className={styles.iconContainer}>
               <OButton 
                 size="extraSmall" 
                 text="O" 
@@ -94,7 +94,7 @@ const InfoCard = () => {
                 className={styles.infoButton}
                 onClick={() => {}}
               />
-            </div> */}
+            </div>
             <div className={styles.infoList}>
               <div className={styles.infoItem}>
                 {latestInfo}

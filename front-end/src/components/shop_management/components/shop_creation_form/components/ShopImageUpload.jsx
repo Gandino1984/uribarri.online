@@ -68,7 +68,7 @@ const ShopImageUpload = ({
     <section className={styles.imageSection}>  
       <h2 className={styles.sectionTitle}>Paso 1: sube una imagen</h2>
       <p className={styles.sectionDescription}>
-        Esta será la portada de la tarjeta de tu comercio, visible para tod@s l@s usuari@s.
+        Esta será la portada de la tarjeta de tu comercio que será visible para todos los usuarios.
       </p>
       
       <div 
@@ -142,7 +142,7 @@ const ShopImageUpload = ({
       </div>
       
        <p className={styles.sectionDescription2}>
-        La imagen se convertirá automáticamente a formato WebP y se comprimirá a 1MB.
+        La imagen se convertirá automáticamente a formato WebP y se comprimirá a 1MB si es necesario.
       </p>
       
       {selectedImage && (

@@ -10,9 +10,9 @@
 .passwordDisplay{
     display: flex;
     align-items: center;
-    /* border: 2px dashed lightgray; */
+    border: 2px dashed white;
     justify-content: center;
-    height: 2rem;
+    height: 1.8rem;
     gap: .8rem;
     padding: .2rem .3rem .2rem .3rem;
     overflow: hidden;
@@ -30,7 +30,7 @@
 .keyboard{
     position: relative;
     width: 100%;
-    gap: .85rem;
+    gap: .8rem;
 }
 
 .key{
@@ -38,26 +38,26 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: none;
     outline: none;
     width: 2.5rem;
     height: 2.5rem;
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     border-radius: 50%;
     padding: .3rem .5rem;
-    /* border: 1px solid rgba(255, 255, 255, 0.6); */
+    border: 1px solid rgba(255, 255, 255, 0.6);
     user-select: none;
-    margin: .2rem;
-    color: black;
-    background-color: var(--light-gray);
-    transition: all .3s ease;
+    margin: .1rem;
+    color: gray;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: all .15s ease;
 }
 
 .key:hover{
-    color: var(--app-purple);
-    /* background-color: var(--); */
-    /* box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent);  */
+    color: white;
+    background-color: var(--saturated);
+    box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent); 
 }
 
 .row{
