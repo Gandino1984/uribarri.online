@@ -254,10 +254,11 @@ textarea {
   min-height: 2.5rem;
   width: 100%;
   border: 2px solid lightgray;
-  padding: var(--spacing-sm);
+  /* padding: var(--spacing-sm); */
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   color: black; 
+  border-radius: 12px;
   resize: vertical;
 }
 
@@ -269,13 +270,15 @@ textarea::placeholder {
 
 textarea:focus {
   color: black; /* Keep blue color when focused */
-  border: 2px solid blue;
+  border: 2px solid var(--app-purple);
   outline: none;
-  box-shadow: var(--focus-shadow);
+  color: var(--app-purple);
+
+  /* box-shadow: var(--focus-shadow); */
 }
 
 textarea:hover {
-  border: 2px solid blue;
+  border: 2px solid var(--app-purple);
 }
 
 
@@ -283,8 +286,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* max-width: 3.5rem; */
-  /* flex-wrap: wrap; */
   background-color: white;
   color: black;
   border: 2px solid transparent;
@@ -292,7 +293,7 @@ button {
   cursor: pointer;
   padding: .5rem .7rem;
   font-weight: 600;
-  font-size: .9rem;
+  font-size: 1rem;
   gap: .2rem;
   border-radius: 8px;
   touch-action: manipulation;
@@ -301,10 +302,7 @@ button {
 }
 
 button:hover {
-  /* border: 2px solid lightgray; */
-  /* transform: translateY(2px); */
   background-color: var(--light-gray);
-  /* border: 2px solid lightgray;  */
 }
 
 button:active {
@@ -317,7 +315,6 @@ select {
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   margin-bottom: .5rem;
-  /* max-width: 20rem; */
   max-height: 2.5rem;
   font-size: .9rem;
   font-weight: 600;
@@ -404,7 +401,7 @@ input[type="checkbox"] {
 
 /* Apply similar styling to radio buttons */
 input[type="radio"] {
-  accent-color: var(--saturated-blue);
+  accent-color: var(--app-purple);
   cursor: pointer;
 }
 

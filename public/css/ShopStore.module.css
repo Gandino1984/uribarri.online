@@ -496,23 +496,24 @@
 .orderButton {
   margin: 0 1rem 1rem;
   padding: 1rem;
-  background-color: #4CAF50;
+  background-color: var(--app-purple);
   color: white;
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .orderButton:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: var(--app-purple-darker);
 }
 
 .orderButton:disabled {
-  background-color: #ccc;
+  background-color: var(--app-purple-transparent);
   cursor: not-allowed;
+  color: gray;
 }
 
 /* Responsive adjustments */

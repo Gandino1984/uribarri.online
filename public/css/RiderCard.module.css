@@ -88,7 +88,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #2ecc71;
+  color: var(--app-purple);
   font-weight: 500;
 }
 
