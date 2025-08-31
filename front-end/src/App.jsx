@@ -19,9 +19,7 @@ import ImageModal from "../src/components/image_modal/ImageModal.jsx";
 import ShopWindow from "../src/components/shop_window/ShopWindow.jsx";
 import ShopStore from "../src/components/shop_store/ShopStore.jsx";
 import ShopManagement from "../src/components/shop_management/ShopManagement.jsx";
-//update: Import RiderOrdersManagement
 import RiderOrdersManagement from "../src/components/rider_order_management/RiderOrderManagement.jsx";
-//update: Import useEffect from React
 import { useEffect } from 'react';
 
 const AppContent = () => {
@@ -32,7 +30,6 @@ const AppContent = () => {
     showShopStore,
     selectedShopForStore,
     showShopsListBySeller,
-    //update: Add showRiderManagement from UI context
     showRiderManagement, 
     setShowRiderManagement,
     setShowShopsListBySeller,
@@ -41,7 +38,6 @@ const AppContent = () => {
   } = useUI();
   const { currentUser } = useAuth();
   
-  //update: Add useEffect to handle rider user type
   useEffect(() => {
     if (currentUser?.type_user === 'rider') {
       console.log('User is rider, showing rider management UI');
@@ -66,7 +62,7 @@ const AppContent = () => {
       return <ShopStore />;
     }
     
-    //update: Show RiderOrdersManagement for rider users
+    //Show RiderOrdersManagement for rider users
     if (showRiderManagement && currentUser?.type_user === 'rider') {
       return <RiderOrdersManagement />;
     }
@@ -92,7 +88,7 @@ const AppContent = () => {
       <ConfirmationModal />
       <ImageModal />
       {showTopBar && <TopBar />} 
-      {currentUser && <UserInfoCard />}
+      {/* {currentUser && <UserInfoCard />} */}
       <CardDisplay />
       {renderMainContent()}
     </div>

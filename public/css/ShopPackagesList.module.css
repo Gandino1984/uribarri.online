@@ -5,7 +5,7 @@
    flex-direction: column;
    width: 100%;
    min-height: 100vh;
-   gap: 1.5rem;
+   gap: 1rem;
    margin-top: 11rem; 
    overflow-x: hidden;
    overflow-y: auto;
@@ -89,9 +89,9 @@
    justify-content: space-between;
    align-items: center;
    padding: 1rem;
-   background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end));
-   border-radius: 12px 12px 0 0;
-   margin: 0 1rem;
+   /* background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end)); */
+   /* border-radius: 12px 12px 0 0; */
+   /* margin: 0 1rem; */
 }
 
 .title {
@@ -100,7 +100,7 @@
    gap: 0.5rem;
    font-size: 1.25rem;
    font-weight: 600;
-   color: white;
+   color: black;
    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
@@ -121,7 +121,7 @@
 
 .packageCard:hover {
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-   transform: translateY(-2px);
+   /* transform: translateY(-2px); */
 }
 
 .packageHeader {
@@ -161,8 +161,8 @@
 
 .packageImageContainer:hover {
    transform: scale(1.05);
-   border-color: var(--saturated-blue);
-   box-shadow: 0 0 15px var(--saturated-blue-transparent);
+   border-color: var(--app-purple);
+   /* box-shadow: 0 0 15px var(--saturated-blue-transparent); */
 }
 
 .packageImageContainer.noImage {
@@ -266,14 +266,15 @@
 }
 
 .productCount {
-   font-size: 0.875rem;
-   color: #6b7280;
-   font-weight: 500;
+   font-size: 0.9rem;
+   color: black;
+   font-weight: 600;
+   margin-bottom: 1rem;
 }
 
 .packagePricing {
    display: flex;
-   flex-direction: column;
+   /* flex-direction: column; */
    align-items: flex-end;
    gap: 0.25rem;
    padding: 0 1rem;
@@ -286,18 +287,18 @@
 }
 
 .finalPrice {
-   font-size: 1.25rem;
+   font-size: 1rem;
    font-weight: 700;
-   color: var(--saturated-blue);
+   color: var(--app-purple);
 }
 
 .savings {
-   font-size: 0.75rem;
-   color: #059669;
+   font-size: 0.9rem;
+   color: gray;
    font-weight: 600;
-   background: rgba(5, 150, 105, 0.1);
+   /* background: rgba(5, 150, 105, 0.1); */
    padding: 0.125rem 0.5rem;
-   border-radius: 4px;
+   /* border-radius: 4px; */
 }
 
 .packageActions {
@@ -307,10 +308,10 @@
 
 .actionButton {
    padding: 0.5rem;
-   background: white;
-   border: 1px solid #e5e7eb;
+   background-color: var(--light-gray);
+   border: 2px solid transparent;
    border-radius: 8px;
-   color: #6b7280;
+   color: black;
    cursor: pointer;
    transition: all 0.2s ease;
    display: flex;
@@ -319,22 +320,23 @@
 }
 
 .actionButton:hover {
-   background: var(--saturated-blue);
-   color: white;
-   border-color: var(--saturated-blue);
-   box-shadow: 0 0 10px var(--saturated-blue-transparent);
+   background: lightgray;
+   /* color: white; */
+   /* border-color: var(--saturated-blue); */
+   /* box-shadow: 0 0 10px var(--saturated-blue-transparent); */
 }
 
 .actionButton:disabled {
-   opacity: 0.5;
+   /* opacity: 0.5; */
+   color: lightgray;
    cursor: not-allowed;
 }
 
 .expandButton {
    padding: 0.5rem;
-   background: transparent;
-   border: none;
-   color: #6b7280;
+   background-color: var(--light-gray);
+   border: 2px solid transparent;
+   color: black;
    cursor: pointer;
    transition: all 0.2s ease;
    display: flex;
@@ -344,12 +346,12 @@
 }
 
 .expandButton:hover {
-   color: var(--saturated-blue);
-   background: rgba(59, 130, 246, 0.1);
+   color: lightgray;
+   /* background: rgba(59, 130, 246, 0.1); */
 }
 
 .packageDetails {
-   background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5));
+   /* background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5)); */
    padding: 1rem;
    border-top: 1px solid rgba(229, 231, 235, 0.5);
 }
@@ -361,7 +363,7 @@
 .sectionTitle {
    font-size: 0.875rem;
    font-weight: 600;
-   color: #4b5563;
+   color: black;
    margin: 0 0 0.75rem 0;
 }
 
@@ -377,19 +379,21 @@
    gap: 0.75rem;
    padding: 0.5rem;
    background: white;
-   border-radius: 6px;
-   border-left: 3px solid var(--saturated-blue);
+   border-radius: 8px;
+   /* border-left: 3px solid var(--saturated-blue); */
    transition: all 0.2s ease;
 }
 
 .productItem:hover {
-   background: rgba(59, 130, 246, 0.05);
-   transform: translateX(2px);
+   background: var(--light-gray);
+   /* transform: translateX(2px); */
 }
 
 .productIndex {
    font-weight: 600;
-   color: var(--saturated-blue);
+   color: gray;
+   font-size: .9rem;
+   /* color: var(--s-blue); */
    min-width: 1.5rem;
 }
 
@@ -402,8 +406,8 @@
 
 .productPrice {
    font-weight: 700;
-   color: var(--saturated-blue);
-   font-size: 0.875rem;
+   color: var(--app-purple);
+   font-size: 0.9rem;
 }
 
 .packageFooter {

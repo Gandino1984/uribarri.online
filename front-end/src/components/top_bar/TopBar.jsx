@@ -96,11 +96,11 @@ function TopBar() {
             </span>
         </div>
 
-        {currentUser && (
+        {/* {currentUser && (
           <div className={styles.userInfoWrapper}>
             <UserInfoCard />
           </div>
-        )}
+        )} */}
 
         <div className={styles.buttonsContainer}>
           {currentUser ? (

@@ -304,7 +304,7 @@ button:hover {
   /* border: 2px solid lightgray; */
   /* transform: translateY(2px); */
   background-color: var(--light-gray);
-  border: 2px solid lightgray;
+  /* border: 2px solid lightgray;  */
 }
 
 button:active {

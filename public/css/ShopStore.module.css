@@ -67,20 +67,23 @@
 }
 
 .cartButton {
-  background: none;
-  border: none;
+  background-color: var(--app-purple);
+  border: 2px solid transparent;
   cursor: pointer;
-  padding: 0.5rem;
+  color: white;
+  padding: .4rem;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .cartButton:hover {
-  background-color: #f0f0f0;
+  background-color: var(--app-purple-darker);
+  transform: scale(1.09);
+  padding: .4rem;
 }
 
 .cartBadge {
@@ -110,7 +113,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #666;
+  color: black;
   font-size: 0.875rem;
 }
 
@@ -119,12 +122,12 @@
 }
 
 .deliveryBadge {
-  background-color: #2196F3;
-  color: white;
+  background-color: lightgray;
+  color: black;
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  /* font-weight: 500; */
 }
 
 .tabs {
@@ -139,22 +142,21 @@
 .tab {
   flex: 1;
   padding: 1rem;
-  background: none;
-  border: none;
+  background-color: white;
   cursor: pointer;
-  font-size: 1rem;
-  color: #666;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
+  font-size: .9rem;
+  color: black;
+  border: 2px solid transparent;
+  transition: all .3s ease;
 }
 
 .tab:hover {
-  color: #333;
+  border: 2px solid var(--app-purple);
 }
 
 .activeTab {
-  color: #2196F3;
-  border-bottom-color: #2196F3;
+  background-color: var(--app-purple-transparent);
+  border: 2px solid var(--app-purple);
 }
 
 .content {
@@ -186,6 +188,10 @@
   display: flex;
   gap: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.productCard:hover {
+  background-color: var(--app-purple-transparent);
 }
 
 .productImage {
@@ -240,18 +246,19 @@
 }
 
 .addButton {
-  background-color: #2196F3;
-  color: white;
-  border: none;
+  background-color: var(--light-gray);
+  color: black;
+  border: 2px solid transparent;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  font-size: .9rem;
+  transition: all 0.2s;
 }
 
 .addButton:hover {
-  background-color: #1976D2;
+  background-color: lightgray;
 }
 
 .quantityControls {

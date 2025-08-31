@@ -333,7 +333,7 @@ const ShopPackagesList = () => {
       <div className={styles.container}>
         <div className={styles.header}>
           <h3 className={styles.title}>
-            <Package size={20} />
+            {/* <Package size={20} /> */}
             Paquetes ({packages.length})
           </h3>
         </div>
@@ -385,9 +385,6 @@ const ShopPackagesList = () => {
                           {pkg.discount_package}% dto
                         </span>
                       )}
-                      <span className={styles.productCount}>
-                        {[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length} productos
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -449,7 +446,10 @@ const ShopPackagesList = () => {
               {expandedPackages.has(pkg.id_package) && (
                 <div className={styles.packageDetails}>
                   <div className={styles.productsSection}>
-                    <h5 className={styles.sectionTitle}>Productos incluidos:</h5>
+                    <span className={styles.productCount}>
+                        Productos ({[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length})
+                    </span>
+                    {/* <h5 className={styles.sectionTitle}>Productos incluidos:</h5> */}
                     <div className={styles.productsList}>
                       {pkg.product1 && renderProductItem(pkg.product1, 1)}
                       {pkg.product2 && renderProductItem(pkg.product2, 2)}

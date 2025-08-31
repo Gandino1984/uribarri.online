@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
 import FiltersForShops from './components/FiltersForShops.jsx';
-import useFiltersForShops from './components/FiltersForShopsUtils.jsx';
-import axiosInstance from '../../utils/app/axiosConfig.js';
+import useShopWindow from './ShopWindowUtils.jsx';
 import styles from '../../../../public/css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
 
+//update: Refactored component using ShopWindowUtils
 const ShopWindow = () => {
   const { currentUser } = useAuth();
   const { 
@@ -21,17 +21,30 @@ const ShopWindow = () => {
   } = useUI();
   const { shops, setShops, shopTypesAndSubtypes } = useShop();
   
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  //update: Add filter visibility state
-  const [showFilters, setShowFilters] = useState(false);
+  //update: UI handlers object for utilities
+  const uiHandlers = {
+    setShowShopWindow,
+    setShowShopManagement,
+    setShowShopStore,
+    setSelectedShopForStore,
+    setShowLandingPage
+  };
   
-  //update: Use the filters hook with shops and shopTypesAndSubtypes
+  //update: Shop handlers object for utilities
+  const shopHandlers = {
+    shopTypesAndSubtypes
+  };
+  
+  //update: Use custom hook with all logic extracted
   const {
+    loading,
+    error,
+    showFilters,
     searchTerm,
-    setSearchTerm,
     filters,
-    filteredShops,
+    fetchAllShops,
+    handleShopClick,
+    toggleFilters,
     handleFilterChange,
     handleSearchChange,
     handleDeliveryChange,
@@ -40,73 +53,20 @@ const ShopWindow = () => {
     handleDayChange,
     handleResetFilters,
     getAvailableSubtypes,
-    getActiveFiltersCount
-  } = useFiltersForShops(shops, shopTypesAndSubtypes);
+    getActiveFiltersCount,
+    getDisplayedShops,
+  } = useShopWindow(currentUser, shops, setShops, uiHandlers, shopHandlers);
   
-  //update: Get active filters count
+  //update: Get values from hook functions
   const activeFiltersCount = getActiveFiltersCount();
+  const displayedShops = getDisplayedShops();
   
-  // Load all shops when component mounts
+  //update: Load shops on mount
   useEffect(() => {
     fetchAllShops();
-  }, []);
+  }, [fetchAllShops]);
 
-  const fetchAllShops = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await axiosInstance.get('/shop');
-      
-      if (response.data && !response.data.error) {
-        setShops(response.data.data || []);
-      } else {
-        setError(response.data.error || 'Error al cargar los comercios');
-      }
-    } catch (err) {
-      console.error('Error fetching shops:', err);
-      setError('Error al cargar los comercios');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegisterClick = () => {
-    // Hide ShopWindow and show LoginRegisterForm
-    setShowShopWindow(false);
-    setShowLandingPage(false);
-    // This will trigger the LoginRegisterForm to show
-  };
-  
-  const handleShopClick = (shop) => {
-    if (!currentUser) {
-      // If user is not logged in, redirect to login/register
-      setShowShopWindow(false);
-      setShowLandingPage(false);
-      // Store the selected shop for after login
-      setSelectedShopForStore(shop);
-    } else if (currentUser.type_user === 'user') {
-      // If user is logged in as 'user', show the shop store
-      setSelectedShopForStore(shop);
-      setShowShopWindow(false);
-      setShowShopStore(true);
-    }
-    // If user is seller or other type, do nothing on click
-  };
-  
-  //update: Toggle filters visibility
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
-  
-  //update: Handle reset all filters
-  const handleResetAllFilters = () => {
-    handleResetFilters();
-  };
-  
-  //update: Determine which shops to display - always use filteredShops when filters/search are active
-  const hasActiveFilters = getActiveFiltersCount() > 0;
-  const displayedShops = hasActiveFilters || searchTerm ? filteredShops : shops;
-
+  //update: Animations for shop cards
   const transitions = useTransition(displayedShops, {
     from: { opacity: 0, transform: 'translateY(20px)' },
     enter: { opacity: 1, transform: 'translateY(0px)' },
@@ -120,7 +80,6 @@ const ShopWindow = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
         
-        {/*update: Add filter toggle button */}
         <button
           onClick={toggleFilters}
           className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
@@ -138,7 +97,6 @@ const ShopWindow = () => {
         </button>
       </div>
       
-      {/*update: Add filters component - pass all hook functions and state */}
       {showFilters && (
         <FiltersForShops 
           searchTerm={searchTerm}
@@ -151,7 +109,7 @@ const ShopWindow = () => {
           handleOpenNowChange={handleOpenNowChange}
           handleTopRatedChange={handleTopRatedChange}
           handleDayChange={handleDayChange}
-          handleResetFilters={handleResetAllFilters}
+          handleResetFilters={handleResetFilters}
           getAvailableSubtypes={getAvailableSubtypes}
         />
       )}
@@ -180,7 +138,7 @@ const ShopWindow = () => {
               : "No hay comercios disponibles en este momento"}
           </p>
           {(activeFiltersCount > 0 || searchTerm) && (
-            <button onClick={handleResetAllFilters} className={styles.resetButton}>
+            <button onClick={handleResetFilters} className={styles.resetButton}>
               Limpiar filtros
             </button>
           )}
@@ -189,7 +147,6 @@ const ShopWindow = () => {
 
       {!loading && !error && displayedShops.length > 0 && (
         <>
-          {/*update: Add shops count */}
           <div className={styles.shopsCount}>
             <p>Mostrando {displayedShops.length} {displayedShops.length === 1 ? 'comercio' : 'comercios'}</p>
           </div>
@@ -215,8 +172,8 @@ const ShopWindow = () => {
                   >
                     <ShopCard 
                       shop={shop} 
-                      isClickable={false} // Disable internal card functionality
-                      hideActions={true} // Hide action buttons
+                      isClickable={false}
+                      hideActions={true}
                     />
                   </div>
                 </animated.div>
