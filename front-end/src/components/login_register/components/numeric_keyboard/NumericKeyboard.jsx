@@ -10,7 +10,6 @@ import { Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, D
 // Move the icons array outside the component to prevent recreation on each render
 const iconComponents = [Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich];
 
-// 🎨 UPDATE: Added gradient colors array based on CSS variables
 const gradientColors = [
   '#6d48dd', // --gradient-purple-start
   '#9c42dd', // --gradient-purple-mid

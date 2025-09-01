@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
-import OButton from '../Obutton/Obutton.jsx';
-import axiosInstance from '../../utils/app/axiosConfig.js';
+import FiltersForShops from './components/FiltersForShops.jsx';
+import useShopWindow from './ShopWindowUtils.jsx';
 import styles from '../../../../public/css/ShopWindow.module.css';
+import { Filter, ChevronDown } from 'lucide-react';
 
+//update: Refactored component using ShopWindowUtils
 const ShopWindow = () => {
   const { currentUser } = useAuth();
   const { 
@@ -17,60 +19,55 @@ const ShopWindow = () => {
     setSelectedShopForStore,
     setShowLandingPage
   } = useUI();
-  const { shops, setShops } = useShop();
+  const { shops, setShops, shopTypesAndSubtypes } = useShop();
   
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  //update: UI handlers object for utilities
+  const uiHandlers = {
+    setShowShopWindow,
+    setShowShopManagement,
+    setShowShopStore,
+    setSelectedShopForStore,
+    setShowLandingPage
+  };
   
-  // Load all shops when component mounts
+  //update: Shop handlers object for utilities
+  const shopHandlers = {
+    shopTypesAndSubtypes
+  };
+  
+  //update: Use custom hook with all logic extracted
+  const {
+    loading,
+    error,
+    showFilters,
+    searchTerm,
+    filters,
+    fetchAllShops,
+    handleShopClick,
+    toggleFilters,
+    handleFilterChange,
+    handleSearchChange,
+    handleDeliveryChange,
+    handleOpenNowChange,
+    handleTopRatedChange,
+    handleDayChange,
+    handleResetFilters,
+    getAvailableSubtypes,
+    getActiveFiltersCount,
+    getDisplayedShops,
+  } = useShopWindow(currentUser, shops, setShops, uiHandlers, shopHandlers);
+  
+  //update: Get values from hook functions
+  const activeFiltersCount = getActiveFiltersCount();
+  const displayedShops = getDisplayedShops();
+  
+  //update: Load shops on mount
   useEffect(() => {
     fetchAllShops();
-  }, []);
+  }, [fetchAllShops]);
 
-  const fetchAllShops = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await axiosInstance.get('/shop');
-      
-      if (response.data && !response.data.error) {
-        setShops(response.data.data || []);
-      } else {
-        setError(response.data.error || 'Error al cargar los comercios');
-      }
-    } catch (err) {
-      console.error('Error fetching shops:', err);
-      setError('Error al cargar los comercios');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegisterClick = () => {
-    // Hide ShopWindow and show LoginRegisterForm
-    setShowShopWindow(false);
-    setShowLandingPage(false);
-    // This will trigger the LoginRegisterForm to show
-  };
-  
-  //update: Handle shop card click
-  const handleShopClick = (shop) => {
-    if (!currentUser) {
-      // If user is not logged in, redirect to login/register
-      setShowShopWindow(false);
-      setShowLandingPage(false);
-      // Store the selected shop for after login
-      setSelectedShopForStore(shop);
-    } else if (currentUser.type_user === 'user') {
-      // If user is logged in as 'user', show the shop store
-      setSelectedShopForStore(shop);
-      setShowShopWindow(false);
-      setShowShopStore(true);
-    }
-    // If user is seller or other type, do nothing on click
-  };
-
-  const transitions = useTransition(shops, {
+  //update: Animations for shop cards
+  const transitions = useTransition(displayedShops, {
     from: { opacity: 0, transform: 'translateY(20px)' },
     enter: { opacity: 1, transform: 'translateY(0px)' },
     leave: { opacity: 0, transform: 'translateY(-20px)' },
@@ -83,17 +80,39 @@ const ShopWindow = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
         
-        {/* {!currentUser && (
-          <div>
-            <button 
-              onClick={handleRegisterClick}
-              className={styles.registerButton}
-            >
-              Registrarse o iniciar
-            </button>
-          </div>
-        )} */}
+        <button
+          onClick={toggleFilters}
+          className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
+          title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+        >
+          <Filter size={18} />
+          <span>Filtros</span>
+          {activeFiltersCount > 0 && (
+            <span className={styles.filterBadge}>{activeFiltersCount}</span>
+          )}
+          <ChevronDown 
+            size={16} 
+            className={`${styles.filterArrow} ${showFilters ? styles.rotated : ''}`}
+          />
+        </button>
       </div>
+      
+      {showFilters && (
+        <FiltersForShops 
+          searchTerm={searchTerm}
+          filters={filters}
+          shopTypesAndSubtypes={shopTypesAndSubtypes}
+          activeFilterCount={activeFiltersCount}
+          handleFilterChange={handleFilterChange}
+          handleSearchChange={handleSearchChange}
+          handleDeliveryChange={handleDeliveryChange}
+          handleOpenNowChange={handleOpenNowChange}
+          handleTopRatedChange={handleTopRatedChange}
+          handleDayChange={handleDayChange}
+          handleResetFilters={handleResetFilters}
+          getAvailableSubtypes={getAvailableSubtypes}
+        />
+      )}
 
       {loading && (
         <div className={styles.loadingContainer}>
@@ -111,43 +130,57 @@ const ShopWindow = () => {
         </div>
       )}
 
-      {!loading && !error && shops.length === 0 && (
+      {!loading && !error && displayedShops.length === 0 && (
         <div className={styles.emptyContainer}>
-          <p className={styles.emptyText}>No hay comercios disponibles en este momento</p>
+          <p className={styles.emptyText}>
+            {activeFiltersCount > 0 || searchTerm 
+              ? "No se encontraron comercios que coincidan con tu búsqueda."
+              : "No hay comercios disponibles en este momento"}
+          </p>
+          {(activeFiltersCount > 0 || searchTerm) && (
+            <button onClick={handleResetFilters} className={styles.resetButton}>
+              Limpiar filtros
+            </button>
+          )}
         </div>
       )}
 
-      {!loading && !error && shops.length > 0 && (
-        <div className={styles.shopsGrid}>
-          {transitions((style, shop) => 
-            shop && (
-              <animated.div 
-                key={shop.id_shop} 
-                style={style} 
-                className={styles.shopCardWrapper}
-              >
-                {/* update: Wrap ShopCard in a clickable div */}
-                <div 
-                  onClick={() => handleShopClick(shop)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleShopClick(shop);
-                    }
-                  }}
-                  style={{ cursor: 'pointer' }}
+      {!loading && !error && displayedShops.length > 0 && (
+        <>
+          <div className={styles.shopsCount}>
+            <p>Mostrando {displayedShops.length} {displayedShops.length === 1 ? 'comercio' : 'comercios'}</p>
+          </div>
+          
+          <div className={styles.shopsGrid}>
+            {transitions((style, shop) => 
+              shop && (
+                <animated.div 
+                  key={shop.id_shop} 
+                  style={style} 
+                  className={styles.shopCardWrapper}
                 >
-                  <ShopCard 
-                    shop={shop} 
-                    isClickable={false} // Disable internal card functionality
-                    hideActions={true} // Hide action buttons
-                  />
-                </div>
-              </animated.div>
-            )
-          )}
-        </div>
+                  <div 
+                    onClick={() => handleShopClick(shop)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleShopClick(shop);
+                      }
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <ShopCard 
+                      shop={shop} 
+                      isClickable={false}
+                      hideActions={true}
+                    />
+                  </div>
+                </animated.div>
+              )
+            )}
+          </div>
+        </>
       )}
     </div>
   );

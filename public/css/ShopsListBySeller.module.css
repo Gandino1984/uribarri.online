@@ -42,8 +42,8 @@
 
 .title {
   /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 1); */
-  font-size: 3rem;
-  text-spacing-trim: 1px;
+  font-size: 2.5rem;
+  /* text-spacing-trim: 1px; */
   font-weight: 800;
   color: rgb(27, 27, 27);
   margin-bottom: 1rem;
@@ -52,6 +52,7 @@
 
 /* Header Buttons Container */
 .headerButtons {
+  margin-top: 1rem;
   display: flex;
   gap: 1rem;
   align-items: center;
@@ -81,44 +82,34 @@
 /* Card-based List Header (similar to ShopPackagesList) */
 .listHeader {
   display: flex;
-  /* justify-content: space-between; */
+  justify-content:left;
   align-items: center;
-  text-align: center;
+  text-align: left;
   width: 100%;
   padding-top: .5rem;
   padding-bottom: .5rem;
-  /* padding: 1rem; */
-  background: linear-gradient( to right,  rgba(255, 255, 255, 0) ,  var( --gradient-purple-end) , var(--saturated-orange) , rgba(255, 255, 255, 0) 100%);
-  /* border-radius: 8px; */
-  /* margin-bottom: .5rem; */
-  /* margin: 0 1rem; */
 }
 
 .listTitle {
   /* display: flex;
   align-items: center; */
   width: 100%;
-  text-align: center;
-  text-shadow: 1px 0px 3px white;
+  text-align: left;
   gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--light-gray);
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  color: black;
 }
 
-/* Shops List Container */
 .shopsList {
   display: flex;
   flex-direction: column;
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   gap: 1rem;
-  padding: 0 1rem 1rem 1rem;
-  /* background-color: white; */
+  padding: 0 0rem 1rem 0rem;
 }
 
-/* Shop Card Styles (similar to package cards) */
 .shopCard {
   background-color:  white;
   border-radius: 12px;
@@ -129,11 +120,10 @@
 
 .shopCard:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
 }
 
 .shopCard.selectedShop {
-  box-shadow: 0 0 0 3px var(--saturated-blue);
+  box-shadow: 0 0 0 2px var(--app-purple);
   background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
 }
 
@@ -145,11 +135,7 @@
   width: 100%;
   padding: 1rem;
   gap: 1rem;
-  /* background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1)); */
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-radius: 6px;
   background-color: white;
   cursor: pointer;
 }
@@ -183,14 +169,12 @@
 }
 
 .shopImageContainer:hover {
-  transform: scale(1.05);
-  border-color: var(--saturated-blue);
-  box-shadow: 0 0 15px var(--saturated-blue-transparent);
+  background-color: var(--light-gray);
 }
 
 .shopImageContainer.noImage {
-  border: 2px dashed rgba(209, 213, 219, 0.8);
-  background: rgba(243, 244, 246, 0.5);
+  border: 2px dashed lightgray;
+  background: white;
 }
 
 .shopImage {
@@ -203,16 +187,15 @@
   color: rgba(156, 163, 175, 0.6);
 }
 
-/* Shop Info */
 .shopInfo {
   flex: 1;
   min-width: 0;
 }
 
 .shopName {
-  font-size: 1.125rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #1f2937;
+  color: black;
   margin: 0 0 1rem 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -261,12 +244,12 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.75rem;
-  background: linear-gradient(135deg, rgba(254, 240, 138, 1), rgba(253, 224, 71, 1));
+  /* background: linear-gradient(135deg, rgba(254, 240, 138, 1), rgba(253, 224, 71, 1)); */
   color: #92400e;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  border: 1px solid rgba(146, 64, 14, 0.2);
+  /* border: 1px solid rgba(146, 64, 14, 0.2); */
 }
 
 /* Shop Actions */
@@ -280,27 +263,26 @@
 }
 
 .actionButton {
-  padding: 0.5rem;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.5rem;
+  background: var(--light-gray);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: black;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
 }
 
 .actionButton:hover {
-  background: var(--saturated-blue);
-  color: white;
-  border-color: var(--saturated-blue);
-  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+  background: lightgray;
+  /* border-color: gray; */
 }
 
 .actionButton:disabled {
-  opacity: 0.5;
+  color: lightgray;
   cursor: not-allowed;
 }
 
@@ -312,30 +294,26 @@
 .active {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
+  /* font-size: ; */
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  background-color: var(--saturated-blue);
-  /* background: linear-gradient(135deg, var(--saturated-blue), var(--light-gradient-purple-start)); */
-  color: white;
-  border: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  color: black;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .active:hover {
-  outline: 2px solid var(--saturated-blue);
-  color: var(--saturated-blue);
-  background-color: white;
-  /* background: linear-gradient(135deg, var(--dark-gradient-purple-start), var(--dark-gradient-purple-end)); */
-  box-shadow: 0 0 15px var(--saturated-blue-transparent);
-  transform: translateY(-2px);
+  /* border: 2px solid lightgray; */
+  background-color: lightgray;
 }
 
 .inactive {
-  opacity: 0.5;
+  color: lightgray;
   cursor: not-allowed;
 }
 
@@ -531,6 +509,41 @@
   transform: translateY(-2px);
 }
 
+
+/* Shop rating with stars */
+.shopRating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Stars container */
+.starsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.filledStar {
+  color: #FFD700;
+}
+
+.halfStar {
+  color: #FFD700;
+  opacity: 0.5;
+}
+
+.emptyStar {
+  color: #d1d1d1;
+}
+
+.ratingText {
+  margin-left: 0.25rem;
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
@@ -600,7 +613,7 @@
   }
   
   .title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   
   /* .listHeader {

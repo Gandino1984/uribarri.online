@@ -143,18 +143,34 @@ export const OrderProvider = ({ children }) => {
     setOrderNotes('');
   };
   
-  // Calculate total price
+  //update: Fixed calculate total to handle package prices correctly
   const calculateTotal = () => {
     let total = 0;
     
     // Add products total
     cartItems.products.forEach(item => {
-      total += item.product.price_product * item.quantity;
+      const price = parseFloat(item.product.price_product) || 0;
+      total += price * item.quantity;
     });
     
-    // Add packages total
+    // Add packages total - handle different price properties
     cartItems.packages.forEach(item => {
-      total += item.package.price_package * item.quantity;
+      let packagePrice = 0;
+      
+      // Check for discounted_price first (this is the final price after discount)
+      if (item.package.discounted_price !== undefined && item.package.discounted_price !== null) {
+        packagePrice = parseFloat(item.package.discounted_price) || 0;
+      }
+      // Then check for total_price (calculated from products)
+      else if (item.package.total_price !== undefined && item.package.total_price !== null) {
+        packagePrice = parseFloat(item.package.total_price) || 0;
+      }
+      // Fallback to price_package if it exists
+      else if (item.package.price_package !== undefined && item.package.price_package !== null) {
+        packagePrice = parseFloat(item.package.price_package) || 0;
+      }
+      
+      total += packagePrice * item.quantity;
     });
     
     return total;

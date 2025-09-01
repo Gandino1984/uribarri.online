@@ -97,6 +97,25 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`shop_valoration`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`shop_valoration` (
+  `id_valoration` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_user` INT UNSIGNED NOT NULL,
+  `id_shop` INT UNSIGNED NOT NULL,
+  `calification_shop` INT NOT NULL,
+  `comment_shop` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_valoration`),
+  UNIQUE INDEX `unique_user_shop` (`id_user`, `id_shop`),
+  INDEX `idx_shop` (`id_shop` ASC),
+  INDEX `idx_user` (`id_user` ASC),
+  INDEX `idx_created_at` (`created_at` DESC),
+  CONSTRAINT `chk_calification` CHECK (`calification_shop` >= 1 AND `calification_shop` <= 5)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`category_subcategory`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`category_subcategory` (
