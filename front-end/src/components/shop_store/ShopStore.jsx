@@ -3,8 +3,24 @@ import { ArrowLeft, ShoppingCart, Package, Clock, MapPin, Phone, Star, ShoppingB
 import { useAuth } from '../../app_context/AuthContext';
 import { useUI } from '../../app_context/UIContext';
 import { useOrder } from '../../app_context/OrderContext';
-import axiosInstance from '../../utils/app/axiosConfig';
-// import OButton from '../Obutton/Obutton';
+//update: Import utility functions
+import {
+  fetchProducts,
+  fetchPackages,
+  fetchShopUserOrders as fetchShopUserOrdersUtil,
+  filterShopOrders,
+  getCartItemCount,
+  getItemQuantityInCart,
+  getScheduleText,
+  getOrderStatusDisplay,
+  formatOrderDate,
+  handleAddToCart as handleAddToCartUtil,
+  handleQuantityChange as handleQuantityChangeUtil,
+  handleRemoveFromCart as handleRemoveFromCartUtil,
+  handleCreateOrder as handleCreateOrderUtil,
+  getPackagePrice,
+  getPackageOriginalPrice
+} from './ShopStoreUtils';
 import styles from '../../../../public/css/ShopStore.module.css';
 
 const ShopStore = () => {
@@ -50,64 +66,19 @@ const ShopStore = () => {
   
   useEffect(() => {
     if (selectedShopForStore?.id_shop) {
-      fetchProducts();
-      fetchPackages();
+      fetchProducts(selectedShopForStore.id_shop, setProducts, setLoadingProducts, setError);
+      fetchPackages(selectedShopForStore.id_shop, setPackages, setLoadingPackages, setError);
       //update: Fetch orders when shop is selected and user is logged in
       if (currentUser && currentUser.type_user === 'user') {
-        fetchShopUserOrders();
+        fetchShopUserOrdersUtil(fetchUserOrders, setLoadingOrders, setError);
       }
     }
   }, [selectedShopForStore, currentUser]);
   
-  const fetchProducts = async () => {
-    try {
-      setLoadingProducts(true);
-      const response = await axiosInstance.get(`/product/active-by-shop-id/${selectedShopForStore.id_shop}`);
-      
-      if (response.data && !response.data.error) {
-        setProducts(response.data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setError({ productError: 'Error al cargar los productos' });
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
-  
-  const fetchPackages = async () => {
-    try {
-      setLoadingPackages(true);
-      const response = await axiosInstance.get(`/package/active-by-shop-id/${selectedShopForStore.id_shop}`);
-      
-      if (response.data && !response.data.error) {
-        setPackages(response.data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching packages:', error);
-      setError({ packageError: 'Error al cargar los paquetes' });
-    } finally {
-      setLoadingPackages(false);
-    }
-  };
-  
-  //update: Add function to fetch user orders for this specific shop
-  const fetchShopUserOrders = async () => {
-    try {
-      setLoadingOrders(true);
-      await fetchUserOrders();
-    } catch (error) {
-      console.error('Error fetching user orders:', error);
-      setError({ orderError: 'Error al cargar los pedidos' });
-    } finally {
-      setLoadingOrders(false);
-    }
-  };
-  
   //update: Filter orders for current shop
   useEffect(() => {
     if (userOrders && selectedShopForStore) {
-      const filteredOrders = userOrders.filter(order => order.id_shop === selectedShopForStore.id_shop);
+      const filteredOrders = filterShopOrders(userOrders, selectedShopForStore.id_shop);
       setShopOrders(filteredOrders);
     }
   }, [userOrders, selectedShopForStore]);
@@ -119,126 +90,31 @@ const ShopStore = () => {
   };
   
   const handleAddToCart = (item, isPackage = false) => {
-    if (isPackage) {
-      addPackageToCart(item, 1);
-    } else {
-      addProductToCart(item, 1);
-    }
-    setSuccess({ cartSuccess: 'Añadido al carrito' });
+    handleAddToCartUtil(item, isPackage, addProductToCart, addPackageToCart, setSuccess);
   };
   
   const handleQuantityChange = (id, quantity, isPackage = false) => {
-    if (isPackage) {
-      updatePackageQuantity(id, quantity);
-    } else {
-      updateProductQuantity(id, quantity);
-    }
+    handleQuantityChangeUtil(id, quantity, isPackage, updateProductQuantity, updatePackageQuantity);
   };
   
   const handleRemoveFromCart = (id, isPackage = false) => {
-    if (isPackage) {
-      removePackageFromCart(id);
-    } else {
-      removeProductFromCart(id);
-    }
+    handleRemoveFromCartUtil(id, isPackage, removeProductFromCart, removePackageFromCart);
   };
   
   const handleCreateOrder = async () => {
-    if (!currentUser) {
-      setError({ orderError: 'Debes iniciar sesión para hacer un pedido' });
-      return;
-    }
-    
-    if (deliveryType === 'delivery' && !deliveryAddress.trim()) {
-      setError({ orderError: 'Por favor ingresa una dirección de entrega' });
-      return;
-    }
-    
-    setProcessingOrder(true);
-    const order = await createOrder(selectedShopForStore.id_shop);
-    
-    if (order) {
-      setShowCart(false);
-      //update: Refresh orders after creating new one
-      if (currentUser.type_user === 'user') {
-        fetchShopUserOrders();
-      }
-    }
-    
-    setProcessingOrder(false);
-  };
-  
-  const getCartItemCount = () => {
-    return cartItems.products.length + cartItems.packages.length;
-  };
-  
-  const getItemQuantityInCart = (id, isPackage = false) => {
-    if (isPackage) {
-      const item = cartItems.packages.find(item => item.id_package === id);
-      return item ? item.quantity : 0;
-    } else {
-      const item = cartItems.products.find(item => item.id_product === id);
-      return item ? item.quantity : 0;
-    }
-  };
-  
-  const formatTime = (time) => {
-    if (!time) return '--:--';
-    return time.slice(0, 5);
-  };
-  
-  const getScheduleText = () => {
-    const shop = selectedShopForStore;
-    const today = new Date().getDay();
-    const dayMap = {
-      0: shop?.open_sunday,
-      1: shop?.open_monday,
-      2: shop?.open_tuesday,
-      3: shop?.open_wednesday,
-      4: shop?.open_thursday,
-      5: shop?.open_friday,
-      6: shop?.open_saturday
-    };
-    
-    const isOpenToday = dayMap[today];
-    
-    if (!isOpenToday) {
-      return 'Cerrado hoy';
-    }
-    
-    return `${formatTime(shop.morning_open)} - ${formatTime(shop.morning_close)} / ${formatTime(shop.afternoon_open)} - ${formatTime(shop.afternoon_close)}`;
-  };
-  
-  //update: Add function to get order status icon and color
-  const getOrderStatusDisplay = (status) => {
-    switch (status) {
-      case 'pending':
-        return { icon: <Clock size={16} />, text: 'Pendiente', color: '#FFA500' };
-      case 'confirmed':
-        return { icon: <CheckCircle size={16} />, text: 'Confirmado', color: '#4CAF50' };
-      case 'preparing':
-        return { icon: <AlertCircle size={16} />, text: 'Preparando', color: '#2196F3' };
-      case 'ready':
-        return { icon: <ShoppingBag size={16} />, text: 'Listo', color: '#00BCD4' };
-      case 'delivered':
-        return { icon: <Truck size={16} />, text: 'Entregado', color: '#4CAF50' };
-      case 'cancelled':
-        return { icon: <XCircle size={16} />, text: 'Cancelado', color: '#F44336' };
-      default:
-        return { icon: <Clock size={16} />, text: status, color: '#757575' };
-    }
-  };
-  
-  //update: Add function to format date
-  const formatOrderDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const order = await handleCreateOrderUtil(
+      currentUser,
+      cartItems,
+      deliveryType,
+      deliveryAddress,
+      selectedShopForStore.id_shop,
+      setError,
+      setProcessingOrder,
+      createOrder,
+      setShowCart,
+      () => fetchShopUserOrdersUtil(fetchUserOrders, setLoadingOrders, setError)
+    );
+    return order;
   };
   
   if (!selectedShopForStore) {
@@ -267,8 +143,8 @@ const ShopStore = () => {
           className={styles.cartButton}
         >
           <ShoppingCart size={24} />
-          {getCartItemCount() > 0 && (
-            <span className={styles.cartBadge}>{getCartItemCount()}</span>
+          {getCartItemCount(cartItems) > 0 && (
+            <span className={styles.cartBadge}>{getCartItemCount(cartItems)}</span>
           )}
         </button>
       </div>
@@ -280,7 +156,7 @@ const ShopStore = () => {
         </div>
         <div className={styles.metaItem}>
           <Clock size={16} />
-          <span>{getScheduleText()}</span>
+          <span>{getScheduleText(selectedShopForStore)}</span>
         </div>
         {selectedShopForStore.calification_shop > 0 && (
           <div className={styles.metaItem}>
@@ -352,7 +228,7 @@ const ShopStore = () => {
                     </div>
                   </div>
                   <div className={styles.productActions}>
-                    {getItemQuantityInCart(product.id_product) === 0 ? (
+                    {getItemQuantityInCart(cartItems, product.id_product) === 0 ? (
                       <button 
                         onClick={() => handleAddToCart(product)}
                         className={styles.addButton}
@@ -364,19 +240,19 @@ const ShopStore = () => {
                         <button 
                           onClick={() => handleQuantityChange(
                             product.id_product, 
-                            getItemQuantityInCart(product.id_product) - 1
+                            getItemQuantityInCart(cartItems, product.id_product) - 1
                           )}
                           className={styles.quantityButton}
                         >
                           -
                         </button>
                         <span className={styles.quantity}>
-                          {getItemQuantityInCart(product.id_product)}
+                          {getItemQuantityInCart(cartItems, product.id_product)}
                         </span>
                         <button 
                           onClick={() => handleQuantityChange(
                             product.id_product, 
-                            getItemQuantityInCart(product.id_product) + 1
+                            getItemQuantityInCart(cartItems, product.id_product) + 1
                           )}
                           className={styles.quantityButton}
                         >
@@ -401,7 +277,7 @@ const ShopStore = () => {
               packages.map(pkg => (
                 <div key={pkg.id_package} className={styles.packageCard}>
                   <div className={styles.packageHeader}>
-                    <Package size={24} />
+                    {/* <Package size={24} /> */}
                     <h3 className={styles.packageName}>
                       {pkg.name_package || 'Paquete sin nombre'}
                     </h3>
@@ -436,21 +312,17 @@ const ShopStore = () => {
                   </div>
                   <div className={styles.packageFooter}>
                     <div className={styles.packagePricing}>
+                      <p>Precio </p>
                       {pkg.discounted_price ? (
                         <>
-                          <span className={styles.originalPrice}>€{(pkg.total_price || 0).toFixed(2)}</span>
-                          <span className={styles.packagePrice}>€{(pkg.discounted_price || 0).toFixed(2)}</span>
+                          <span className={styles.originalPrice}>€{getPackageOriginalPrice(pkg).toFixed(2)}</span>
+                          <span className={styles.packagePrice}>€{getPackagePrice(pkg).toFixed(2)}</span>
                         </>
                       ) : (
-                        <span className={styles.packagePrice}>€{(pkg.total_price || 0).toFixed(2)}</span>
-                      )}
-                      {pkg.discount_package > 0 && (
-                        <span className={styles.packageDiscount}>
-                          Ahorra {pkg.discount_package}%
-                        </span>
+                        <span className={styles.packagePrice}>€{getPackagePrice(pkg).toFixed(2)}</span>
                       )}
                     </div>
-                    {getItemQuantityInCart(pkg.id_package, true) === 0 ? (
+                    {getItemQuantityInCart(cartItems, pkg.id_package, true) === 0 ? (
                       <button 
                         onClick={() => handleAddToCart(pkg, true)}
                         className={styles.addButton}
@@ -462,7 +334,7 @@ const ShopStore = () => {
                         <button 
                           onClick={() => handleQuantityChange(
                             pkg.id_package, 
-                            getItemQuantityInCart(pkg.id_package, true) - 1,
+                            getItemQuantityInCart(cartItems, pkg.id_package, true) - 1,
                             true
                           )}
                           className={styles.quantityButton}
@@ -470,12 +342,12 @@ const ShopStore = () => {
                           -
                         </button>
                         <span className={styles.quantity}>
-                          {getItemQuantityInCart(pkg.id_package, true)}
+                          {getItemQuantityInCart(cartItems, pkg.id_package, true)}
                         </span>
                         <button 
                           onClick={() => handleQuantityChange(
                             pkg.id_package, 
-                            getItemQuantityInCart(pkg.id_package, true) + 1,
+                            getItemQuantityInCart(cartItems, pkg.id_package, true) + 1,
                             true
                           )}
                           className={styles.quantityButton}
@@ -491,7 +363,6 @@ const ShopStore = () => {
           </div>
         )}
         
-        {/*update: Add orders tab content*/}
         {activeTab === 'orders' && currentUser && currentUser.type_user === 'user' && (
           <div className={styles.ordersList}>
             {loadingOrders ? (
@@ -501,15 +372,19 @@ const ShopStore = () => {
             ) : (
               shopOrders.map(order => {
                 const statusDisplay = getOrderStatusDisplay(order.order_status);
+                const StatusIcon = {
+                  Clock, CheckCircle, AlertCircle, ShoppingBag, Truck, XCircle
+                }[statusDisplay.icon] || Clock;
+                
                 return (
                   <div key={order.id_order} className={styles.orderCard}>
                     <div className={styles.orderHeader}>
                       <div className={styles.orderInfo}>
-                        <h4 className={styles.orderId}>Pedido #{order.id_order}</h4>
-                        <span className={styles.orderDate}>{formatOrderDate(order.created_at)}</span>
+                        <p className={styles.orderId}>Pedido #{order.id_order}</p>
+                        <p className={styles.orderDate}>{formatOrderDate(order.created_at)}</p>
                       </div>
                       <div className={styles.orderStatus} style={{ color: statusDisplay.color }}>
-                        {statusDisplay.icon}
+                        <StatusIcon size={16} />
                         <span>{statusDisplay.text}</span>
                       </div>
                     </div>
@@ -517,7 +392,7 @@ const ShopStore = () => {
                     <div className={styles.orderContent}>
                       {order.order_products && order.order_products.length > 0 && (
                         <div className={styles.orderSection}>
-                          <h5 className={styles.sectionTitle}>Productos:</h5>
+                          <p className={styles.sectionTitle}>Productos:</p>
                           {order.order_products.map((item, index) => (
                             <div key={index} className={styles.orderItem}>
                               <span>{item.product?.name_product || 'Producto'}</span>
@@ -560,7 +435,7 @@ const ShopStore = () => {
                         )}
                       </div>
                       <div className={styles.orderTotal}>
-                        <span>Total:</span>
+                        <span>Total: </span>
                         <span className={styles.totalPrice}>€{(parseFloat(order.total_price) || 0).toFixed(2)}</span>
                       </div>
                     </div>
@@ -610,8 +485,9 @@ const ShopStore = () => {
               {cartItems.packages.map(item => (
                 <div key={item.id_package} className={styles.cartItem}>
                   <div className={styles.cartItemInfo}>
-                    <h4>{item.package.name_package}</h4>
-                    <p>€{(item.package.discounted_price || item.package.total_price || 0).toFixed(2)} x {item.quantity}</p>
+                    <h4>{item.package.name_package || 'Paquete'}</h4>
+                    {/*update: Fixed package price display in cart*/}
+                    <p>€{getPackagePrice(item.package).toFixed(2)} x {item.quantity}</p>
                   </div>
                   <div className={styles.cartItemActions}>
                     <button 
@@ -667,12 +543,12 @@ const ShopStore = () => {
             
             <div className={styles.cartTotal}>
               <span>Total:</span>
-              <span>€{calculateTotal().toFixed(2)}</span>
+              <span className={styles.cartTotalAmount}>€{calculateTotal().toFixed(2)}</span>
             </div>
             
             <button 
               onClick={handleCreateOrder}
-              disabled={processingOrder || getCartItemCount() === 0}
+              disabled={processingOrder || getCartItemCount(cartItems) === 0}
               className={styles.orderButton}
             >
               {processingOrder ? 'Procesando...' : 'Hacer Pedido'}

@@ -26,7 +26,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e0e0e0;
+    background-color: lightgray;
     transition: .4s;
     border-radius: 34px;
     margin-left: .5rem;
@@ -46,11 +46,11 @@
   }
   
   .toggleInput:checked + .toggleSlider {
-    background-color: var(--saturated-blue);
+    background-color: var(--app-purple);
   }
   
   .toggleInput:focus + .toggleSlider {
-    box-shadow: 0 0 1px var(--saturated-blue);
+    box-shadow: 0 0 1px var(--app-purple);
   }
   
   .toggleInput:checked + .toggleSlider .toggleKnob {
@@ -59,13 +59,12 @@
   
   .toggleLabel {
     padding-left: .5rem;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: #777;
     /* transition: color 0.3s ease;  */
   }
   
   .toggleLabel.active {
-    color: var(--saturated-blue);
-    /* text-shadow: 0px 0px 5px var(--saturated-blue-transparent); */
+    color: var(--app-purple);
     font-weight: 600;
   }

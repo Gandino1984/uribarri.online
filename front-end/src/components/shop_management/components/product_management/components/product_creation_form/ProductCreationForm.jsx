@@ -420,13 +420,11 @@ const goToNextStep = () => {
 
   return (
     <>
-    {renderProductLimitInfo()}
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.formTitle}>
+        <p className={styles.formTitle}>
           {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
-        </h1>
-        <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
+        </p> 
       </div>
       
       {/* Shop type and subtype guidance */}
@@ -437,6 +435,8 @@ const goToNextStep = () => {
           <p>Subtipo: <strong>{selectedShop.subtype_shop || 'No especificado'}</strong></p>
         </div>
       )}
+      
+      <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
 
       <form onSubmit={handleFormSubmit} className={styles.form}>
         {renderStepContent()}
@@ -472,6 +472,7 @@ const goToNextStep = () => {
           </p>
         )}
       </form>
+      {renderProductLimitInfo()}
     </div>
     </>
   );
