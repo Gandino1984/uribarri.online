@@ -185,7 +185,7 @@ const RiderCard = () => {
       <div className={styles.contactSection}>
         {currentUser?.location_user && (
           <div className={styles.contactItem}>
-            <MapPin size={16} />
+            <MapPin size={16} color='gray'/>
             <span>{currentUser.location_user}</span>
           </div>
         )}

@@ -21,8 +21,8 @@
   flex-direction: column;
   padding: 2rem;
   overflow-y: auto;
-  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 1));
-  transition: height 0.3s ease;
+  background-color: var(--light-gray);
+  transition: all 0.3s ease;
 }
 
 .header {
@@ -82,21 +82,21 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: white;
-  border: 2px solid var(--saturated-blue);
+  background-color: var(--light-gray);
+  border: 2px solid transparent;
   border-radius: 8px;
-  color: var(--saturated-blue);
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: black;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .ridersButton:hover,
 .ridersButton.active {
-  background: var(--saturated-blue);
-  color: white;
-  box-shadow: 0 4px 12px var(--saturated-blue-transparent);
+  background-color: lightgray;
+  /* color: white; */
+  /* box-shadow: 0 4px 12px var(--saturated-blue-transparent); */
 }
 
 .ridersButton svg:last-child {
@@ -113,19 +113,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border: 2px solid rgba(239, 68, 68, 0.3);
+  background: var(--light-gray);
   border-radius: 50%;
-  color: #ef4444;
+  color: black;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .closeButton:hover {
-  background: #ef4444;
-  color: white;
-  transform: rotate(90deg);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  background: lightgray;
+  /* color: black; */
+  /* transform: rotate(90deg); */
+  /* box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); */
 }
 
 /* Loading and Empty States */
@@ -176,36 +175,38 @@
   background: white;
   border-radius: 12px;
   padding: 1.5rem;
-  cursor: pointer;
+  /* cursor: pointer; */
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  outline: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   max-height: fit-content;
+  transition: all .2s ease;
 }
 
 .orderCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-color: var(--saturated-blue);
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); */
+  background-color: var(--app-purple-transparent);
 }
 
 .selectedOrder {
-  border-color: var(--saturated-blue);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  /* border-color: var(--saturated-blue); */
+  /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05)); */
+  /* box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); */
 }
 
 .orderWithRiderRequest {
-  border-color: var(--saturated-orange);
-  animation: borderPulse 2s infinite;
+  border-color: var(--app-purple);
+  /* animation: borderPulse 2s infinite; */
 }
 
 @keyframes borderPulse {
   0%, 100% {
-    border-color: var(--saturated-orange);
+    border-color: var(--app-purple);
   }
   50% {
-    border-color: var(--dark-orange);
+    border-color: var(--app-purple-darker);
   }
 }
 
@@ -216,7 +217,7 @@
   left: -10px;
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
+  background-color: gray;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -261,10 +262,11 @@
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 9999px;
-  background: linear-gradient(135deg, rgba(243, 244, 246, 1), rgba(229, 231, 235, 0.5));
+  background: var(--light-gray);
 }
 
 .statusText {
+  /* color: green; */
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -291,7 +293,7 @@
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background: linear-gradient(135deg, rgba(249, 250, 251, 1), rgba(243, 244, 246, 0.5));
+  background-color: var(--app-purple-transparent);
   border-radius: 8px;
   font-size: 0.95rem;
   color: #1f2937;
@@ -313,6 +315,7 @@
   color: #4b5563;
 }
 
+
 .deliveryAddress {
   display: flex;
   align-items: center;
@@ -327,14 +330,14 @@
 }
 
 .deliveryAddress svg {
-  color: var(--saturated-blue);
+  color: var(--app-purple);
   flex-shrink: 0;
 }
 
 .orderTotal {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--saturated-blue);
+  color: var(--app-purple);
   text-align: right;
 }
 
@@ -360,8 +363,8 @@
 /* Rider Request Section */
 .riderRequestSection {
   padding: 1rem;
-  background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(251, 113, 133, 0.1));
-  border: 2px solid var(--saturated-orange);
+  background-color: var(--app-purple-transparent);
+  /* border: 2px solid var(--saturated-orange); */
   border-radius: 8px;
   margin-bottom: 1rem;
 }
@@ -371,8 +374,9 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-  font-weight: 600;
-  color: #ea580c;
+  font-weight: 500;
+  font-size: 1rem;
+  color: black;
 }
 
 .requestIcon {
@@ -405,26 +409,28 @@
 }
 
 .acceptButton {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background-color: white;
+  color: black;
+  /* background: linear-gradient(135deg, #10b981, #059669); */
 }
 
-.acceptButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+.acceptButton:hover {
+  background-color: lightgray;
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); */
 }
 
 .declineButton {
   background: white;
   color: #ef4444;
-  border: 2px solid #ef4444;
+  /* border: 2px solid #ef4444; */
 }
 
 .declineButton:hover:not(:disabled) {
   background: #ef4444;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  /* box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); */
 }
 
 .acceptButton:disabled,
@@ -449,7 +455,7 @@
 .acceptedRiderInfo {
   background: linear-gradient(135deg, rgba(209, 250, 229, 1), rgba(167, 243, 208, 0.5));
   color: #065f46;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  /* border: 1px solid rgba(16, 185, 129, 0.3); */
 }
 
 .acceptedRiderInfo svg {
@@ -457,9 +463,10 @@
 }
 
 .rejectedRiderInfo {
-  background: linear-gradient(135deg, rgba(254, 226, 226, 1), rgba(254, 202, 202, 0.5));
-  color: #991b1b;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+width: 100%;
+  /* background: linear-gradient(135deg, rgba(254, 226, 226, 1), rgba(254, 202, 202, 0.5)); */
+  color: red;
+  /* border: 1px solid rgba(239, 68, 68, 0.3); */
 }
 
 .rejectedRiderInfo svg {
@@ -486,19 +493,20 @@
 }
 
 .updateButton {
-  background: linear-gradient(135deg, var(--saturated-blue), var(--gradient-purple-end));
-  color: white;
+  background-color: var(--light-gray);
+  color: black;
 }
 
 .updateButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  /* transform: translateY(-2px); */
+  background-color: lightgray;
+  /* box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); */
 }
 
 .cancelButton {
-  background: white;
+  background-color: var(--light-gray);
   color: #ef4444;
-  border: 2px solid #ef4444;
+  /* border: 2px solid #ef4444; */
 }
 
 .cancelButton:hover:not(:disabled) {
@@ -524,22 +532,18 @@
   width: 100%;
   padding: 0.75rem;
   margin-top: 1rem;
-  background: transparent;
-  border: 2px solid #e5e7eb;
+  background-color: var(--light-gray);
+  border: 2px solid transparent;
   border-radius: 8px;
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .expandButton:hover {
-  background: var(--saturated-blue);
-  color: white;
-  border-color: var(--saturated-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  border-color: var(--app-purple);
 }
 
 /* Expanded Details */
