@@ -302,7 +302,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--light-gray);
+  background-color: lightgray;
 }
 
 button:active {

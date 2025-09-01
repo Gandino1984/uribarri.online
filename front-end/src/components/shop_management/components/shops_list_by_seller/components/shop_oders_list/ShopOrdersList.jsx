@@ -373,7 +373,7 @@ const ShopOrdersList = ({ onClose }) => {
                 </div>
 
                 <div className={styles.customerInfo}>
-                  <User size={16} />
+                  <User size={16} color='gray'/>
                   <span>{order.user?.name_user || 'Usuario desconocido'}</span>
                 </div>
 
@@ -535,7 +535,7 @@ const ShopOrdersList = ({ onClose }) => {
             )}
           </div>
           <button onClick={() => setShowRidersList(false)} className={styles.closePanelButton}>
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
         
@@ -586,7 +586,7 @@ const ShopOrdersList = ({ onClose }) => {
                     )}
                   </div>
                   
-                  <button
+                  {/* <button
                     className={styles.assignRiderButton}
                     onClick={() => {
                       if (selectedOrder) {
@@ -603,7 +603,7 @@ const ShopOrdersList = ({ onClose }) => {
                       : assigningRider === `${selectedOrder?.id_order}-${rider.id_user}` 
                         ? 'Asignando...' 
                         : 'Asignar a pedido'}
-                  </button>
+                  </button> */}
                 </div>
               ))}
             </div>

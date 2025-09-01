@@ -311,6 +311,7 @@
 }
 
 .productCard:hover {
+  background-color: var(--app-purple-transparent);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -330,6 +331,11 @@
   border-radius: 8px ; /* Add border radius to match card */
   position: relative; /* Ensure proper stacking context */
 }
+
+.productCardHeader:hover {
+ background-color: var(--app-purple-transparent);
+}
+
 
 /*update: Product number badge */
 .productNumber {
