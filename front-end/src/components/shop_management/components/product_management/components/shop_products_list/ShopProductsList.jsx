@@ -685,7 +685,12 @@ const ShopProductsList = () => {
                 <div className={styles.productsList}>
                   {productsTransition((style, product, _, index) => (
                     <animated.div 
-                      style={style} 
+                      style={{
+                        ...style,
+                        //update: Elevate z-index when menu is open for this product
+                        zIndex: activeProductMenu === product.id_product ? 9999 : 'auto',
+                        position: 'relative'
+                      }} 
                       className={`${styles.productCard} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
                       key={product.id_product}
                     >

@@ -422,7 +422,7 @@
 .creationDate {
    font-size: 0.75rem;
    color: #9ca3af;
-   font-weight: 500;
+   /* font-weight: 500; */
 }
 
 /* Empty states */
@@ -446,9 +446,9 @@
 
 .noShopContainer p,
 .emptyContainer p {
-   color: white;
-   font-weight: 500;
-   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+   color: gray;
+   font-weight: 600;
+   /* text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3); */
 }
 
 .createButton {

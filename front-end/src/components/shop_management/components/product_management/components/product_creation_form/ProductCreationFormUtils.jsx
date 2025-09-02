@@ -303,7 +303,7 @@ const ProductCreationFormUtils = () => {
       if (!selectedProductToUpdate && productCount >= productLimit) {
         setError(prevError => ({ 
           ...prevError, 
-          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en patrocinador para aumentar tu límite.' : ''}`
         }));
         throw new Error(`Has alcanzado el límite de ${productLimit} productos`);
       }
@@ -466,7 +466,7 @@ const ProductCreationFormUtils = () => {
       if (productCount >= productLimit) {
         setError(prevError => ({
           ...prevError,
-          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+          productError: `Has alcanzado el límite de ${productLimit} productos. ${!currentUser?.contributor_user ? 'Conviértete en patrocinador para aumentar tu límite.' : ''}`
         }));
         setShowErrorCard(true);
         return false;

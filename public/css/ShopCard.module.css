@@ -13,9 +13,7 @@
   /* overflow: hidden; */
 }
 
-.shopCardWrapper:hover {
-  outline: 2px solid var(--app-purple);
-}
+
 
 .shopCardWrapper.withMap {
   flex-direction: row;
@@ -73,6 +71,10 @@
   overflow-y: auto;
   min-height: 180px;
   max-height: 250px;
+}
+
+.infoContainer:hover {
+  background-color: var(--app-purple-transparent);
 }
 
 .header {

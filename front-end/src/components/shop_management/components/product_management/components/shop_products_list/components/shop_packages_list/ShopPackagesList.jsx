@@ -312,18 +312,8 @@ const ShopPackagesList = () => {
   if (packages.length === 0) {
     return (
       <div className={styles.emptyContainer}>
-        <Package size={48} />
+        <Package size={48} color='lightgray'/>
         <p>No hay paquetes creados</p>
-        <button 
-          className={styles.createButton}
-          onClick={() => {
-            //update: Also set the form visibility when creating new package
-            setIsAddingPackage(true);
-            setShowPackageCreationForm(true);
-          }}
-        >
-          Crear primer paquete
-        </button>
       </div>
     );
   }

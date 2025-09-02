@@ -342,7 +342,7 @@ const goToNextStep = () => {
           </div>
           {!currentUser?.contributor_user && productCount >= productLimit * 0.7 && (
             <p className={styles.upgradeMessage}>
-              Conviértete en sponsor para aumentar tu límite a 100 productos.
+              Conviértete en patrocinador para aumentar tu límite a 100 productos.
             </p>
           )}
       </div>

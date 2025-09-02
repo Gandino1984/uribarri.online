@@ -416,7 +416,7 @@
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  z-index: 1001; /* Increased z-index to ensure visibility */
+  z-index: 10002; /* Increased z-index to appear above all other elements */
   min-width: 180px;
   padding: 0.5rem;
 }
