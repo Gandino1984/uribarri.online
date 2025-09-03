@@ -149,7 +149,7 @@ const ShopsListBySeller = () => {
     if (shops && shops.length > 0 && isVisible) {
       setInfo(prevInfo => ({
         ...prevInfo,
-        shopInstructions: "Haz clic en una comercio para administrar sus productos"
+        shopInstructions: "Haz click en un comercio para administrar sus productos"
       }));
       setShowInfoCard(true);
     }

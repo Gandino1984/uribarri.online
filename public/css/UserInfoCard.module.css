@@ -22,7 +22,7 @@
   border-radius: 15px;
   /* border: 2px solid var(--app-purple); */
   /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); */
-  padding: 1.25rem; /* Smaller padding for mobile */
+  padding: 1rem; /* Smaller padding for mobile */
   width: calc(100% - 2rem); /* Full width minus margins on both sides */
   max-width: 320px; /* Smaller max-width for mobile */
   min-width: 280px; /* Minimum width for very small screens */
@@ -45,8 +45,8 @@
   justify-content: center;
   transition: all 0.2s ease;
   color: black;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 
 .closeButton:hover {
@@ -57,7 +57,7 @@
 /* update: Card content container */
 .cardContent {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
   gap: 1rem; /* Smaller gap on mobile */
 }
@@ -253,18 +253,18 @@
 .userInfo {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  text-align: center;
+  /* align-items: center; */
+  gap: 0.1rem;
+  text-align: left;
   width: 100%;
 }
 
 .userName {
-  font-size: 1.1rem; /* Smaller on mobile */
+  font-size: .9rem; /* Smaller on mobile */
   font-weight: 800;
   color: black;
   margin: 0;
-  letter-spacing: 0.03rem;
+  letter-spacing: 0.05rem;
   word-break: break-word; /* Handle long names */
 }
 
@@ -274,7 +274,7 @@
   color: var(--app-purple);
   margin: 0;
   /* text-transform: uppercase; */
-  letter-spacing: 0.08rem;
+  letter-spacing: 0.05rem;
 }
 
 .userEmail {

@@ -4,13 +4,11 @@
   width: 100%;
   min-height: 100vh;
   gap: 1.5rem;
-  /*update: Adjusted margin-top to account for back button */
-  margin-top: 9rem;
+  margin-top: 2rem;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-/*update: Add back button container styles */
 .backButtonContainer {
   display: flex;
   justify-content: flex-start;
@@ -21,7 +19,6 @@
   padding: 0 1rem;
 }
 
-/*update: Add back button styles */
 .backButton {
   display: flex;
   align-items: center;
@@ -34,13 +31,10 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 .backButton:hover {
   background: lightgray;
-  /* border-color: lightgray; */
-  /* transform: translateX(-4px); */
 }
 
 .backButton span {
@@ -410,6 +404,7 @@
 }
 
 .upgradeMessage {
+  text-align: center;
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.9);
   margin: 0;

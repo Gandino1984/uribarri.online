@@ -94,8 +94,8 @@
 .heroContent h1 {
   font-family: Montserrat;
   color: white;
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   letter-spacing: 0.4rem;
   margin-bottom: 13rem;
   /* text-shadow: 
@@ -107,8 +107,8 @@
 
 .heroContent p {
   color: rgb(151, 71, 255);
-  font-size: .83rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
   letter-spacing: .05rem;
   text-transform: uppercase;
   /* text-shadow: 
