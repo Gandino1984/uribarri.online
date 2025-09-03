@@ -4,11 +4,47 @@
   width: 100%;
   min-height: 100vh;
   gap: 1.5rem;
-  margin-top: 11rem;
+  /*update: Adjusted margin-top to account for back button */
+  margin-top: 9rem;
   overflow-x: hidden;
   overflow-y: auto;
-  /* padding: 1rem; */
-  /* background-color: var(--light-gray); */
+}
+
+/*update: Add back button container styles */
+.backButtonContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/*update: Add back button styles */
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.backButton:hover {
+  background: lightgray;
+  /* border-color: lightgray; */
+  /* transform: translateX(-4px); */
+}
+
+.backButton span {
+  font-size: 0.95rem;
 }
 
 .content {
@@ -18,7 +54,6 @@
   max-width: 1200px;
   margin: 0 auto;
   gap: 1.5rem;
-  /* background-color: white; */
 }
 
 .headerContainer {
@@ -35,15 +70,11 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  /* padding-top: 3rem; */
   width: 100%;
-  /* gap: 1rem; */
 }
 
 .title {
-  /* text-shadow: 2px 2px 0px rgba(0, 0, 0, 1); */
   font-size: 2.5rem;
-  /* text-spacing-trim: 1px; */
   font-weight: 800;
   color: rgb(27, 27, 27);
   margin-bottom: 1rem;
@@ -75,7 +106,6 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  /* background-color: white; */
   gap: .5rem;
 }
 
@@ -91,8 +121,6 @@
 }
 
 .listTitle {
-  /* display: flex;
-  align-items: center; */
   width: 100%;
   text-align: left;
   gap: 0.5rem;
@@ -138,6 +166,10 @@
   border-radius: 6px;
   background-color: white;
   cursor: pointer;
+}
+
+.shopCardHeader:hover {
+  background-color: var(--app-purple-transparent);
 }
 
 .shopMainInfo {
@@ -205,7 +237,6 @@
 .shopMeta {
   display: flex;
   align-items: center;
-  /* justify-content: center; */
   gap: 1.5rem;
   flex-wrap: wrap;
 }
@@ -244,12 +275,10 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.75rem;
-  /* background: linear-gradient(135deg, rgba(254, 240, 138, 1), rgba(253, 224, 71, 1)); */
   color: #92400e;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  /* border: 1px solid rgba(146, 64, 14, 0.2); */
 }
 
 /* Shop Actions */
@@ -273,12 +302,10 @@
   color: black;
   cursor: pointer;
   transition: all 0.2s ease;
-
 }
 
 .actionButton:hover {
   background: lightgray;
-  /* border-color: gray; */
 }
 
 .actionButton:disabled {
@@ -297,7 +324,6 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  /* font-size: ; */
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -308,7 +334,6 @@
 }
 
 .active:hover {
-  /* border: 2px solid lightgray; */
   background-color: lightgray;
 }
 
@@ -368,7 +393,6 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  /* background: rgba(255, 255, 255, 0.1); */
   backdrop-filter: blur(4px);
 }
 
@@ -548,7 +572,21 @@
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;
-    margin-top: 10rem;
+    /*update: Adjust margin for back button on tablet */
+    margin-top: 8.5rem;
+  }
+  
+  /*update: Responsive back button container */
+  .backButtonContainer {
+    padding: 0 0.5rem;
+  }
+  
+  .backButton {
+    padding: 0.6rem 1rem;
+  }
+  
+  .backButton span {
+    font-size: 0.9rem;
   }
   
   .content {
@@ -603,8 +641,21 @@
 
 @media (max-width: 480px) {
   .container {
-    /* padding: 0.25rem; */
-    margin-top: 9rem;
+    /*update: Adjust margin for back button on mobile */
+    margin-top: 8rem;
+  }
+  
+  /*update: Responsive back button for mobile */
+  .backButtonContainer {
+    padding: 0 0.25rem;
+  }
+  
+  .backButton {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .backButton span {
+    font-size: 0.85rem;
   }
   
   .header {
@@ -615,11 +666,6 @@
   .title {
     font-size: 1.5rem;
   }
-  
-  /* .listHeader {
-    margin: 0 0.25rem;
-    padding: 0.5rem;
-  } */
   
   .listTitle {
     font-size: 1rem;
@@ -632,8 +678,6 @@
   
   .shopCardHeader {
     padding: 0.5rem;
-    /* flex-direction: column; */
-    /* align-items: flex-start; */
   }
   
   .shopImageContainer {
@@ -660,12 +704,7 @@
     width: 30%;
     flex-direction: column;
     justify-content: flex-end;
-    /* padding-top: 0.5rem; */
   }
-  
-  /* .active span {
-    display: none;
-  } */
   
   .active,
   .ordersButton {

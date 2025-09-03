@@ -20,9 +20,6 @@
     align-items: center;
     justify-content: right;
     width: 100%;
-    /* flex-grow: 1; */
-    /* gap: 1rem; */
-    /* padding: 0.5rem 0; */
     position: relative;
 }
 
@@ -80,8 +77,6 @@
 .burgerButton:hover {
     color: black;
     background-color: lightgray;
-    /* border: 2px solid lightgra   y; */
-    /* box-shadow: 0px 3px 8px lightgray; */
 }
 
 .burgerButton.active {
@@ -134,22 +129,27 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
-    /* width: auto; */
 }
 
 .mobileMenu button:hover {
-    /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)); */
-    /* color: var(--saturated-blue); */
-    transform: translateX(4px);
+    /* transform: translateX(4px); */
 }
 
 /* Back Button */
 .backButton {
-    /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05)); */
     color: var(--saturated-blue);
 }
 
 .backButton:hover {
+    background-color: var(--light-gray);
+}
+
+/* update: Profile Menu Button */
+.profileMenuButton {
+    color: var(--app-purple);
+}
+
+.profileMenuButton:hover {
     background-color: var(--light-gray);
 }
 
@@ -208,6 +208,28 @@
     box-shadow: 0px 0px 10px 2px var(--light-gray);
 }
 
+/* update: Profile Button (desktop) */
+.profileButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.profileButton:hover {
+    background-color: var(--light-gray);
+    border-color: var(--app-purple);
+}
+
 /* Menu Divider */
 .menuDivider {
     height: 1px;
@@ -226,7 +248,6 @@
     flex: 1;
     color: black;
 }
-
 
 /* Tablet Breakpoint */
 @media (min-width: 501px) {

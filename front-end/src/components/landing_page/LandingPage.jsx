@@ -249,10 +249,10 @@ const LandingPage = () => {
       <div className={styles.heroSection}>
         <div className={styles.heroContent}>
           <animated.p style={subtitleSpring}>
-            Participa, transforma y crea tu barrio.
+            Participa y transforma tu barrio.
           </animated.p>
           <animated.h1 style={titleSpring}>
-            Uribarri
+            mibarrio.online
           </animated.h1>
         </div>
         
