@@ -9,7 +9,6 @@ import useShopWindow from './ShopWindowUtils.jsx';
 import styles from '../../../../public/css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
 
-//update: Refactored component using ShopWindowUtils
 const ShopWindow = () => {
   const { currentUser } = useAuth();
   const { 
@@ -21,7 +20,6 @@ const ShopWindow = () => {
   } = useUI();
   const { shops, setShops, shopTypesAndSubtypes } = useShop();
   
-  //update: UI handlers object for utilities
   const uiHandlers = {
     setShowShopWindow,
     setShowShopManagement,
@@ -30,12 +28,10 @@ const ShopWindow = () => {
     setShowLandingPage
   };
   
-  //update: Shop handlers object for utilities
   const shopHandlers = {
     shopTypesAndSubtypes
   };
   
-  //update: Use custom hook with all logic extracted
   const {
     loading,
     error,
@@ -55,25 +51,39 @@ const ShopWindow = () => {
     getAvailableSubtypes,
     getActiveFiltersCount,
     getDisplayedShops,
+    //update: Add setShowFilters from the hook
+    setShowFilters
   } = useShopWindow(currentUser, shops, setShops, uiHandlers, shopHandlers);
   
-  //update: Get values from hook functions
   const activeFiltersCount = getActiveFiltersCount();
   const displayedShops = getDisplayedShops();
   
-  //update: Load shops on mount
   useEffect(() => {
     fetchAllShops();
   }, [fetchAllShops]);
 
-  //update: Animations for shop cards
+  //update: Fixed animation - use consistent transform format
   const transitions = useTransition(displayedShops, {
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    enter: { opacity: 1, transform: 'translateY(0px)' },
-    leave: { opacity: 0, transform: 'translateY(-20px)' },
+    from: { 
+      opacity: 0, 
+      transform: 'translate3d(0,20px,0)' 
+    },
+    enter: { 
+      opacity: 1, 
+      transform: 'translate3d(0,0px,0)' 
+    },
+    leave: { 
+      opacity: 0, 
+      transform: 'translate3d(0,-20px,0)' 
+    },
     trail: 100,
     config: { tension: 200, friction: 25 }
   });
+
+  //update: Handle close filters
+  const handleCloseFilters = () => {
+    setShowFilters(false);
+  };
 
   return (
     <div className={styles.container}>
@@ -111,6 +121,8 @@ const ShopWindow = () => {
           handleDayChange={handleDayChange}
           handleResetFilters={handleResetFilters}
           getAvailableSubtypes={getAvailableSubtypes}
+          //update: Pass onClose handler
+          onClose={handleCloseFilters}
         />
       )}
 

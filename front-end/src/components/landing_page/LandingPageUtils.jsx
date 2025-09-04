@@ -136,29 +136,29 @@ export const useParallaxScroll = (threshold = 50) => {
   };
 };
 
-//update: Parallax animation configurations for features
+//update: Fixed parallax animation configurations - ensure consistent transform format
 export const useParallaxAnimations = (scrollY, showFeatures) => {
   // Hero section parallax
   const heroParallax = useSpring({
-    transform: `translateY(${scrollY * 0.5}px)`,
+    transform: `translate3d(0px, ${scrollY * 0.5}px, 0px)`,
     opacity: Math.max(1 - (scrollY / 800), 0),
     config: config.slow
   });
   
-  // Feature cards with staggered parallax
+  // Feature cards with staggered parallax - FIXED: consistent transform format
   const feature1Animation = useSpring({
     opacity: showFeatures ? 1 : 0,
     transform: showFeatures 
-      ? `translateY(${-scrollY * 0.3}px) translateX(0px) scale(1)` 
-      : `translateY(100px) translateX(-50px) scale(0.9)`,
+      ? `translate3d(0px, ${-scrollY * 0.3}px, 0px) scale(1)` 
+      : `translate3d(-50px, 100px, 0px) scale(0.9)`,
     config: config.molasses
   });
   
   const feature2Animation = useSpring({
     opacity: showFeatures ? 1 : 0,
     transform: showFeatures 
-      ? `translateY(${-scrollY * 0.2}px) translateX(0px) scale(1)` 
-      : `translateY(100px) translateX(50px) scale(0.9)`,
+      ? `translate3d(0px, ${-scrollY * 0.2}px, 0px) scale(1)` 
+      : `translate3d(50px, 100px, 0px) scale(0.9)`,
     delay: 200,
     config: config.molasses
   });
@@ -166,8 +166,8 @@ export const useParallaxAnimations = (scrollY, showFeatures) => {
   const feature3Animation = useSpring({
     opacity: showFeatures ? 1 : 0,
     transform: showFeatures 
-      ? `translateY(${-scrollY * 0.25}px) translateX(0px) scale(1)` 
-      : `translateY(100px) translateX(-50px) scale(0.9)`,
+      ? `translate3d(0px, ${-scrollY * 0.25}px, 0px) scale(1)` 
+      : `translate3d(-50px, 100px, 0px) scale(0.9)`,
     delay: 400,
     config: config.molasses
   });
@@ -210,7 +210,7 @@ export const usePageTransition = () => {
   };
 };
 
-//update: Enhanced button animation hook
+//update: Enhanced button animation hook - fixed transform format
 export const useEnterButtonAnimation = (show) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
@@ -218,8 +218,8 @@ export const useEnterButtonAnimation = (show) => {
   const buttonAnimation = useSpring({
     opacity: show ? 1 : 0,
     transform: show 
-      ? `translateY(0px) scale(${isPressed ? 0.95 : isHovered ? 1.05 : 1})` 
-      : 'translateY(50px) scale(0.8)',
+      ? `translate3d(0px, 0px, 0px) scale(${isPressed ? 0.95 : isHovered ? 1.05 : 1})` 
+      : `translate3d(0px, 50px, 0px) scale(0.8)`,
     boxShadow: isHovered 
       ? '0 20px 40px rgba(151, 71, 255, 0.4)' 
       : '0 10px 20px rgba(151, 71, 255, 0.2)',
@@ -242,22 +242,22 @@ export const useEnterButtonAnimation = (show) => {
   };
 };
 
-//update: Portrait animation configurations
+//update: Fixed portrait animation configurations - consistent transform format
 export const portraitAnimationConfig = {
   fade: {
     from: { 
       opacity: 0,
-      transform: 'scale(1.1) translateZ(0)',
+      transform: 'scale(1.1) translate3d(0px, 0px, 0px)',
       filter: 'blur(15px) brightness(0.8)'
     },
     enter: { 
       opacity: 1,
-      transform: 'scale(1) translateZ(0)',
+      transform: 'scale(1) translate3d(0px, 0px, 0px)',
       filter: 'blur(0px) brightness(1)'
     },
     leave: { 
       opacity: 0,
-      transform: 'scale(0.95) translateZ(0)',
+      transform: 'scale(0.95) translate3d(0px, 0px, 0px)',
       filter: 'blur(15px) brightness(1.2)'
     },
     config: {
@@ -270,15 +270,15 @@ export const portraitAnimationConfig = {
   zoom: {
     from: { 
       opacity: 0,
-      transform: 'scale(0.8) translateZ(0) rotateZ(5deg)'
+      transform: 'scale(0.8) translate3d(0px, 0px, 0px) rotate(5deg)'
     },
     enter: { 
       opacity: 1,
-      transform: 'scale(1) translateZ(0) rotateZ(0deg)'
+      transform: 'scale(1) translate3d(0px, 0px, 0px) rotate(0deg)'
     },
     leave: { 
       opacity: 0,
-      transform: 'scale(1.2) translateZ(0) rotateZ(-5deg)'
+      transform: 'scale(1.2) translate3d(0px, 0px, 0px) rotate(-5deg)'
     },
     config: config.gentle
   },
@@ -286,31 +286,31 @@ export const portraitAnimationConfig = {
   slide: {
     from: { 
       opacity: 0,
-      transform: 'translateX(100%) scale(0.9)'
+      transform: 'translate3d(100%, 0px, 0px) scale(0.9)'
     },
     enter: { 
       opacity: 1,
-      transform: 'translateX(0%) scale(1)'
+      transform: 'translate3d(0%, 0px, 0px) scale(1)'
     },
     leave: { 
       opacity: 0,
-      transform: 'translateX(-100%) scale(0.9)'
+      transform: 'translate3d(-100%, 0px, 0px) scale(0.9)'
     },
     config: config.slow
   }
 };
 
-//update: Text animation utilities
+//update: Fixed text animation utilities - consistent transform format
 export const useTextAnimations = (delay = 0) => {
   const titleAnimation = useSpring({
     from: { 
       opacity: 0, 
-      transform: 'translateY(40px) scale(0.9)',
+      transform: 'translate3d(0px, 40px, 0px) scale(0.9)',
       filter: 'blur(4px)'
     },
     to: { 
       opacity: 1, 
-      transform: 'translateY(0px) scale(1)',
+      transform: 'translate3d(0px, 0px, 0px) scale(1)',
       filter: 'blur(0px)'
     },
     delay: delay,
