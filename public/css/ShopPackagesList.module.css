@@ -59,19 +59,19 @@
    align-items: center;
    justify-content: center;
    padding: 0.5rem 1rem;
-   background-color: rgba(255, 255, 255, 0.2);
-   color: white;
-   border: 1px solid rgba(255, 255, 255, 0.3);
+   background-color: white;
+   border: 2px solid transparent !important;
+   color: black;
    border-radius: 8px;
    cursor: pointer;
-   font-weight: 500;
+   font-weight: 600;
    transition: all 0.2s ease;
 }
 
 .backButton:hover {
-   background-color: rgba(255, 255, 255, 0.5);
-   border: 1px solid white;
-   box-shadow: 0 0 10px var(--saturated-blue-transparent);
+   background-color: lightgray !important;
+   /* border: 1px solid white; */
+   /* box-shadow: 0 0 10px var(--saturated-blue-transparent); */
 }
 
 .listTitle {
@@ -83,15 +83,11 @@
    margin: 0;
 }
 
-/* New Package List Card Styles */
 .header {
    display: flex;
-   justify-content: space-between;
+   justify-content: left;
    align-items: center;
    padding: 1rem;
-   /* background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end)); */
-   /* border-radius: 12px 12px 0 0; */
-   /* margin: 0 1rem; */
 }
 
 .title {
@@ -101,7 +97,6 @@
    font-size: 1.25rem;
    font-weight: 600;
    color: black;
-   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
 }
 
 .packagesList {
@@ -121,7 +116,6 @@
 
 .packageCard:hover {
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-   /* transform: translateY(-2px); */
 }
 
 .packageHeader {
@@ -141,7 +135,6 @@
    min-width: 0;
 }
 
-/* update: Package image styles matching the app design */
 .packageImageContainer {
    position: relative;
    width: 80px;
@@ -162,7 +155,6 @@
 .packageImageContainer:hover {
    transform: scale(1.05);
    border-color: var(--app-purple);
-   /* box-shadow: 0 0 15px var(--saturated-blue-transparent); */
 }
 
 .packageImageContainer.noImage {
@@ -274,7 +266,6 @@
 
 .packagePricing {
    display: flex;
-   /* flex-direction: column; */
    align-items: flex-end;
    gap: 0.25rem;
    padding: 0 1rem;
@@ -296,9 +287,7 @@
    font-size: 0.9rem;
    color: gray;
    font-weight: 600;
-   /* background: rgba(5, 150, 105, 0.1); */
    padding: 0.125rem 0.5rem;
-   /* border-radius: 4px; */
 }
 
 .packageActions {
@@ -321,13 +310,9 @@
 
 .actionButton:hover {
    background: lightgray;
-   /* color: white; */
-   /* border-color: var(--saturated-blue); */
-   /* box-shadow: 0 0 10px var(--saturated-blue-transparent); */
 }
 
 .actionButton:disabled {
-   /* opacity: 0.5; */
    color: lightgray;
    cursor: not-allowed;
 }

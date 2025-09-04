@@ -689,7 +689,16 @@ const ShopProductsList = () => {
               )}
             </div>
 
-            {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
+            {/*update: Pass onClose prop to FiltersForProducts to allow closing */}
+            {showFilters && (
+              <FiltersForProducts 
+                isVisible={showFilters} 
+                searchTerm={searchTerm} 
+                setSearchTerm={setSearchTerm} 
+                onResetFilters={handleResetAllFilters}
+                onClose={() => setShowFilters(false)}
+              />
+            )}
             
             {displayedProducts.length === 0 ? (
               <NoProductsMessage products={products} />

@@ -14,7 +14,9 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
-  Tag
+  Tag,
+  //update: Import ArrowLeft icon for back button
+  ArrowLeft
 } from 'lucide-react';
 import { formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
@@ -22,7 +24,8 @@ import ConfirmationModal from '../../../../../../../confirmation_modal/Confirmat
 
 import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
 
-const ShopPackagesList = () => {
+//update: Add onBack prop to handle navigation back to ShopProductsList
+const ShopPackagesList = ({ onBack }) => {
   const { 
     packages, 
     setPackages,
@@ -290,6 +293,14 @@ const ShopPackagesList = () => {
     );
   };
   
+  //update: Handle back navigation to ShopProductsList
+  const handleBackToProductsList = () => {
+    console.log('Navigating back to ShopProductsList from ShopPackagesList');
+    if (onBack && typeof onBack === 'function') {
+      onBack();
+    }
+  };
+  
   // Loading state
   if (isLoading) {
     return (
@@ -305,15 +316,15 @@ const ShopPackagesList = () => {
       <div className={styles.noShopContainer}>
         <AlertCircle size={48} />
         <p>Selecciona un comercio para ver sus paquetes</p>
-      </div>
-    );
-  }
-  
-  if (packages.length === 0) {
-    return (
-      <div className={styles.emptyContainer}>
-        <Package size={48} color='lightgray'/>
-        <p>No hay paquetes creados</p>
+        {/*update: Add back button even when no shop is selected */}
+        <button 
+          onClick={handleBackToProductsList}
+          className={styles.backButton}
+          style={{ marginTop: '1rem' }}
+        >
+          <ArrowLeft size={20} />
+          <span>a Productos</span>
+        </button>
       </div>
     );
   }
@@ -321,6 +332,45 @@ const ShopPackagesList = () => {
   return (
     <>
       <div className={styles.container}>
+        {/*update: Add back button at the top of the container */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          marginBottom: '1rem', 
+          paddingLeft: '1rem',
+          paddingRight: '1rem' 
+        }}>
+          <button 
+            onClick={handleBackToProductsList}
+            className={styles.backButton}
+            title="Volver a la lista de productos"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'white',
+              color: 'black',
+              border: '2px solid lightgray',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--light-gray)';
+              e.currentTarget.style.borderColor = 'var(--app-purple)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.borderColor = 'lightgray';
+            }}
+          >
+            <ArrowLeft size={20} />
+            <span>a Productos</span>
+          </button>
+        </div>
+        
         <div className={styles.header}>
           <h3 className={styles.title}>
             {/* <Package size={20} /> */}
@@ -328,138 +378,145 @@ const ShopPackagesList = () => {
           </h3>
         </div>
         
-        <div className={styles.packagesList} key={updateKey}>
-          {packages.map(pkg => (
-            <div key={`package-${pkg.id_package}-${pkg.active_package}`} className={styles.packageCard}>
-              <div className={styles.packageHeader}>
-                <div className={styles.packageMainInfo}>
-                  {/* Display package image if available */}
-                  {pkg.image_package ? (
-                    <div 
-                      className={styles.packageImageContainer}
-                      onClick={() => openImageModal(formatImageUrl(pkg.image_package))}
-                    >
-                      <img 
-                        src={formatImageUrl(pkg.image_package)} 
-                        alt={pkg.name_package || 'Paquete'}
-                        className={styles.packageImage}
-                        onError={(e) => {
-                          console.error('Error loading package image:', pkg.image_package);
-                          // Hide broken image
-                          e.target.parentElement.style.display = 'none';
-                        }}
-                      />
-                      <div className={styles.imageOverlay}>
-                        <Image size={16} />
+        {packages.length === 0 ? (
+          <div className={styles.emptyContainer}>
+            <Package size={48} color='lightgray'/>
+            <p>No hay paquetes creados</p>
+          </div>
+        ) : (
+          <div className={styles.packagesList} key={updateKey}>
+            {packages.map(pkg => (
+              <div key={`package-${pkg.id_package}-${pkg.active_package}`} className={styles.packageCard}>
+                <div className={styles.packageHeader}>
+                  <div className={styles.packageMainInfo}>
+                    {/* Display package image if available */}
+                    {pkg.image_package ? (
+                      <div 
+                        className={styles.packageImageContainer}
+                        onClick={() => openImageModal(formatImageUrl(pkg.image_package))}
+                      >
+                        <img 
+                          src={formatImageUrl(pkg.image_package)} 
+                          alt={pkg.name_package || 'Paquete'}
+                          className={styles.packageImage}
+                          onError={(e) => {
+                            console.error('Error loading package image:', pkg.image_package);
+                            // Hide broken image
+                            e.target.parentElement.style.display = 'none';
+                          }}
+                        />
+                        <div className={styles.imageOverlay}>
+                          <Image size={16} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`${styles.packageImageContainer} ${styles.noImage}`}>
+                        <Package size={30} className={styles.placeholderIcon} />
+                      </div>
+                    )}
+                    
+                    <div className={styles.packageInfo}>
+                      <h4 className={styles.packageName}>{pkg.name_package || 'Paquete sin nombre'}</h4>
+                      <div className={styles.packageMeta}>
+                        {console.log(`Rendering package ${pkg.id_package}, active_package:`, pkg.active_package, 'Type:', typeof pkg.active_package)}
+                        <span 
+                          key={`status-${pkg.id_package}-${pkg.active_package}-${updateKey}`}
+                          className={`${styles.statusBadge} ${pkg.active_package === true || pkg.active_package === 1 ? styles.active : styles.inactive}`}
+                        >
+                          {pkg.active_package === true || pkg.active_package === 1 ? 'Activo' : 'Inactivo'}
+                        </span>
+                        {pkg.discount_package > 0 && (
+                          <span className={styles.discountBadge}>
+                            <Tag size={12} />
+                            {pkg.discount_package}% dto
+                          </span>
+                        )}
                       </div>
                     </div>
-                  ) : (
-                    <div className={`${styles.packageImageContainer} ${styles.noImage}`}>
-                      <Package size={30} className={styles.placeholderIcon} />
-                    </div>
-                  )}
+                  </div>
                   
-                  <div className={styles.packageInfo}>
-                    <h4 className={styles.packageName}>{pkg.name_package || 'Paquete sin nombre'}</h4>
-                    <div className={styles.packageMeta}>
-                      {console.log(`Rendering package ${pkg.id_package}, active_package:`, pkg.active_package, 'Type:', typeof pkg.active_package)}
-                      <span 
-                        key={`status-${pkg.id_package}-${pkg.active_package}-${updateKey}`}
-                        className={`${styles.statusBadge} ${pkg.active_package === true || pkg.active_package === 1 ? styles.active : styles.inactive}`}
-                      >
-                        {pkg.active_package === true || pkg.active_package === 1 ? 'Activo' : 'Inactivo'}
+                  <div className={styles.packagePricing}>
+                    {(() => {
+                      const prices = calculatePackagePrices(pkg);
+                      return (
+                        <>
+                          {pkg.discount_package > 0 && (
+                            <span className={styles.originalPrice}>€{formatPrice(prices.totalPrice)}</span>
+                          )}
+                          <span className={styles.finalPrice}>€{formatPrice(prices.discountedPrice)}</span>
+                          {pkg.discount_package > 0 && (
+                            <span className={styles.savings}>Ahorro: €{formatPrice(prices.savings)}</span>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                  
+                  <div className={styles.packageActions}>
+                    <button
+                      key={`toggle-${pkg.id_package}-${pkg.active_package}`}
+                      onClick={() => handleToggleStatus(pkg)}
+                      className={styles.actionButton}
+                      disabled={isTogglingStatus === pkg.id_package}
+                      title={pkg.active_package === true || pkg.active_package === 1 ? 'Desactivar' : 'Activar'}
+                    >
+                      {pkg.active_package === true || pkg.active_package === 1 ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                    </button>
+                    
+                    <button
+                      onClick={() => handleEditPackage(pkg)}
+                      className={styles.actionButton}
+                      title="Editar"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    
+                    <button
+                      onClick={() => handleDeletePackage(pkg)}
+                      className={styles.actionButton}
+                      title="Eliminar"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    
+                    <button
+                      onClick={() => toggleExpanded(pkg.id_package)}
+                      className={styles.expandButton}
+                      title={expandedPackages.has(pkg.id_package) ? 'Contraer' : 'Expandir'}
+                    >
+                      {expandedPackages.has(pkg.id_package) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedPackages.has(pkg.id_package) && (
+                  <div className={styles.packageDetails}>
+                    <div className={styles.productsSection}>
+                      <span className={styles.productCount}>
+                          Productos ({[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length})
                       </span>
-                      {pkg.discount_package > 0 && (
-                        <span className={styles.discountBadge}>
-                          <Tag size={12} />
-                          {pkg.discount_package}% dto
-                        </span>
-                      )}
+                      {/* <h5 className={styles.sectionTitle}>Productos incluidos:</h5> */}
+                      <div className={styles.productsList}>
+                        {pkg.product1 && renderProductItem(pkg.product1, 1)}
+                        {pkg.product2 && renderProductItem(pkg.product2, 2)}
+                        {pkg.product3 && renderProductItem(pkg.product3, 3)}
+                        {pkg.product4 && renderProductItem(pkg.product4, 4)}
+                        {pkg.product5 && renderProductItem(pkg.product5, 5)}
+                      </div>
+                    </div>
+                    
+                    <div className={styles.packageFooter}>
+                      <span className={styles.packageId}>ID: {pkg.id_package}</span>
+                      <span className={styles.creationDate}>
+                        Creado: {new Date(pkg.creation_package).toLocaleDateString('es-ES')}
+                      </span>
                     </div>
                   </div>
-                </div>
-                
-                <div className={styles.packagePricing}>
-                  {(() => {
-                    const prices = calculatePackagePrices(pkg);
-                    return (
-                      <>
-                        {pkg.discount_package > 0 && (
-                          <span className={styles.originalPrice}>€{formatPrice(prices.totalPrice)}</span>
-                        )}
-                        <span className={styles.finalPrice}>€{formatPrice(prices.discountedPrice)}</span>
-                        {pkg.discount_package > 0 && (
-                          <span className={styles.savings}>Ahorro: €{formatPrice(prices.savings)}</span>
-                        )}
-                      </>
-                    );
-                  })()}
-                </div>
-                
-                <div className={styles.packageActions}>
-                  <button
-                    key={`toggle-${pkg.id_package}-${pkg.active_package}`}
-                    onClick={() => handleToggleStatus(pkg)}
-                    className={styles.actionButton}
-                    disabled={isTogglingStatus === pkg.id_package}
-                    title={pkg.active_package === true || pkg.active_package === 1 ? 'Desactivar' : 'Activar'}
-                  >
-                    {pkg.active_package === true || pkg.active_package === 1 ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                  </button>
-                  
-                  <button
-                    onClick={() => handleEditPackage(pkg)}
-                    className={styles.actionButton}
-                    title="Editar"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDeletePackage(pkg)}
-                    className={styles.actionButton}
-                    title="Eliminar"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  
-                  <button
-                    onClick={() => toggleExpanded(pkg.id_package)}
-                    className={styles.expandButton}
-                    title={expandedPackages.has(pkg.id_package) ? 'Contraer' : 'Expandir'}
-                  >
-                    {expandedPackages.has(pkg.id_package) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </button>
-                </div>
+                )}
               </div>
-              
-              {expandedPackages.has(pkg.id_package) && (
-                <div className={styles.packageDetails}>
-                  <div className={styles.productsSection}>
-                    <span className={styles.productCount}>
-                        Productos ({[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length})
-                    </span>
-                    {/* <h5 className={styles.sectionTitle}>Productos incluidos:</h5> */}
-                    <div className={styles.productsList}>
-                      {pkg.product1 && renderProductItem(pkg.product1, 1)}
-                      {pkg.product2 && renderProductItem(pkg.product2, 2)}
-                      {pkg.product3 && renderProductItem(pkg.product3, 3)}
-                      {pkg.product4 && renderProductItem(pkg.product4, 4)}
-                      {pkg.product5 && renderProductItem(pkg.product5, 5)}
-                    </div>
-                  </div>
-                  
-                  <div className={styles.packageFooter}>
-                    <span className={styles.packageId}>ID: {pkg.id_package}</span>
-                    <span className={styles.creationDate}>
-                      Creado: {new Date(pkg.creation_package).toLocaleDateString('es-ES')}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       
       {showDeleteModal && (

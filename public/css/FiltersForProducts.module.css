@@ -21,17 +21,53 @@
 .filterControls {
   display: flex;
   flex-direction: column;
-    background-color: white;
-      border-radius: 12px;
+  background-color: white;
+  border-radius: 12px;
   gap: 1rem;
   width: 100%;
   padding: 1rem;
   min-height: fit-content;
   will-change: transform, opacity;
+  /*update: Add relative position for close button positioning */
+  position: relative;
 }
 
 .filterControls:hover {
  box-shadow: 0 0 10px 2px lightgray;
+}
+
+/*update: Close button styles */
+.closeButton {
+  position: absolute;
+  top: 0rem;
+  /* right: 0rem; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background-color: var(--light-gray);
+  color: black;
+  /* border: 1px solid lightgray; */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  outline: none;
+}
+
+.closeButton:hover {
+  background-color: lightgray;
+  color: black;
+  /* border-color: gray; */
+  /* transform: rotate(90deg); */
+}
+
+.closeButton:active {
+  background-color: var(--app-purple-transparent);
+  border-color: var(--app-purple);
+  /* transform: rotate(90deg) scale(0.95); */
 }
 
 /* Row for select filters */
@@ -42,6 +78,8 @@
   width: 100%;
   min-height: fit-content;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /*update: Add padding-top to account for close button on mobile */
+  padding-top: 2rem;
 }
 
 /* Row for checkbox filters */
@@ -76,7 +114,7 @@
   border-radius: 8px;
   cursor: pointer;
   outline: none;
-  border: 2px solid transparent;
+  border: 2px solid var(--light-gray);
   transition: all 0.2s ease;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -189,7 +227,7 @@
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-    background-color: var(--light-gray);
+  background-color: var(--light-gray);
   color: black;
   transition: all 0.2s ease;
   /* border: 1px solid rgba(255, 255, 255, 0.3); */
@@ -238,6 +276,8 @@
   
   .selectFiltersRow {
     grid-template-columns: 1fr;
+    /*update: Adjust padding-top for mobile close button */
+    padding-top: 2.5rem;
   }
   
   .checkboxFiltersRow {
@@ -253,12 +293,20 @@
   .toggleIconLabel {
     font-size: 0.8rem;
   }
+  
+  /*update: Adjust close button position for mobile */
+  .closeButton {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
 }
 
 /* Small tablets - 2 columns */
 @media (min-width: 640px) and (max-width: 767px) {
   .selectFiltersRow {
     grid-template-columns: repeat(2, 1fr);
+    /*update: Reduce padding-top for tablets */
+    padding-top: 1rem;
   }
   
   .checkboxFiltersRow {
@@ -275,11 +323,19 @@
   .selectFiltersRow {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
+    /*update: Remove extra padding on larger screens */
+    padding-top: 0;
   }
   
   .checkboxFiltersRow {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
+  }
+  
+  /*update: Adjust close button for tablets */
+  .closeButton {
+    top: 1rem;
+    right: 1rem;
   }
 }
 
@@ -293,6 +349,8 @@
   .selectFiltersRow {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
+    /*update: Remove extra padding on desktop */
+    padding-top: 0;
   }
   
   .checkboxFiltersRow {
@@ -302,6 +360,14 @@
   
   .toggleSwitchContainer {
     padding: 0.6rem 1rem;
+  }
+  
+  /*update: Desktop close button positioning */
+  .closeButton {
+    top: 1rem;
+    right: 1rem;
+    width: 2.25rem;
+    height: 2.25rem;
   }
 }
 
