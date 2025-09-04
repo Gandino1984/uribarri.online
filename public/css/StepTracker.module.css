@@ -3,7 +3,8 @@
     justify-content: center;
     align-items: center;
     right: 0;
-    top: -2.3rem;
+    top: -1rem;
+    width: 100%;
     position: absolute;
     flex-shrink: 1;
     min-width: min-content;
@@ -22,7 +23,7 @@
     justify-content: center;
     align-items: center;
     color: #666;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 600;
     position: relative;
   }
@@ -30,7 +31,6 @@
   .stepDot.active {
     margin-right: .5rem;
     margin-left: .5rem;
-    /* border: 1px solid var(--app-purple); */
     background-color: var(--app-purple);
     color: white;
     transform: scale(1.4);

@@ -620,7 +620,7 @@ const ShopProductsList = () => {
                 title="Volver a la lista de tiendas"
               >
                 <ArrowLeft size={20} />
-                <span>Volver a tiendas</span>
+                <span> tiendas</span>
               </button>
             </div>
             

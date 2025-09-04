@@ -6,7 +6,8 @@ import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
-import { AlertCircle, PackagePlus, Save, RefreshCw, Loader } from 'lucide-react';
+//update: Add X icon for close button
+import { AlertCircle, PackagePlus, Save, RefreshCw, Loader, X } from 'lucide-react';
 
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 
@@ -45,7 +46,8 @@ const ProductCreationForm = () => {
     isAccepted,
     setIsAccepted,
     isDeclined,
-    setIsDeclined
+    setIsDeclined,
+    setShowProductManagement
   } = useUI();
   
   // Shop context
@@ -64,7 +66,10 @@ const ProductCreationForm = () => {
     //update: Get loading state for categories
     loadingCategories,
     categoriesError,
-    fetchSubcategoriesByCategory
+    fetchSubcategoriesByCategory,
+    //update: Add setters to handle navigation back
+    setIsUpdatingProduct,
+    setSelectedProductToUpdate
   } = useProduct();
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -76,6 +81,27 @@ const ProductCreationForm = () => {
   const totalSteps = 3;
   
   const [isResetPending, setIsResetPending] = useState(false);
+  
+  //update: Add function to handle close/cancel
+  const handleClose = () => {
+    // Reset form states
+    setIsUpdatingProduct(false);
+    setSelectedProductToUpdate(null);
+    resetNewProductData();
+    
+    // Clear any image states
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    
+    // Navigate back to ShopProductsList through ProductManagement
+    setShowProductManagement(true);
+    
+    // Refresh the product list
+    refreshProductList();
+  };
   
   // Get available product types based on shop type
   const availableProductTypes = selectedShop?.type_shop 
@@ -226,7 +252,7 @@ const ProductCreationForm = () => {
     setIsModalOpen(true);
   };
 
-const goToNextStep = () => {
+  const goToNextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     }
@@ -421,10 +447,23 @@ const goToNextStep = () => {
   return (
     <>
     <div className={styles.container}>
+    
       <div className={styles.header}>
+        
         <p className={styles.formTitle}>
           {selectedProductToUpdate ? 'Actualizar Producto' : 'Crear un nuevo producto'}
-        </p> 
+        </p>
+          <div className={styles.containerCloseButton}>
+            <button
+                type="button"
+                onClick={handleClose}
+                className={styles.closeButton}
+                title="Cerrar y volver a la lista de productos"
+              >
+                <X size={20} />
+              </button>
+      </div>
+        
       </div>
       
       {/* Shop type and subtype guidance */}

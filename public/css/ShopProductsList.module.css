@@ -8,7 +8,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
+    /* width: calc(100vw - 2rem); */
+  min-height: calc(100vh - 3.3rem);
   gap: 1rem;
   margin-top: 4rem;
   overflow-x: hidden;
@@ -83,7 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: .7rem;
 }
 
 /* Button Group Container - Hidden on mobile by default */
@@ -736,7 +737,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  flex: 1;
+  /* flex: 1; */
   /* margin: 0 auto; */
 }
 

@@ -111,7 +111,7 @@ input[type="text"] {
   border-radius: 8px;
   min-height: 2.5rem;
   width: 100%;
-  margin-bottom: .5rem;
+  /* margin-bottom: .5rem; */
   /* max-width: 20rem; */
   font-weight: 600;
   border: 2px solid lightgray;

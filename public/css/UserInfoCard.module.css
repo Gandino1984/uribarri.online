@@ -260,11 +260,11 @@
 }
 
 .userName {
-  font-size: .9rem; /* Smaller on mobile */
+  font-size: .8rem; /* Smaller on mobile */
   font-weight: 800;
   color: black;
   margin: 0;
-  letter-spacing: 0.05rem;
+  letter-spacing: 0.04rem;
   word-break: break-word; /* Handle long names */
 }
 
