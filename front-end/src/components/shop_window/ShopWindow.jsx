@@ -5,6 +5,7 @@ import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
 import FiltersForShops from './components/FiltersForShops.jsx';
+import RecommendedFilters from './components/recommendedFilters/RecommendedFilters.jsx';
 import useShopWindow from './ShopWindowUtils.jsx';
 import styles from '../../../../public/css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
@@ -51,7 +52,6 @@ const ShopWindow = () => {
     getAvailableSubtypes,
     getActiveFiltersCount,
     getDisplayedShops,
-    //update: Add setShowFilters from the hook
     setShowFilters
   } = useShopWindow(currentUser, shops, setShops, uiHandlers, shopHandlers);
   
@@ -85,11 +85,30 @@ const ShopWindow = () => {
     setShowFilters(false);
   };
 
+  //update: Handle recommended filter selection
+  const handleRecommendedFilterSelect = (filterType) => {
+    if (filterType) {
+      handleFilterChange('tipo_comercio', filterType);
+      handleFilterChange('subtipo_comercio', null);
+    } else {
+      handleFilterChange('tipo_comercio', null);
+      handleFilterChange('subtipo_comercio', null);
+    }
+  };
+
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
+      {/*update: Reorganized structure - title first, then recommended filters, then filter button */}
+      <div className={styles.headerSection}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
-        
+      </div>
+
+      <RecommendedFilters 
+        onFilterSelect={handleRecommendedFilterSelect}
+        currentFilter={filters.tipo_comercio}
+      />
+      
+      <div className={styles.filterButtonSection}>
         <button
           onClick={toggleFilters}
           className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
@@ -121,7 +140,6 @@ const ShopWindow = () => {
           handleDayChange={handleDayChange}
           handleResetFilters={handleResetFilters}
           getAvailableSubtypes={getAvailableSubtypes}
-          //update: Pass onClose handler
           onClose={handleCloseFilters}
         />
       )}
@@ -165,7 +183,7 @@ const ShopWindow = () => {
           
           <div className={styles.shopsGrid}>
             {transitions((style, shop) => 
-              shop && (
+              shop ? (
                 <animated.div 
                   key={shop.id_shop} 
                   style={style} 
@@ -189,7 +207,7 @@ const ShopWindow = () => {
                     />
                   </div>
                 </animated.div>
-              )
+              ) : null
             )}
           </div>
         </>

@@ -21,6 +21,9 @@ router.get("/by-user/:id_user", shopValorationApiController.getByUserId);
 // Get a specific valoration by user and shop
 router.post("/by-user-and-shop", shopValorationApiController.getByUserAndShop);
 
+//update: Check if user can rate a shop
+router.post("/can-rate", shopValorationApiController.canUserRateShop);
+
 // Delete a valoration
 router.delete("/remove/:id_valoration", shopValorationApiController.removeById);
 
