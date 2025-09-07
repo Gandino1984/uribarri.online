@@ -18,7 +18,7 @@ export const filterOptions = [
     id: 'alimentación',
     label: 'Alimentación',
     type: 'Alimentación',
-    image: '/images/portraits/recommendedFilters/Conservas.jpg'
+    image: '/images/portraits/recommendedFilters/Alimentación.jpg'
   },
   { 
     id: 'frutasyvegetales',

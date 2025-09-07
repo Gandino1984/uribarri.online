@@ -43,20 +43,17 @@
   cursor: pointer;
   z-index: 10;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .scrollButton:hover:not(.disabled) {
-  background: var(--app-purple);
-  border-color: var(--app-purple);
-  color: white;
-  transform: translateY(-50%) scale(1.1);
-  /* box-shadow: 0 4px 12px rgba(146, 51, 234, 0.3); */
+  background: lightgray;
 }
 
 .scrollButton.disabled {
-  opacity: 0.3;
+  /* opacity: 0.3; */
   cursor: not-allowed;
+  color: lightgray;
   pointer-events: none;
 }
 
@@ -71,7 +68,7 @@
 /*update: Slider container - horizontal scroll with drag */
 .sliderContainer {
   overflow-x: auto;  
-  /* overflow-y: hidden; */
+  overflow-y: hidden;
   scroll-behavior: smooth;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -115,22 +112,19 @@
   transform: scale(1.02);
 }
 
-/*update: Image wrapper - squared with border radius */
 .imageWrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 1;
   border-radius: 20px;
   overflow: hidden;
-  /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); */
   transition: all 0.3s ease;
-  border: 2px solid transparent;
+  border: 2px solid lightgray;
   background: white;
 }
 
 .filterButton.active .imageWrapper {
   border-color: var(--app-purple);
-  /* box-shadow: 0 8px 30px rgba(146, 51, 234, 0.4); */
 }
 
 .filterButton:hover .imageWrapper {
