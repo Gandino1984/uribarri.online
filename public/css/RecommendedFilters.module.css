@@ -15,9 +15,9 @@
 }
 
 .subtitle {
-  font-size: 0.8rem;
-  color: gray;
-  font-weight: 500;
+  font-size: 1rem;
+  color: black;
+  font-weight:6500;
 }
 
 /*update: Slider wrapper with scroll buttons */
@@ -52,9 +52,10 @@
 }
 
 .scrollButton.disabled {
+  opacity: .4;
   cursor: not-allowed;
-  color: gray;
-  pointer-events: none;
+  color: white;
+  /* pointer-events: none; */
 }
 
 .scrollButtonLeft {

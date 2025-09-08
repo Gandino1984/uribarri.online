@@ -105,7 +105,7 @@ const ShopWindow = () => {
   return (
     <div className={styles.container}>
       <div className={styles.headerSection}>
-        <h1 className={styles.title}>Escaparate Comercial</h1>
+        <h1 className={styles.title}>Comercio de barrio</h1>
       </div>
 
       <RecommendedFilters 
