@@ -24,7 +24,7 @@ const RecommendedFilters = ({ onFilterSelect, currentFilter }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <p className={styles.subtitle}>Explora por categorías los comercios del distrito 02 de Bilbao</p>
+        <p className={styles.subtitle}>Explora por categorías las actividades comerciales del distrito 02 de Bilbao</p>
       </div>
       
       <div className={styles.sliderWrapper}>

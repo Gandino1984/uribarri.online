@@ -213,6 +213,7 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     return dayMap[day] === true || dayMap[day] === 1;
   }, []);
 
+  //update: Modified to search both type and subtype
   const getFilteredShops = useCallback(() => {
     if (!shops || shops.length === 0) {
       return [];
@@ -233,12 +234,17 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
       });
     }
 
-    // Filter by shop type
+    //update: Filter by shop type OR subtype when tipo_comercio filter is set
     if (filters.tipo_comercio) {
-      filtered = filtered.filter(shop => shop.type_shop === filters.tipo_comercio);
+      const filterValue = filters.tipo_comercio.toLowerCase();
+      filtered = filtered.filter(shop => {
+        const typeMatch = shop.type_shop && shop.type_shop.toLowerCase() === filterValue;
+        const subtypeMatch = shop.subtype_shop && shop.subtype_shop.toLowerCase() === filterValue;
+        return typeMatch || subtypeMatch;
+      });
     }
 
-    // Filter by shop subtype
+    // Filter by shop subtype (only if specifically selected from subtype dropdown)
     if (filters.subtipo_comercio) {
       filtered = filtered.filter(shop => shop.subtype_shop === filters.subtipo_comercio);
     }
@@ -293,7 +299,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     getAvailableSubtypes,
     getActiveFiltersCount,
     getDisplayedShops,
-    //update: Export setShowFilters so parent can control it
     setShowFilters,
   };
 };

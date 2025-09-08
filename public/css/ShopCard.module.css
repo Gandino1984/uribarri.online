@@ -73,10 +73,10 @@
   max-height: 250px;
 }
 
-/*update: Remove hover effect that was triggering store navigation */
-/* .infoContainer:hover {
+
+.infoContainer:hover {
   background-color: var(--app-purple-transparent);
-} */
+}
 
 .header {
   display: flex;

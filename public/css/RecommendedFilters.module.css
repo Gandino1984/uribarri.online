@@ -9,15 +9,20 @@
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   margin-bottom: 1rem;
   padding: 0 1rem;
 }
 
 .subtitle {
+  user-select: none;
+  max-width: 90%;
   font-size: 1rem;
   color: black;
-  font-weight:6500;
+  /* font-weight:500; */
 }
 
 /*update: Slider wrapper with scroll buttons */

@@ -39,10 +39,10 @@ export const filterOptions = [
     image: '/images/portraits/recommendedFilters/ProductosOrgánicos.jpg'
   },
   { 
-    id: 'comidaturca',
-    label: 'Comida Turca',
-    type: 'comida turca',
-    image: '/images/portraits/recommendedFilters/ComidaTurca.jpg'
+    id: 'Kebab',
+    label: 'Kebab',
+    type: 'kebab',
+    image: '/images/portraits/recommendedFilters/Kebab.jpg'
   },
     { 
     id: 'carniceríaypescadería',
