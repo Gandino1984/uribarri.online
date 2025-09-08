@@ -9,7 +9,6 @@ async function validateUser(id_user) {
         const user = await user_model.findOne({
             where: {
                 id_user: id_user,
-                //update: Remove contributor_user check, add type_user validation
                 type_user: 'user'
             }
         });
@@ -62,7 +61,7 @@ async function validateShop(id_shop) {
     }
 }
 
-//update: Add function to check if user has purchased from shop
+//to check if user has purchased from shop
 async function hasUserPurchasedFromShop(id_user, id_shop) {
     try {
         const order = await order_model.findOne({

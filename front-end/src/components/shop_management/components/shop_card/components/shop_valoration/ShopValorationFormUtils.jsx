@@ -9,11 +9,9 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
   const [canRate, setCanRate] = useState(false);
   const [rateMessage, setRateMessage] = useState('');
   const [existingValoration, setExistingValoration] = useState(null);
-  //update: Add state for purchase verification
   const [hasPurchased, setHasPurchased] = useState(false);
   const [purchaseCheckLoading, setPurchaseCheckLoading] = useState(true);
 
-  //update: Check if user can rate this shop
   const checkCanRate = useCallback(async () => {
     if (!currentUser || currentUser.type_user !== 'user') {
       setCanRate(false);
@@ -25,7 +23,6 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
     try {
       setPurchaseCheckLoading(true);
       
-      //update: First check if user has made a successful purchase from this shop using the correct endpoint
       console.log('Checking purchase for user:', currentUser.id_user, 'shop:', shop.id_shop);
       
       const purchaseResponse = await axiosInstance.get('/order/check-purchase', {
@@ -47,7 +44,6 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
         return;
       }
 
-      //update: If user has purchased, check if they can rate (haven't rated yet or can update)
       const response = await axiosInstance.post('/shop-valoration/can-rate', {
         id_user: currentUser.id_user,
         id_shop: shop.id_shop
@@ -64,7 +60,6 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
           setExistingValoration(response.data.existingValoration);
           setRating(response.data.existingValoration.calification_shop);
           setComment(response.data.existingValoration.comment_shop || '');
-          //update: Allow editing existing valoration
           setCanRate(true);
         }
       }
@@ -77,26 +72,22 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
     }
   }, [currentUser, shop.id_shop]);
 
-  //update: Handle rating click
   const handleRatingClick = useCallback((value) => {
     if (canRate || existingValoration) {
       setRating(value);
     }
   }, [canRate, existingValoration]);
 
-  //update: Handle mouse hover on stars
   const handleRatingHover = useCallback((value) => {
     if (canRate || existingValoration) {
       setHoveredRating(value);
     }
   }, [canRate, existingValoration]);
 
-  //update: Handle mouse leave from stars
   const handleRatingLeave = useCallback(() => {
     setHoveredRating(0);
   }, []);
 
-  //update: Handle comment change
   const handleCommentChange = useCallback((e) => {
     const value = e.target.value;
     if (value.length <= 500) {
@@ -104,17 +95,17 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
     }
   }, []);
 
-  //update: Handle form submission
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     if (rating === 0) {
+      //update: Set error as object
       setError({ valorationError: 'Por favor selecciona una calificación' });
       return;
     }
 
-    //update: Double-check purchase status before submitting
     if (!hasPurchased && !existingValoration) {
+      //update: Set error as object
       setError({ valorationError: 'Debes realizar una compra antes de valorar' });
       return;
     }
@@ -125,7 +116,6 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
       let response;
       
       if (existingValoration) {
-        //update: Update existing valoration
         response = await axiosInstance.patch('/shop-valoration/update', {
           id_valoration: existingValoration.id_valoration,
           id_user: currentUser.id_user,
@@ -134,7 +124,6 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
           comment_shop: comment.trim() || null
         });
       } else {
-        //update: Create new valoration
         response = await axiosInstance.post('/shop-valoration/create', {
           id_user: currentUser.id_user,
           id_shop: shop.id_shop,
@@ -144,7 +133,12 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
       }
 
       if (response.data.success) {
-        setSuccess(existingValoration ? 'Valoración actualizada exitosamente' : 'Valoración creada exitosamente');
+        //update: Set success as object with a key-value pair
+        const successMessage = existingValoration 
+          ? 'Valoración actualizada exitosamente' 
+          : 'Valoración creada exitosamente';
+        
+        setSuccess({ valorationSuccess: successMessage });
         
         // Call success callback if provided
         if (onSubmitSuccess) {
@@ -158,6 +152,7 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
       }
     } catch (error) {
       console.error('Error submitting valoration:', error);
+      //update: Set error as object
       setError({ 
         valorationError: error.response?.data?.error || 'Error al enviar la valoración' 
       });
@@ -166,7 +161,6 @@ const useShopValorationForm = (shop, currentUser, setError, setSuccess, onClose,
     }
   }, [rating, comment, existingValoration, hasPurchased, currentUser, shop.id_shop, setError, setSuccess, onSubmitSuccess, onClose]);
 
-  //update: Initialize on mount
   useEffect(() => {
     checkCanRate();
   }, [checkCanRate]);

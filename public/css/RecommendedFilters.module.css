@@ -29,30 +29,31 @@
 
 /*update: Scroll buttons - mobile first */
 .scrollButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  background: white;
+  color: white;
+  background-color: var(--app-purple);
   border: 2px solid transparent;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 10px;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.3s ease;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  transition: all 0.2s ease;
 }
 
 .scrollButton:hover{
-  background: lightgray;
+  color: white;
+  background-color: var(--app-purple-darker);
 }
 
 .scrollButton.disabled {
   cursor: not-allowed;
-  color: lightgray;
+  color: gray;
   pointer-events: none;
 }
 
