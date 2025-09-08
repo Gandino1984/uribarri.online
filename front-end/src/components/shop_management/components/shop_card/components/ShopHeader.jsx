@@ -1,9 +1,18 @@
 import React, { memo } from 'react';
-import { Minimize2, Edit, Map, AlertTriangle } from 'lucide-react';
+import { Minimize2, Edit, Map, Star, AlertTriangle } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
-
-const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleMap, handleReport, isSeller }) => {
+const ShopHeader = memo(({ 
+  minimized, 
+  toggleMinimized, 
+  handleUpdateShop, 
+  toggleMap, 
+  handleToggleValoration,
+  handleReport, 
+  isSeller, 
+  canValorate,
+  showValorationForm 
+}) => {
   if (minimized) return null;
   
   return (
@@ -37,7 +46,19 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
         <Map size={16} />
       </button>
       
-      {/*update: Added report button*/}
+      {/*update: Added valoration button for users */}
+      {canValorate && (
+        <button 
+          className={`${styles.active} ${showValorationForm ? styles.activeToggled : ''}`}
+          onClick={handleToggleValoration}
+          title="Valorar comercio"
+          aria-label="Valorar comercio"
+        >
+          <Star size={16} />
+        </button>
+      )}
+      
+      {/*update: Report button */}
       <button 
         className={styles.active}
         onClick={handleReport}
@@ -49,5 +70,7 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
     </div>
   );
 });
+
+ShopHeader.displayName = 'ShopHeader';
 
 export default ShopHeader;

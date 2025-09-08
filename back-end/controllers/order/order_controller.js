@@ -801,7 +801,6 @@ async function cancel(id_order, cancellation_reason) {
     }
 }
 
-//update: Fixed assignRider to set rider_accepted to null (pending)
 async function assignRider(id_order, id_rider) {
     try {
         const order = await order_model.findByPk(id_order);
@@ -837,7 +836,6 @@ async function assignRider(id_order, id_rider) {
     }
 }
 
-//update: Fixed riderResponse to handle shop owner's response
 async function riderResponse(id_order, id_rider, accepted) {
     try {
         const order = await order_model.findByPk(id_order);
@@ -868,42 +866,77 @@ async function riderResponse(id_order, id_rider, accepted) {
                 rider_accepted: false
             });
         }
-        const updatedOrder = await getById(id_order);
-       
-       return { 
-           data: updatedOrder.data,
-           message: accepted ? "Repartidor aceptado por el comercio" : "Solicitud de repartidor rechazada"
-       };
-   } catch (err) {
-       console.error("Error al procesar respuesta del repartidor =", err);
-       return { error: "Error al procesar la respuesta del repartidor" };
-   }
+        
+const updatedOrder = await getById(id_order);
+        
+        return { 
+            data: updatedOrder.data,
+            message: accepted ? "Repartidor aceptado por el comercio" : "Solicitud de repartidor rechazada"
+        };
+    } catch (err) {
+        console.error("Error al procesar respuesta del repartidor =", err);
+        return { error: "Error al procesar la respuesta del repartidor" };
+    }
+}
+
+//update: Fixed checkUserPurchase to properly check for delivered orders
+async function checkUserPurchase(id_user, id_shop) {
+    try {
+        console.log("-> order_controller.js - checkUserPurchase() - Checking purchase for user:", id_user, "shop:", id_shop);
+        
+        const order = await order_model.findOne({
+            where: {
+                id_user: id_user,
+                id_shop: id_shop,
+                order_status: 'delivered'
+            }
+        });
+        
+        console.log("-> order_controller.js - checkUserPurchase() - Found order:", order ? "Yes" : "No");
+        
+        return {
+            hasPurchased: order !== null,
+            orderDetails: order ? {
+                id_order: order.id_order,
+                order_date: order.created_at,
+                order_status: order.order_status
+            } : null
+        };
+    } catch (err) {
+        console.error("Error checking user purchase:", err);
+        return {
+            error: "Error al verificar compras",
+            hasPurchased: false
+        };
+    }
 }
 
 export { 
-   getAll, 
-   getById,
-   getByUserId,
-   getByShopId,
-   getByRiderId,
-   getAvailableForRiders,
-   create, 
-   updateStatus,
-   cancel,
-   assignRider,
-   riderResponse
+    getAll, 
+    getById,
+    getByUserId,
+    getByShopId,
+    getByRiderId,
+    getAvailableForRiders,
+    create, 
+    updateStatus,
+    cancel,
+    assignRider,
+    riderResponse,
+    checkUserPurchase
 }
 
 export default { 
-   getAll, 
-   getById,
-   getByUserId,
-   getByShopId,
-   getByRiderId,
-   getAvailableForRiders,
-   create, 
-   updateStatus,
-   cancel,
-   assignRider,
-   riderResponse
+    getAll, 
+    getById,
+    getByUserId,
+    getByShopId,
+    getByRiderId,
+    getAvailableForRiders,
+    create, 
+    updateStatus,
+    cancel,
+    assignRider,
+    riderResponse,
+    checkUserPurchase
 }

@@ -24,7 +24,7 @@
 .sliderWrapper {
   position: relative;
   width: 100%;
-  padding: 0 3rem;
+  padding: 0 1rem;
 }
 
 /*update: Scroll buttons - mobile first */
@@ -36,7 +36,7 @@
   height: 40px;
   background: white;
   border: 2px solid transparent;
-  border-radius: 50%;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,12 +46,11 @@
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
-.scrollButton:hover:not(.disabled) {
+.scrollButton:hover{
   background: lightgray;
 }
 
 .scrollButton.disabled {
-  /* opacity: 0.3; */
   cursor: not-allowed;
   color: lightgray;
   pointer-events: none;
@@ -65,7 +64,6 @@
   right: 0.5rem;
 }
 
-/*update: Slider container - horizontal scroll with drag */
 .sliderContainer {
   overflow-x: auto;  
   overflow-y: hidden;
@@ -93,6 +91,7 @@
 
 /*update: Filter button - mobile first with squared design */
 .filterButton {
+  max-width: 10rem;
   flex: 0 0 calc(50% - 0.5rem);
   position: relative;
   background: transparent;
@@ -116,7 +115,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 20px;
+  border-radius: 15px;
   overflow: hidden;
   transition: all 0.3s ease;
   border: 2px solid lightgray;
@@ -185,12 +184,12 @@
 
 .label {
   display: inline-block;
-  padding: 0.375rem 0.875rem;
+  padding: 0.3rem 0.8rem;
   /* background: var(--app-purple); */
   color: var(--app-purple);
   border-radius: 24px;
-  font-size: 1rem;
-  font-weight: 800;
+  font-size: .8rem;
+  font-weight: 700;
   white-space: nowrap;
   /* box-shadow: 0 4px 16px rgba(146, 51, 234, 0.4); */
   position: relative;

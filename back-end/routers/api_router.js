@@ -39,7 +39,6 @@ router.use("/product-category", productCategoryApiRouter);
 
 router.use("/product-subcategory", productSubcategoryApiRouter);
 
-//update: Add category-subcategory association routes
 router.use("/category-subcategory", categorySubcategoryApiRouter);
 
 router.use("/type-category", typeCategoryApiRouter);

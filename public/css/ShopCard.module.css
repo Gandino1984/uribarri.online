@@ -2,7 +2,7 @@
 
 .shopCardWrapper {
   /* outline: 2px solid var(--app-purple); */
-  border-radius: 8px;
+  border-radius: 10px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -17,8 +17,8 @@
 
 .shopCardWrapper.withMap {
   flex-direction: row;
-  align-items: stretch;
-  height: 500px;
+  /* align-items: stretch; */
+  /* height: 500px; */
 }
 
 .withMap .container {
@@ -73,9 +73,10 @@
   max-height: 250px;
 }
 
-.infoContainer:hover {
+/*update: Remove hover effect that was triggering store navigation */
+/* .infoContainer:hover {
   background-color: var(--app-purple-transparent);
-}
+} */
 
 .header {
   display: flex;
@@ -164,17 +165,16 @@
 }
 
 .minimizeButton {
-  color: var(--dark-orange);
-  opacity: .8;
-  background-color: rgba(255, 255, 255, 0.638);
-  border: none;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: black;
+  opacity: .8;
+  background-color: white;
+  border: 2px solid transparent;
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .minimizeButton:hover {
@@ -216,6 +216,48 @@
 
 .updateButtonText {
   font-size: 0.85rem;
+}
+
+/*update: New Order Button Styles */
+.orderButtonContainer {
+  padding: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.orderButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--app-purple);
+  color: white;
+  border: 2px solid transparent;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.orderButton:hover {
+  background-color: var(--app-purple-darker);
+  /* transform: translateY(-1px); */
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
+}
+
+.orderButton:active {
+  /* transform: translateY(0); */
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.orderButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Minimized state */
@@ -375,28 +417,31 @@
 
 /* Action button */
 .active {
+  opacity: .5;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: .3rem .4rem;
-  border-radius: 50%;
-  font-weight: 500;
+  padding: .2rem .2rem;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
   margin-right: .5rem;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: white;
   transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid transparent;
 }
 
 .active:hover {
-  color: white;
-  border: 1px solid white;
-  background-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 0 10px var(--saturated-blue-transparent);
+  opacity: 1;
+  background-color: lightgray;
+}
+
+.activeToggled {
+  border-color: var(app-purple) !important;
 }
 
 .inactive {
-  opacity: 0.5;
+  color: gray;
   cursor: not-allowed;
 }
 
@@ -438,6 +483,52 @@
 .active[title="Reportar actividad inusual"]:hover {
   background-color: rgba(239, 68, 68, 0.3);
   color: #dc2626;
+}
+
+/* Add these new styles */
+.container.expanded {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.storeButton {
+  background-color: rgba(34, 197, 94, 0.1) !important;
+}
+
+.storeButton:hover {
+  background-color: rgba(34, 197, 94, 0.3) !important;
+  color: #16a34a !important;
+}
+
+.viewProductsButton {
+  margin-top: 1rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--primary-color, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.viewProductsButton:hover {
+  background-color: var(--primary-hover, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/*update: Valoration form container */
+.valorationFormContainer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
 }
 
 /* CRITICAL: Fullscreen map on mobile devices with maximum z-index */
@@ -511,6 +602,16 @@
   .responsiveContainerColumn,
   .responsiveContainerRow {
     padding: 0 1rem;
+  }
+
+  /*update: Adjust order button on mobile */
+  .orderButtonContainer {
+    padding: 0.5rem;
+  }
+
+  .orderButton {
+    padding: 0.65rem 0.9rem;
+    font-size: 0.85rem;
   }
 }
 

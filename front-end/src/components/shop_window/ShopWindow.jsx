@@ -19,7 +19,7 @@ const ShopWindow = () => {
     setSelectedShopForStore,
     setShowLandingPage
   } = useUI();
-  const { shops, setShops, shopTypesAndSubtypes } = useShop();
+  const { shops, setShops, shopTypesAndSubtypes, setSelectedShop } = useShop();
   
   const uiHandlers = {
     setShowShopWindow,
@@ -62,7 +62,6 @@ const ShopWindow = () => {
     fetchAllShops();
   }, [fetchAllShops]);
 
-  //update: Fixed animation - use consistent transform format
   const transitions = useTransition(displayedShops, {
     from: { 
       opacity: 0, 
@@ -80,12 +79,10 @@ const ShopWindow = () => {
     config: { tension: 200, friction: 25 }
   });
 
-  //update: Handle close filters
   const handleCloseFilters = () => {
     setShowFilters(false);
   };
 
-  //update: Handle recommended filter selection
   const handleRecommendedFilterSelect = (filterType) => {
     if (filterType) {
       handleFilterChange('tipo_comercio', filterType);
@@ -96,9 +93,17 @@ const ShopWindow = () => {
     }
   };
 
+  //update: Add handler for shop card order button
+  const handleShopOrder = (shop) => {
+    console.log('ShopWindow - handleShopOrder called for shop:', shop);
+    setSelectedShop(shop);
+    setSelectedShopForStore(shop);
+    setShowShopWindow(false);
+    setShowShopStore(true);
+  };
+
   return (
     <div className={styles.container}>
-      {/*update: Reorganized structure - title first, then recommended filters, then filter button */}
       <div className={styles.headerSection}>
         <h1 className={styles.title}>Escaparate Comercial</h1>
       </div>
@@ -189,23 +194,12 @@ const ShopWindow = () => {
                   style={style} 
                   className={styles.shopCardWrapper}
                 >
-                  <div 
-                    onClick={() => handleShopClick(shop)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        handleShopClick(shop);
-                      }
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <ShopCard 
-                      shop={shop} 
-                      isClickable={false}
-                      hideActions={true}
-                    />
-                  </div>
+                  <ShopCard 
+                    shop={shop} 
+                    isClickable={false}
+                    hideActions={false}
+                    onOrder={handleShopOrder}
+                  />
                 </animated.div>
               ) : null
             )}

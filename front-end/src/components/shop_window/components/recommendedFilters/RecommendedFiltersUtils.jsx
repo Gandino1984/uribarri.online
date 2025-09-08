@@ -9,6 +9,12 @@ export const filterOptions = [
     image: '/images/portraits/recommendedFilters/Artesanía.jpg'
   },
   { 
+    id: 'panaderíayrepostería',
+    label: 'Panadería y Repostería',
+    type: 'panadería y repostería',
+    image: '/images/portraits/recommendedFilters/PanaderíaYrepostería.jpg'
+  },
+  { 
     id: 'comidaasiática',
     label: 'Comida Asiática',
     type: 'comida asiática',
@@ -37,6 +43,12 @@ export const filterOptions = [
     label: 'Comida Turca',
     type: 'comida turca',
     image: '/images/portraits/recommendedFilters/ComidaTurca.jpg'
+  },
+    { 
+    id: 'carniceríaypescadería',
+    label: 'Carnicería y Pescadería',
+    type: 'carnicería y pescadería',
+    image: '/images/portraits/recommendedFilters/CarniceríaYpescadería.jpg'
   },
   { 
     id: 'comidalatina',

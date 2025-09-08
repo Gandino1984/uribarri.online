@@ -35,7 +35,7 @@ const RecommendedFilters = ({ onFilterSelect, currentFilter }) => {
           disabled={!canScrollLeft}
           aria-label="Scroll left"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={30} />
         </button>
 
         {/* Slider container with drag functionality */}
@@ -95,7 +95,7 @@ const RecommendedFilters = ({ onFilterSelect, currentFilter }) => {
           disabled={!canScrollRight}
           aria-label="Scroll right"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={30} />
         </button>
       </div>
 

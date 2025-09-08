@@ -10,8 +10,10 @@ import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 
 function TopBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  //update: Add state for UserInfoCard visibility
   const [showUserInfoCard, setShowUserInfoCard] = useState(false);
+  //update: Add state for scroll behavior
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   
   const burgerButtonRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -44,6 +46,56 @@ function TopBar() {
     clearUserSession
   } = TopBarUtils();
 
+  //update: Add scroll handler
+  useEffect(() => {
+    const controlTopBar = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Define scroll threshold
+      const scrollThreshold = 10;
+      
+      // If mobile menu is open, keep TopBar visible
+      if (mobileMenuOpen) {
+        setIsVisible(true);
+        setLastScrollY(currentScrollY);
+        return;
+      }
+      
+      // Show TopBar when at the top of the page
+      if (currentScrollY < scrollThreshold) {
+        setIsVisible(true);
+      }
+      // Hide when scrolling down
+      else if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+        setIsVisible(false);
+      }
+      // Show when scrolling up
+      else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+    
+    // Add scroll event listener with throttling for performance
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          controlTopBar();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY, mobileMenuOpen]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -55,13 +107,11 @@ function TopBar() {
     setMobileMenuOpen(false);
   };
   
-  //update: Add handler for profile button
   const handleProfileClick = () => {
     setShowUserInfoCard(true);
     setMobileMenuOpen(false);
   };
   
-  //update: Add handler to close UserInfoCard
   const handleCloseUserInfoCard = () => {
     setShowUserInfoCard(false);
   };
@@ -101,7 +151,8 @@ function TopBar() {
 
   return (
     <>
-      <div className={styles.container}>
+      {/*update: Add dynamic className based on visibility state */}
+      <div className={`${styles.container} ${isVisible ? styles.visible : styles.hidden}`}>
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
               <span className={styles.title}>
@@ -112,7 +163,6 @@ function TopBar() {
           <div className={styles.buttonsContainer}>
             {currentUser ? (
               <>
-                {/* update: Add desktop profile button */}
                 <button 
                   type="button" 
                   className={styles.profileButton} 
@@ -188,7 +238,6 @@ function TopBar() {
 
                 {currentUser ? (
                   <>
-                    {/* update: Add profile button in mobile menu */}
                     <button 
                       className={styles.profileMenuButton}
                       onClick={handleProfileClick}
@@ -233,7 +282,6 @@ function TopBar() {
         </div>
       </div>
       
-      {/* update: Render UserInfoCard when showUserInfoCard is true */}
       {currentUser && showUserInfoCard && (
         <UserInfoCard onClose={handleCloseUserInfoCard} />
       )}
