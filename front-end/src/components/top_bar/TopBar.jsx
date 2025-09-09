@@ -156,7 +156,7 @@ function TopBar() {
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
               <span className={styles.title}>
-                mibarrio.online
+                uribarri.online
               </span>
           </div>
 
@@ -170,7 +170,7 @@ function TopBar() {
                   title="Ver perfil"
                 >
                   <CircleUserRound size={16}/>
-                  <span>Perfil</span>
+                  <span>Mi Perfil</span>
                 </button>
                 <button 
                   type="button" 
@@ -243,7 +243,7 @@ function TopBar() {
                       onClick={handleProfileClick}
                     >
                       <CircleUserRound size={16} className={styles.buttonIcon} />
-                      <span className={styles.buttonText}>Perfil</span>
+                      <span className={styles.buttonText}>Mi Perfil</span>
                     </button>
                     
                     <div className={styles.menuDivider}></div>

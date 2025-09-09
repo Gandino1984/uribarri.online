@@ -11,14 +11,19 @@ import ShopDetails from './components/ShopDetails.jsx';
 import useScreenSize from './components/useScreenSize.js';
 import ShopCardUtils from './ShopCardUtils.jsx';
 import ShopValorationForm from './components/shop_valoration/ShopValorationForm.jsx';
+import UserInfoCard from '../../../user_info_card/UserInfoCard.jsx';
 import { ShoppingCart } from 'lucide-react';
+import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
 const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = null }) => {
   const [minimized, setMinimized] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showValorationForm, setShowValorationForm] = useState(false);
-  //update: Add state to trigger refresh of valoration form
   const [valorationKey, setValorationKey] = useState(0);
+  //update: Add state for shop owner info
+  const [showOwnerInfo, setShowOwnerInfo] = useState(false);
+  const [ownerData, setOwnerData] = useState(null);
+  const [loadingOwner, setLoadingOwner] = useState(false);
   const isSmallScreen = useScreenSize(768);
   
   const { currentUser } = useAuth();
@@ -40,6 +45,55 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
     return () => clearInterval(interval);
   }, [shop, isShopOpen]);
 
+  //update: Function to fetch shop owner data using correct field name
+// In ShopCard.jsx, modify the fetchOwnerData function:
+
+const fetchOwnerData = useCallback(async () => {
+  if (!shop?.id_user) {
+    console.error('No shop owner ID available');
+    return;
+  }
+
+  setLoadingOwner(true);
+  try {
+    console.log('Fetching owner data for user ID:', shop.id_user);
+    
+    // Use the correct endpoint from user_api_router.js
+    const response = await axiosInstance.post('/user/byId', {
+      id_user: shop.id_user
+    });
+
+    if (response.data && response.data.data) {
+      setOwnerData(response.data.data);
+      console.log('Owner data fetched successfully:', response.data.data);
+    } else {
+      console.error('Owner not found');
+    }
+  } catch (error) {
+    console.error('Error fetching owner data:', error);
+  } finally {
+    setLoadingOwner(false);
+  }
+}, [shop?.id_user]);
+
+  //update: Handle showing owner info
+  const handleShowOwnerInfo = useCallback(async (e) => {
+    e.stopPropagation();
+    
+    if (!ownerData && !loadingOwner) {
+      await fetchOwnerData();
+    }
+    
+    setShowOwnerInfo(true);
+    setShowMap(false);
+    setShowValorationForm(false);
+  }, [ownerData, loadingOwner, fetchOwnerData]);
+
+  //update: Handle closing owner info
+  const handleCloseOwnerInfo = useCallback(() => {
+    setShowOwnerInfo(false);
+  }, []);
+
   // Event handlers
   const toggleMinimized = useCallback(() => {
     setMinimized(prevState => !prevState);
@@ -47,6 +101,7 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
     if (!minimized === false) {
       setShowMap(false);
       setShowValorationForm(false);
+      setShowOwnerInfo(false);
     }
   }, [minimized]);
 
@@ -55,6 +110,7 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
     setShowMap(prev => !prev);
     if (!showMap) {
       setShowValorationForm(false);
+      setShowOwnerInfo(false);
     }
   }, [showMap]);
 
@@ -73,7 +129,7 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
     setShowValorationForm(prev => !prev);
     if (!showValorationForm) {
       setShowMap(false);
-      //update: Force refresh of valoration form when opening
+      setShowOwnerInfo(false);
       setValorationKey(prev => prev + 1);
     }
   }, [showValorationForm]);
@@ -103,7 +159,6 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
 
   const handleValorationSuccess = useCallback(() => {
     console.log('Valoration submitted successfully');
-    //update: Refresh the shop data if needed
     setShowValorationForm(false);
   }, []);
 
@@ -133,9 +188,11 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
               toggleMap={toggleMap}
               handleToggleValoration={handleToggleValoration}
               handleReport={handleReport}
+              handleShowOwnerInfo={handleShowOwnerInfo}
               isSeller={isSeller}
               canValorate={canValorate}
               showValorationForm={showValorationForm}
+              showOwnerInfo={showOwnerInfo}
             />
             <ShopCoverImage id_shop={shop.id_shop} />
             <ShopDetails 
@@ -160,7 +217,6 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
               </div>
             )}
             
-            {/*update: Add key prop to force re-render of valoration form */}
             {showValorationForm && (
               <div className={styles.valorationFormContainer}>
                 <ShopValorationForm 
@@ -187,6 +243,15 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
         </div>    
       )}
     </div>
+    
+    {/*update: Render UserInfoCard for shop owner */}
+    {showOwnerInfo && ownerData && (
+      <UserInfoCard 
+        userData={ownerData}
+        onClose={handleCloseOwnerInfo}
+        isOwnerView={true}
+      />
+    )}
     </>
   );
 };

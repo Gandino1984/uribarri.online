@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Minimize2, Edit, Map, Star, AlertTriangle } from 'lucide-react';
+import { Minimize2, Edit, Map, Star, AlertTriangle, User } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
 const ShopHeader = memo(({ 
@@ -8,10 +8,12 @@ const ShopHeader = memo(({
   handleUpdateShop, 
   toggleMap, 
   handleToggleValoration,
-  handleReport, 
+  handleReport,
+  handleShowOwnerInfo,
   isSeller, 
   canValorate,
-  showValorationForm 
+  showValorationForm,
+  showOwnerInfo
 }) => {
   if (minimized) return null;
   
@@ -46,7 +48,6 @@ const ShopHeader = memo(({
         <Map size={16} />
       </button>
       
-      {/*update: Added valoration button for users */}
       {canValorate && (
         <button 
           className={`${styles.active} ${showValorationForm ? styles.activeToggled : ''}`}
@@ -58,7 +59,16 @@ const ShopHeader = memo(({
         </button>
       )}
       
-      {/*update: Report button */}
+      {/*update: Owner info button */}
+      <button 
+        className={`${styles.active} ${showOwnerInfo ? styles.activeToggled : ''}`}
+        onClick={handleShowOwnerInfo}
+        title="Ver información del propietario"
+        aria-label="Ver información del propietario"
+      >
+        <User size={16} />
+      </button>
+      
       <button 
         className={styles.active}
         onClick={handleReport}

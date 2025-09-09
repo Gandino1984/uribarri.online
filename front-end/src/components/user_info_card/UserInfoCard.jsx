@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Loader, Eye, User, CircleUserRound,  X } from 'lucide-react';
+import { Camera, Loader, Eye, User, CircleUserRound, X } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 
-const UserInfoCard = ({ onClose }) => {
+//update: Modified to accept userData prop for viewing other users
+const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const { 
     currentUser 
   } = useAuth();
@@ -25,29 +26,27 @@ const UserInfoCard = ({ onClose }) => {
     localImageUrl
   } = UserInfoCardUtils();
 
+  //update: Use provided userData or currentUser
+  const displayUser = userData || currentUser;
+  const isCurrentUser = !userData || (currentUser?.id_user === userData?.id_user);
+
   const fileInputRef = useRef(null);
   const [imageKey, setImageKey] = useState(Date.now()); 
   const [hasValidImage, setHasValidImage] = useState(false);
-  
-  //update: State for controlling visibility
   const [isVisible, setIsVisible] = useState(false);
-  
-  // State for showing the action buttons
   const [showButtons, setShowButtons] = useState(false);
   
-  // References for positioning
   const profileContainerRef = useRef(null);
   const popupRef = useRef(null);
 
-  //update: Fixed slide-down animation with proper centering
   const slideAnimation = useSpring({
     from: {
       opacity: 0,
-      transform: 'translate(-50%, -150%)', // Start above screen, centered
+      transform: 'translate(-50%, -150%)',
     },
     to: {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translate(-50%, 0%)' : 'translate(-50%, -150%)', // Maintain centering
+      transform: isVisible ? 'translate(-50%, 0%)' : 'translate(-50%, -150%)',
     },
     config: {
       mass: 1,
@@ -56,7 +55,6 @@ const UserInfoCard = ({ onClose }) => {
     }
   });
   
-  //update: Backdrop fade animation
   const backdropAnimation = useSpring({
     opacity: isVisible ? 1 : 0,
     pointerEvents: isVisible ? 'auto' : 'none',
@@ -65,34 +63,30 @@ const UserInfoCard = ({ onClose }) => {
     }
   });
 
-  //update: Show animation when component mounts
   useEffect(() => {
-    // Small delay to ensure proper mounting
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 10);
     return () => clearTimeout(timer);
   }, []);
 
-  //update: Handle close with animation
   const handleClose = () => {
     setIsVisible(false);
-    // Wait for animation to complete before calling onClose
     setTimeout(() => {
       if (onClose) onClose();
     }, 300);
   };
 
-  // Toggle button visibility
   const toggleButtons = () => {
-    if (!uploading) {
+    //update: Only allow editing for current user
+    if (!uploading && isCurrentUser) {
       setShowButtons(!showButtons);
     }
   };
 
   const handleUploadClick = (e) => {
     e.stopPropagation();
-    if (fileInputRef.current) {
+    if (fileInputRef.current && isCurrentUser) {
       fileInputRef.current.click();
     }
     setShowButtons(false);
@@ -100,8 +94,8 @@ const UserInfoCard = ({ onClose }) => {
 
   const handleViewClick = (e) => {
     e.stopPropagation();
-    if (currentUser?.image_user && hasValidImage) {
-      const imageUrl = getImageUrl(currentUser.image_user);
+    if (displayUser?.image_user && hasValidImage) {
+      const imageUrl = getImageUrl(displayUser.image_user);
       if (imageUrl) {
         console.log('Opening image modal with URL:', imageUrl);
         openImageModal(imageUrl);
@@ -114,7 +108,6 @@ const UserInfoCard = ({ onClose }) => {
     }
   };
 
-  //update: Improved popup positioning
   useEffect(() => {
     if (showButtons && popupRef.current && profileContainerRef.current) {
       const popup = popupRef.current;
@@ -122,38 +115,32 @@ const UserInfoCard = ({ onClose }) => {
       const profileRect = profileContainer.getBoundingClientRect();
       const popupRect = popup.getBoundingClientRect();
       
-      // Reset any inline styles first
       popup.style.top = '';
       popup.style.bottom = '';
       popup.style.left = '';
       popup.style.right = '';
       
-      // Check if popup would go off the bottom of the screen
       const spaceBelow = window.innerHeight - profileRect.bottom;
       const spaceAbove = profileRect.top;
       
       if (popupRect.height > spaceBelow && spaceAbove > spaceBelow) {
-        // Position above the profile image
         popup.style.bottom = 'calc(100% + 0.5rem)';
         popup.style.top = 'auto';
       }
       
-      // Check horizontal positioning
       const spaceRight = window.innerWidth - profileRect.left;
       
       if (popupRect.width > spaceRight) {
-        // Align to right edge if not enough space
         popup.style.left = 'auto';
         popup.style.right = '0';
       }
     }
   }, [showButtons]);
   
-  // Check if user has a valid image
   useEffect(() => {
     const checkImage = async () => {
-      if (currentUser?.image_user) {
-        const imageUrl = getImageUrl(currentUser.image_user);
+      if (displayUser?.image_user) {
+        const imageUrl = getImageUrl(displayUser.image_user);
         if (imageUrl) {
           try {
             await new Promise((resolve, reject) => {
@@ -176,7 +163,7 @@ const UserInfoCard = ({ onClose }) => {
     };
     
     checkImage();
-  }, [currentUser?.image_user, getImageUrl]);
+  }, [displayUser?.image_user, getImageUrl]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -201,42 +188,38 @@ const UserInfoCard = ({ onClose }) => {
   }, [showButtons]);
 
   useEffect(() => {
-    if (currentUser?.image_user || localImageUrl) {
+    if (displayUser?.image_user || localImageUrl) {
       setImageKey(Date.now());
     }
-  }, [currentUser?.image_user, localImageUrl]);
+  }, [displayUser?.image_user, localImageUrl]);
 
-  useEffect(() => {
-    if (currentUser?.image_user) {
-      const imageUrl = getImageUrl(currentUser.image_user);
-      if (!imageUrl) {
-        setError(prevError => ({ 
-          ...prevError, 
-          imageError: "No se ha proporcionado una ruta de imagen" 
-        }));
-      }
-    }
-  }, [currentUser?.image_user, getImageUrl, setError]);
-
-  if (!currentUser) {
+  if (!displayUser) {
     return null;
   }
 
+  //update: Format user type display
+  const getUserTypeDisplay = (type) => {
+    switch(type) {
+      case 'seller': return 'Vendedor/a';
+      case 'rider': return 'Repartidor/a';
+      case 'user': return 'Comprador/a';
+      case 'admin': return 'Administrador/a';
+      default: return type;
+    }
+  };
+
   return (
     <>
-      {/* update: Backdrop with fade animation */}
       <animated.div 
         className={styles.backdrop}
         style={backdropAnimation}
         onClick={handleClose}
       />
       
-      {/* update: Card with fixed slide-down animation and centering */}
       <animated.div 
         className={styles.userInfoCard}
         style={slideAnimation}
       >
-        {/* update: Close button */}
         <button 
           className={styles.closeButton}
           onClick={handleClose}
@@ -245,9 +228,13 @@ const UserInfoCard = ({ onClose }) => {
           <X size={20} />
         </button>
         
+        {/*update: Add title for owner view */}
+        {isOwnerView && (
+          <h3 className={styles.cardTitle}>Información del Propietario</h3>
+        )}
+        
         <div className={styles.cardContent}>
           <div className={styles.profileSection}>
-            {/* Profile image container */}
             <div 
               ref={profileContainerRef}
               className={styles.profileImageContainer}
@@ -256,26 +243,30 @@ const UserInfoCard = ({ onClose }) => {
               {hasValidImage ? (
                 <img
                   key={imageKey}
-                  src={getImageUrl(currentUser.image_user) || ''}
+                  src={getImageUrl(displayUser.image_user) || ''}
                   alt="Imagen de perfil"
                   className={styles.profileImage}
                   onError={() => {
                     setHasValidImage(false);
-                    setInfo(prevInfo => ({
-                      ...prevInfo,
-                      imageInfo: "No tienes imagen de perfil"
-                    }));
+                    if (isCurrentUser) {
+                      setInfo(prevInfo => ({
+                        ...prevInfo,
+                        imageInfo: "No tienes imagen de perfil"
+                      }));
+                    }
                   }}
                   onLoad={() => {
                     setHasValidImage(true);
-                    setError(prevError => ({
-                      ...prevError,
-                      imageError: ''
-                    }));
-                    setInfo(prevInfo => ({
-                      ...prevInfo,
-                      imageInfo: ''
-                    }));
+                    if (isCurrentUser) {
+                      setError(prevError => ({
+                        ...prevError,
+                        imageError: ''
+                      }));
+                      setInfo(prevInfo => ({
+                        ...prevInfo,
+                        imageInfo: ''
+                      }));
+                    }
                   }}
                 />
               ) : (
@@ -284,26 +275,27 @@ const UserInfoCard = ({ onClose }) => {
                 </div>
               )}
               
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/jpg,image/webp"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-                id="profile-image-input"
-                disabled={uploading}
-              />
+              {/*update: Only show upload input for current user */}
+              {isCurrentUser && (
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/jpg,image/webp"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                  id="profile-image-input"
+                  disabled={uploading}
+                />
+              )}
               
-              {/* Show the edit overlay with camera icon when hovering */}
-              {!uploading && (
+              {/*update: Only show edit overlay for current user */}
+              {!uploading && isCurrentUser && (
                 <div className={styles.editOverlay}>
                   <Camera size={20} className={styles.editIcon} />
                 </div>
               )}
               
-              {/* Loader and progress bar during upload */}
-              {uploading && (
+              {uploading && isCurrentUser && (
                 <div className={styles.loader}>
                   <Loader size={20} className={styles.loaderIcon} />
                   
@@ -322,20 +314,18 @@ const UserInfoCard = ({ onClose }) => {
               )}
             </div>
             
-            {/* Popup for profile actions */}
-            {showButtons && (
+            {/*update: Only show action buttons for current user */}
+            {showButtons && isCurrentUser && (
               <div 
                 id="profile-actions-popup" 
                 className={styles.actionsPopup}
                 ref={popupRef}
               >
-                {/* Upload button */}
                 <div className={styles.actionButton} onClick={handleUploadClick}>
                   <Camera size={16} className={styles.actionIcon} />
                   <span className={styles.actionText}>Subir Imagen</span>
                 </div>
                 
-                {/* View button (only if there's an image) */}
                 {hasValidImage && (
                   <div className={styles.actionButton} onClick={handleViewClick}>
                     <Eye size={16} className={styles.actionIcon} />
@@ -346,20 +336,26 @@ const UserInfoCard = ({ onClose }) => {
             )}
           </div>
           
-          {/* User info section */}
           <div className={styles.userInfo}>
             <h2 className={styles.userName}>
-              {currentUser.name_user || 'Usuario'}
+              {displayUser.name_user || 'Usuario'}
             </h2>
             <p className={styles.userType}>
-              {currentUser.type_user === 'seller' ? 'Vendedor/a' : 
-               currentUser.type_user === 'rider' ? 'Repartidor/a' : 
-               currentUser.type_user === 'buyer' ? 'Comprador/a' : 
-               currentUser.type_user}
+              {getUserTypeDisplay(displayUser.type_user)}
             </p>
-            {currentUser.email_user && (
+            {displayUser.location_user && (
+              <p className={styles.userLocation}>
+                📍 {displayUser.location_user}
+              </p>
+            )}
+            {displayUser.age_user && (
+              <p className={styles.userAge}>
+                Edad: {displayUser.age_user} años
+              </p>
+            )}
+            {displayUser.email_user && (
               <p className={styles.userEmail}>
-                {currentUser.email_user}
+                {displayUser.email_user}
               </p>
             )}
           </div>

@@ -252,7 +252,7 @@ const LandingPage = () => {
             Participa y transforma tu barrio
           </animated.p>
           <animated.h1 style={titleSpring}>
-            mibarrio.online
+            uribarri.online
           </animated.h1>
         </div>
         
