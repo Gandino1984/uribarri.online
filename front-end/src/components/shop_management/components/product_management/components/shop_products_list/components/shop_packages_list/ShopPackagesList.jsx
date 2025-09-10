@@ -15,23 +15,24 @@ import {
   ChevronUp,
   AlertCircle,
   Tag,
-  //update: Import ArrowLeft icon for back button
-  ArrowLeft
+  ArrowLeft,
+  //update: Import Monitor icon for offers board button
+  Monitor
 } from 'lucide-react';
 import { formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
+//update: Import the new OffersBoard component
+import OffersBoard from './components/offers_board/OffersBoard.jsx';
 
 import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
 
-//update: Add onBack prop to handle navigation back to ShopProductsList
 const ShopPackagesList = ({ onBack }) => {
   const { 
     packages, 
     setPackages,
     setSelectedPackage,
     setIsAddingPackage,
-    //update: Add showPackageCreationForm to control form visibility
     setShowPackageCreationForm,
     packageListKey
   } = usePackage();
@@ -51,8 +52,9 @@ const ShopPackagesList = ({ onBack }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  //update: Add a state to force re-renders when packages are updated
   const [updateKey, setUpdateKey] = useState(0);
+  //update: Add state for OffersBoard visibility
+  const [showOffersBoard, setShowOffersBoard] = useState(false);
   
   // Fetch packages function
   const fetchPackages = async () => {
@@ -95,13 +97,31 @@ const ShopPackagesList = ({ onBack }) => {
       setIsLoading(false);
     }
   };
+
+  //update: Add function to handle showing the offers board
+  const handleShowOffersBoard = () => {
+    // Only show if there are active packages
+    const activePackages = packages.filter(pkg => 
+      pkg.active_package && pkg.name_package && pkg.name_package.trim() !== ''
+    );
+    
+    if (activePackages.length === 0) {
+      setError(prevError => ({
+        ...prevError,
+        productError: 'No hay ofertas activas para mostrar'
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+    
+    setShowOffersBoard(true);
+  };
   
   // Load packages when shop changes or packageListKey updates
   useEffect(() => {
     fetchPackages();
   }, [selectedShop, packageListKey]);
   
-  //update: Debug effect to monitor packages state changes
   useEffect(() => {
     console.log('PACKAGES STATE UPDATED:', packages);
     console.log('Number of packages:', packages.length);
@@ -129,7 +149,6 @@ const ShopPackagesList = ({ onBack }) => {
     });
   };
   
-  //update: Handle edit package - properly set states to show the form
   const handleEditPackage = (pkg) => {
     console.log('Editing package:', pkg);
     setSelectedPackage(pkg);
@@ -185,7 +204,6 @@ const ShopPackagesList = ({ onBack }) => {
     }
   };
   
-  //update: Toggle package active status - fixed with correct UI context functions
   const handleToggleStatus = async (pkg) => {
     try {
       setIsTogglingStatus(pkg.id_package);
@@ -293,7 +311,6 @@ const ShopPackagesList = ({ onBack }) => {
     );
   };
   
-  //update: Handle back navigation to ShopProductsList
   const handleBackToProductsList = () => {
     console.log('Navigating back to ShopProductsList from ShopPackagesList');
     if (onBack && typeof onBack === 'function') {
@@ -316,7 +333,6 @@ const ShopPackagesList = ({ onBack }) => {
       <div className={styles.noShopContainer}>
         <AlertCircle size={48} />
         <p>Selecciona un comercio para ver sus paquetes</p>
-        {/*update: Add back button even when no shop is selected */}
         <button 
           onClick={handleBackToProductsList}
           className={styles.backButton}
@@ -332,7 +348,6 @@ const ShopPackagesList = ({ onBack }) => {
   return (
     <>
       <div className={styles.container}>
-        {/*update: Add back button at the top of the container */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -373,9 +388,19 @@ const ShopPackagesList = ({ onBack }) => {
         
         <div className={styles.header}>
           <h3 className={styles.title}>
-            {/* <Package size={20} /> */}
             Paquetes ({packages.length})
           </h3>
+          {/*update: Add button to show offers board */}
+          {packages.length > 0 && (
+            <button 
+              onClick={handleShowOffersBoard}
+              className={styles.offersButton}
+              title="Mostrar tablero de ofertas"
+            >
+              <Monitor size={20} />
+              <span>Mostrar Ofertas</span>
+            </button>
+          )}
         </div>
         
         {packages.length === 0 ? (
@@ -495,7 +520,6 @@ const ShopPackagesList = ({ onBack }) => {
                       <span className={styles.productCount}>
                           Productos ({[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length})
                       </span>
-                      {/* <h5 className={styles.sectionTitle}>Productos incluidos:</h5> */}
                       <div className={styles.productsList}>
                         {pkg.product1 && renderProductItem(pkg.product1, 1)}
                         {pkg.product2 && renderProductItem(pkg.product2, 2)}
@@ -532,6 +556,15 @@ const ShopPackagesList = ({ onBack }) => {
           confirmText="Eliminar"
           cancelText="Cancelar"
           isLoading={isDeleting}
+        />
+      )}
+      
+      {/*update: Add OffersBoard component when showOffersBoard is true */}
+      {showOffersBoard && (
+        <OffersBoard 
+          packages={packages}
+          shopName={selectedShop?.name_shop || ''}
+          onClose={() => setShowOffersBoard(false)}
         />
       )}
     </>

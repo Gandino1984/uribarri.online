@@ -70,8 +70,6 @@
 
 .backButton:hover {
    background-color: lightgray !important;
-   /* border: 1px solid white; */
-   /* box-shadow: 0 0 10px var(--saturated-blue-transparent); */
 }
 
 .listTitle {
@@ -85,9 +83,10 @@
 
 .header {
    display: flex;
-   justify-content: left;
+   justify-content: space-between;
    align-items: center;
    padding: 1rem;
+   gap: 1rem;
 }
 
 .title {
@@ -97,6 +96,33 @@
    font-size: 1.25rem;
    font-weight: 600;
    color: black;
+}
+
+/*update: Styles for the offers board button */
+.offersButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #ff6b6b, #ff8787);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.offersButton:hover {
+  background: linear-gradient(135deg, #ff5252, #ff6b6b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.offersButton:active {
+  transform: translateY(0);
 }
 
 .packagesList {
@@ -332,11 +358,9 @@
 
 .expandButton:hover {
    color: lightgray;
-   /* background: rgba(59, 130, 246, 0.1); */
 }
 
 .packageDetails {
-   /* background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5)); */
    padding: 1rem;
    border-top: 1px solid rgba(229, 231, 235, 0.5);
 }
@@ -365,20 +389,17 @@
    padding: 0.5rem;
    background: white;
    border-radius: 8px;
-   /* border-left: 3px solid var(--saturated-blue); */
    transition: all 0.2s ease;
 }
 
 .productItem:hover {
    background: var(--light-gray);
-   /* transform: translateX(2px); */
 }
 
 .productIndex {
    font-weight: 600;
    color: gray;
    font-size: .9rem;
-   /* color: var(--s-blue); */
    min-width: 1.5rem;
 }
 
@@ -407,12 +428,12 @@
 .creationDate {
    font-size: 0.75rem;
    color: #9ca3af;
-   /* font-weight: 500; */
 }
 
 /* Empty states */
 .noShopContainer,
-.emptyContainer {
+.emptyContainer,
+.loadingContainer {
    display: flex;
    flex-direction: column;
    align-items: center;
@@ -425,15 +446,29 @@
 }
 
 .noShopContainer svg,
-.emptyContainer svg {
+.emptyContainer svg,
+.loadingContainer svg {
    color: rgba(255, 255, 255, 0.5);
 }
 
 .noShopContainer p,
-.emptyContainer p {
+.emptyContainer p,
+.loadingContainer p {
    color: gray;
    font-weight: 600;
-   /* text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3); */
+}
+
+.loadingIcon {
+   animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+   from {
+      transform: rotate(0deg);
+   }
+   to {
+      transform: rotate(360deg);
+   }
 }
 
 .createButton {
@@ -1156,10 +1191,6 @@
     padding-top: 0.5rem;
   }
   
-  .searchInputWrapper {
-      /* padding: 0.5rem 0; */
-  }
-  
   .searchInput {
       font-size: 0.875rem;
   }
@@ -1219,10 +1250,23 @@
   .header {
     margin: 0 0.5rem;
     padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.75rem;
   }
   
   .title {
     font-size: 1.125rem;
+  }
+  
+  /*update: Mobile styles for offers button */
+  .offersButton {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+  
+  .offersButton span {
+    display: none; /* Hide text on mobile, show only icon */
   }
   
   .packagesList {
