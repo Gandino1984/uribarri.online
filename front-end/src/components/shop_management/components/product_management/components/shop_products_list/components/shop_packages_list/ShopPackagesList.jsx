@@ -14,21 +14,25 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
-  Tag
+  Tag,
+  ArrowLeft,
+  //update: Import Monitor icon for offers board button
+  Monitor
 } from 'lucide-react';
 import { formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
+//update: Import the new OffersBoard component
+import OffersBoard from './components/offers_board/OffersBoard.jsx';
 
 import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
 
-const ShopPackagesList = () => {
+const ShopPackagesList = ({ onBack }) => {
   const { 
     packages, 
     setPackages,
     setSelectedPackage,
     setIsAddingPackage,
-    //update: Add showPackageCreationForm to control form visibility
     setShowPackageCreationForm,
     packageListKey
   } = usePackage();
@@ -48,8 +52,9 @@ const ShopPackagesList = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isTogglingStatus, setIsTogglingStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  //update: Add a state to force re-renders when packages are updated
   const [updateKey, setUpdateKey] = useState(0);
+  //update: Add state for OffersBoard visibility
+  const [showOffersBoard, setShowOffersBoard] = useState(false);
   
   // Fetch packages function
   const fetchPackages = async () => {
@@ -92,13 +97,31 @@ const ShopPackagesList = () => {
       setIsLoading(false);
     }
   };
+
+  //update: Add function to handle showing the offers board
+  const handleShowOffersBoard = () => {
+    // Only show if there are active packages
+    const activePackages = packages.filter(pkg => 
+      pkg.active_package && pkg.name_package && pkg.name_package.trim() !== ''
+    );
+    
+    if (activePackages.length === 0) {
+      setError(prevError => ({
+        ...prevError,
+        productError: 'No hay ofertas activas para mostrar'
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+    
+    setShowOffersBoard(true);
+  };
   
   // Load packages when shop changes or packageListKey updates
   useEffect(() => {
     fetchPackages();
   }, [selectedShop, packageListKey]);
   
-  //update: Debug effect to monitor packages state changes
   useEffect(() => {
     console.log('PACKAGES STATE UPDATED:', packages);
     console.log('Number of packages:', packages.length);
@@ -126,7 +149,6 @@ const ShopPackagesList = () => {
     });
   };
   
-  //update: Handle edit package - properly set states to show the form
   const handleEditPackage = (pkg) => {
     console.log('Editing package:', pkg);
     setSelectedPackage(pkg);
@@ -182,7 +204,6 @@ const ShopPackagesList = () => {
     }
   };
   
-  //update: Toggle package active status - fixed with correct UI context functions
   const handleToggleStatus = async (pkg) => {
     try {
       setIsTogglingStatus(pkg.id_package);
@@ -290,6 +311,13 @@ const ShopPackagesList = () => {
     );
   };
   
+  const handleBackToProductsList = () => {
+    console.log('Navigating back to ShopProductsList from ShopPackagesList');
+    if (onBack && typeof onBack === 'function') {
+      onBack();
+    }
+  };
+  
   // Loading state
   if (isLoading) {
     return (
@@ -305,24 +333,13 @@ const ShopPackagesList = () => {
       <div className={styles.noShopContainer}>
         <AlertCircle size={48} />
         <p>Selecciona un comercio para ver sus paquetes</p>
-      </div>
-    );
-  }
-  
-  if (packages.length === 0) {
-    return (
-      <div className={styles.emptyContainer}>
-        <Package size={48} />
-        <p>No hay paquetes creados</p>
         <button 
-          className={styles.createButton}
-          onClick={() => {
-            //update: Also set the form visibility when creating new package
-            setIsAddingPackage(true);
-            setShowPackageCreationForm(true);
-          }}
+          onClick={handleBackToProductsList}
+          className={styles.backButton}
+          style={{ marginTop: '1rem' }}
         >
-          Crear primer paquete
+          <ArrowLeft size={20} />
+          <span>a Productos</span>
         </button>
       </div>
     );
@@ -331,145 +348,199 @@ const ShopPackagesList = () => {
   return (
     <>
       <div className={styles.container}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>
-            {/* <Package size={20} /> */}
-            Paquetes ({packages.length})
-          </h3>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          marginBottom: '1rem', 
+          paddingLeft: '1rem',
+          paddingRight: '1rem' 
+        }}>
+          <button 
+            onClick={handleBackToProductsList}
+            className={styles.backButton}
+            title="Volver a la lista de productos"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: 'white',
+              color: 'black',
+              border: '2px solid lightgray',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--light-gray)';
+              e.currentTarget.style.borderColor = 'var(--app-purple)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+              e.currentTarget.style.borderColor = 'lightgray';
+            }}
+          >
+            <ArrowLeft size={20} />
+            <span>a Productos</span>
+          </button>
         </div>
         
-        <div className={styles.packagesList} key={updateKey}>
-          {packages.map(pkg => (
-            <div key={`package-${pkg.id_package}-${pkg.active_package}`} className={styles.packageCard}>
-              <div className={styles.packageHeader}>
-                <div className={styles.packageMainInfo}>
-                  {/* Display package image if available */}
-                  {pkg.image_package ? (
-                    <div 
-                      className={styles.packageImageContainer}
-                      onClick={() => openImageModal(formatImageUrl(pkg.image_package))}
-                    >
-                      <img 
-                        src={formatImageUrl(pkg.image_package)} 
-                        alt={pkg.name_package || 'Paquete'}
-                        className={styles.packageImage}
-                        onError={(e) => {
-                          console.error('Error loading package image:', pkg.image_package);
-                          // Hide broken image
-                          e.target.parentElement.style.display = 'none';
-                        }}
-                      />
-                      <div className={styles.imageOverlay}>
-                        <Image size={16} />
+        <div className={styles.header}>
+          <h3 className={styles.title}>
+            Paquetes ({packages.length})
+          </h3>
+          {/*update: Add button to show offers board */}
+          {packages.length > 0 && (
+            <button 
+              onClick={handleShowOffersBoard}
+              className={styles.offersButton}
+              title="Mostrar tablero de ofertas"
+            >
+              <Monitor size={20} />
+              <span>Mostrar Ofertas</span>
+            </button>
+          )}
+        </div>
+        
+        {packages.length === 0 ? (
+          <div className={styles.emptyContainer}>
+            <Package size={48} color='lightgray'/>
+            <p>No hay paquetes creados</p>
+          </div>
+        ) : (
+          <div className={styles.packagesList} key={updateKey}>
+            {packages.map(pkg => (
+              <div key={`package-${pkg.id_package}-${pkg.active_package}`} className={styles.packageCard}>
+                <div className={styles.packageHeader}>
+                  <div className={styles.packageMainInfo}>
+                    {/* Display package image if available */}
+                    {pkg.image_package ? (
+                      <div 
+                        className={styles.packageImageContainer}
+                        onClick={() => openImageModal(formatImageUrl(pkg.image_package))}
+                      >
+                        <img 
+                          src={formatImageUrl(pkg.image_package)} 
+                          alt={pkg.name_package || 'Paquete'}
+                          className={styles.packageImage}
+                          onError={(e) => {
+                            console.error('Error loading package image:', pkg.image_package);
+                            // Hide broken image
+                            e.target.parentElement.style.display = 'none';
+                          }}
+                        />
+                        <div className={styles.imageOverlay}>
+                          <Image size={16} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`${styles.packageImageContainer} ${styles.noImage}`}>
+                        <Package size={30} className={styles.placeholderIcon} />
+                      </div>
+                    )}
+                    
+                    <div className={styles.packageInfo}>
+                      <h4 className={styles.packageName}>{pkg.name_package || 'Paquete sin nombre'}</h4>
+                      <div className={styles.packageMeta}>
+                        {console.log(`Rendering package ${pkg.id_package}, active_package:`, pkg.active_package, 'Type:', typeof pkg.active_package)}
+                        <span 
+                          key={`status-${pkg.id_package}-${pkg.active_package}-${updateKey}`}
+                          className={`${styles.statusBadge} ${pkg.active_package === true || pkg.active_package === 1 ? styles.active : styles.inactive}`}
+                        >
+                          {pkg.active_package === true || pkg.active_package === 1 ? 'Activo' : 'Inactivo'}
+                        </span>
+                        {pkg.discount_package > 0 && (
+                          <span className={styles.discountBadge}>
+                            <Tag size={12} />
+                            {pkg.discount_package}% dto
+                          </span>
+                        )}
                       </div>
                     </div>
-                  ) : (
-                    <div className={`${styles.packageImageContainer} ${styles.noImage}`}>
-                      <Package size={30} className={styles.placeholderIcon} />
-                    </div>
-                  )}
+                  </div>
                   
-                  <div className={styles.packageInfo}>
-                    <h4 className={styles.packageName}>{pkg.name_package || 'Paquete sin nombre'}</h4>
-                    <div className={styles.packageMeta}>
-                      {console.log(`Rendering package ${pkg.id_package}, active_package:`, pkg.active_package, 'Type:', typeof pkg.active_package)}
-                      <span 
-                        key={`status-${pkg.id_package}-${pkg.active_package}-${updateKey}`}
-                        className={`${styles.statusBadge} ${pkg.active_package === true || pkg.active_package === 1 ? styles.active : styles.inactive}`}
-                      >
-                        {pkg.active_package === true || pkg.active_package === 1 ? 'Activo' : 'Inactivo'}
+                  <div className={styles.packagePricing}>
+                    {(() => {
+                      const prices = calculatePackagePrices(pkg);
+                      return (
+                        <>
+                          {pkg.discount_package > 0 && (
+                            <span className={styles.originalPrice}>€{formatPrice(prices.totalPrice)}</span>
+                          )}
+                          <span className={styles.finalPrice}>€{formatPrice(prices.discountedPrice)}</span>
+                          {pkg.discount_package > 0 && (
+                            <span className={styles.savings}>Ahorro: €{formatPrice(prices.savings)}</span>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                  
+                  <div className={styles.packageActions}>
+                    <button
+                      key={`toggle-${pkg.id_package}-${pkg.active_package}`}
+                      onClick={() => handleToggleStatus(pkg)}
+                      className={styles.actionButton}
+                      disabled={isTogglingStatus === pkg.id_package}
+                      title={pkg.active_package === true || pkg.active_package === 1 ? 'Desactivar' : 'Activar'}
+                    >
+                      {pkg.active_package === true || pkg.active_package === 1 ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                    </button>
+                    
+                    <button
+                      onClick={() => handleEditPackage(pkg)}
+                      className={styles.actionButton}
+                      title="Editar"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    
+                    <button
+                      onClick={() => handleDeletePackage(pkg)}
+                      className={styles.actionButton}
+                      title="Eliminar"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    
+                    <button
+                      onClick={() => toggleExpanded(pkg.id_package)}
+                      className={styles.expandButton}
+                      title={expandedPackages.has(pkg.id_package) ? 'Contraer' : 'Expandir'}
+                    >
+                      {expandedPackages.has(pkg.id_package) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedPackages.has(pkg.id_package) && (
+                  <div className={styles.packageDetails}>
+                    <div className={styles.productsSection}>
+                      <span className={styles.productCount}>
+                          Productos ({[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length})
                       </span>
-                      {pkg.discount_package > 0 && (
-                        <span className={styles.discountBadge}>
-                          <Tag size={12} />
-                          {pkg.discount_package}% dto
-                        </span>
-                      )}
+                      <div className={styles.productsList}>
+                        {pkg.product1 && renderProductItem(pkg.product1, 1)}
+                        {pkg.product2 && renderProductItem(pkg.product2, 2)}
+                        {pkg.product3 && renderProductItem(pkg.product3, 3)}
+                        {pkg.product4 && renderProductItem(pkg.product4, 4)}
+                        {pkg.product5 && renderProductItem(pkg.product5, 5)}
+                      </div>
+                    </div>
+                    
+                    <div className={styles.packageFooter}>
+                      <span className={styles.packageId}>ID: {pkg.id_package}</span>
+                      <span className={styles.creationDate}>
+                        Creado: {new Date(pkg.creation_package).toLocaleDateString('es-ES')}
+                      </span>
                     </div>
                   </div>
-                </div>
-                
-                <div className={styles.packagePricing}>
-                  {(() => {
-                    const prices = calculatePackagePrices(pkg);
-                    return (
-                      <>
-                        {pkg.discount_package > 0 && (
-                          <span className={styles.originalPrice}>€{formatPrice(prices.totalPrice)}</span>
-                        )}
-                        <span className={styles.finalPrice}>€{formatPrice(prices.discountedPrice)}</span>
-                        {pkg.discount_package > 0 && (
-                          <span className={styles.savings}>Ahorro: €{formatPrice(prices.savings)}</span>
-                        )}
-                      </>
-                    );
-                  })()}
-                </div>
-                
-                <div className={styles.packageActions}>
-                  <button
-                    key={`toggle-${pkg.id_package}-${pkg.active_package}`}
-                    onClick={() => handleToggleStatus(pkg)}
-                    className={styles.actionButton}
-                    disabled={isTogglingStatus === pkg.id_package}
-                    title={pkg.active_package === true || pkg.active_package === 1 ? 'Desactivar' : 'Activar'}
-                  >
-                    {pkg.active_package === true || pkg.active_package === 1 ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
-                  </button>
-                  
-                  <button
-                    onClick={() => handleEditPackage(pkg)}
-                    className={styles.actionButton}
-                    title="Editar"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDeletePackage(pkg)}
-                    className={styles.actionButton}
-                    title="Eliminar"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  
-                  <button
-                    onClick={() => toggleExpanded(pkg.id_package)}
-                    className={styles.expandButton}
-                    title={expandedPackages.has(pkg.id_package) ? 'Contraer' : 'Expandir'}
-                  >
-                    {expandedPackages.has(pkg.id_package) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </button>
-                </div>
+                )}
               </div>
-              
-              {expandedPackages.has(pkg.id_package) && (
-                <div className={styles.packageDetails}>
-                  <div className={styles.productsSection}>
-                    <span className={styles.productCount}>
-                        Productos ({[pkg.product1, pkg.product2, pkg.product3, pkg.product4, pkg.product5].filter(p => p).length})
-                    </span>
-                    {/* <h5 className={styles.sectionTitle}>Productos incluidos:</h5> */}
-                    <div className={styles.productsList}>
-                      {pkg.product1 && renderProductItem(pkg.product1, 1)}
-                      {pkg.product2 && renderProductItem(pkg.product2, 2)}
-                      {pkg.product3 && renderProductItem(pkg.product3, 3)}
-                      {pkg.product4 && renderProductItem(pkg.product4, 4)}
-                      {pkg.product5 && renderProductItem(pkg.product5, 5)}
-                    </div>
-                  </div>
-                  
-                  <div className={styles.packageFooter}>
-                    <span className={styles.packageId}>ID: {pkg.id_package}</span>
-                    <span className={styles.creationDate}>
-                      Creado: {new Date(pkg.creation_package).toLocaleDateString('es-ES')}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       
       {showDeleteModal && (
@@ -485,6 +556,15 @@ const ShopPackagesList = () => {
           confirmText="Eliminar"
           cancelText="Cancelar"
           isLoading={isDeleting}
+        />
+      )}
+      
+      {/*update: Add OffersBoard component when showOffersBoard is true */}
+      {showOffersBoard && (
+        <OffersBoard 
+          packages={packages}
+          shopName={selectedShop?.name_shop || ''}
+          onClose={() => setShowOffersBoard(false)}
         />
       )}
     </>

@@ -1,32 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../../public/css/CardDisplay.module.css';
 import ErrorCard from '../card_display/components/error_card/ErrorCard.jsx';
 import SuccessCard from '../card_display/components/success_card/SuccessCard.jsx';
 import InfoCard from '../card_display/components/info_card/InfoCard.jsx';
-import ImageModal from '../image_modal/ImageModal.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 
-// ⭐ UPDATE: Enhanced implementation with background blur effect that lasts half as long as cards
+//update: Complete rewrite with slide-down animations
 function CardDisplay() {
-  // State for card visibility with CSS classes
-  const [errorCardClass, setErrorCardClass] = useState(styles.cardContainer);
-  const [successCardClass, setSuccessCardClass] = useState(styles.cardContainer);
-  const [infoCardClass, setInfoCardClass] = useState(styles.cardContainer);
+  const [activeCards, setActiveCards] = useState([]);
+  const cardIdCounter = useRef(0);
   
-  // ⭐ UPDATE: Added blur overlay state
-  const [blurClass, setBlurClass] = useState(styles.blurOverlay);
-  
-  // State to track if cards are being animated
-  const [isErrorAnimating, setIsErrorAnimating] = useState(false);
-  const [isSuccessAnimating, setIsSuccessAnimating] = useState(false);
-  const [isInfoAnimating, setIsInfoAnimating] = useState(false);
-  
-  // Using useUI hook to access card states
   const {
     error,
     success,
     info,
-    showImageModal,
     showErrorCard,
     showSuccessCard, 
     showInfoCard,
@@ -43,178 +31,141 @@ function CardDisplay() {
     return obj && Object.values(obj).some(value => value);
   };
   
-  // Helper function for error card animation with half-time blur
-  const animateErrorCard = () => {
-    if (isErrorAnimating) return;
-    setIsErrorAnimating(true);
+  //update: Add a new card with animation
+  const addCard = (type, content) => {
+    const newCard = {
+      id: cardIdCounter.current++,
+      type,
+      content,
+      isVisible: false
+    };
     
-    // Show card with animation
-    setErrorCardClass(`${styles.cardContainer} ${styles.cardVisible}`);
+    setActiveCards(prev => [...prev, newCard]);
     
-    // ⭐ UPDATE: Activate blur effect
-    setBlurClass(`${styles.blurOverlay} ${styles.blurActive}`);
-    
-    // ⭐ UPDATE: Remove blur after half the time (2 seconds)
+    // Trigger animation after mount
     setTimeout(() => {
-      setBlurClass(styles.blurOverlay);
-    }, 2000);
+      setActiveCards(prev => 
+        prev.map(card => 
+          card.id === newCard.id ? { ...card, isVisible: true } : card
+        )
+      );
+    }, 10);
     
-    // After 4 seconds, hide with animation
-    const timer = setTimeout(() => {
-      setErrorCardClass(`${styles.cardContainer} ${styles.cardHiding}`);
-      
-      // After animation completes, reset state
-      setTimeout(() => {
-        setShowErrorCard(false);
-        clearError();
-        setIsErrorAnimating(false);
-        setErrorCardClass(styles.cardContainer);
-      }, 300); // Duration matches CSS transition
-    }, 4000); // Display duration
-    
-    return () => clearTimeout(timer);
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+      removeCard(newCard.id, type);
+    }, 4000);
   };
   
-  // Helper function for success card animation with half-time blur
-  const animateSuccessCard = () => {
-    if (isSuccessAnimating) return;
-    setIsSuccessAnimating(true);
+  //update: Remove card with animation
+  const removeCard = (cardId, type) => {
+    // Start exit animation
+    setActiveCards(prev => 
+      prev.map(card => 
+        card.id === cardId ? { ...card, isVisible: false } : card
+      )
+    );
     
-    // Show card with animation
-    setSuccessCardClass(`${styles.cardContainer} ${styles.cardVisible}`);
-    
-    // ⭐ UPDATE: Activate blur effect
-    setBlurClass(`${styles.blurOverlay} ${styles.blurActive}`);
-    
-    // ⭐ UPDATE: Remove blur after half the time (2 seconds)
+    // Remove from DOM after animation
     setTimeout(() => {
-      setBlurClass(styles.blurOverlay);
-    }, 2000);
-    
-    // After 4 seconds, hide with animation
-    const timer = setTimeout(() => {
-      setSuccessCardClass(`${styles.cardContainer} ${styles.cardHiding}`);
+      setActiveCards(prev => prev.filter(card => card.id !== cardId));
       
-      // After animation completes, reset state
-      setTimeout(() => {
-        setShowSuccessCard(false);
-        clearSuccess();
-        setIsSuccessAnimating(false);
-        setSuccessCardClass(styles.cardContainer);
-      }, 300); // Duration matches CSS transition
-    }, 4000); // Display duration
-    
-    return () => clearTimeout(timer);
+      // Clear the appropriate state
+      switch(type) {
+        case 'error':
+          setShowErrorCard(false);
+          clearError();
+          break;
+        case 'success':
+          setShowSuccessCard(false);
+          clearSuccess();
+          break;
+        case 'info':
+          setShowInfoCard(false);
+          clearInfo();
+          break;
+      }
+    }, 300);
   };
   
-  // Helper function for info card animation with half-time blur
-  const animateInfoCard = () => {
-    if (isInfoAnimating) return;
-    setIsInfoAnimating(true);
-    
-    // Show card with animation
-    setInfoCardClass(`${styles.cardContainer} ${styles.cardVisible}`);
-    
-    // ⭐ UPDATE: Activate blur effect
-    setBlurClass(`${styles.blurOverlay} ${styles.blurActive}`);
-    
-    // ⭐ UPDATE: Remove blur after half the time (2 seconds)
-    setTimeout(() => {
-      setBlurClass(styles.blurOverlay);
-    }, 2000);
-    
-    // After 4 seconds, hide with animation
-    const timer = setTimeout(() => {
-      setInfoCardClass(`${styles.cardContainer} ${styles.cardHiding}`);
-      
-      // After animation completes, reset state
-      setTimeout(() => {
-        setShowInfoCard(false);
-        clearInfo();
-        setIsInfoAnimating(false);
-        setInfoCardClass(styles.cardContainer);
-      }, 300); // Duration matches CSS transition
-    }, 4000); // Display duration
-    
-    return () => clearTimeout(timer);
-  };
-  
-  // Effect to handle error card display
+  // Watch for new error messages
   useEffect(() => {
-    if (showErrorCard && hasAnyValue(error) && !isErrorAnimating) {
-      animateErrorCard();
-    }
-  }, [showErrorCard, error, isErrorAnimating]);
-  
-  // Effect to handle success card display
-  useEffect(() => {
-    if (showSuccessCard && hasAnyValue(success) && !isSuccessAnimating) {
-      animateSuccessCard();
-    }
-  }, [showSuccessCard, success, isSuccessAnimating]);
-  
-  // Effect to handle info card display
-  useEffect(() => {
-    if (showInfoCard && hasAnyValue(info) && !isInfoAnimating) {
-      animateInfoCard();
-    }
-  }, [showInfoCard, info, isInfoAnimating]);
-  
-  // Effect to detect new error messages
-  useEffect(() => {
-    if (error && hasAnyValue(error) && !showErrorCard && !isErrorAnimating) {
+    if (error && hasAnyValue(error) && !activeCards.some(c => c.type === 'error')) {
       setShowErrorCard(true);
+      addCard('error', error);
     }
-  }, [error, showErrorCard, isErrorAnimating, setShowErrorCard]);
+  }, [error]);
   
-  // Effect to detect new success messages
+  // Watch for new success messages
   useEffect(() => {
-    if (success && hasAnyValue(success) && !showSuccessCard && !isSuccessAnimating) {
+    if (success && hasAnyValue(success) && !activeCards.some(c => c.type === 'success')) {
       setShowSuccessCard(true);
+      addCard('success', success);
     }
-  }, [success, showSuccessCard, isSuccessAnimating, setShowSuccessCard]);
+  }, [success]);
   
-  // Effect to detect new info messages
+  // Watch for new info messages
   useEffect(() => {
-    if (info && hasAnyValue(info) && !showInfoCard && !isInfoAnimating) {
+    if (info && hasAnyValue(info) && !activeCards.some(c => c.type === 'info')) {
       setShowInfoCard(true);
+      addCard('info', info);
     }
-  }, [info, showInfoCard, isInfoAnimating, setShowInfoCard]);
+  }, [info]);
 
   return (
-    <>
-      {/* Blur overlay element */}
-      <div className={blurClass}></div>
-      
-      <div className={styles.cardDisplayContainer}>
-        {showImageModal && <ImageModal />}
-        
-        {/* Dedicated container for all notification cards */}
-        <div className={styles.messageWrapper}>
-          {/* Error card with CSS transition animation */}
-          {showErrorCard && hasAnyValue(error) && (
-            <div className={errorCardClass}>
-              <ErrorCard />
-            </div>
-          )}
-          
-          {/* Success card with CSS transition animation */}
-          {showSuccessCard && hasAnyValue(success) && (
-            <div className={successCardClass}>
-              <SuccessCard />
-            </div>
-          )}
-          
-          {/* Info card with CSS transition animation */}
-          {showInfoCard && hasAnyValue(info) && (
-            <div className={infoCardClass}>
-              <InfoCard />
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+    <div className={styles.cardDisplayContainer}>
+      {activeCards.map((card) => (
+        <AnimatedCard 
+          key={card.id} 
+          card={card}
+          onClose={() => removeCard(card.id, card.type)}
+        />
+      ))}
+    </div>
   );
 }
+
+//update: New animated card component
+const AnimatedCard = ({ card, onClose }) => {
+  const slideAnimation = useSpring({
+    from: {
+      opacity: 0,
+      transform: 'translate(-50%, -150%)',
+    },
+    to: {
+      opacity: card.isVisible ? 1 : 0,
+      transform: card.isVisible ? 'translate(-50%, 0%)' : 'translate(-50%, -150%)',
+    },
+    config: {
+      mass: 1,
+      tension: 180,
+      friction: 20
+    }
+  });
+  
+  const getCardComponent = () => {
+    switch(card.type) {
+      case 'error':
+        return <ErrorCard />;
+      case 'success':
+        return <SuccessCard />;
+      case 'info':
+        return <InfoCard />;
+      default:
+        return null;
+    }
+  };
+  
+  return (
+    <animated.div 
+      className={styles.cardWrapper}
+      style={slideAnimation}
+    >
+      <div className={styles.cardContent} onClick={onClose}>
+        {getCardComponent()}
+      </div>
+    </animated.div>
+  );
+};
 
 export default CardDisplay;

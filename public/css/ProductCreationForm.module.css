@@ -7,26 +7,27 @@
   width: 100%;
   max-width: 600px;
   border-radius: 12px;
-  /* margin-top: 2rem; */
-  /* background: white; */
-  border-radius: 12px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
-/* .container:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-} */
+.containerCloseButton{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton{
+}
+
 
 .header {
   display: flex;
-  flex-direction: column;
   width: 100%;
 }
 
 .formTitle {
-  font-size: 2rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: black;
   text-align: center;

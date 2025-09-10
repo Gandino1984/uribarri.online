@@ -1,64 +1,55 @@
+/* update: Mobile-first design for notification cards with slide-down animation */
 .cardDisplayContainer {
-  position: fixed;
-  top: -1.2rem;
-  left: 0;
-  right: 0;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-}
-
-/* ✨ UPDATE: Positioned for right-to-left slide animation */
-.messageWrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end; /* Align to right side for our animation */
-  padding: 12px;
-  gap: 8px;
-  margin-top: 70px; /* Adjusted to position below top bar */
-  pointer-events: auto;
-  overflow: hidden; /* Ensure animations stay within bounds */
-}
-
-/* ✨ UPDATE: Card animation classes using CSS transitions */
-.cardContainer {
-  max-width: 90%;
-  min-width: 250px;
-  width: auto;
-  transform: translateX(100%); /* Start off-screen to the right */
-  opacity: 0;
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-}
-
-.cardVisible {
-  transform: translateX(10%);
-  opacity: 1;
-}
-
-.cardHiding {
-  transform: translateX(100%); /* Exit to the right */
-  opacity: 0;
-}
-
-/* ⭐ UPDATE: Added blur overlay for background when cards are visible */
-.blurOverlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(3px);
-  z-index: 1900;
-  opacity: 0;
+  z-index: 8000; /* Below UserInfoCard but above content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  padding-top: 4rem; /* Space for TopBar */
 }
 
-.blurActive {
-  opacity: 1;
+/* update: Individual card wrapper for animation */
+.cardWrapper {
+  position: relative;
+  left: 50%;
+  margin-bottom: 0.5rem;
+  pointer-events: auto;
+  /* Transform handled by React Spring */
+}
+
+/* update: Card content container */
+.cardContent {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cardContent:hover {
+  transform: scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (min-width: 481px) {
+  .cardDisplayContainer {
+    padding-top: 4.5rem;
+  }
+  
+  .cardWrapper {
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (min-width: 641px) {
+  .cardDisplayContainer {
+    padding-top: 5rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .cardWrapper {
+    margin-bottom: 1rem;
+  }
 }

@@ -26,7 +26,6 @@ export const TopBarUtils = () => {
         setShowLandingPage,
         setShowImageModal,
         setShowShopsListBySeller,
-        //update: Added showShopWindow to destructuring
         showShopWindow,
         setShowShopWindow,
         showShopsListBySeller,
@@ -113,7 +112,16 @@ export const TopBarUtils = () => {
             return;
         }
         
-        // If we're in ShopsListBySeller (no product management, no shop creation), go back to landing
+        //update: If we're in ShopsListBySeller as a seller, go back to ShopWindow
+        if (showShopsListBySeller && !showProductManagement && !showShopCreationForm && currentUser?.type_user === 'seller') {
+            console.log('Navigating from ShopsListBySeller back to ShopWindow');
+            setShowShopsListBySeller(false);
+            setShowShopWindow(true);
+            setSelectedShop(null);
+            return;
+        }
+        
+        //update: If we're in ShopsListBySeller (no product management, no shop creation), go back to landing
         if (showShopsListBySeller && !showProductManagement && !showShopCreationForm) {
             console.log('Navigating from ShopsListBySeller back to LandingPage');
             setShowShopsListBySeller(false);

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
-//update: Extracted all logic from ShopWindow component
 const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +15,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     dia_semana: null,
   });
 
-  //update: Fetch all shops from API
   const fetchAllShops = useCallback(async () => {
     try {
       setLoading(true);
@@ -36,7 +34,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     }
   }, [setShops]);
 
-  //update: Handle shop click navigation
   const handleShopClick = useCallback((shop) => {
     const {
       setShowShopWindow,
@@ -60,12 +57,10 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     // If user is seller or other type, do nothing on click
   }, [currentUser, uiHandlers]);
 
-  //update: Toggle filters visibility
   const toggleFilters = useCallback(() => {
     setShowFilters(prev => !prev);
   }, []);
 
-  //update: Handle filter changes
   const handleFilterChange = useCallback((filterName, value) => {
     const normalizedValue = value === "" ? null : value;
     
@@ -84,12 +79,10 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     });
   }, []);
 
-  //update: Handle search term change
   const handleSearchChange = useCallback((e) => {
     setSearchTerm(e.target.value);
   }, []);
 
-  //update: Handle delivery filter change
   const handleDeliveryChange = useCallback((e) => {
     const value = e.target.checked ? 'Sí' : null;
     setFilters(prevFilters => ({
@@ -98,7 +91,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     }));
   }, []);
 
-  //update: Handle open now filter change
   const handleOpenNowChange = useCallback((e) => {
     const value = e.target.checked ? 'Sí' : null;
     setFilters(prevFilters => ({
@@ -107,7 +99,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     }));
   }, []);
 
-  //update: Handle top rated filter change
   const handleTopRatedChange = useCallback((e) => {
     const value = e.target.checked ? 'Sí' : null;
     setFilters(prevFilters => ({
@@ -116,7 +107,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     }));
   }, []);
 
-  //update: Handle day filter change
   const handleDayChange = useCallback((value) => {
     setFilters(prevFilters => ({
       ...prevFilters,
@@ -124,7 +114,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     }));
   }, []);
 
-  //update: Reset all filters
   const handleResetFilters = useCallback(() => {
     setFilters({
       tipo_comercio: null,
@@ -137,7 +126,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     setSearchTerm('');
   }, []);
 
-  //update: Get available subtypes for selected type
   const getAvailableSubtypes = useCallback(() => {
     const { shopTypesAndSubtypes } = shopHandlers;
     if (!filters.tipo_comercio || !shopTypesAndSubtypes[filters.tipo_comercio]) {
@@ -146,7 +134,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     return shopTypesAndSubtypes[filters.tipo_comercio];
   }, [filters.tipo_comercio, shopHandlers]);
 
-  //update: Count active filters
   const getActiveFiltersCount = useCallback(() => {
     let count = 0;
     
@@ -164,7 +151,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     return count;
   }, [filters, searchTerm]);
 
-  //update: Check if shop is currently open
   const isShopOpenNow = useCallback((shop) => {
     const now = new Date();
     const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
@@ -213,7 +199,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     return false;
   }, []);
 
-  //update: Check if shop is open on a specific day
   const isOpenOnDay = useCallback((shop, day) => {
     const dayMap = {
       'Lunes': shop.open_monday,
@@ -228,7 +213,7 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     return dayMap[day] === true || dayMap[day] === 1;
   }, []);
 
-  //update: Filter shops based on active filters and search
+  //update: Modified to search both type and subtype
   const getFilteredShops = useCallback(() => {
     if (!shops || shops.length === 0) {
       return [];
@@ -249,12 +234,17 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
       });
     }
 
-    // Filter by shop type
+    //update: Filter by shop type OR subtype when tipo_comercio filter is set
     if (filters.tipo_comercio) {
-      filtered = filtered.filter(shop => shop.type_shop === filters.tipo_comercio);
+      const filterValue = filters.tipo_comercio.toLowerCase();
+      filtered = filtered.filter(shop => {
+        const typeMatch = shop.type_shop && shop.type_shop.toLowerCase() === filterValue;
+        const subtypeMatch = shop.subtype_shop && shop.subtype_shop.toLowerCase() === filterValue;
+        return typeMatch || subtypeMatch;
+      });
     }
 
-    // Filter by shop subtype
+    // Filter by shop subtype (only if specifically selected from subtype dropdown)
     if (filters.subtipo_comercio) {
       filtered = filtered.filter(shop => shop.subtype_shop === filters.subtipo_comercio);
     }
@@ -282,7 +272,6 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     return filtered;
   }, [shops, filters, searchTerm, isShopOpenNow, isOpenOnDay]);
 
-  //update: Get shops to display (filtered or all)
   const getDisplayedShops = useCallback(() => {
     const hasActiveFilters = getActiveFiltersCount() > 0;
     return hasActiveFilters || searchTerm ? getFilteredShops() : shops;
@@ -310,6 +299,7 @@ const useShopWindow = (currentUser, shops, setShops, uiHandlers, shopHandlers) =
     getAvailableSubtypes,
     getActiveFiltersCount,
     getDisplayedShops,
+    setShowFilters,
   };
 };
 

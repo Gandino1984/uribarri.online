@@ -1,4 +1,3 @@
-//update: New unified actions menu component with slide-down animation
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu,
@@ -35,9 +34,9 @@ const UnifiedActionsMenu = ({
   const [activeSubmenu, setActiveSubmenu] = useState(null);
   const menuRef = useRef(null);
   
-  //update: Animation for slide-down effect
+  //update: Keep original slide-down animation from top
   const menuAnimation = useSpring({
-    transform: isMenuOpen ? 'translateY(0%)' : 'translateY(-100%)',
+    transform: isMenuOpen ? 'translateY(0)' : 'translateY(100px)',
     opacity: isMenuOpen ? 1 : 0,
     config: { tension: 280, friction: 24 }
   });
@@ -84,6 +83,21 @@ const UnifiedActionsMenu = ({
     };
   }, [isMenuOpen]);
   
+  //update: Handle escape key to close menu
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && isMenuOpen) {
+        setIsMenuOpen(false);
+        setActiveSubmenu(null);
+      }
+    };
+    
+    if (isMenuOpen) {
+      document.addEventListener('keydown', handleEscKey);
+      return () => document.removeEventListener('keydown', handleEscKey);
+    }
+  }, [isMenuOpen]);
+  
   return (
     <div className={styles.menuContainer} ref={menuRef}>
       {/*update: Main burger button */}
@@ -91,14 +105,18 @@ const UnifiedActionsMenu = ({
         onClick={toggleMenu}
         className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`}
         title="Menú de acciones"
+        aria-label="Menú de acciones"
+        aria-expanded={isMenuOpen}
       >
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
       
-      {/*update: Animated dropdown menu */}
+      {/*update: Animated dropdown menu with original slide-down effect */}
       <animated.div 
         style={menuAnimation} 
         className={`${styles.dropdownMenu} ${isMenuOpen ? styles.open : ''}`}
+        role="menu"
+        aria-hidden={!isMenuOpen}
       >
         <div className={styles.menuContent}>
           {/*update: Products section */}
@@ -106,6 +124,7 @@ const UnifiedActionsMenu = ({
             <button
               onClick={() => toggleSubmenu('products')}
               className={`${styles.sectionButton} ${activeSubmenu === 'products' ? styles.active : ''}`}
+              aria-expanded={activeSubmenu === 'products'}
             >
               <ShoppingBag size={20} />
               <span>Productos</span>
@@ -116,7 +135,7 @@ const UnifiedActionsMenu = ({
             </button>
             
             {activeSubmenu === 'products' && (
-              <div className={styles.submenu}>
+              <div className={styles.submenu} role="group">
                 <button
                   onClick={() => handleAction(handleAddProduct)}
                   className={styles.submenuItem}
@@ -168,6 +187,7 @@ const UnifiedActionsMenu = ({
             <button
               onClick={() => toggleSubmenu('packages')}
               className={`${styles.sectionButton} ${activeSubmenu === 'packages' ? styles.active : ''}`}
+              aria-expanded={activeSubmenu === 'packages'}
             >
               <Box size={20} />
               <span>Paquetes</span>
@@ -178,7 +198,7 @@ const UnifiedActionsMenu = ({
             </button>
             
             {activeSubmenu === 'packages' && (
-              <div className={styles.submenu}>
+              <div className={styles.submenu} role="group">
                 <button
                   onClick={() => handleAction(handleCreatePackage)}
                   className={`${styles.submenuItem} ${selectedProducts.size === 0 ? styles.disabled : ''}`}

@@ -10,7 +10,9 @@ import {
   X 
 } from 'lucide-react';
 import CustomToggleSwitch from '../../navigation_components/CustomToggleSwitch.jsx';
+import PropTypes from 'prop-types';
 
+//update: Added onClose prop to handle closing the filters
 const FiltersForShops = ({ 
   searchTerm,
   filters,
@@ -23,7 +25,8 @@ const FiltersForShops = ({
   handleTopRatedChange,
   handleDayChange,
   handleResetFilters,
-  getAvailableSubtypes
+  getAvailableSubtypes,
+  onClose = null
 }) => {
   // Days of the week for filter
   const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -33,8 +36,25 @@ const FiltersForShops = ({
     handleSearchChange(e);
   };
 
+  //update: Handle close button click
+  const handleClose = () => {
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
   return (
     <div className={styles.filtersContainer}>
+      {/*update: Add close button at top right corner */}
+      <button 
+        onClick={handleClose}
+        className={styles.closeButton}
+        type="button"
+        title="Cerrar filtros"
+      >
+        <X size={20} />
+      </button>
+
       {/* Search Bar */}
       <div className={styles.searchSection}>
         <div className={styles.searchInputWrapper}>
@@ -196,6 +216,23 @@ const FiltersForShops = ({
       </div>
     </div>
   );
+};
+
+//update: Add PropTypes for documentation and type-checking
+FiltersForShops.propTypes = {
+  searchTerm: PropTypes.string,
+  filters: PropTypes.object,
+  shopTypesAndSubtypes: PropTypes.object,
+  activeFilterCount: PropTypes.number,
+  handleFilterChange: PropTypes.func,
+  handleSearchChange: PropTypes.func,
+  handleDeliveryChange: PropTypes.func,
+  handleOpenNowChange: PropTypes.func,
+  handleTopRatedChange: PropTypes.func,
+  handleDayChange: PropTypes.func,
+  handleResetFilters: PropTypes.func,
+  getAvailableSubtypes: PropTypes.func,
+  onClose: PropTypes.func
 };
 
 export default FiltersForShops;

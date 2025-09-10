@@ -5,11 +5,11 @@ import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
 import FiltersForShops from './components/FiltersForShops.jsx';
+import RecommendedFilters from './components/recommendedFilters/RecommendedFilters.jsx';
 import useShopWindow from './ShopWindowUtils.jsx';
 import styles from '../../../../public/css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
 
-//update: Refactored component using ShopWindowUtils
 const ShopWindow = () => {
   const { currentUser } = useAuth();
   const { 
@@ -19,9 +19,8 @@ const ShopWindow = () => {
     setSelectedShopForStore,
     setShowLandingPage
   } = useUI();
-  const { shops, setShops, shopTypesAndSubtypes } = useShop();
+  const { shops, setShops, shopTypesAndSubtypes, setSelectedShop } = useShop();
   
-  //update: UI handlers object for utilities
   const uiHandlers = {
     setShowShopWindow,
     setShowShopManagement,
@@ -30,12 +29,10 @@ const ShopWindow = () => {
     setShowLandingPage
   };
   
-  //update: Shop handlers object for utilities
   const shopHandlers = {
     shopTypesAndSubtypes
   };
   
-  //update: Use custom hook with all logic extracted
   const {
     loading,
     error,
@@ -55,31 +52,68 @@ const ShopWindow = () => {
     getAvailableSubtypes,
     getActiveFiltersCount,
     getDisplayedShops,
+    setShowFilters
   } = useShopWindow(currentUser, shops, setShops, uiHandlers, shopHandlers);
   
-  //update: Get values from hook functions
   const activeFiltersCount = getActiveFiltersCount();
   const displayedShops = getDisplayedShops();
   
-  //update: Load shops on mount
   useEffect(() => {
     fetchAllShops();
   }, [fetchAllShops]);
 
-  //update: Animations for shop cards
   const transitions = useTransition(displayedShops, {
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    enter: { opacity: 1, transform: 'translateY(0px)' },
-    leave: { opacity: 0, transform: 'translateY(-20px)' },
+    from: { 
+      opacity: 0, 
+      transform: 'translate3d(0,20px,0)' 
+    },
+    enter: { 
+      opacity: 1, 
+      transform: 'translate3d(0,0px,0)' 
+    },
+    leave: { 
+      opacity: 0, 
+      transform: 'translate3d(0,-20px,0)' 
+    },
     trail: 100,
     config: { tension: 200, friction: 25 }
   });
 
+  const handleCloseFilters = () => {
+    setShowFilters(false);
+  };
+
+  const handleRecommendedFilterSelect = (filterType) => {
+    if (filterType) {
+      handleFilterChange('tipo_comercio', filterType);
+      handleFilterChange('subtipo_comercio', null);
+    } else {
+      handleFilterChange('tipo_comercio', null);
+      handleFilterChange('subtipo_comercio', null);
+    }
+  };
+
+  //update: Add handler for shop card order button
+  const handleShopOrder = (shop) => {
+    console.log('ShopWindow - handleShopOrder called for shop:', shop);
+    setSelectedShop(shop);
+    setSelectedShopForStore(shop);
+    setShowShopWindow(false);
+    setShowShopStore(true);
+  };
+
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Escaparate Comercial</h1>
-        
+      <div className={styles.headerSection}>
+        <h1 className={styles.title}>Comercio de barrio</h1>
+      </div>
+
+      <RecommendedFilters 
+        onFilterSelect={handleRecommendedFilterSelect}
+        currentFilter={filters.tipo_comercio}
+      />
+      
+      <div className={styles.filterButtonSection}>
         <button
           onClick={toggleFilters}
           className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
@@ -111,6 +145,7 @@ const ShopWindow = () => {
           handleDayChange={handleDayChange}
           handleResetFilters={handleResetFilters}
           getAvailableSubtypes={getAvailableSubtypes}
+          onClose={handleCloseFilters}
         />
       )}
 
@@ -153,31 +188,20 @@ const ShopWindow = () => {
           
           <div className={styles.shopsGrid}>
             {transitions((style, shop) => 
-              shop && (
+              shop ? (
                 <animated.div 
                   key={shop.id_shop} 
                   style={style} 
                   className={styles.shopCardWrapper}
                 >
-                  <div 
-                    onClick={() => handleShopClick(shop)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        handleShopClick(shop);
-                      }
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <ShopCard 
-                      shop={shop} 
-                      isClickable={false}
-                      hideActions={true}
-                    />
-                  </div>
+                  <ShopCard 
+                    shop={shop} 
+                    isClickable={false}
+                    hideActions={false}
+                    onOrder={handleShopOrder}
+                  />
                 </animated.div>
-              )
+              ) : null
             )}
           </div>
         </>

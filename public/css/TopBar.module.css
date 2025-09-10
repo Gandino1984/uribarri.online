@@ -1,4 +1,4 @@
-/* Mobile-First Base Styles */
+/*update: Mobile-First Base Styles with scroll animations */
 .container {
     width: 100%;
     display: flex;
@@ -12,7 +12,29 @@
     top: 0; 
     left: 0; 
     right: 0; 
-    margin-bottom: 0; 
+    margin-bottom: 0;
+    /*update: Add background and transition for scroll behavior */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.3s ease,
+                box-shadow 0.3s ease;
+    transform: translateY(0);
+}
+
+/*update: Visible state (default) */
+.container.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/*update: Hidden state (scrolling down) */
+.container.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .contentWrapper {
@@ -20,9 +42,6 @@
     align-items: center;
     justify-content: right;
     width: 100%;
-    /* flex-grow: 1; */
-    /* gap: 1rem; */
-    /* padding: 0.5rem 0; */
     position: relative;
 }
 
@@ -35,10 +54,10 @@
 
 .title {
     user-select: none;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     letter-spacing: .1rem;
     font-weight: 800;
-    color: black;
+    color: var(--app-purple);
     position: relative;
     display: flex;
     align-items: center;
@@ -69,7 +88,7 @@
     background: white;
     border: 2px solid transparent;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: .9rem;
     font-weight: 600;
     text-transform: uppercase;
     color: black;
@@ -80,8 +99,6 @@
 .burgerButton:hover {
     color: black;
     background-color: lightgray;
-    /* border: 2px solid lightgra   y; */
-    /* box-shadow: 0px 3px 8px lightgray; */
 }
 
 .burgerButton.active {
@@ -134,22 +151,23 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
-    /* width: auto; */
-}
-
-.mobileMenu button:hover {
-    /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)); */
-    /* color: var(--saturated-blue); */
-    transform: translateX(4px);
 }
 
 /* Back Button */
 .backButton {
-    /* background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05)); */
     color: var(--saturated-blue);
 }
 
 .backButton:hover {
+    background-color: var(--light-gray);
+}
+
+/* Profile Menu Button */
+.profileMenuButton {
+    color: var(--app-purple);
+}
+
+.profileMenuButton:hover {
     background-color: var(--light-gray);
 }
 
@@ -196,6 +214,7 @@
 .active {
     border-radius: 8px;
     color: black;
+    font-size: .9rem;
     font-weight: 600;
     background-color: white;
     border: 2px solid transparent;
@@ -206,6 +225,28 @@
     background-color: var(--light-gray);
     border: 2px solid lightgray;
     box-shadow: 0px 0px 10px 2px var(--light-gray);
+}
+
+/* Profile Button (desktop) */
+.profileButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.profileButton:hover {
+    background-color: var(--light-gray);
+    border-color: var(--app-purple);
 }
 
 /* Menu Divider */
@@ -227,7 +268,6 @@
     color: black;
 }
 
-
 /* Tablet Breakpoint */
 @media (min-width: 501px) {
     .container {
@@ -241,6 +281,11 @@
 
 /* Desktop Breakpoint */
 @media (min-width: 769px) {
+    /*update: Enhanced background for desktop */
+    .container {
+        background: rgba(255, 255, 255, 0.98);
+    }
+    
     /* Show desktop elements */
     .userInfoWrapper {
         display: block;
@@ -266,5 +311,18 @@
     
     .buttonsContainer .backButton:hover {
         background-color: var(--light-gray);
+    }
+}
+
+/*update: Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .container {
+        transition: none;
+    }
+    
+    .container.hidden {
+        transform: none;
+        opacity: 0.98;
+        pointer-events: all;
     }
 }

@@ -49,7 +49,9 @@ import {
   CheckCircle,
   Layers,
   MoreVertical,
-  Layers2
+  Layers2,
+  //update: Import ArrowLeft icon for back button
+  ArrowLeft
 } from 'lucide-react';
 
 // Import image utility
@@ -64,7 +66,7 @@ const ShopProductsList = () => {
   
   // UI context
   const {
-    clearError, setError,
+    clearError, setError, setShowProductManagement,
     isModalOpen, setIsModalOpen,
     isAccepted, setIsAccepted,
     isDeclined, setIsDeclined,
@@ -90,7 +92,6 @@ const ShopProductsList = () => {
     selectedProductDetails, setSelectedProductDetails,
     setSelectedProductForImageUpload,
     productListKey,
-    setShowProductManagement,
     refreshProductList,
     categories,
     subcategories,
@@ -169,6 +170,13 @@ const ShopProductsList = () => {
     isNewProduct,
     allSubcategories
   } = ShopProductsListUtils();
+
+  //update: Add function to handle back to ShopsListBySeller
+  const handleBackToShopsListBySeller = () => {
+    console.log('Navigating from ShopProductsList back to ShopsListBySeller');
+    setShowProductManagement(false);
+    // The ShopsListBySeller component will be shown automatically by ShopManagement
+  };
 
   // Create animation transitions using React Spring
   const contentTransition = useTransition(isVisible, {
@@ -604,6 +612,18 @@ const ShopProductsList = () => {
       {contentTransition((style, item) => 
         item && (
           <animated.div style={style} className={styles.container}>
+            {/*update: Add back button at the top of the container */}
+            <div className={styles.backButtonContainer}>
+              <button 
+                onClick={handleBackToShopsListBySeller}
+                className={styles.backButton}
+                title="Volver a la lista de tiendas"
+              >
+                <ArrowLeft size={20} />
+                <span> tiendas</span>
+              </button>
+            </div>
+            
             {shopCardTransition((cardStyle, shop) => 
               shop && (
                 <animated.div style={cardStyle} className={isSmallScreen ? styles.responsiveContainerColumn : styles.responsiveContainerRow}>
@@ -614,7 +634,7 @@ const ShopProductsList = () => {
 
             <div className={styles.listHeaderTop}>
               <div className={styles.listTitleWrapper}>
-                <p className={styles.listTitle}>Gestiona los productos de tu comercio</p>
+                <p className={styles.listTitle}>Administra los productos de tu comercio</p>
               </div>
               
               {isSmallScreen ? (
@@ -669,7 +689,16 @@ const ShopProductsList = () => {
               )}
             </div>
 
-            {showFilters && <FiltersForProducts isVisible={showFilters} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onResetFilters={handleResetAllFilters} />}
+            {/*update: Pass onClose prop to FiltersForProducts to allow closing */}
+            {showFilters && (
+              <FiltersForProducts 
+                isVisible={showFilters} 
+                searchTerm={searchTerm} 
+                setSearchTerm={setSearchTerm} 
+                onResetFilters={handleResetAllFilters}
+                onClose={() => setShowFilters(false)}
+              />
+            )}
             
             {displayedProducts.length === 0 ? (
               <NoProductsMessage products={products} />
@@ -685,7 +714,12 @@ const ShopProductsList = () => {
                 <div className={styles.productsList}>
                   {productsTransition((style, product, _, index) => (
                     <animated.div 
-                      style={style} 
+                      style={{
+                        ...style,
+                        //update: Elevate z-index when menu is open for this product
+                        zIndex: activeProductMenu === product.id_product ? 9999 : 'auto',
+                        position: 'relative'
+                      }} 
                       className={`${styles.productCard} ${selectedProducts.has(product.id_product) ? styles.selected : ''}`}
                       key={product.id_product}
                     >

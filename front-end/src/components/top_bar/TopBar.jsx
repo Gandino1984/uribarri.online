@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../../public/css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
-import { ArrowLeft, DoorClosed, Menu, X } from 'lucide-react';
+import { ArrowLeft, DoorClosed, Menu, X, User, CircleUserRound } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -10,6 +10,10 @@ import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 
 function TopBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showUserInfoCard, setShowUserInfoCard] = useState(false);
+  //update: Add state for scroll behavior
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   
   const burgerButtonRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -42,6 +46,56 @@ function TopBar() {
     clearUserSession
   } = TopBarUtils();
 
+  //update: Add scroll handler
+  useEffect(() => {
+    const controlTopBar = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Define scroll threshold
+      const scrollThreshold = 10;
+      
+      // If mobile menu is open, keep TopBar visible
+      if (mobileMenuOpen) {
+        setIsVisible(true);
+        setLastScrollY(currentScrollY);
+        return;
+      }
+      
+      // Show TopBar when at the top of the page
+      if (currentScrollY < scrollThreshold) {
+        setIsVisible(true);
+      }
+      // Hide when scrolling down
+      else if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+        setIsVisible(false);
+      }
+      // Show when scrolling up
+      else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+    
+    // Add scroll event listener with throttling for performance
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          controlTopBar();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY, mobileMenuOpen]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -53,13 +107,21 @@ function TopBar() {
     setMobileMenuOpen(false);
   };
   
-  //update: Modified to always show back button when in ShopWindow
+  const handleProfileClick = () => {
+    setShowUserInfoCard(true);
+    setMobileMenuOpen(false);
+  };
+  
+  const handleCloseUserInfoCard = () => {
+    setShowUserInfoCard(false);
+  };
+  
   const shouldShowBackButton = () => {
     if (showShopStore) return true;
     if (showShopCreationForm) return true;
     if (selectedShop && showProductManagement) return true;
     if (showShopsListBySeller && currentUser?.type_user === 'seller') return true;
-    if (showShopWindow) return true; // Show back button for all users in ShopWindow
+    if (showShopWindow) return true;
     if (isUpdatingProduct) return true;
     return false;
   };
@@ -88,118 +150,142 @@ function TopBar() {
   }, [mobileMenuOpen]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.contentWrapper}>
-        <div className={styles.titleWrapper}>
-            <span className={styles.title}>
-              uribarri.online
-            </span>
-        </div>
-
-        {/* {currentUser && (
-          <div className={styles.userInfoWrapper}>
-            <UserInfoCard />
+    <>
+      {/*update: Add dynamic className based on visibility state */}
+      <div className={`${styles.container} ${isVisible ? styles.visible : styles.hidden}`}>
+        <div className={styles.contentWrapper}>
+          <div className={styles.titleWrapper}>
+              <span className={styles.title}>
+                uribarri.online
+              </span>
           </div>
-        )} */}
 
-        <div className={styles.buttonsContainer}>
-          {currentUser ? (
-            <button 
-              type="button" 
-              className={styles.active} 
-              onClick={clearUserSession}
-              title="Cerrar sesión"
-            >
-              <span>Cerrar</span>
-              <DoorClosed size={16}/>
-            </button>
-          ) : (
-            showShopWindow && (
+          <div className={styles.buttonsContainer}>
+            {currentUser ? (
+              <>
+                <button 
+                  type="button" 
+                  className={styles.profileButton} 
+                  onClick={handleProfileClick}
+                  title="Ver perfil"
+                >
+                  <CircleUserRound size={16}/>
+                  <span>Mi Perfil</span>
+                </button>
+                <button 
+                  type="button" 
+                  className={styles.active} 
+                  onClick={clearUserSession}
+                  title="Cerrar sesión"
+                >
+                  <span>Cerrar</span>
+                  <DoorClosed size={16}/>
+                </button>
+              </>
+            ) : (
+              showShopWindow && (
+                <button 
+                  type="button" 
+                  className={styles.loginButton} 
+                  onClick={handleLoginClick}
+                  title="Registrarse o iniciar sesión"
+                >
+                  <img 
+                    src="/images/icons/Register.png" 
+                    alt="Login" 
+                    className={styles.loginIcon}
+                    width={30}
+                    height={30}
+                  />
+                  <span>ENTRAR</span>
+                </button>
+              )
+            )}
+          </div>
+
+          {/* Show burger menu for both logged in users and non-logged in users in ShopWindow */}
+          {(currentUser || (!currentUser && showShopWindow)) && (
+            <div className={styles.mobileMenuContainer}>
               <button 
-                type="button" 
-                className={styles.loginButton} 
-                onClick={handleLoginClick}
-                title="Registrarse o iniciar sesión"
+                className={`${styles.burgerButton} ${mobileMenuOpen ? styles.active : ''}`}
+                onClick={toggleMobileMenu}
+                aria-label="Menu"
+                ref={burgerButtonRef}
               >
-                <img 
-                  src="/images/icons/Register.png" 
-                  alt="Login" 
-                  className={styles.loginIcon}
-                  width={30}
-                  height={30}
-                />
-                <span>ENTRAR</span>
+                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
-            )
+
+              <div 
+                className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}
+                ref={mobileMenuRef}
+              >
+                {shouldShowBackButton() && (
+                  <>
+                    <button
+                      className={styles.backButton}
+                      onClick={() => {
+                        handleBack();
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <ArrowLeft size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Volver</span>
+                    </button>
+                    
+                    {currentUser && <div className={styles.menuDivider}></div>}
+                  </>
+                )}
+
+                {currentUser ? (
+                  <>
+                    <button 
+                      className={styles.profileMenuButton}
+                      onClick={handleProfileClick}
+                    >
+                      <CircleUserRound size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Mi Perfil</span>
+                    </button>
+                    
+                    <div className={styles.menuDivider}></div>
+                    
+                    <button 
+                      className={styles.logoutButton}
+                      onClick={() => {
+                        clearUserSession();
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <DoorClosed size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Cerrar sesión</span>
+                    </button>
+                  </>
+                ) : (
+                  showShopWindow && (
+                    <button 
+                      className={styles.loginButton}
+                      onClick={handleLoginClick}
+                    >
+                      <img 
+                        src="/images/icons/Register.png" 
+                        alt="Login" 
+                        className={styles.buttonIcon}
+                        width={16}
+                        height={16}
+                      />
+                      <span className={styles.buttonText}>entrar</span>
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
           )}
         </div>
-
-        {/* Show burger menu for both logged in users and non-logged in users in ShopWindow */}
-        {(currentUser || (!currentUser && showShopWindow)) && (
-          <div className={styles.mobileMenuContainer}>
-            <button 
-              className={`${styles.burgerButton} ${mobileMenuOpen ? styles.active : ''}`}
-              onClick={toggleMobileMenu}
-              aria-label="Menu"
-              ref={burgerButtonRef}
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-
-            <div 
-              className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}
-              ref={mobileMenuRef}
-            >
-              {shouldShowBackButton() && (
-                <>
-                  <button
-                    className={styles.backButton}
-                    onClick={() => {
-                      handleBack();
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <ArrowLeft size={16} className={styles.buttonIcon} />
-                    <span className={styles.buttonText}>Volver</span>
-                  </button>
-                  
-                  {currentUser && <div className={styles.menuDivider}></div>}
-                </>
-              )}
-
-              {currentUser ? (
-                <button 
-                  className={styles.logoutButton}
-                  onClick={() => {
-                    clearUserSession();
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <DoorClosed size={16} className={styles.buttonIcon} />
-                  <span className={styles.buttonText}>Cerrar sesión</span>
-                </button>
-              ) : (
-                showShopWindow && (
-                  <button 
-                    className={styles.loginButton}
-                    onClick={handleLoginClick}
-                  >
-                    <img 
-                      src="/images/icons/Register.png" 
-                      alt="Login" 
-                      className={styles.buttonIcon}
-                      width={16}
-                      height={16}
-                    />
-                    <span className={styles.buttonText}>entrar</span>
-                  </button>
-                )
-              )}
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+      
+      {currentUser && showUserInfoCard && (
+        <UserInfoCard onClose={handleCloseUserInfoCard} />
+      )}
+    </>
   );
 }
 

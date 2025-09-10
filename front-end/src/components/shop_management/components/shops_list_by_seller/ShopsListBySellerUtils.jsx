@@ -148,7 +148,7 @@ const ShopsListBySellerUtils = () => {
     if (shopCount >= effectiveShopLimit) {
       setError(prevError => ({ 
         ...prevError, 
-        shopError: `Has alcanzado el límite de ${effectiveShopLimit} comercios. ${!currentUser?.contributor_user ? 'Conviértete en sponsor para aumentar tu límite.' : ''}`
+        shopError: `Has alcanzado el límite de ${effectiveShopLimit} comercios. ${!currentUser?.contributor_user ? 'Conviértete en patrocinador para aumentar tu límite.' : ''}`
       }));
       return;
     }

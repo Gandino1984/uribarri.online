@@ -1,7 +1,7 @@
 :root {
 
   --app-purple:  #9747ff;
-  --app-purple-darker:  #813cdb;
+  --app-purple-darker:  #7431ca;
   --app-purple-transparent:  #af71ff15;  
   --app-green: #D1FF1F;
   --app-darkGreen: #0d2516;
@@ -111,7 +111,7 @@ input[type="text"] {
   border-radius: 8px;
   min-height: 2.5rem;
   width: 100%;
-  margin-bottom: .5rem;
+  /* margin-bottom: .5rem; */
   /* max-width: 20rem; */
   font-weight: 600;
   border: 2px solid lightgray;

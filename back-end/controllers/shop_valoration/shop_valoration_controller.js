@@ -1,6 +1,7 @@
 import shop_valoration_model from "../../models/shop_valoration_model.js";
 import shop_model from "../../models/shop_model.js";
 import user_model from "../../models/user_model.js";
+import order_model from "../../models/order_model.js";
 import { Sequelize } from "sequelize";
 
 async function validateUser(id_user) {
@@ -8,14 +9,14 @@ async function validateUser(id_user) {
         const user = await user_model.findOne({
             where: {
                 id_user: id_user,
-                contributor_user: true
+                type_user: 'user'
             }
         });
         
         if (!user) {
             return {
                 isValid: false,
-                error: "El usuario no existe o no es un colaborador del proyecto"
+                error: "El usuario no existe o no tiene permisos para valorar comercios"
             };
         }
         
@@ -60,9 +61,27 @@ async function validateShop(id_shop) {
     }
 }
 
+//to check if user has purchased from shop
+async function hasUserPurchasedFromShop(id_user, id_shop) {
+    try {
+        const order = await order_model.findOne({
+            where: {
+                id_user: id_user,
+                id_shop: id_shop,
+                order_status: 'delivered'
+            }
+        });
+        
+        return order !== null;
+    } catch (err) {
+        console.error("Error checking user purchases:", err);
+        return false;
+    }
+}
+
 async function create(valorationData) {
     try {
-        // Validate user is a contributor
+        // Validate user type
         const userValidation = await validateUser(valorationData.id_user);
         if (!userValidation.isValid) {
             return { error: userValidation.error };
@@ -72,6 +91,12 @@ async function create(valorationData) {
         const shopValidation = await validateShop(valorationData.id_shop);
         if (!shopValidation.isValid) {
             return { error: shopValidation.error };
+        }
+
+        //update: Check if user has purchased from this shop
+        const hasPurchased = await hasUserPurchasedFromShop(valorationData.id_user, valorationData.id_shop);
+        if (!hasPurchased) {
+            return { error: "Solo puedes valorar comercios donde hayas realizado una compra" };
         }
 
         // Check if valoration already exists
@@ -125,10 +150,10 @@ async function update(id_valoration, valorationData) {
             return { error: "No tienes permisos para modificar esta valoración" };
         }
 
-        // Validate user is still a contributor
+        // Validate user still has correct type
         const userValidation = await validateUser(valoration.id_user);
         if (!userValidation.isValid) {
-            return { error: "El usuario no es un colaborador activo del proyecto" };
+            return { error: "El usuario no tiene permisos para valorar comercios" };
         }
 
         // Validate calification range if provided
@@ -399,6 +424,55 @@ async function getShopAverageCalification(id_shop) {
     }
 }
 
+//update: Add function to check if user can rate a shop
+async function canUserRateShop(id_user, id_shop) {
+    try {
+        // Validate user type
+        const userValidation = await validateUser(id_user);
+        if (!userValidation.isValid) {
+            return { 
+                canRate: false, 
+                reason: userValidation.error 
+            };
+        }
+
+        // Check if user has purchased from shop
+        const hasPurchased = await hasUserPurchasedFromShop(id_user, id_shop);
+        if (!hasPurchased) {
+            return { 
+                canRate: false, 
+                reason: "Debes realizar una compra en este comercio antes de poder valorarlo" 
+            };
+        }
+
+        // Check if already rated
+        const existingValoration = await shop_valoration_model.findOne({
+            where: {
+                id_user: id_user,
+                id_shop: id_shop
+            }
+        });
+
+        if (existingValoration) {
+            return { 
+                canRate: false, 
+                reason: "Ya has valorado este comercio",
+                existingValoration: existingValoration
+            };
+        }
+
+        return { 
+            canRate: true 
+        };
+    } catch (err) {
+        console.error("-> shop_valoration_controller.js - canUserRateShop() - Error =", err);
+        return { 
+            canRate: false, 
+            reason: "Error al verificar permisos de valoración" 
+        };
+    }
+}
+
 export {
     create,
     update,
@@ -408,7 +482,8 @@ export {
     getByUserAndShop,
     removeById,
     getShopAverageCalification,
-    updateShopAverageCalification
+    updateShopAverageCalification,
+    canUserRateShop
 };
 
 export default {
@@ -420,5 +495,6 @@ export default {
     getByUserAndShop,
     removeById,
     getShopAverageCalification,
-    updateShopAverageCalification
+    updateShopAverageCalification,
+    canUserRateShop
 };
