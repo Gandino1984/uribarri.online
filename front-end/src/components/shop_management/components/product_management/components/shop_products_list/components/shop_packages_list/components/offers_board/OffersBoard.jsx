@@ -167,12 +167,12 @@ const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
 
             {/* Products list */}
             <div className={styles.productsList}>
-              <h3 className={styles.includesTitle}>Incluye:</h3>
+              {/* <h3 className={styles.includesTitle}>Incluye:</h3> */}
               {products.map((product, index) => (
                 <div key={index} className={styles.productItem}>
                   <span className={styles.productBullet}>•</span>
                   <span className={styles.productName}>{product.name_product}</span>
-                  <span className={styles.productPrice}>€{parseFloat(product.price_product).toFixed(2)}</span>
+                  {/* <span className={styles.productPrice}>€{parseFloat(product.price_product).toFixed(2)}</span> */}
                 </div>
               ))}
             </div>

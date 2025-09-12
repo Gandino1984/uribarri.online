@@ -34,7 +34,9 @@ const AppContent = () => {
     setShowRiderManagement,
     setShowShopsListBySeller,
     setShowLandingPage,
-    setShowTopBar
+    setShowTopBar,
+    //update: Add showOffersBoard
+    showOffersBoard
   } = useUI();
   const { currentUser } = useAuth();
   
@@ -87,7 +89,8 @@ const AppContent = () => {
     <div className={styles.mainContainer}>
       <ConfirmationModal />
       <ImageModal />
-      {showTopBar && <TopBar />} 
+      {/*update: Hide TopBar when OffersBoard is shown */}
+      {showTopBar && !showOffersBoard && <TopBar />} 
       {/* {currentUser && <UserInfoCard />} */}
       <CardDisplay />
       {renderMainContent()}

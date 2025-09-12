@@ -136,10 +136,11 @@ const ProductCategoryManagementForm = ({ onClose }) => {
       setLoading(true);
       setError('');
       
-      //update: Create category first
+      //update: Fixed - Send id_type as a number, not an object
       const categoryResponse = await axiosInstance.post('/product-category/create', {
         name_category: newCategoryName.trim(),
-        createdby_category: currentUser?.name_user || currentUser?.email_user
+        createdby_category: currentUser?.name_user || currentUser?.email_user,
+        id_type: parseInt(selectedShopType.id_type) // Fixed: Send the id_type value as a number
       });
 
       if (categoryResponse.data.error) {
@@ -147,24 +148,12 @@ const ProductCategoryManagementForm = ({ onClose }) => {
         return;
       }
 
-      const newCategoryId = categoryResponse.data.data.id_category;
+      setSuccess('¡Categoría de producto creada! Será revisada por un administrador.');
+      setNewCategoryName('');
+      setShowCreateCategory(false);
+      fetchCategories();
       
-      //update: Then create type-category association
-      const typeCategoryResponse = await axiosInstance.post('/type-category/create', {
-        id_type: selectedShopType.id_type,
-        id_category: newCategoryId
-      });
-
-      if (typeCategoryResponse.data.error) {
-        setError(typeCategoryResponse.data.error);
-      } else {
-        setSuccess('¡Categoría de producto creada! Será revisada por un administrador.');
-        setNewCategoryName('');
-        setShowCreateCategory(false);
-        fetchCategories();
-        
-        setTimeout(() => setSuccess(''), 3000);
-      }
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       console.error('Error creating category:', err);
       setError('Error al crear la categoría de producto');
@@ -393,11 +382,6 @@ const ProductCategoryManagementForm = ({ onClose }) => {
               <h3>
                 <Layers size={20} />
                 Subcategorías
-                {/* {selectedCategory && (
-                  <span className={styles.selectedTypeLabel}>
-                    ({selectedCategory.name_category})
-                  </span>
-                )} */}
               </h3>
               <button
                 onClick={() => setShowCreateSubcategory(!showCreateSubcategory)}
