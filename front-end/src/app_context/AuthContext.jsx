@@ -22,10 +22,12 @@ export const AuthProvider = ({ children }) => {
           console.warn('Warning: User data missing name_user field');
         }
         
-        // Include image_user in the state
+        // Include image_user and email_user in the state
         return {
           ...parsedData,
-          image_user: parsedData.image_user || null
+          image_user: parsedData.image_user || null,
+          //update: Added email_user from stored data
+          email_user: parsedData.email_user || null
         };
       } catch (err) {
         console.error('Error parsing stored user data:', err);
@@ -37,6 +39,8 @@ export const AuthProvider = ({ children }) => {
   
   const [isLoggingIn, setIsLoggingIn] = useState(() => !currentUser);
   const [name_user, setNameUser] = useState(() => currentUser?.name_user || '');
+  //update: Added email_user state
+  const [email_user, setEmailUser] = useState(() => currentUser?.email_user || '');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
   const [passwordIcons, setPasswordIcons] = useState([]);
@@ -69,6 +73,8 @@ export const AuthProvider = ({ children }) => {
           setCurrentUser(parsedData);
           // Also update other relevant user states
           setNameUser(parsedData.name_user || '');
+          //update: Set email from stored data
+          setEmailUser(parsedData.email_user || '');
           setUserType(parsedData.type_user || '');
           setLocationUser(parsedData.location_user || '');
         }
@@ -95,7 +101,9 @@ export const AuthProvider = ({ children }) => {
     // Create the user state object with correct property mappings
     const userStateData = {
       id_user: userData.id_user,            
-      name_user: userData.name_user,   
+      name_user: userData.name_user,
+      //update: Added email_user to user state
+      email_user: userData.email_user,   
       type_user: userData.type_user,   
       location: userData.location_user, 
       image_user: userData.image_user, 
@@ -115,6 +123,8 @@ export const AuthProvider = ({ children }) => {
     console.log('Setting currentUser to:', userStateData);
     setCurrentUser(userStateData);
     setNameUser(userData.name_user);
+    //update: Set email after login
+    setEmailUser(userData.email_user);
     setIsLoggingIn(false);
     
     // Return a promise to ensure state updates are completed
@@ -133,6 +143,8 @@ export const AuthProvider = ({ children }) => {
 
   const clearUserSession = () => {
     setNameUser('');
+    //update: Clear email
+    setEmailUser('');
     setPassword('');
     setPasswordRepeat('');
     setLocationUser('');
@@ -153,6 +165,8 @@ export const AuthProvider = ({ children }) => {
     currentUser, setCurrentUser,
     isLoggingIn, setIsLoggingIn,
     name_user, setNameUser,
+    //update: Added email_user to context value
+    email_user, setEmailUser,
     password, setPassword,
     passwordRepeat, setPasswordRepeat,
     passwordIcons, setPasswordIcons,

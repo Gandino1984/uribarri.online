@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx';
@@ -7,6 +7,7 @@ import styles from '../../../../../public/css/LoginRegisterForm.module.css';
 export const FormFields = () => {
   const {
     name_user,
+    email_user,
     isLoggingIn,
     type_user,
     location_user,
@@ -15,12 +16,33 @@ export const FormFields = () => {
   const { error } = useUI();
   const usernameError = error.userError;
   const userlocationError = error.userlocationError;
+  const emailError = error.emailError;
 
   const {
     handleUsernameChange,
     handleUserTypeChange,
     handleUserLocationChange,
+    handleEmailChange,
   } = LoginRegisterUtils();
+
+  //update: Added state for email validation status
+  const [emailValidationClass, setEmailValidationClass] = useState('');
+  
+  //update: Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  //update: Email validation effect
+  useEffect(() => {
+    if (!isLoggingIn && email_user) {
+      if (emailRegex.test(email_user)) {
+        setEmailValidationClass('inputValid');
+      } else {
+        setEmailValidationClass('inputInvalid');
+      }
+    } else {
+      setEmailValidationClass('');
+    }
+  }, [email_user, isLoggingIn]);
 
   return (
     <div className={styles.inputSection}>
@@ -37,6 +59,17 @@ export const FormFields = () => {
 
         {!isLoggingIn && (
           <>
+            {/*update: Added email input field with validation*/}
+            <input
+              id="email_user"
+              type="email"
+              value={email_user}
+              onChange={handleEmailChange}
+              className={`${emailError ? styles.inputError : ''} ${emailValidationClass}`}
+              placeholder="Correo electrónico:"
+              required
+            />
+            
             <input
               id="location_user"
               type="text"
@@ -47,7 +80,7 @@ export const FormFields = () => {
               required 
             />
 
-               <select 
+            <select 
               value={type_user} 
               onChange={handleUserTypeChange}
               className={type_user ? 'has-value' : ''}

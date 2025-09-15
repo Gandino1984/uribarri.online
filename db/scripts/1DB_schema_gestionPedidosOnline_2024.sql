@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `id_user` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name_user` VARCHAR(100) NOT NULL,
   `pass_user` VARCHAR(255) NOT NULL,
+  `email_user` VARCHAR(255) NOT NULL, 
   `location_user` VARCHAR(100) NOT NULL,
   `type_user` VARCHAR(45) NOT NULL,
   `image_user` VARCHAR(255) NULL,

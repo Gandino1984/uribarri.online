@@ -9,9 +9,9 @@ async function getAll(req, res) {
 }
 
 async function create(req, res) {
-    //update: Added age_user to destructured fields
-    const {name_user, pass_user, location_user, type_user, image_user, age_user } = req.body;
-    const {error, data} = await userController.create({name_user, pass_user, location_user, type_user, image_user, age_user});
+    //update: Added email_user to destructured fields
+    const {name_user, pass_user, email_user, location_user, type_user, image_user, age_user } = req.body;
+    const {error, data} = await userController.create({name_user, pass_user, email_user, location_user, type_user, image_user, age_user});
     res.json({error, data});
 }
 
@@ -47,12 +47,13 @@ async function login(req, res) {
 }
 
 async function register(req, res) {
-    //update: Added age_user to destructured fields
-    let {name_user, pass_user, location_user, type_user, image_user, calification_user, age_user } = req.body;
+    //update: Added email_user to destructured fields
+    let {name_user, pass_user, email_user, location_user, type_user, image_user, calification_user, age_user } = req.body;
     try{
-        if(!name_user || !pass_user || !location_user || !type_user){
+        //update: Added email_user to required fields check
+        if(!name_user || !pass_user || !email_user || !location_user || !type_user){
             res.status(400).json({ 
-                error: 'Los parámetros name_user, pass_user, location_user y type_user son obligatorios', 
+                error: 'Los parámetros name_user, pass_user, email_user, location_user y type_user son obligatorios', 
                 requestBody: req.body 
             });
         }
@@ -69,12 +70,13 @@ async function register(req, res) {
 
         const {error, data} = await userController.register({
             name_user, 
-            pass_user, 
+            pass_user,
+            //update: Added email_user to register call
+            email_user,
             location_user, 
             type_user, 
             image_user, 
             calification_user,
-            //update: Added age_user to register call
             age_user
         });
 
@@ -88,7 +90,9 @@ async function register(req, res) {
 async function update(req, res) {
     const {
         id_user, 
-        name_user, 
+        name_user,
+        //update: Added email_user
+        email_user,
         pass_user, 
         location_user, 
         type_user, 
@@ -105,7 +109,9 @@ async function update(req, res) {
     }
     
     const {error, data} = await userController.update(id_user, { 
-        name_user, 
+        name_user,
+        //update: Added email_user to update call
+        email_user,
         pass_user, 
         location_user, 
         type_user, 

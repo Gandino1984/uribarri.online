@@ -10,6 +10,8 @@ export const LoginRegisterUtils = () => {
   const {
     isLoggingIn, setIsLoggingIn,
     name_user, setNameUser,
+    //update: Added email_user state
+    email_user, setEmailUser,
     password, setPassword,
     passwordRepeat, setPasswordRepeat,
     showPasswordRepeat, setShowPasswordRepeat,
@@ -45,6 +47,9 @@ export const LoginRegisterUtils = () => {
   const { validateUsername } = useUsernameValidation();
   const { validateIPRegistration } = useIPValidation();
 
+  //update: Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const isButtonDisabled = () => {
     const { isValid } = validateUsername(name_user);
 
@@ -53,8 +58,12 @@ export const LoginRegisterUtils = () => {
     if (isLoggingIn) {
       return password.length !== 4;
     } else {
-      // For registration, require a 4-digit password, matching password repeat, and a selected user type
-      return password.length !== 4 || 
+      //update: Added email validation to button disabled check
+      const isEmailValid = emailRegex.test(email_user);
+      
+      // For registration, require a valid email, 4-digit password, matching password repeat, and a selected user type
+      return !isEmailValid ||
+              password.length !== 4 || 
               passwordRepeat.length !== 4 || 
               password !== passwordRepeat || 
               type_user === '';
@@ -64,6 +73,12 @@ export const LoginRegisterUtils = () => {
   const handleUsernameChange = (e) => {
     const rawUsername = e.target.value;
     setNameUser(rawUsername);
+  };
+  
+  //update: Added email change handler
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setEmailUser(email);
   };
     
   const handleUserLocationChange = (e) => {
@@ -165,6 +180,8 @@ export const LoginRegisterUtils = () => {
       const normalizedUserData = {
         id_user: userData.id_user, 
         name_user: userData.name_user,
+        //update: Added email_user to normalized data
+        email_user: userData.email_user,
         type_user: userData.type_user,
         location_user: userData.location_user,
         image_user: userData.image_user,
@@ -310,6 +327,8 @@ export const LoginRegisterUtils = () => {
       const normalizedUserData = {
         id_user: userData.id_user,
         name_user: userData.name_user,
+        //update: Added email_user to normalized data
+        email_user: userData.email_user,
         type_user: userData.type_user,
         location_user: userData.location_user,
         contributor_user: userData.contributor_user
@@ -355,11 +374,13 @@ export const LoginRegisterUtils = () => {
     }
   };
 
-  const handleRegistration = async (cleanedUsername, password, type_user, userLocation) => {
+  const handleRegistration = async (cleanedUsername, password, type_user, userLocation, userEmail) => {
     try {    
       const registrationData = {
         name_user: cleanedUsername,
         pass_user: password,
+        //update: Added email_user to registration data
+        email_user: userEmail,
         type_user: type_user,
         location_user: userLocation,
         calification_user: 5 
@@ -401,6 +422,13 @@ export const LoginRegisterUtils = () => {
           console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Validación de IP fallida. No se permite el registro.');
           return;
         }
+        
+        //update: Email validation for registration
+        if (!emailRegex.test(email_user)) {
+          setError(prevError => ({ ...prevError, emailError: "El formato del email no es válido" }));
+          console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Email inválido');
+          return;
+        }
       }
   
       // Username validation
@@ -432,9 +460,10 @@ export const LoginRegisterUtils = () => {
         await handleLogin(cleanedUsername, password);
       
       } else {
-        console.log('-> Registrando usuario', { cleanedUsername, type_user });
+        console.log('-> Registrando usuario', { cleanedUsername, type_user, email_user });
 
-        await handleRegistration(cleanedUsername, password, type_user, location_user);
+        //update: Pass email to registration handler
+        await handleRegistration(cleanedUsername, password, type_user, location_user, email_user);
         
       }
     } catch (err) {
@@ -459,5 +488,6 @@ export const LoginRegisterUtils = () => {
     handleUserTypeChange,
     handleUsernameChange,
     handleUserLocationChange,
+    handleEmailChange,
   };
 };

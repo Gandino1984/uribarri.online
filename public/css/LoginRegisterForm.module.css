@@ -116,19 +116,6 @@ background-color: white;
   gap: .6rem;
   width: 100%;
 }
-/* 
-.submitButton {
-  min-width: 80px;
-  align-self: flex-start;
-} */
-
-/* .toggleButton {
-  min-width: 80px;
-} */
-
-/* .toggleButton:hover {
- 
-} */
 
 .inputError {
   border: 2px solid red;
@@ -185,6 +172,8 @@ background-color: white;
 
   input[type="text"],
   input[type="number"],
+  /*update: Added email input type to responsive styles*/
+  input[type="email"],
   select {
     flex: 1;
     max-width: 300px;

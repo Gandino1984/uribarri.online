@@ -12,6 +12,11 @@ const user_model = sequelize.define("user", {
         type: DataTypes.STRING(100),
         allowNull: false
     },
+    email_user: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        unique: true
+    },
     pass_user: {
         type: DataTypes.STRING(255), 
         allowNull: false
@@ -38,7 +43,6 @@ const user_model = sequelize.define("user", {
         allowNull: false,
         defaultValue: false
     },
-    //update: Added age_user field with default value of 18
     age_user: {
         type: DataTypes.INTEGER,
         allowNull: false,

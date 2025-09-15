@@ -2,6 +2,8 @@ import { console } from "inspector";
 import user_model from "../../models/user_model.js";
 import bcrypt from "bcrypt";
 
+//update: Added email validation regex
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validateUserData = (userData) => {
     console.log("-> user_controller.js - validateUserData() - userData = ", userData);
@@ -14,6 +16,15 @@ const validateUserData = (userData) => {
             errors.push(`Falta el campo: ${field}`);
         }
     });
+    
+    //update: Added email validation
+    if (userData.email_user !== undefined) {
+        if (!userData.email_user) {
+            errors.push('El email es requerido');
+        } else if (!emailRegex.test(userData.email_user)) {
+            errors.push('El formato del email no es válido');
+        }
+    }
     
     if (userData.name_user) {
         if (userData.name_user.length < 3) {
@@ -41,7 +52,6 @@ const validateUserData = (userData) => {
     if (userData.contributor_user !== undefined && typeof userData.contributor_user !== 'boolean') {
         errors.push('La categoría de usuario debe ser un valor booleano');
     }
-    //update: Added age_user validation
     if (userData.age_user !== undefined) {
         if (!Number.isInteger(userData.age_user) || userData.age_user < 0) {
             errors.push('La edad debe ser un número entero positivo');
@@ -151,6 +161,20 @@ async function create(userData) {
                 error: "El usuario ya existe"
             };
         }
+        
+        //update: Check if email already exists
+        if (userData.email_user) {
+            const existingEmail = await user_model.findOne({ 
+                where: { email_user: userData.email_user } 
+            });
+            
+            if (existingEmail) {
+                return { 
+                    error: "El email ya está registrado"
+                };
+            }
+        }
+        
         // Create new user
         const user = await user_model.create(userData);
         console.log("Created user:", user);
@@ -202,15 +226,16 @@ async function login(userData) {
             };
         }
 
-        // Return user data including contributor_user
+        // Return user data including contributor_user and email
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
+            //update: Added email_user to login response
+            email_user: user.email_user,
             type_user: user.type_user,
             location_user: user.location_user,
             image_user: user.image_user,
             contributor_user: user.contributor_user,
-            //update: Added age_user to login response
             age_user: user.age_user
         };
 
@@ -252,6 +277,18 @@ async function register(userData) {
                 error: "El usuario ya existe",
             };
         }
+        
+        //update: Check if email already exists
+        const existingEmail = await user_model.findOne({ 
+            where: { email_user: userData.email_user } 
+        });
+        
+        if (existingEmail) {
+            console.log('-> register() - El email ya está registrado');
+            return { 
+                error: "El email ya está registrado",
+            };
+        }
 
         // Add default values if not provided
         if (userData.calification_user === undefined) {
@@ -262,7 +299,6 @@ async function register(userData) {
             //by default all users are not sponsors
             userData.contributor_user = false;
         }
-        //update: Added default age_user if not provided
         if (userData.age_user === undefined) {
             userData.age_user = 18;
         }
@@ -273,11 +309,12 @@ async function register(userData) {
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
+            //update: Added email_user to register response
+            email_user: user.email_user,
             type_user: user.type_user,
             location_user: user.location_user,
             calification_user: user.calification_user,
             contributor_user: user.contributor_user,
-            //update: Added age_user to register response
             age_user: user.age_user
         };
 
@@ -315,10 +352,25 @@ async function update(id, userData) {
                 error: "El usuario no existe",
             };
         }
+        
+        //update: Check if email is being updated and if it's already taken
+        if (userData.email_user && userData.email_user !== user.email_user) {
+            const existingEmail = await user_model.findOne({ 
+                where: { email_user: userData.email_user } 
+            });
+            
+            if (existingEmail) {
+                return { 
+                    error: "El email ya está registrado por otro usuario",
+                };
+            }
+        }
 
         // Validate the fields that are being updated
         const fieldsToUpdate = {};
         if (userData.name_user) fieldsToUpdate.name_user = userData.name_user;
+        //update: Added email_user to fields to update
+        if (userData.email_user) fieldsToUpdate.email_user = userData.email_user;
         if (userData.pass_user) fieldsToUpdate.pass_user = userData.pass_user;
         if (userData.location_user) fieldsToUpdate.location_user = userData.location_user;
         if (userData.type_user) fieldsToUpdate.type_user = userData.type_user;
