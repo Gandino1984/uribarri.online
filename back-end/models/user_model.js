@@ -47,6 +47,20 @@ const user_model = sequelize.define("user", {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 18
+    },
+    //update: Added email verification fields
+    email_verified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    verification_token: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    verification_token_expires: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     timestamps: false,

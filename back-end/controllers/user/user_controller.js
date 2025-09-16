@@ -1,6 +1,8 @@
 import { console } from "inspector";
 import user_model from "../../models/user_model.js";
 import bcrypt from "bcrypt";
+import { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail } from "../../services/emailService.js";
+import { Op } from "sequelize";
 
 //update: Added email validation regex
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,8 +99,6 @@ async function getById(id) {
 
         const user = await user_model.findByPk(id);
         
-        // console.log("-> user_controller.js - getById() - Retrieved user = ", user);
-
         if (!user) {
             console.warn("-> user_controller.js - getById() - User not found");
             return { error: "Usuario no encontrado" };
@@ -121,7 +121,6 @@ async function getByUserName(userName) {
         });
     
         if (user) {
-            //erase this log later
             console.log('->  getByUserName() - Datos completos obtenidos = ', user);
             return { 
                 data: user
@@ -138,7 +137,6 @@ async function getByUserName(userName) {
             error: "Error al obtener el usuario"
         };
     }
-
 }
 
 async function create(userData) {
@@ -217,6 +215,14 @@ async function login(userData) {
             };
         }
 
+        //update: Check if email is verified
+        if (!user.email_verified) {
+            return {
+                error: "Por favor verifica tu correo electrónico antes de iniciar sesión",
+                needsVerification: true
+            };
+        }
+
         const isPasswordValid = await bcrypt.compare(userData.pass_user, user.pass_user);
 
         if (!isPasswordValid) {
@@ -230,13 +236,13 @@ async function login(userData) {
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
-            //update: Added email_user to login response
             email_user: user.email_user,
             type_user: user.type_user,
             location_user: user.location_user,
             image_user: user.image_user,
             contributor_user: user.contributor_user,
-            age_user: user.age_user
+            age_user: user.age_user,
+            email_verified: user.email_verified
         };
 
         console.log('-> login() - User response:', userResponse); 
@@ -295,38 +301,160 @@ async function register(userData) {
             userData.calification_user = 5;
         }
         if (userData.contributor_user === undefined) {
-            //if category is false it means the user is not a sponsor of the app
-            //by default all users are not sponsors
             userData.contributor_user = false;
         }
         if (userData.age_user === undefined) {
             userData.age_user = 18;
         }
 
+        //update: Generate verification token and expiry
+        const verificationToken = generateVerificationToken();
+        const verificationTokenExpires = new Date();
+        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24); // Token expires in 24 hours
+
+        // Add verification fields to user data
+        userData.verification_token = verificationToken;
+        userData.verification_token_expires = verificationTokenExpires;
+        userData.email_verified = false;
+
         const user = await user_model.create(userData);
+
+        //update: Send verification email
+        console.log('About to send verification email to:', userData.email_user);
+        const emailResult = await sendVerificationEmail(
+            userData.email_user,
+            userData.name_user,
+            verificationToken
+        );
+        console.log('Email send result:', emailResult);
+
+        if (!emailResult.success) {
+            console.error('Failed to send verification email:', emailResult.error);
+            // Still create the user but warn about email
+        }
 
         // Return user data without sensitive information
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
-            //update: Added email_user to register response
             email_user: user.email_user,
             type_user: user.type_user,
             location_user: user.location_user,
             calification_user: user.calification_user,
             contributor_user: user.contributor_user,
-            age_user: user.age_user
+            age_user: user.age_user,
+            email_verified: user.email_verified
         };
 
         return { 
-            message: "Registro exitoso", 
-            data: userResponse
+            message: "Registro exitoso. Por favor verifica tu correo electrónico.", 
+            data: userResponse,
+            verificationEmailSent: emailResult.success
         };
     } catch (err) {
         console.error("Error en el registro = ", err);
         return { 
             error: "Error de registro",
             details: err.message 
+        };
+    }
+}
+
+//update: New function to verify email
+async function verifyEmail(email, token) {
+    try {
+        const user = await user_model.findOne({
+            where: {
+                email_user: email,
+                verification_token: token,
+                verification_token_expires: {
+                    [Op.gt]: new Date() // Token hasn't expired
+                }
+            }
+        });
+
+        if (!user) {
+            return {
+                error: "Token inválido o expirado"
+            };
+        }
+
+        // Update user as verified
+        await user.update({
+            email_verified: true,
+            verification_token: null,
+            verification_token_expires: null
+        });
+
+        // Send welcome email
+        await sendWelcomeEmail(user.email_user, user.name_user);
+
+        return {
+            message: "Email verificado exitosamente",
+            data: {
+                email_verified: true,
+                name_user: user.name_user
+            }
+        };
+    } catch (err) {
+        console.error("Error verifying email:", err);
+        return {
+            error: "Error al verificar el email",
+            details: err.message
+        };
+    }
+}
+
+//update: New function to resend verification email
+async function resendVerificationEmail(email) {
+    try {
+        const user = await user_model.findOne({
+            where: { email_user: email }
+        });
+
+        if (!user) {
+            return {
+                error: "Usuario no encontrado"
+            };
+        }
+
+        if (user.email_verified) {
+            return {
+                error: "El email ya está verificado"
+            };
+        }
+
+        // Generate new token
+        const verificationToken = generateVerificationToken();
+        const verificationTokenExpires = new Date();
+        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+
+        await user.update({
+            verification_token: verificationToken,
+            verification_token_expires: verificationTokenExpires
+        });
+
+        // Send new verification email
+        const emailResult = await sendVerificationEmail(
+            user.email_user,
+            user.name_user,
+            verificationToken
+        );
+
+        if (!emailResult.success) {
+            return {
+                error: "Error al enviar el email de verificación"
+            };
+        }
+
+        return {
+            message: "Email de verificación reenviado exitosamente"
+        };
+    } catch (err) {
+        console.error("Error resending verification email:", err);
+        return {
+            error: "Error al reenviar el email de verificación",
+            details: err.message
         };
     }
 }
@@ -364,12 +492,27 @@ async function update(id, userData) {
                     error: "El email ya está registrado por otro usuario",
                 };
             }
+
+            //update: If email is changed, require re-verification
+            userData.email_verified = false;
+            const verificationToken = generateVerificationToken();
+            const verificationTokenExpires = new Date();
+            verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+            
+            userData.verification_token = verificationToken;
+            userData.verification_token_expires = verificationTokenExpires;
+
+            // Send verification email for the new address
+            await sendVerificationEmail(
+                userData.email_user,
+                user.name_user,
+                verificationToken
+            );
         }
 
         // Validate the fields that are being updated
         const fieldsToUpdate = {};
         if (userData.name_user) fieldsToUpdate.name_user = userData.name_user;
-        //update: Added email_user to fields to update
         if (userData.email_user) fieldsToUpdate.email_user = userData.email_user;
         if (userData.pass_user) fieldsToUpdate.pass_user = userData.pass_user;
         if (userData.location_user) fieldsToUpdate.location_user = userData.location_user;
@@ -377,6 +520,9 @@ async function update(id, userData) {
         if (userData.calification_user !== undefined) fieldsToUpdate.calification_user = userData.calification_user;
         if (userData.contributor_user !== undefined) fieldsToUpdate.contributor_user = userData.contributor_user;
         if (userData.age_user !== undefined) fieldsToUpdate.age_user = userData.age_user;
+        if (userData.email_verified !== undefined) fieldsToUpdate.email_verified = userData.email_verified;
+        if (userData.verification_token !== undefined) fieldsToUpdate.verification_token = userData.verification_token;
+        if (userData.verification_token_expires !== undefined) fieldsToUpdate.verification_token_expires = userData.verification_token_expires;
 
         const validation = validateUserData(fieldsToUpdate);
         if (!validation.isValid) {
@@ -392,9 +538,8 @@ async function update(id, userData) {
 
         console.log("Updated user:", user);
         return { 
-            message: "Usuario actualizado ." ,
+            message: userData.email_user ? "Usuario actualizado. Por favor verifica tu nuevo email." : "Usuario actualizado.",
             data: user
-            
         };
     } catch (error) {
         console.error("Error in update:", error);
@@ -423,7 +568,7 @@ async function removeById(id_user) {
         
         return { 
             data: id_user,
-            message: "El usuario se ha borrado ." 
+            message: "El usuario se ha borrado." 
         };
 
     } catch (err) {
@@ -452,7 +597,7 @@ async function updateProfileImage(userName, imagePath) {
 
         return {
             data: { image_user: imagePath },
-            message: "Imagen de perfil actualizada ."
+            message: "Imagen de perfil actualizada."
         };
     } catch (err) {
         console.error("Error updating profile image:", err);
@@ -472,7 +617,10 @@ export {
     login, 
     register,
     getByUserName,
-    updateProfileImage 
+    updateProfileImage,
+    //update: Added verification functions
+    verifyEmail,
+    resendVerificationEmail
 };
 
 export default { 
@@ -484,5 +632,8 @@ export default {
     login, 
     register,
     getByUserName,
-    updateProfileImage 
+    updateProfileImage,
+    //update: Added verification functions
+    verifyEmail,
+    resendVerificationEmail
 };

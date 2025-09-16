@@ -1,4 +1,5 @@
 // import React from 'react';
+import { useEffect } from 'react';
 import { UIProvider } from "./app_context/UIContext.jsx";
 import { AuthProvider } from "./app_context/AuthContext.jsx";
 import { ShopProvider } from "./app_context/ShopContext.jsx";
@@ -20,7 +21,8 @@ import ShopWindow from "../src/components/shop_window/ShopWindow.jsx";
 import ShopStore from "../src/components/shop_store/ShopStore.jsx";
 import ShopManagement from "../src/components/shop_management/ShopManagement.jsx";
 import RiderOrdersManagement from "../src/components/rider_order_management/RiderOrderManagement.jsx";
-import { useEffect } from 'react';
+//update: Import EmailVerification component
+import EmailVerification from "../src/components/email_verification/EmailVerification.jsx";
 
 const AppContent = () => {
   const { 
@@ -35,12 +37,20 @@ const AppContent = () => {
     setShowShopsListBySeller,
     setShowLandingPage,
     setShowTopBar,
-    //update: Add showOffersBoard
     showOffersBoard
   } = useUI();
   const { currentUser } = useAuth();
   
+  //update: Check if we're on the email verification page
+  const isEmailVerificationPage = window.location.pathname === '/verify-email' || 
+                                  window.location.search.includes('token=');
+  
   useEffect(() => {
+    //update: Don't run normal routing logic if on email verification page
+    if (isEmailVerificationPage) {
+      return;
+    }
+    
     if (currentUser?.type_user === 'rider') {
       console.log('User is rider, showing rider management UI');
       setShowRiderManagement(true);
@@ -56,9 +66,14 @@ const AppContent = () => {
     } else {
       setShowRiderManagement(false);
     }
-  }, [currentUser?.type_user, setShowRiderManagement, setShowShopsListBySeller, setShowLandingPage, setShowTopBar]);
+  }, [currentUser?.type_user, setShowRiderManagement, setShowShopsListBySeller, setShowLandingPage, setShowTopBar, isEmailVerificationPage]);
   
   const renderMainContent = () => {
+    //update: Show EmailVerification component if on verification page
+    if (isEmailVerificationPage) {
+      return <EmailVerification />;
+    }
+    
     // Priority order for displaying components
     if (showShopStore && selectedShopForStore) {
       return <ShopStore />;
@@ -89,8 +104,8 @@ const AppContent = () => {
     <div className={styles.mainContainer}>
       <ConfirmationModal />
       <ImageModal />
-      {/*update: Hide TopBar when OffersBoard is shown */}
-      {showTopBar && !showOffersBoard && <TopBar />} 
+      {/* Hide TopBar when OffersBoard is shown or on email verification page */}
+      {showTopBar && !showOffersBoard && !isEmailVerificationPage && <TopBar />} 
       {/* {currentUser && <UserInfoCard />} */}
       <CardDisplay />
       {renderMainContent()}
