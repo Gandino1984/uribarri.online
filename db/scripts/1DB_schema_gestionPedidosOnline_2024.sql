@@ -31,22 +31,22 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `id_user` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name_user` VARCHAR(100) NOT NULL,
   `pass_user` VARCHAR(255) NOT NULL,
-  `email_user` VARCHAR(255) NOT NULL UNIQUE, 
+  `email_user` VARCHAR(255) NOT NULL, 
+  --update: Removed UNIQUE constraint from email_user field
   `location_user` VARCHAR(100) NOT NULL,
   `type_user` VARCHAR(45) NOT NULL,
   `image_user` VARCHAR(255) NULL,
   `calification_user` INT NOT NULL DEFAULT 5,
   `contributor_user` TINYINT(1) NOT NULL DEFAULT 0,
   `age_user` INT NOT NULL DEFAULT 18,
-  -- update: Added email verification fields
   `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
   `verification_token` VARCHAR(255) NULL,
   `verification_token_expires` DATETIME NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE,
-  -- update: Add index for type_user to improve performance when filtering riders
+  --update: Added composite unique index for email_user + type_user combination
+  UNIQUE INDEX `unique_email_type` (`email_user` ASC, `type_user` ASC) VISIBLE,
   INDEX `idx_type_user` (`type_user` ASC) VISIBLE,
-  -- update: Add indexes for email verification
   INDEX `idx_verification_token` (`verification_token` ASC) VISIBLE,
   INDEX `idx_email_verified` (`email_verified` ASC) VISIBLE,
   INDEX `idx_email_user` (`email_user` ASC) VISIBLE

@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 import { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail } from "../../services/emailService.js";
 import { Op } from "sequelize";
 
-//update: Added email validation regex
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validateUserData = (userData) => {
@@ -19,7 +18,6 @@ const validateUserData = (userData) => {
         }
     });
     
-    //update: Added email validation
     if (userData.email_user !== undefined) {
         if (!userData.email_user) {
             errors.push('El email es requerido');
@@ -160,15 +158,18 @@ async function create(userData) {
             };
         }
         
-        //update: Check if email already exists
-        if (userData.email_user) {
-            const existingEmail = await user_model.findOne({ 
-                where: { email_user: userData.email_user } 
+        //update: Check if email+type combination already exists
+        if (userData.email_user && userData.type_user) {
+            const existingEmailType = await user_model.findOne({ 
+                where: { 
+                    email_user: userData.email_user,
+                    type_user: userData.type_user
+                } 
             });
             
-            if (existingEmail) {
+            if (existingEmailType) {
                 return { 
-                    error: "El email ya está registrado"
+                    error: `Ya existe una cuenta de tipo ${userData.type_user} con este email`
                 };
             }
         }
@@ -284,16 +285,37 @@ async function register(userData) {
             };
         }
         
-        //update: Check if email already exists
-        const existingEmail = await user_model.findOne({ 
-            where: { email_user: userData.email_user } 
+        //update: Check if email+type combination already exists
+        const existingEmailType = await user_model.findOne({ 
+            where: { 
+                email_user: userData.email_user,
+                type_user: userData.type_user
+            } 
         });
         
-        if (existingEmail) {
-            console.log('-> register() - El email ya está registrado');
+        if (existingEmailType) {
+            console.log('-> register() - Ya existe una cuenta con este email y tipo de usuario');
             return { 
-                error: "El email ya está registrado",
+                error: `Ya existe una cuenta de tipo ${userData.type_user} con este email. Puedes crear una cuenta con un tipo de usuario diferente.`,
             };
+        }
+
+        //update: Check if email exists with other user types and suggest available types
+        const existingEmailAccounts = await user_model.findAll({ 
+            where: { 
+                email_user: userData.email_user
+            },
+            attributes: ['type_user'] 
+        });
+        
+        if (existingEmailAccounts.length > 0) {
+            const existingTypes = existingEmailAccounts.map(acc => acc.type_user);
+            const availableTypes = ['user', 'seller', 'rider', 'provider'].filter(type => !existingTypes.includes(type));
+            
+            console.log('-> register() - Email exists with types:', existingTypes);
+            console.log('-> register() - Available types for this email:', availableTypes);
+            
+            // This is informational - registration will proceed since the type is different
         }
 
         // Add default values if not provided
@@ -360,10 +382,11 @@ async function register(userData) {
     }
 }
 
-//update: New function to verify email
+//update: Modified to handle multiple accounts per email
 async function verifyEmail(email, token) {
     try {
-        const user = await user_model.findOne({
+        // Find ALL users with this email and token (could be multiple if registering different types)
+        const users = await user_model.findAll({
             where: {
                 email_user: email,
                 verification_token: token,
@@ -373,27 +396,30 @@ async function verifyEmail(email, token) {
             }
         });
 
-        if (!user) {
+        if (!users || users.length === 0) {
             return {
                 error: "Token inválido o expirado"
             };
         }
 
-        // Update user as verified
-        await user.update({
-            email_verified: true,
-            verification_token: null,
-            verification_token_expires: null
-        });
-
-        // Send welcome email
-        await sendWelcomeEmail(user.email_user, user.name_user);
+        // Verify all accounts with this email/token combination
+        for (const user of users) {
+            await user.update({
+                email_verified: true,
+                verification_token: null,
+                verification_token_expires: null
+            });
+            
+            // Send welcome email for each verified account
+            await sendWelcomeEmail(user.email_user, user.name_user);
+        }
 
         return {
             message: "Email verificado exitosamente",
             data: {
                 email_verified: true,
-                name_user: user.name_user
+                accounts_verified: users.length,
+                user_types: users.map(u => u.type_user)
             }
         };
     } catch (err) {
@@ -405,7 +431,6 @@ async function verifyEmail(email, token) {
     }
 }
 
-//update: New function to resend verification email
 async function resendVerificationEmail(email) {
     try {
         const user = await user_model.findOne({
@@ -481,15 +506,19 @@ async function update(id, userData) {
             };
         }
         
-        //update: Check if email is being updated and if it's already taken
+        //update: Check if email+type combination would be duplicated
         if (userData.email_user && userData.email_user !== user.email_user) {
-            const existingEmail = await user_model.findOne({ 
-                where: { email_user: userData.email_user } 
+            const existingEmailType = await user_model.findOne({ 
+                where: { 
+                    email_user: userData.email_user,
+                    type_user: user.type_user, // Use current user's type
+                    id_user: { [Op.ne]: id } // Exclude current user
+                } 
             });
             
-            if (existingEmail) {
+            if (existingEmailType) {
                 return { 
-                    error: "El email ya está registrado por otro usuario",
+                    error: `Ya existe otra cuenta de tipo ${user.type_user} con este email`,
                 };
             }
 
@@ -618,7 +647,6 @@ export {
     register,
     getByUserName,
     updateProfileImage,
-    //update: Added verification functions
     verifyEmail,
     resendVerificationEmail
 };
@@ -633,7 +661,6 @@ export default {
     register,
     getByUserName,
     updateProfileImage,
-    //update: Added verification functions
     verifyEmail,
     resendVerificationEmail
 };

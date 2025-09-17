@@ -15,7 +15,8 @@ const user_model = sequelize.define("user", {
     email_user: {
         type: DataTypes.STRING(255),
         allowNull: false,
-        unique: true
+        //update: Removed unique constraint to allow same email for different user types
+        // unique: true - REMOVED
     },
     pass_user: {
         type: DataTypes.STRING(255), 
@@ -48,7 +49,6 @@ const user_model = sequelize.define("user", {
         allowNull: false,
         defaultValue: 18
     },
-    //update: Added email verification fields
     email_verified: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -64,7 +64,15 @@ const user_model = sequelize.define("user", {
     }
 }, {
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    //update: Added composite unique constraint for email_user + type_user
+    indexes: [
+        {
+            unique: true,
+            fields: ['email_user', 'type_user'],
+            name: 'unique_email_type'
+        }
+    ]
 });
 
 export default user_model;
