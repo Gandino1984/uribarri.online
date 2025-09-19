@@ -196,8 +196,8 @@ export const LoginRegisterUtils = () => {
       // Store the user type to avoid race conditions
       const userType = userData.type_user;
       
-      //update: Handle organization_manager user type routing
-      if (userType === 'organization_manager') {
+      //update: Handle organization_participant user type routing
+      if (userType === 'organization_participant') {
         console.log('User is organization manager, loading InfoManagement view');
         setShowInfoManagement(true);
         setShowShopManagement(false);

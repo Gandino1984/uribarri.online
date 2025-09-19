@@ -18,10 +18,11 @@ const participant_model = sequelize.define(
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         },
-        joined_at: {
-            type: DataTypes.DATE,
+        is_manager: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: DataTypes.NOW
+            defaultValue: false,
+            comment: 'Indicates if the user is a manager of this organization'
         }
     },
     {

@@ -90,10 +90,9 @@ export const FormFields = () => {
               <option value="user">Usuaria/o</option>
               <option value="seller">Vendedor/a</option>
               <option value="rider">Repartidor/a</option>
-              {/*update: Added organization_manager option*/}
-              <option value="organization_manager">Gestor/a de asociación</option>
-              <option value="handler" disabled>Gestor/a de tienda</option>
-              <option value="provider" disabled>Mayorista</option>
+              <option value="organization_participant">Participante de asociación</option>
+              <option value="shop_handler" disabled>Gestor/a de tienda</option>
+              <option value="shop_provider" disabled>Mayorista</option>
             </select>
           </>
         )}
