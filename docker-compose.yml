@@ -23,11 +23,9 @@ services:
       - ${APP_PORT}:3000
     depends_on:
       - db
-    #update: Use env_file to load ALL environment variables from .env
     env_file:
       - .env
     environment:
-      #update: Override MySQL port for internal Docker network communication
       - MYSQL_PORT=3306
       - MYSQL_HOST=${MYSQL_HOST}
     volumes:

@@ -4,6 +4,7 @@ import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import ShopManagement from "../shop_management/ShopManagement.jsx";
 import ShopStore from "../shop_store/ShopStore.jsx";
+import EmailVerificationPending from "../email_verification/EmailVerificationPending.jsx";
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
@@ -11,7 +12,6 @@ import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 // Memoize form content
 const FormContent = React.memo(() => {
-  //update: Import isLoggingIn from AuthContext to determine which title to show
   const { isLoggingIn } = useAuth();
   
   return (
@@ -31,20 +31,25 @@ const FormContent = React.memo(() => {
 FormContent.displayName = 'FormContent';
 
 const LoginRegisterForm = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, email_user } = useAuth();
   const { 
     showShopManagement, 
     showLandingPage,
     setShowTopBar,
     showShopStore,
-    showShopWindow
+    showShopWindow,
+    //update: Get success state to check for registration success
+    success
   } = useUI();
   
   // Track if mounted, not animation state
   const [isMounted, setIsMounted] = useState(false);
+  //update: Add state to track if we should show the verification pending screen
+  const [showVerificationPending, setShowVerificationPending] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
   
   // Simple state to track if we should show content
-  const shouldShow = !showLandingPage && !showShopManagement && !currentUser && !showShopStore && !showShopWindow;
+  const shouldShow = !showLandingPage && !showShopManagement && !currentUser && !showShopStore && !showShopWindow && !showVerificationPending;
   
   // Show TopBar when form is visible
   useEffect(() => {
@@ -54,6 +59,14 @@ const LoginRegisterForm = () => {
     }
   }, [shouldShow, setShowTopBar, isMounted]);
   
+  //update: Check for registration success and show verification pending screen
+  useEffect(() => {
+    if (success?.registrationSuccess && email_user) {
+      console.log('Registration successful, showing verification pending screen');
+      setPendingEmail(email_user);
+      setShowVerificationPending(true);
+    }
+  }, [success, email_user]);
 
   const getTransition = useCallback(() => {
     return {
@@ -66,7 +79,17 @@ const LoginRegisterForm = () => {
   
   const transitions = useTransition(shouldShow, getTransition());
   
+  //update: Handle back to login from verification pending
+  const handleBackToLogin = useCallback(() => {
+    setShowVerificationPending(false);
+    setPendingEmail('');
+  }, []);
+  
   // Return appropriate component based on state
+  if (showVerificationPending && pendingEmail) {
+    return <EmailVerificationPending email={pendingEmail} onBackToLogin={handleBackToLogin} />;
+  }
+  
   if (showShopStore) {
     return <ShopStore />;
   }

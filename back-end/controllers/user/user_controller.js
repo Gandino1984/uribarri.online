@@ -216,11 +216,13 @@ async function login(userData) {
             };
         }
 
-        //update: Check if email is verified
-        if (!user.email_verified) {
+        //update: Check if email is verified - BLOCK LOGIN if not verified
+        if (user.email_verified === false || user.email_verified === 0) {
+            console.log('-> login() - User email not verified, blocking login');
             return {
-                error: "Por favor verifica tu correo electrónico antes de iniciar sesión",
-                needsVerification: true
+                error: "Por favor verifica tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.",
+                needsVerification: true,
+                email: user.email_user // Include email for resend functionality
             };
         }
 

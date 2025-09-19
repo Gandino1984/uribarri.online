@@ -31,8 +31,9 @@ export const UIProvider = ({ children }) => {
   const [selectedShopForStore, setSelectedShopForStore] = useState(null);
   const [showShopsListBySeller, setShowShopsListBySeller] = useState(false);
   const [showRiderManagement, setShowRiderManagement] = useState(false);
-  //update: Add showOffersBoard state
   const [showOffersBoard, setShowOffersBoard] = useState(false);
+  //update: Add InfoManagement state
+  const [showInfoManagement, setShowInfoManagement] = useState(false);
 
   // Image modal states
   const [showImageModal, setShowImageModal] = useState(false);
@@ -152,8 +153,9 @@ export const UIProvider = ({ children }) => {
         selectedShopForStore, setSelectedShopForStore,
         showShopsListBySeller, setShowShopsListBySeller,
         showRiderManagement, setShowRiderManagement,
-        //update: Include showOffersBoard
         showOffersBoard, setShowOffersBoard,
+        //update: Include InfoManagement
+        showInfoManagement, setShowInfoManagement,
         
         // Image modal handlers
         showImageModal, setShowImageModal,

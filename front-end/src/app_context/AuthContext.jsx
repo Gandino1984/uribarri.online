@@ -22,12 +22,19 @@ export const AuthProvider = ({ children }) => {
           console.warn('Warning: User data missing name_user field');
         }
         
-        // Include image_user and email_user in the state
+        //update: Check if email is verified before allowing session restore
+        if (parsedData.email_verified === false || parsedData.email_verified === 0) {
+          console.warn('Stored user has unverified email, clearing session');
+          localStorage.removeItem('currentUser');
+          return null;
+        }
+        
+        // Include image_user, email_user and email_verified in the state
         return {
           ...parsedData,
           image_user: parsedData.image_user || null,
-          //update: Added email_user from stored data
-          email_user: parsedData.email_user || null
+          email_user: parsedData.email_user || null,
+          email_verified: parsedData.email_verified || false
         };
       } catch (err) {
         console.error('Error parsing stored user data:', err);
@@ -39,7 +46,6 @@ export const AuthProvider = ({ children }) => {
   
   const [isLoggingIn, setIsLoggingIn] = useState(() => !currentUser);
   const [name_user, setNameUser] = useState(() => currentUser?.name_user || '');
-  //update: Added email_user state
   const [email_user, setEmailUser] = useState(() => currentUser?.email_user || '');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -69,14 +75,20 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('currentUser');
           setCurrentUser(null);
         } else {
-          // Set the parsed user data if not expired
-          setCurrentUser(parsedData);
-          // Also update other relevant user states
-          setNameUser(parsedData.name_user || '');
-          //update: Set email from stored data
-          setEmailUser(parsedData.email_user || '');
-          setUserType(parsedData.type_user || '');
-          setLocationUser(parsedData.location_user || '');
+          //update: Check email verification status before setting user
+          if (parsedData.email_verified === false || parsedData.email_verified === 0) {
+            console.log('User email not verified, clearing stored session');
+            localStorage.removeItem('currentUser');
+            setCurrentUser(null);
+          } else {
+            // Set the parsed user data if not expired and verified
+            setCurrentUser(parsedData);
+            // Also update other relevant user states
+            setNameUser(parsedData.name_user || '');
+            setEmailUser(parsedData.email_user || '');
+            setUserType(parsedData.type_user || '');
+            setLocationUser(parsedData.location_user || '');
+          }
         }
       } catch (err) {
         console.error('Error parsing stored user data:', err);
@@ -90,6 +102,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (userData) => {
     console.log('Incoming userData for login:', userData);
+    
+    //update: Verify email is verified before allowing login
+    if (userData.email_verified === false || userData.email_verified === 0) {
+      console.error('Attempting to login with unverified email - blocking');
+      return Promise.reject(new Error('Email not verified'));
+    }
   
     // First, ensure user type is set immediately for component routing decisions
     console.log('Setting user type in login function:', userData.type_user);
@@ -102,12 +120,12 @@ export const AuthProvider = ({ children }) => {
     const userStateData = {
       id_user: userData.id_user,            
       name_user: userData.name_user,
-      //update: Added email_user to user state
       email_user: userData.email_user,   
       type_user: userData.type_user,   
-      location: userData.location_user, 
+      location_user: userData.location_user, 
       image_user: userData.image_user, 
-      contributor_user: userData.contributor_user, 
+      contributor_user: userData.contributor_user,
+      email_verified: userData.email_verified
     };
     
     // Create timestamp data for localStorage
@@ -123,7 +141,6 @@ export const AuthProvider = ({ children }) => {
     console.log('Setting currentUser to:', userStateData);
     setCurrentUser(userStateData);
     setNameUser(userData.name_user);
-    //update: Set email after login
     setEmailUser(userData.email_user);
     setIsLoggingIn(false);
     
@@ -143,7 +160,6 @@ export const AuthProvider = ({ children }) => {
 
   const clearUserSession = () => {
     setNameUser('');
-    //update: Clear email
     setEmailUser('');
     setPassword('');
     setPasswordRepeat('');
@@ -165,7 +181,6 @@ export const AuthProvider = ({ children }) => {
     currentUser, setCurrentUser,
     isLoggingIn, setIsLoggingIn,
     name_user, setNameUser,
-    //update: Added email_user to context value
     email_user, setEmailUser,
     password, setPassword,
     passwordRepeat, setPasswordRepeat,

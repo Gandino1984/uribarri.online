@@ -21,8 +21,9 @@ import ShopWindow from "../src/components/shop_window/ShopWindow.jsx";
 import ShopStore from "../src/components/shop_store/ShopStore.jsx";
 import ShopManagement from "../src/components/shop_management/ShopManagement.jsx";
 import RiderOrdersManagement from "../src/components/rider_order_management/RiderOrderManagement.jsx";
-//update: Import EmailVerification component
 import EmailVerification from "../src/components/email_verification/EmailVerification.jsx";
+//update: Import InfoManagement component
+import InfoManagement from "../src/components/info_management/InfoManagement.jsx";
 
 const AppContent = () => {
   const { 
@@ -37,7 +38,10 @@ const AppContent = () => {
     setShowShopsListBySeller,
     setShowLandingPage,
     setShowTopBar,
-    showOffersBoard
+    showOffersBoard,
+    //update: Add InfoManagement state
+    showInfoManagement,
+    setShowInfoManagement
   } = useUI();
   const { currentUser } = useAuth();
   
@@ -51,27 +55,43 @@ const AppContent = () => {
       return;
     }
     
-    if (currentUser?.type_user === 'rider') {
+    //update: Handle organization_manager user type
+    if (currentUser?.type_user === 'organization_manager') {
+      console.log('User is organization manager, showing InfoManagement UI');
+      setShowInfoManagement(true);
+      setShowRiderManagement(false);
+      setShowShopsListBySeller(false);
+      setShowLandingPage(false);
+      setShowTopBar(true);
+    } else if (currentUser?.type_user === 'rider') {
       console.log('User is rider, showing rider management UI');
       setShowRiderManagement(true);
       setShowShopsListBySeller(false);
       setShowLandingPage(false);
+      setShowInfoManagement(false);
       setShowTopBar(true);
     } else if (currentUser?.type_user === 'seller') {
       console.log('User is seller, showing shop management UI');
       setShowRiderManagement(false);
       setShowShopsListBySeller(true);
       setShowLandingPage(false);
+      setShowInfoManagement(false);
       setShowTopBar(true);
     } else {
       setShowRiderManagement(false);
+      setShowInfoManagement(false);
     }
-  }, [currentUser?.type_user, setShowRiderManagement, setShowShopsListBySeller, setShowLandingPage, setShowTopBar, isEmailVerificationPage]);
+  }, [currentUser?.type_user, setShowRiderManagement, setShowShopsListBySeller, setShowLandingPage, setShowTopBar, setShowInfoManagement, isEmailVerificationPage]);
   
   const renderMainContent = () => {
     //update: Show EmailVerification component if on verification page
     if (isEmailVerificationPage) {
       return <EmailVerification />;
+    }
+    
+    //update: Add InfoManagement to the priority order
+    if (showInfoManagement) {
+      return <InfoManagement />;
     }
     
     // Priority order for displaying components

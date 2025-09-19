@@ -4,12 +4,18 @@ import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../../public/css/LandingPage.module.css';
-//update: Import Lucide icons for polished scroll indicators
-import { Mouse, MoveDown, ChevronDown, Hand } from 'lucide-react';
+//update: Import Lucide icons for polished scroll indicators and buttons
+import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper } from 'lucide-react';
 
 const LandingPage = () => {
   //update: Navigation context and user authentication
-  const { setShowTopBar, setShowLandingPage, setShowShopWindow, setShowShopsListBySeller } = useUI();
+  const { 
+    setShowTopBar, 
+    setShowLandingPage, 
+    setShowShopWindow, 
+    setShowShopsListBySeller,
+    setShowInfoManagement 
+  } = useUI();
   const { currentUser } = useAuth();
   
   const buttonRef = useRef(null);
@@ -17,12 +23,15 @@ const LandingPage = () => {
   
   //update: State management for slideshow and interactions
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showButton, setShowButton] = useState(false);
+  const [showButtons, setShowButtons] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [exitingTo, setExitingTo] = useState(null); // Track which button was clicked
   const [hasScrolled, setHasScrolled] = useState(false);
-  //update: Add button hover and press states
-  const [isButtonHovered, setIsButtonHovered] = useState(false);
-  const [isButtonPressed, setIsButtonPressed] = useState(false);
+  //update: Add button hover states for both buttons
+  const [isShopButtonHovered, setIsShopButtonHovered] = useState(false);
+  const [isShopButtonPressed, setIsShopButtonPressed] = useState(false);
+  const [isInfoButtonHovered, setIsInfoButtonHovered] = useState(false);
+  const [isInfoButtonPressed, setIsInfoButtonPressed] = useState(false);
   //update: Add device type detection state
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
@@ -65,7 +74,7 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, [currentImageIndex, portraits.length]);
   
-  //update: Scroll detection for button reveal - fixed for mouse wheel
+  //update: Scroll detection for buttons reveal
   useEffect(() => {
     let scrollAccumulator = 0;
     
@@ -75,14 +84,14 @@ const LandingPage = () => {
       
       if (scrollAccumulator > 100 && !hasScrolled) {
         setHasScrolled(true);
-        setShowButton(true);
+        setShowButtons(true);
       }
     };
     
     const handleScroll = () => {
       if (window.scrollY > 10 && !hasScrolled) {
         setHasScrolled(true);
-        setShowButton(true);
+        setShowButtons(true);
       }
     };
     
@@ -96,7 +105,7 @@ const LandingPage = () => {
       const touchDelta = touchStartY - e.touches[0].clientY;
       if (touchDelta > 50 && !hasScrolled) {
         setHasScrolled(true);
-        setShowButton(true);
+        setShowButtons(true);
       }
     };
     
@@ -134,36 +143,50 @@ const LandingPage = () => {
     exitBeforeEnter: false // Allow overlap for smoother transition
   });
   
-  //update: Enhanced button animation with hover and press effects
-  const buttonSpring = useSpring({
-    opacity: showButton ? 1 : 0,
-    transform: showButton 
-      ? `translateY(0px) scale(${isButtonPressed ? 0.95 : isButtonHovered ? 1.05 : 1})` 
-      : 'translateY(50px) scale(0.8)',
+  //update: Buttons container animation
+  const buttonsContainerSpring = useSpring({
+    opacity: showButtons ? 1 : 0,
+    transform: showButtons ? 'translateY(0px)' : 'translateY(50px)',
     config: config.gentle
   });
   
-  //update: Button glow effect animation
-  const buttonGlowSpring = useSpring({
-    boxShadow: isButtonHovered 
+  //update: Shop button animation with hover and press effects
+  const shopButtonSpring = useSpring({
+    transform: `scale(${isShopButtonPressed ? 0.95 : isShopButtonHovered ? 1.05 : 1})`,
+    config: config.gentle
+  });
+  
+  //update: Info button animation with hover and press effects
+  const infoButtonSpring = useSpring({
+    transform: `scale(${isInfoButtonPressed ? 0.95 : isInfoButtonHovered ? 1.05 : 1})`,
+    config: config.gentle
+  });
+  
+  //update: Shop button glow effect animation
+  const shopButtonGlowSpring = useSpring({
+    boxShadow: isShopButtonHovered 
       ? '0 0 30px rgba(151, 71, 255, 0.6), 0 0 60px rgba(151, 71, 255, 0.3), inset 0 0 20px rgba(151, 71, 255, 0.2)'
       : '0 0 15px rgba(151, 71, 255, 0.4), 0 0 30px rgba(151, 71, 255, 0.2)',
-    background: isButtonHovered
+    background: isShopButtonHovered
       ? 'linear-gradient(135deg, rgba(151, 71, 255, 0.9) 0%, rgba(120, 50, 220, 0.9) 100%)'
       : 'linear-gradient(135deg, rgba(151, 71, 255, 0.8) 0%, rgba(120, 50, 220, 0.8) 100%)',
     config: config.gentle
   });
   
-  //update: Button text animationgentle
-  const buttonTextSpring = useSpring({
-    letterSpacing: isButtonHovered ? '0.3rem' : '0.2rem',
-    transform: isButtonHovered ? 'scale(1.1)' : 'scale(1)',
+  //update: Info button glow effect animation
+  const infoButtonGlowSpring = useSpring({
+    boxShadow: isInfoButtonHovered 
+      ? '0 0 30px rgba(209, 255, 31, 0.6), 0 0 60px rgba(209, 255, 31, 0.3), inset 0 0 20px rgba(209, 255, 31, 0.2)'
+      : '0 0 15px rgba(209, 255, 31, 0.4), 0 0 30px rgba(209, 255, 31, 0.2)',
+    background: isInfoButtonHovered
+      ? 'linear-gradient(135deg, rgba(209, 255, 31, 0.9) 0%, rgba(180, 220, 20, 0.9) 100%)'
+      : 'linear-gradient(135deg, rgba(209, 255, 31, 0.8) 0%, rgba(180, 220, 20, 0.8) 100%)',
     config: config.gentle
   });
   
   //update: Overlay gradient animation
   const overlaySpring = useSpring({
-    opacity: showButton ? 0.7 : 0.4,
+    opacity: showButtons ? 0.7 : 0.4,
     config: config.slow
   });
   
@@ -192,17 +215,18 @@ const LandingPage = () => {
   
   //update: Scroll hint animation
   const scrollHintSpring = useSpring({
-    opacity: !showButton ? 1 : 0,
-    transform: !showButton 
+    opacity: !showButtons ? 1 : 0,
+    transform: !showButtons 
       ? 'translateY(0px)' 
       : 'translateY(-20px)',
     config: config.wobbly
   });
   
-  //update: Handle button click and navigation
-  const handleButtonClick = () => {
+  //update: Handle shop button click
+  const handleShopButtonClick = () => {
     if (isExiting) return;
     setIsExiting(true);
+    setExitingTo('shop');
     
     setTimeout(() => {
       setShowTopBar(true);
@@ -211,10 +235,27 @@ const LandingPage = () => {
       if (currentUser && currentUser.type_user === 'seller') {
         setShowShopsListBySeller(true);
         setShowShopWindow(false);
+        setShowInfoManagement(false);
       } else {
         setShowShopWindow(true);
         setShowShopsListBySeller(false);
+        setShowInfoManagement(false);
       }
+    }, 800);
+  };
+  
+  //update: Handle info button click
+  const handleInfoButtonClick = () => {
+    if (isExiting) return;
+    setIsExiting(true);
+    setExitingTo('info');
+    
+    setTimeout(() => {
+      setShowTopBar(true);
+      setShowLandingPage(false);
+      setShowInfoManagement(true);
+      setShowShopWindow(false);
+      setShowShopsListBySeller(false);
     }, 800);
   };
   
@@ -261,7 +302,7 @@ const LandingPage = () => {
           className={styles.scrollHint}
           style={scrollHintSpring}
         >
-          <span className={styles.scrollText}>Desliza para entrar</span>
+          <span className={styles.scrollText}>Desliza para continuar</span>
           {isMobileDevice ? (
             // Touch gesture indicator for mobile
             <div className={styles.mobileScrollIndicator}>
@@ -323,39 +364,74 @@ const LandingPage = () => {
           )}
         </animated.div>
         
-        {/* Custom animated ENTRAR button */}
+        {/* update: Two buttons container */}
         <animated.div 
-          className={styles.buttonWrapper}
-          style={buttonSpring}
+          className={styles.buttonsContainer}
+          style={buttonsContainerSpring}
         >
-          <animated.button
-            ref={buttonRef}
-            className={styles.enterButton}
-            style={buttonGlowSpring}
-            onClick={handleButtonClick}
-            onMouseEnter={() => setIsButtonHovered(true)}
-            onMouseLeave={() => {
-              setIsButtonHovered(false);
-              setIsButtonPressed(false);
-            }}
-            onMouseDown={() => setIsButtonPressed(true)}
-            onMouseUp={() => setIsButtonPressed(false)}
-            onTouchStart={() => setIsButtonPressed(true)}
-            onTouchEnd={() => {
-              setIsButtonPressed(false);
-              setIsButtonHovered(false);
-            }}
-            disabled={isExiting}
-            aria-label="Entrar al Escaparate"
+          {/* Shop button */}
+          <animated.div 
+            className={styles.buttonWrapper}
+            style={shopButtonSpring}
           >
-            <animated.span 
-              className={styles.buttonText}
-              style={buttonTextSpring}
+            <animated.button
+              className={styles.enterButton}
+              style={shopButtonGlowSpring}
+              onClick={handleShopButtonClick}
+              onMouseEnter={() => setIsShopButtonHovered(true)}
+              onMouseLeave={() => {
+                setIsShopButtonHovered(false);
+                setIsShopButtonPressed(false);
+              }}
+              onMouseDown={() => setIsShopButtonPressed(true)}
+              onMouseUp={() => setIsShopButtonPressed(false)}
+              onTouchStart={() => setIsShopButtonPressed(true)}
+              onTouchEnd={() => {
+                setIsShopButtonPressed(false);
+                setIsShopButtonHovered(false);
+              }}
+              disabled={isExiting}
+              aria-label="Ir al Escaparate Comercial"
             >
-              ENTRAR
-            </animated.span>
-            <div className={styles.buttonShine} />
-          </animated.button>
+              <ShoppingBag className={styles.buttonIcon} size={20} />
+              <span className={styles.buttonText}>
+                Escaparate comercial
+              </span>
+              <div className={styles.buttonShine} />
+            </animated.button>
+          </animated.div>
+          
+          {/* Info button */}
+          <animated.div 
+            className={styles.buttonWrapper}
+            style={infoButtonSpring}
+          >
+            <animated.button
+              className={`${styles.enterButton} ${styles.infoButton}`}
+              style={infoButtonGlowSpring}
+              onClick={handleInfoButtonClick}
+              onMouseEnter={() => setIsInfoButtonHovered(true)}
+              onMouseLeave={() => {
+                setIsInfoButtonHovered(false);
+                setIsInfoButtonPressed(false);
+              }}
+              onMouseDown={() => setIsInfoButtonPressed(true)}
+              onMouseUp={() => setIsInfoButtonPressed(false)}
+              onTouchStart={() => setIsInfoButtonPressed(true)}
+              onTouchEnd={() => {
+                setIsInfoButtonPressed(false);
+                setIsInfoButtonHovered(false);
+              }}
+              disabled={isExiting}
+              aria-label="Ir al Tablón Informativo"
+            >
+              <Newspaper className={styles.buttonIcon} size={20} />
+              <span className={styles.buttonText}>
+                Tablón informativo
+              </span>
+              <div className={styles.buttonShine} />
+            </animated.button>
+          </animated.div>
         </animated.div>
       </div>
     </animated.div>
