@@ -202,7 +202,7 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
     switch(type) {
       case 'seller': return 'Vendedor/a';
       case 'rider': return 'Repartidor/a';
-      case 'user': return 'Comprador/a';
+      case 'user': return 'Usuaria/o';
       case 'admin': return 'Administrador/a';
       default: return type;
     }

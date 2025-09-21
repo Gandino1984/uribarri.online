@@ -114,7 +114,7 @@ async function getByOrganizationId(id_org) {
             return { error: "No hay participantes en esta organización", data: [] };
         }
 
-        //update: Include user information for each participant
+        //update: Include user information for each participant with org_managed field
         const participantsWithUsers = [];
         for (const participant of participants) {
             const user = await user_model.findByPk(participant.id_user);
@@ -156,7 +156,7 @@ async function getByUserId(id_user) {
             return { error: "El usuario no participa en ninguna organización", data: [] };
         }
 
-        //update: Include organization information
+        //update: Include organization information and org_managed field
         const participationsWithOrgs = [];
         for (const participation of participations) {
             const organization = await organization_model.findByPk(participation.id_org);
@@ -206,8 +206,11 @@ async function create(participantData) {
             };
         }
 
-        //update: Create the participant record
-        const participant = await participant_model.create(participantData);
+        //update: Create the participant record with org_managed field
+        const participant = await participant_model.create({
+            ...participantData,
+            org_managed: participantData.org_managed || false
+        });
         
         const participantWithDetails = {
             ...participant.toJSON(),
@@ -232,6 +235,64 @@ async function create(participantData) {
     }
 }
 
+//update: New function to set a participant as manager
+async function setAsManager(id_participant) {
+    try {
+        if (!id_participant) {
+            return { error: "ID de participante no válido" };
+        }
+
+        const participant = await participant_model.findByPk(id_participant);
+        
+        if (!participant) {
+            return { 
+                error: "Participante no encontrado"
+            };
+        }
+
+        // Update org_managed field
+        participant.org_managed = true;
+        await participant.save();
+
+        return { 
+            success: "Participante establecido como gestor",
+            data: participant
+        };
+    } catch (err) {
+        console.error("-> participant_controller.js - setAsManager() - Error = ", err);
+        return { error: "Error al establecer el gestor" };
+    }
+}
+
+//update: New function to remove manager status
+async function removeAsManager(id_participant) {
+    try {
+        if (!id_participant) {
+            return { error: "ID de participante no válido" };
+        }
+
+        const participant = await participant_model.findByPk(id_participant);
+        
+        if (!participant) {
+            return { 
+                error: "Participante no encontrado"
+            };
+        }
+
+        // Update org_managed field
+        participant.org_managed = false;
+        await participant.save();
+
+        return { 
+            success: "Estatus de gestor removido",
+            data: participant
+        };
+    } catch (err) {
+        console.error("-> participant_controller.js - removeAsManager() - Error = ", err);
+        return { error: "Error al remover el estatus de gestor" };
+    }
+}
+
 async function removeById(id_participant) {
     try {
         if (!id_participant) {
@@ -246,11 +307,10 @@ async function removeById(id_participant) {
             };
         }
 
-        //update: Check if participant is the organization manager
-        const organization = await organization_model.findByPk(participant.id_org);
-        if (organization && organization.id_user === participant.id_user) {
+        //update: Check if participant is a manager
+        if (participant.org_managed) {
             return {
-                error: "No se puede eliminar al administrador de la organización como participante"
+                error: "No se puede eliminar a un gestor de la organización. Primero debe removerse su estatus de gestor."
             };
         }
 
@@ -272,19 +332,6 @@ async function removeByUserAndOrg(id_user, id_org) {
             return { error: "ID de usuario y organización son obligatorios" };
         }
 
-        //update: Check if organization exists
-        const organization = await organization_model.findByPk(id_org);
-        if (!organization) {
-            return { error: "Organización no encontrada" };
-        }
-
-        //update: Check if trying to remove the manager
-        if (organization.id_user === id_user) {
-            return {
-                error: "No se puede eliminar al administrador de la organización como participante"
-            };
-        }
-
         const participant = await participant_model.findOne({
             where: {
                 id_user: id_user,
@@ -295,6 +342,13 @@ async function removeByUserAndOrg(id_user, id_org) {
         if (!participant) {
             return { 
                 error: "El usuario no es participante de esta organización"
+            };
+        }
+
+        //update: Check if trying to remove a manager
+        if (participant.org_managed) {
+            return {
+                error: "No se puede eliminar a un gestor de la organización. Primero debe removerse su estatus de gestor."
             };
         }
 
@@ -318,6 +372,8 @@ export {
     getByOrganizationId,
     getByUserId,
     create,
+    setAsManager,
+    removeAsManager,
     removeById,
     removeByUserAndOrg
 };
@@ -327,6 +383,8 @@ export default {
     getByOrganizationId,
     getByUserId,
     create,
+    setAsManager,
+    removeAsManager,
     removeById,
     removeByUserAndOrg
 };

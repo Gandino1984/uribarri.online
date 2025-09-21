@@ -13,6 +13,10 @@ router.post("/by-user", participantApiController.getByUserId);
 router.post("/create", participantApiController.create);
 router.post("/remove-by-user-org", participantApiController.removeByUserAndOrg);
 
+//update: PUT routes for manager operations
+router.put("/set-manager/:id_participant", participantApiController.setAsManager);
+router.put("/remove-manager/:id_participant", participantApiController.removeAsManager);
+
 //update: DELETE routes
 router.delete("/remove-by-id/:id_participant", participantApiController.removeById);
 

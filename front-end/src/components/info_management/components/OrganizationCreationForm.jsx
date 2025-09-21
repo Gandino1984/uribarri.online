@@ -1,0 +1,363 @@
+//update: Path corrected for proper nesting
+// src/components/info_management/components/organization_creation_form/OrganizationCreationForm.jsx
+import React, { useState } from 'react';
+import { useAuth } from '../../../../../front-end/src/app_context/AuthContext.jsx';
+import { useUI } from '../../../../../front-end/src/app_context/UIContext.jsx';
+import axiosInstance from '../../../utils/app/axiosConfig.js';
+import { Building2, MapPin, Image, X, Save, AlertCircle } from 'lucide-react';
+import styles from '../../../../../public/css/OrganizationCreationForm.module.css';
+
+const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
+  const { currentUser } = useAuth();
+  const { setError, setSuccess } = useUI();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name_org: '',
+    scope_org: ''
+  });
+  
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error for this field when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+  
+  // Handle image selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        setError(prev => ({
+          ...prev,
+          imageError: 'Por favor selecciona una imagen válida (JPG, PNG o WEBP)'
+        }));
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setError(prev => ({
+          ...prev,
+          imageError: 'La imagen no debe superar los 5MB'
+        }));
+        return;
+      }
+      
+      setImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Remove selected image
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    // Reset file input
+    const fileInput = document.getElementById('org-image-input');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+  
+  // Validate form
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.name_org.trim()) {
+      errors.name_org = 'El nombre de la organización es obligatorio';
+    } else if (formData.name_org.trim().length < 3) {
+      errors.name_org = 'El nombre debe tener al menos 3 caracteres';
+    } else if (formData.name_org.trim().length > 100) {
+      errors.name_org = 'El nombre no puede superar los 100 caracteres';
+    }
+    
+    if (formData.scope_org && formData.scope_org.length > 255) {
+      errors.scope_org = 'El ámbito no puede superar los 255 caracteres';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Step 1: Create the organization
+      const createResponse = await axiosInstance.post('/organization/create', {
+        id_user: currentUser.id_user,
+        name_org: formData.name_org.trim(),
+        scope_org: formData.scope_org.trim() || null
+      });
+      
+      if (createResponse.data.error) {
+        setError(prev => ({
+          ...prev,
+          createError: createResponse.data.error
+        }));
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const newOrganization = createResponse.data.data;
+      
+      // Step 2: Upload image if selected
+      if (imageFile && newOrganization) {
+        const formDataImage = new FormData();
+        formDataImage.append('image', imageFile);
+        
+        try {
+          await axiosInstance.post('/organization/upload-image', formDataImage, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'x-organization-id': newOrganization.id_organization
+            }
+          });
+        } catch (imgError) {
+          console.error('Error uploading image:', imgError);
+          // Image upload failed but organization was created
+          setError(prev => ({
+            ...prev,
+            imageUploadError: 'La organización fue creada pero hubo un error al subir la imagen'
+          }));
+        }
+      }
+      
+      //update: Manager status is now set automatically in the backend when creating an organization
+      
+      setSuccess(prev => ({
+        ...prev,
+        createSuccess: '¡Organización creada exitosamente!'
+      }));
+      
+      // Reset form
+      setFormData({
+        name_org: '',
+        scope_org: ''
+      });
+      handleRemoveImage();
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess(newOrganization);
+      }
+      
+    } catch (err) {
+      console.error('Error creating organization:', err);
+      setError(prev => ({
+        ...prev,
+        createError: 'Error al crear la organización. Por favor intenta de nuevo.'
+      }));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle cancel
+  const handleCancel = () => {
+    // Reset form
+    setFormData({
+      name_org: '',
+      scope_org: ''
+    });
+    handleRemoveImage();
+    setFormErrors({});
+    
+    // Call cancel callback if provided
+    if (onCancel) {
+      onCancel();
+    }
+  };
+  
+  return (
+    <div className={styles.container}>
+      <div className={styles.formHeader}>
+        <h2 className={styles.formTitle}>
+          <Building2 size={24} />
+          <span>Crear Nueva Organización</span>
+        </h2>
+        <p className={styles.formSubtitle}>
+          Como gestor, puedes crear una nueva organización para tu comunidad
+        </p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Organization Name Field */}
+        <div className={styles.formGroup}>
+          <label htmlFor="name_org" className={styles.label}>
+            <Building2 size={16} />
+            <span>Nombre de la Organización *</span>
+          </label>
+          <input
+            type="text"
+            id="name_org"
+            name="name_org"
+            value={formData.name_org}
+            onChange={handleInputChange}
+            placeholder="Ej: Asociación Vecinal Uribarri"
+            className={`${styles.input} ${formErrors.name_org ? styles.inputError : ''}`}
+            maxLength={100}
+            disabled={isSubmitting}
+          />
+          {formErrors.name_org && (
+            <span className={styles.errorMessage}>
+              <AlertCircle size={14} />
+              {formErrors.name_org}
+            </span>
+          )}
+          <span className={styles.charCount}>
+            {formData.name_org.length}/100 caracteres
+          </span>
+        </div>
+        
+        {/* Organization Scope Field */}
+        <div className={styles.formGroup}>
+          <label htmlFor="scope_org" className={styles.label}>
+            <MapPin size={16} />
+            <span>Ámbito de Actuación</span>
+          </label>
+          <textarea
+            id="scope_org"
+            name="scope_org"
+            value={formData.scope_org}
+            onChange={handleInputChange}
+            placeholder="Describe el ámbito o área de actuación de la organización (opcional)"
+            className={`${styles.textarea} ${formErrors.scope_org ? styles.inputError : ''}`}
+            maxLength={255}
+            rows={3}
+            disabled={isSubmitting}
+          />
+          {formErrors.scope_org && (
+            <span className={styles.errorMessage}>
+              <AlertCircle size={14} />
+              {formErrors.scope_org}
+            </span>
+          )}
+          <span className={styles.charCount}>
+            {formData.scope_org.length}/255 caracteres
+          </span>
+        </div>
+        
+        {/* Image Upload Field */}
+        <div className={styles.formGroup}>
+          <label className={styles.label}>
+            <Image size={16} />
+            <span>Imagen de la Organización</span>
+          </label>
+          
+          {!imagePreview ? (
+            <div className={styles.imageUploadArea}>
+              <input
+                type="file"
+                id="org-image-input"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleImageSelect}
+                className={styles.fileInput}
+                disabled={isSubmitting}
+              />
+              <label htmlFor="org-image-input" className={styles.fileInputLabel}>
+                <Image size={32} />
+                <span>Haz clic para seleccionar una imagen</span>
+                <span className={styles.fileInputHint}>
+                  JPG, PNG o WEBP (máx. 5MB)
+                </span>
+              </label>
+            </div>
+          ) : (
+            <div className={styles.imagePreviewContainer}>
+              <img 
+                src={imagePreview} 
+                alt="Vista previa" 
+                className={styles.imagePreview}
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className={styles.removeImageButton}
+                disabled={isSubmitting}
+                title="Eliminar imagen"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Form Actions */}
+        <div className={styles.formActions}>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className={styles.cancelButton}
+            disabled={isSubmitting}
+          >
+            <X size={18} />
+            <span>Cancelar</span>
+          </button>
+          
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isSubmitting || !formData.name_org.trim()}
+          >
+            {isSubmitting ? (
+              <>
+                <span className={styles.loadingSpinner}></span>
+                <span>Creando...</span>
+              </>
+            ) : (
+              <>
+                <Save size={18} />
+                <span>Crear Organización</span>
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+      
+      {/* Information Note */}
+      <div className={styles.infoNote}>
+        <AlertCircle size={16} />
+        <p>
+          Al crear una organización, automáticamente serás asignado como su gestor. 
+          Podrás gestionar los participantes y las publicaciones de la organización.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default OrganizationCreationForm;

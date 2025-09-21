@@ -1,3 +1,4 @@
+// back-end/controllers/user/user_controller.js
 import { console } from "inspector";
 import user_model from "../../models/user_model.js";
 import bcrypt from "bcrypt";
@@ -12,6 +13,10 @@ const validateUserData = (userData) => {
     const errors = [];
     const requiredFields = ['name_user', 'type_user', 'location_user'];
     
+    if (userData.is_manager !== undefined && typeof userData.is_manager !== 'boolean') {
+        errors.push('is_manager debe ser un valor booleano');
+    }
+
     requiredFields.forEach(field => {
         if (!userData[field]) {
             errors.push(`Falta el campo: ${field}`);
@@ -38,7 +43,7 @@ const validateUserData = (userData) => {
         }
     }
     if (userData.type_user) {
-        const validTypes = ['user', 'seller', 'rider' , 'provider', 'admin'];
+        const validTypes = ['user', 'seller', 'rider', 'admin'];
         if (!validTypes.includes(userData.type_user)) {
             errors.push('Tipo de usuari@ no valido');
         }
@@ -216,13 +221,19 @@ async function login(userData) {
             };
         }
 
+        //update: Enhanced debugging for is_manager field
+        console.log('-> login() - Full user object from DB:', user);
+        console.log('-> login() - User dataValues:', user.dataValues);
+        console.log('-> login() - is_manager raw value:', user.dataValues.is_manager);
+        console.log('-> login() - is_manager type:', typeof user.dataValues.is_manager);
+
         //update: Check if email is verified - BLOCK LOGIN if not verified
         if (user.email_verified === false || user.email_verified === 0) {
             console.log('-> login() - User email not verified, blocking login');
             return {
                 error: "Por favor verifica tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.",
                 needsVerification: true,
-                email: user.email_user // Include email for resend functionality
+                email: user.email_user
             };
         }
 
@@ -235,20 +246,25 @@ async function login(userData) {
             };
         }
 
-        // Return user data including contributor_user and email
+        //update: Build complete user response including ALL fields from database
         const userResponse = {
-            id_user: user.id_user,
-            name_user: user.name_user,
-            email_user: user.email_user,
-            type_user: user.type_user,
-            location_user: user.location_user,
-            image_user: user.image_user,
-            contributor_user: user.contributor_user,
-            age_user: user.age_user,
-            email_verified: user.email_verified
+            id_user: user.dataValues.id_user,
+            name_user: user.dataValues.name_user,
+            email_user: user.dataValues.email_user,
+            type_user: user.dataValues.type_user,
+            location_user: user.dataValues.location_user,
+            image_user: user.dataValues.image_user,
+            contributor_user: user.dataValues.contributor_user,
+            age_user: user.dataValues.age_user,
+            calification_user: user.dataValues.calification_user,
+            email_verified: user.dataValues.email_verified,
+            is_manager: user.dataValues.is_manager // Use raw value from database
         };
 
-        console.log('-> login() - User response:', userResponse); 
+        //update: Final debug check before sending response
+        console.log('-> login() - FINAL userResponse being sent:', JSON.stringify(userResponse));
+        console.log('-> login() - FINAL is_manager value:', userResponse.is_manager);
+        console.log('-> login() - FINAL is_manager type:', typeof userResponse.is_manager);
 
         return {
             data: userResponse,
@@ -265,6 +281,11 @@ async function login(userData) {
 
 async function register(userData) {
     try {
+
+        if (userData.is_manager === undefined) {
+            userData.is_manager = false; 
+        }
+
         const validation = validateUserData(userData);
 
         if (!validation.isValid) {
@@ -316,8 +337,6 @@ async function register(userData) {
             
             console.log('-> register() - Email exists with types:', existingTypes);
             console.log('-> register() - Available types for this email:', availableTypes);
-            
-            // This is informational - registration will proceed since the type is different
         }
 
         // Add default values if not provided
@@ -334,9 +353,8 @@ async function register(userData) {
         //update: Generate verification token and expiry
         const verificationToken = generateVerificationToken();
         const verificationTokenExpires = new Date();
-        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24); // Token expires in 24 hours
+        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
 
-        // Add verification fields to user data
         userData.verification_token = verificationToken;
         userData.verification_token_expires = verificationTokenExpires;
         userData.email_verified = false;
@@ -354,7 +372,6 @@ async function register(userData) {
 
         if (!emailResult.success) {
             console.error('Failed to send verification email:', emailResult.error);
-            // Still create the user but warn about email
         }
 
         // Return user data without sensitive information
@@ -367,7 +384,8 @@ async function register(userData) {
             calification_user: user.calification_user,
             contributor_user: user.contributor_user,
             age_user: user.age_user,
-            email_verified: user.email_verified
+            email_verified: user.email_verified,
+            is_manager: user.is_manager
         };
 
         return { 
@@ -384,16 +402,15 @@ async function register(userData) {
     }
 }
 
-//update: Modified to handle multiple accounts per email
+// Rest of functions remain the same...
 async function verifyEmail(email, token) {
     try {
-        // Find ALL users with this email and token (could be multiple if registering different types)
         const users = await user_model.findAll({
             where: {
                 email_user: email,
                 verification_token: token,
                 verification_token_expires: {
-                    [Op.gt]: new Date() // Token hasn't expired
+                    [Op.gt]: new Date()
                 }
             }
         });
@@ -404,7 +421,6 @@ async function verifyEmail(email, token) {
             };
         }
 
-        // Verify all accounts with this email/token combination
         for (const user of users) {
             await user.update({
                 email_verified: true,
@@ -412,7 +428,6 @@ async function verifyEmail(email, token) {
                 verification_token_expires: null
             });
             
-            // Send welcome email for each verified account
             await sendWelcomeEmail(user.email_user, user.name_user);
         }
 
@@ -451,7 +466,6 @@ async function resendVerificationEmail(email) {
             };
         }
 
-        // Generate new token
         const verificationToken = generateVerificationToken();
         const verificationTokenExpires = new Date();
         verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
@@ -461,7 +475,6 @@ async function resendVerificationEmail(email) {
             verification_token_expires: verificationTokenExpires
         });
 
-        // Send new verification email
         const emailResult = await sendVerificationEmail(
             user.email_user,
             user.name_user,
@@ -492,7 +505,6 @@ async function update(id, userData) {
             return { error: "El ID de usuario es requerido" };
         }
 
-        // Check if userData is empty
         if (Object.keys(userData).length === 0) {
             return { 
                 error: "No hay campos para actualizar",
@@ -500,7 +512,6 @@ async function update(id, userData) {
             };
         }
 
-        // Find user
         const user = await user_model.findByPk(id);
         if (!user) {
             return { 
@@ -513,8 +524,8 @@ async function update(id, userData) {
             const existingEmailType = await user_model.findOne({ 
                 where: { 
                     email_user: userData.email_user,
-                    type_user: user.type_user, // Use current user's type
-                    id_user: { [Op.ne]: id } // Exclude current user
+                    type_user: user.type_user,
+                    id_user: { [Op.ne]: id }
                 } 
             });
             
@@ -533,7 +544,6 @@ async function update(id, userData) {
             userData.verification_token = verificationToken;
             userData.verification_token_expires = verificationTokenExpires;
 
-            // Send verification email for the new address
             await sendVerificationEmail(
                 userData.email_user,
                 user.name_user,
@@ -541,8 +551,8 @@ async function update(id, userData) {
             );
         }
 
-        // Validate the fields that are being updated
         const fieldsToUpdate = {};
+        if (userData.is_manager !== undefined) fieldsToUpdate.is_manager = userData.is_manager;
         if (userData.name_user) fieldsToUpdate.name_user = userData.name_user;
         if (userData.email_user) fieldsToUpdate.email_user = userData.email_user;
         if (userData.pass_user) fieldsToUpdate.pass_user = userData.pass_user;
@@ -563,7 +573,6 @@ async function update(id, userData) {
             };
         }
 
-        // Update user
         Object.assign(user, fieldsToUpdate);
         await user.save();
 
@@ -623,7 +632,6 @@ async function updateProfileImage(userName, imagePath) {
             };
         }
         
-        // Store the path relative to the public directory
         await user.update({ image_user: imagePath });
 
         return {

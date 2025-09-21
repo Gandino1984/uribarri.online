@@ -1,3 +1,4 @@
+//update: Removed organization_manager/participant handling
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
@@ -30,7 +31,6 @@ export const LoginRegisterUtils = () => {
     setShowShopStore,
     selectedShopForStore,
     setShowShopWindow,
-    //update: Added setInfo for showing verification message and setShowInfoManagement
     setInfo,
     setShowInfoManagement
   } = useUI();
@@ -45,6 +45,7 @@ export const LoginRegisterUtils = () => {
   } = useShop();
 
   const { validateUsername } = useUsernameValidation();
+  
   const { validateIPRegistration } = useIPValidation();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -166,6 +167,8 @@ export const LoginRegisterUtils = () => {
       console.log('User data:', userData);
   
       console.log('-> handleLoginResponse() - userData = ', userData);
+      //update: Log is_manager specifically
+      console.log('-> handleLoginResponse() - is_manager from response = ', userData.is_manager);
   
       // check the database response in depth
       if (!userData || !userData.id_user || !userData.name_user || !userData.type_user) {
@@ -178,7 +181,7 @@ export const LoginRegisterUtils = () => {
       setUserType(userData.type_user);
       console.log('Setting user type to:', userData.type_user);
   
-      // Normalize user data structure using the server-provided user type
+      //update: Include ALL fields from userData including is_manager
       const normalizedUserData = {
         id_user: userData.id_user, 
         name_user: userData.name_user,
@@ -187,8 +190,15 @@ export const LoginRegisterUtils = () => {
         location_user: userData.location_user,
         image_user: userData.image_user,
         contributor_user: userData.contributor_user,
-        email_verified: userData.email_verified
+        email_verified: userData.email_verified,
+        is_manager: userData.is_manager, // CRITICAL: Include is_manager field
+        age_user: userData.age_user,
+        calification_user: userData.calification_user
       };
+      
+      //update: Log what we're passing to login
+      console.log('-> handleLoginResponse() - normalizedUserData being passed to login:', normalizedUserData);
+      console.log('-> handleLoginResponse() - is_manager in normalizedUserData:', normalizedUserData.is_manager);
   
       // Call login to setup user data
       await login(normalizedUserData);
@@ -196,15 +206,8 @@ export const LoginRegisterUtils = () => {
       // Store the user type to avoid race conditions
       const userType = userData.type_user;
       
-      //update: Handle organization_participant user type routing
-      if (userType === 'organization_participant') {
-        console.log('User is organization manager, loading InfoManagement view');
-        setShowInfoManagement(true);
-        setShowShopManagement(false);
-        setShowShopWindow(false);
-        setShowShopStore(false);
-        setShowShopCreationForm(false);
-      } else if (userType === 'seller') {
+      //update: Simplified routing without organization_manager type
+      if (userType === 'seller') {
         console.log('User is seller, loading shops list view');
         // For sellers, always show the shops list first
         setShowShopManagement(true);
@@ -264,6 +267,8 @@ export const LoginRegisterUtils = () => {
       console.error('-> LoginRegisterUtils.jsx - handleLoginResponse() - Error = ', err);
     }  
   };
+
+// ... (keep the rest of the file the same)
 
   const handleLogin = async (cleanedUsername, password) => {
     try {
@@ -370,7 +375,7 @@ export const LoginRegisterUtils = () => {
       // DO NOT redirect to ShopManagement or any other authenticated view
       
     } catch (err) {
-      console.error('-> handleRegistrationResponse() - Error = ', err);
+      console.error('-> handleRegistrationResponse() = ', err);
     }
   };
 

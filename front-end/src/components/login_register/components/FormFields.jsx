@@ -1,3 +1,4 @@
+//update: Removed organization_manager from user type options
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
@@ -90,7 +91,6 @@ export const FormFields = () => {
               <option value="user">Usuaria/o</option>
               <option value="seller">Vendedor/a</option>
               <option value="rider">Repartidor/a</option>
-              <option value="organization_participant">Participante de asociación</option>
               <option value="shop_handler" disabled>Gestor/a de tienda</option>
               <option value="shop_provider" disabled>Mayorista</option>
             </select>

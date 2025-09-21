@@ -18,7 +18,7 @@ const participant_model = sequelize.define(
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false
         },
-        is_manager: {
+        org_managed: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,

@@ -1,9 +1,9 @@
 // src/components/info_management/components/filters_for_organizations/FiltersForOrganizations.jsx
 import React, { useState } from 'react';
-import { useOrganization } from '../../../../app_context/OrganizationContext.jsx';
-import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useOrganization } from '../../../../src/app_context/OrganizationContext.jsx';
+import { useUI } from '../../../../src/app_context/UIContext.jsx';
 import { Search, X } from 'lucide-react';
-import styles from '../../../../../../public/css/FiltersForOrganizations.module.css';
+import styles from '../../../../../public/css/FiltersForOrganizations.module.css';
 
 const FiltersForOrganizations = () => {
   const {

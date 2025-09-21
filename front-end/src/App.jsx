@@ -1,3 +1,4 @@
+//update: Removed organization_manager handling
 // import React from 'react';
 import { useEffect } from 'react';
 import { UIProvider } from "./app_context/UIContext.jsx";
@@ -57,15 +58,8 @@ const AppContent = () => {
       return;
     }
     
-    //update: Handle organization_manager user type
-    if (currentUser?.type_user === 'organization_manager') {
-      console.log('User is organization manager, showing InfoManagement UI');
-      setShowInfoManagement(true);
-      setShowRiderManagement(false);
-      setShowShopsListBySeller(false);
-      setShowLandingPage(false);
-      setShowTopBar(true);
-    } else if (currentUser?.type_user === 'rider') {
+    //update: Simplified routing without organization_manager type
+    if (currentUser?.type_user === 'rider') {
       console.log('User is rider, showing rider management UI');
       setShowRiderManagement(true);
       setShowShopsListBySeller(false);
@@ -81,7 +75,7 @@ const AppContent = () => {
       setShowTopBar(true);
     } else {
       setShowRiderManagement(false);
-      setShowInfoManagement(false);
+      // Don't automatically show InfoManagement for regular users
     }
   }, [currentUser?.type_user, setShowRiderManagement, setShowShopsListBySeller, setShowLandingPage, setShowTopBar, setShowInfoManagement, isEmailVerificationPage]);
   

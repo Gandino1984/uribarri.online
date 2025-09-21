@@ -1,10 +1,10 @@
 // src/components/info_management/components/organizations_list/OrganizationsList.jsx
 import React, { useEffect, useState } from 'react';
-import { useOrganization } from '../../../../app_context/OrganizationContext.jsx';
-import { useAuth } from '../../../../app_context/AuthContext.jsx';
-import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useOrganization } from '../../../../src/app_context/OrganizationContext.jsx';
+import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
+import { useUI } from '../../../../src/app_context/UIContext.jsx';
 import { Users, MapPin, User, AlertCircle } from 'lucide-react';
-import styles from '../../../../../../public/css/OrganizationsList.module.css';
+import styles from '../../../../../public/css/OrganizationsList.module.css';
 
 const OrganizationsList = () => {
   const {
@@ -46,7 +46,7 @@ const OrganizationsList = () => {
   // Check if user is manager of an organization
   const isManager = (orgId) => {
     const participation = userOrganizations.find(p => p.id_org === orgId);
-    return participation?.is_manager || false;
+    return participation?.org_managed || false;
   };
 
   // Handle join organization

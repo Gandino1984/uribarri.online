@@ -60,7 +60,8 @@ async function create(req, res) {
     try {
         const { 
             id_org,
-            id_user
+            id_user,
+            org_managed // update: Accept org_managed field
         } = req.body;
         
         //update: Validate required fields
@@ -76,7 +77,8 @@ async function create(req, res) {
         
         const { error, data, success } = await participantController.create({
             id_org,
-            id_user
+            id_user,
+            org_managed: org_managed || false // update: Pass org_managed field
         });
         
         if (error) {
@@ -89,6 +91,60 @@ async function create(req, res) {
         res.status(500).json({
             error: "Error al agregar participante",
             details: err.message
+        });
+    }
+}
+
+//update: New function to set participant as manager
+async function setAsManager(req, res) {
+    try {
+        const { id_participant } = req.params;
+        
+        if (!id_participant) {
+            return res.status(400).json({ 
+                error: 'El ID del participante es obligatorio'
+            });
+        }
+        
+        const { error, data, success } = await participantController.setAsManager(id_participant);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ data, success, error });
+    } catch (err) {
+        console.error("-> participant_api_controller.js - setAsManager() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al establecer el gestor",
+            details: err.message 
+        });
+    }
+}
+
+//update: New function to remove manager status
+async function removeAsManager(req, res) {
+    try {
+        const { id_participant } = req.params;
+        
+        if (!id_participant) {
+            return res.status(400).json({ 
+                error: 'El ID del participante es obligatorio'
+            });
+        }
+        
+        const { error, data, success } = await participantController.removeAsManager(id_participant);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ data, success, error });
+    } catch (err) {
+        console.error("-> participant_api_controller.js - removeAsManager() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al remover el estatus de gestor",
+            details: err.message 
         });
     }
 }
@@ -150,6 +206,8 @@ export {
     getByOrganizationId,
     getByUserId,
     create,
+    setAsManager,
+    removeAsManager,
     removeById,
     removeByUserAndOrg
 };
@@ -159,6 +217,8 @@ export default {
     getByOrganizationId,
     getByUserId,
     create,
+    setAsManager,
+    removeAsManager,
     removeById,
     removeByUserAndOrg
 };

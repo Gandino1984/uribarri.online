@@ -97,7 +97,7 @@ export const OrganizationProvider = ({ children }) => {
         setUserOrganizations(participations);
         
         // Check if user manages any organization
-        const managed = participations.find(p => p.is_manager);
+        const managed = participations.find(p => p.org_managed);
         if (managed && managed.organization) {
           setManagedOrganization(managed.organization);
         }
@@ -113,6 +113,52 @@ export const OrganizationProvider = ({ children }) => {
       return [];
     }
   }, []);
+
+  //update: Create a new organization
+  const createOrganization = useCallback(async (organizationData) => {
+    if (!currentUser?.id_user) {
+      setError(prev => ({ 
+        ...prev, 
+        createError: 'Debes iniciar sesión para crear una organización' 
+      }));
+      return null;
+    }
+    
+    try {
+      const response = await axiosInstance.post('/organization/create', {
+        ...organizationData,
+        id_user: currentUser.id_user
+      });
+      
+      if (response.data && !response.data.error) {
+        setSuccess(prev => ({ 
+          ...prev, 
+          createSuccess: response.data.success || '¡Organización creada exitosamente!' 
+        }));
+        
+        // Refresh organizations list
+        await fetchAllOrganizations();
+        
+        // Refresh user's organizations
+        await fetchUserOrganizations(currentUser.id_user);
+        
+        return response.data.data;
+      } else {
+        setError(prev => ({ 
+          ...prev, 
+          createError: response.data.error || 'Error al crear la organización' 
+        }));
+        return null;
+      }
+    } catch (err) {
+      console.error('Error creating organization:', err);
+      setError(prev => ({ 
+        ...prev, 
+        createError: 'Error al crear la organización' 
+      }));
+      return null;
+    }
+  }, [currentUser, setError, setSuccess, fetchAllOrganizations, fetchUserOrganizations]);
 
   // Join an organization
   const joinOrganization = useCallback(async (organizationId) => {
@@ -219,6 +265,7 @@ export const OrganizationProvider = ({ children }) => {
     fetchAllOrganizations,
     searchOrganizations,
     fetchUserOrganizations,
+    createOrganization, //update: Added createOrganization
     joinOrganization,
     leaveOrganization
   };

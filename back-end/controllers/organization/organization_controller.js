@@ -162,11 +162,14 @@ async function create(orgData) {
         //update: Create the organization
         const organization = await organization_model.create(orgData);
         
-        //update: Automatically add the manager as a participant
+        //update: Automatically add the creator as a participant AND manager
         await participant_model.create({
             id_org: organization.id_organization,
-            id_user: orgData.id_user
+            id_user: orgData.id_user,
+            org_managed: true  //update: Set creator as manager automatically
         });
+        
+        console.log(`-> organization_controller.js - User ${orgData.id_user} set as manager for organization ${organization.id_organization}`);
         
         const orgWithManager = {
             ...organization.toJSON(),
@@ -203,7 +206,19 @@ async function update(id, orgData) {
                 return { error: userValidation.error };
             }
             
-            //update: Add new manager as participant if not already
+            //update: Remove manager status from old manager
+            const oldManagerParticipant = await participant_model.findOne({
+                where: {
+                    id_org: id,
+                    id_user: organization.id_user
+                }
+            });
+            
+            if (oldManagerParticipant) {
+                await oldManagerParticipant.update({ org_managed: false });
+            }
+            
+            //update: Add new manager as participant with manager status if not already
             const existingParticipation = await participant_model.findOne({
                 where: {
                     id_org: id,
@@ -214,8 +229,12 @@ async function update(id, orgData) {
             if (!existingParticipation) {
                 await participant_model.create({
                     id_org: id,
-                    id_user: orgData.id_user
+                    id_user: orgData.id_user,
+                    org_managed: true  //update: Set new manager with manager status
                 });
+            } else {
+                //update: Update existing participant to be manager
+                await existingParticipation.update({ org_managed: true });
             }
         }
 

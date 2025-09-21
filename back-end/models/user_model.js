@@ -16,7 +16,6 @@ const user_model = sequelize.define("user", {
         type: DataTypes.STRING(255),
         allowNull: false,
         //update: Removed unique constraint to allow same email for different user types
-        // unique: true - REMOVED
     },
     pass_user: {
         type: DataTypes.STRING(255), 
@@ -61,6 +60,11 @@ const user_model = sequelize.define("user", {
     verification_token_expires: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    is_manager: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     timestamps: false,
@@ -71,6 +75,10 @@ const user_model = sequelize.define("user", {
             unique: true,
             fields: ['email_user', 'type_user'],
             name: 'unique_email_type'
+        },
+        {
+            fields: ['is_manager'],
+            name: 'idx_is_manager'
         }
     ]
 });
