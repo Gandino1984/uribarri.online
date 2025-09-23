@@ -1,260 +1,323 @@
-/* public/css/OrganizationsList.module.css */
-
 .container {
-  width: 100%;
-  padding: 1rem;
+    width: 100%;
+    padding: 1rem;
 }
 
 .loadingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 1rem;
 }
 
 .loader {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .emptyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  text-align: center;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 1rem;
+    text-align: center;
 }
 
 .emptyIcon {
-  color: #999;
-  margin-bottom: 1rem;
+    color: #999;
 }
 
 .emptyText {
-  font-size: 1.1rem;
-  color: #666;
-  margin: 0;
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0.5rem 0;
 }
 
 .emptySubtext {
-  font-size: 0.9rem;
-  color: #999;
-  margin: 0.5rem 0 0 0;
+    font-size: 0.95rem;
+    color: #999;
+    margin: 0;
 }
 
 .organizationsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .organizationCard {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.25rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
 }
 
 .organizationCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* update: Pending organization card styling */
+.pendingCard {
+    border: 2px dashed #ffa500;
+    background: linear-gradient(135deg, #fff9f0 0%, #ffffff 100%);
+}
+
+/* update: Approval status badge */
+.approvalBadge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: linear-gradient(135deg, #ff9800, #ff6b00);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
+    z-index: 1;
+}
+
+/* update: Admin badge */
+.adminBadge {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: linear-gradient(135deg, #6b46c1, #553c9a);
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow: 0 2px 6px rgba(107, 70, 193, 0.3);
+    z-index: 1;
 }
 
 .cardHeader {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
 }
 
 .orgImage {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: cover;
-  cursor: pointer;
-  transition: transform 0.2s;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
 .orgImage:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 .orgImagePlaceholder {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
 }
 
 .orgInfo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .orgName {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-  line-height: 1.3;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
 }
 
 .orgScope {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.85rem;
-  color: #666;
-  margin: 0;
-}
-
-.orgScope svg {
-  flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
 }
 
 .orgManager {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.85rem;
-  color: #666;
-  margin: 0;
-}
-
-.orgManager svg {
-  flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0;
 }
 
 .cardActions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+/* update: Admin actions for approval/reject */
+.adminActions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
 }
 
 .actionButton {
-  padding: 0.5rem 1.5rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.actionButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .joinButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
 }
 
 .joinButton:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.joinButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+    background: linear-gradient(135deg, #45a049, #3d8b40);
 }
 
 .leaveButton {
-  background: #f44336;
-  color: white;
+    background: linear-gradient(135deg, #f44336, #da190b);
+    color: white;
 }
 
 .leaveButton:hover:not(:disabled) {
-  background: #d32f2f;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    background: linear-gradient(135deg, #da190b, #c01000);
 }
 
-.leaveButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* update: Approve button styling */
+.approveButton {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+}
+
+.approveButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+/* update: Reject button styling */
+.rejectButton {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.rejectButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
 }
 
 .managerBadge {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* update: Pending message for creators */
+.pendingMessage {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #fff4e5, #ffe8cc);
+    border: 1px solid #ffcc80;
+    border-radius: 8px;
+    color: #e65100;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .buttonLoader {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
 }
 
 .resultsCount {
-  text-align: center;
-  padding: 1rem;
-  color: #666;
-  font-size: 0.9rem;
-  border-top: 1px solid #eee;
-  margin-top: 1rem;
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
+    padding: 1rem 0;
 }
 
-.resultsCount p {
-  margin: 0;
+/* update: Pending count styling */
+.pendingCount {
+    color: #ff9800;
+    font-weight: 600;
 }
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-  .organizationsGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .organizationCard {
-    padding: 1rem;
-  }
-  
-  .cardHeader {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .orgImage,
-  .orgImagePlaceholder {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .cardActions {
-    justify-content: center;
-  }
+    .organizationsGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .organizationCard {
+        padding: 1rem;
+    }
+    
+    .approvalBadge,
+    .adminBadge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .orgName {
+        font-size: 1rem;
+    }
+    
+    .adminActions {
+        flex-direction: column;
+    }
 }

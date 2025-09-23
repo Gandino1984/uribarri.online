@@ -26,6 +26,11 @@ const organization_model = sequelize.define(
         image_org: {
             type: DataTypes.STRING(255),
             allowNull: true
+        },
+        org_approved: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     },
     {

@@ -7,8 +7,10 @@ import { ShopProvider } from "./app_context/ShopContext.jsx";
 import { ProductProvider } from "./app_context/ProductContext.jsx";
 import { PackageProvider } from "./app_context/PackageContext.jsx";
 import { OrderProvider } from "./app_context/OrderContext.jsx";
+
 //update: Import OrganizationProvider
 import { OrganizationProvider } from "./app_context/OrganizationContext.jsx";
+import { PublicationProvider } from "./app_context/PublicationContext.jsx";
 import styles from '../../public/css/App.module.css';
 import '../../public/css/App.css'; // Keep this for global styles
 import LoginRegisterForm from "../src/components/login_register/LoginRegisterForm.jsx";
@@ -138,7 +140,9 @@ function App() {
             <ProductProvider>
               <PackageProvider>
                 <OrderProvider>
-                  <AppContent />
+                  <PublicationProvider>
+                    <AppContent />
+                  </PublicationProvider>
                 </OrderProvider>
               </PackageProvider>
             </ProductProvider>

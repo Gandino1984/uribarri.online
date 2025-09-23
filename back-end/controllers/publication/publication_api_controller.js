@@ -1,4 +1,3 @@
-// back-end/controllers/publication/publication_api_controller.js
 import publicationController from "./publication_controller.js";
 import path from 'path';
 
@@ -78,6 +77,28 @@ async function getByDateRange(req, res) {
     }
 }
 
+//update: Add getByOrganization endpoint
+async function getByOrganization(req, res) {
+    try {
+        const { id_org } = req.body;
+        
+        if (!id_org) {
+            return res.status(400).json({ 
+                error: 'El ID de la organización es obligatorio' 
+            });
+        }
+        
+        const { error, data, message } = await publicationController.getByOrganizationId(id_org);
+        res.json({ error, data, message });
+    } catch (err) {
+        console.error("-> publication_api_controller.js - getByOrganization() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener publicaciones de la organización",
+            details: err.message
+        });
+    }
+}
+
 async function create(req, res) {
     try {
         const { 
@@ -86,6 +107,7 @@ async function create(req, res) {
             date_pub,
             time_pub,
             id_user_pub,
+            id_org, //update: Add organization field
             image_pub
         } = req.body;
         
@@ -107,6 +129,7 @@ async function create(req, res) {
             date_pub,
             time_pub,
             id_user_pub,
+            id_org: id_org || null, //update: Include organization
             image_pub: image_pub || null
         });
         
@@ -133,6 +156,7 @@ async function update(req, res) {
             date_pub,
             time_pub,
             id_user_pub,
+            id_org, //update: Add organization field
             image_pub
         } = req.body;
         
@@ -148,6 +172,7 @@ async function update(req, res) {
         if (date_pub !== undefined) updateData.date_pub = date_pub;
         if (time_pub !== undefined) updateData.time_pub = time_pub;
         if (id_user_pub !== undefined) updateData.id_user_pub = id_user_pub;
+        if (id_org !== undefined) updateData.id_org = id_org; //update: Include organization
         if (image_pub !== undefined) updateData.image_pub = image_pub;
         
         const { error, data } = await publicationController.update(id_publication, updateData);
@@ -232,11 +257,13 @@ async function uploadImage(req, res) {
     }
 }
 
+// Export with new function included
 export {
     getAll,
     getById,
     getByUserId,
     getByDateRange,
+    getByOrganization, //update: Add new function
     create,
     update,
     removeById,
@@ -248,6 +275,7 @@ export default {
     getById,
     getByUserId,
     getByDateRange,
+    getByOrganization, //update: Add new function
     create,
     update,
     removeById,

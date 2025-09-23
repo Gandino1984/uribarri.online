@@ -4,12 +4,30 @@ import path from 'path';
 
 async function getAll(req, res) {
     try {
-        const { error, data } = await organizationController.getAll();
+        //update: Get requesting user ID from headers or query for admin check
+        const requestingUserId = req.headers['x-user-id'] || req.query.user_id;
+        const includeUnapproved = req.query.include_unapproved === 'true';
+        
+        const { error, data } = await organizationController.getAll(includeUnapproved, requestingUserId);
         res.json({ error, data });
     } catch (err) {
         console.error("-> organization_api_controller.js - getAll() - Error =", err);
         res.status(500).json({ 
             error: "Error al obtener todas las organizaciones",
+            details: err.message
+        });
+    }
+}
+
+//update: New endpoint to get only unapproved organizations
+async function getUnapproved(req, res) {
+    try {
+        const { error, data, message } = await organizationController.getUnapproved();
+        res.json({ error, data, message });
+    } catch (err) {
+        console.error("-> organization_api_controller.js - getUnapproved() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al obtener organizaciones no aprobadas",
             details: err.message
         });
     }
@@ -97,11 +115,12 @@ async function create(req, res) {
 async function update(req, res) {
     try {
         const {
-            id_organization,
-            id_user,
-            name_org,
-            scope_org,
-            image_org
+                id_organization,
+                id_user,
+                name_org,
+                scope_org,
+                image_org,
+                org_approved  //update: Added approval field
         } = req.body;
         
         if (!id_organization) {
@@ -111,10 +130,12 @@ async function update(req, res) {
         }
         
         const updateData = {};
+        if (id_organization !== undefined) updateData.id_organization = id_organization;
         if (id_user !== undefined) updateData.id_user = id_user;
         if (name_org !== undefined) updateData.name_org = name_org;
         if (scope_org !== undefined) updateData.scope_org = scope_org;
         if (image_org !== undefined) updateData.image_org = image_org;
+        if (org_approved !== undefined) updateData.org_approved = org_approved;
         
         const { error, data } = await organizationController.update(id_organization, updateData);
         
@@ -127,6 +148,53 @@ async function update(req, res) {
         console.error("-> organization_api_controller.js - update() - Error =", err);
         res.status(500).json({
             error: "Error al actualizar la organización",
+            details: err.message
+        });
+    }
+}
+
+//update: New endpoint to approve/reject organization
+async function approve(req, res) {
+    try {
+        const { 
+            id_organization, 
+            approved,
+            admin_user_id 
+        } = req.body;
+        
+        if (!id_organization) {
+            return res.status(400).json({
+                error: 'El ID de la organización es obligatorio'
+            });
+        }
+        
+        if (approved === undefined) {
+            return res.status(400).json({
+                error: 'El estado de aprobación es obligatorio'
+            });
+        }
+        
+        if (!admin_user_id) {
+            return res.status(400).json({
+                error: 'El ID del administrador es obligatorio'
+            });
+        }
+        
+        const { error, data, message } = await organizationController.setApprovalStatus(
+            id_organization, 
+            approved,
+            admin_user_id
+        );
+        
+        if (error) {
+            return res.status(403).json({ error });
+        }
+        
+        res.json({ error, data, message });
+    } catch (err) {
+        console.error("-> organization_api_controller.js - approve() - Error =", err);
+        res.status(500).json({
+            error: "Error al cambiar estado de aprobación",
             details: err.message
         });
     }
@@ -202,8 +270,10 @@ export {
     getAll,
     getById,
     getByUserId,
+    getUnapproved,
     create,
     update,
+    approve,
     removeById,
     uploadImage
 };
@@ -212,8 +282,10 @@ export default {
     getAll,
     getById,
     getByUserId,
+    getUnapproved,
     create,
     update,
+    approve,
     removeById,
     uploadImage
 };

@@ -11,6 +11,8 @@ router.get("/", publicationApiController.getAll);
 router.post("/by-id", publicationApiController.getById);
 router.post("/by-user-id", publicationApiController.getByUserId);
 router.post("/by-date-range", publicationApiController.getByDateRange);
+//update: Add missing by-organization route
+router.post("/by-organization", publicationApiController.getByOrganization);
 router.post("/create", publicationApiController.create);
 
 //update: PATCH routes

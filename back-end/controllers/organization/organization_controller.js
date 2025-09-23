@@ -37,9 +37,29 @@ async function validateUser(id_user) {
     }
 }
 
-async function getAll() {
+//update: New function to check if user is admin
+async function isUserAdmin(id_user) {
     try {
-        const organizations = await organization_model.findAll();
+        const user = await user_model.findByPk(id_user);
+        return user && user.level_user === 'admin';
+    } catch (err) {
+        console.error("Error checking admin status:", err);
+        return false;
+    }
+}
+
+//update: Modified getAll to include approval filter option
+async function getAll(includeUnapproved = false, requestingUserId = null) {
+    try {
+        //update: Check if requesting user is admin
+        const isAdmin = requestingUserId ? await isUserAdmin(requestingUserId) : false;
+        
+        //update: Apply filter based on admin status
+        const whereClause = (includeUnapproved || isAdmin) ? {} : { org_approved: true };
+        
+        const organizations = await organization_model.findAll({
+            where: whereClause
+        });
 
         if (!organizations || organizations.length === 0) {
             return { error: "No hay organizaciones registradas" };
@@ -65,6 +85,41 @@ async function getAll() {
     } catch (err) {
         console.error("-> organization_controller.js - getAll() - Error = ", err);
         return { error: "Error al obtener todas las organizaciones" };
+    }
+}
+
+//update: New function to get only unapproved organizations (for admin)
+async function getUnapproved() {
+    try {
+        const organizations = await organization_model.findAll({
+            where: { org_approved: false }
+        });
+
+        if (!organizations || organizations.length === 0) {
+            return { 
+                data: [],
+                message: "No hay organizaciones pendientes de aprobación" 
+            };
+        }
+
+        //update: Include manager information
+        const orgsWithManagers = [];
+        for (const org of organizations) {
+            const manager = await user_model.findByPk(org.id_user);
+            orgsWithManagers.push({
+                ...org.toJSON(),
+                manager: manager ? {
+                    id_user: manager.id_user,
+                    name_user: manager.name_user,
+                    email_user: manager.email_user
+                } : null
+            });
+        }
+
+        return { data: orgsWithManagers };
+    } catch (err) {
+        console.error("-> organization_controller.js - getUnapproved() - Error = ", err);
+        return { error: "Error al obtener organizaciones no aprobadas" };
     }
 }
 
@@ -117,14 +172,21 @@ async function getByUserId(id_user) {
             where: { id_user: id_user }
         });
 
-        //update: Get organizations where user is participant
+        //update: Get organizations where user is participant (only approved ones for non-admins)
+        const isAdmin = await isUserAdmin(id_user);
         const participations = await participant_model.findAll({
             where: { id_user: id_user }
         });
 
         const participatingOrgIds = participations.map(p => p.id_org);
+        
+        //update: Filter by approval status if not admin
+        const whereClause = isAdmin 
+            ? { id_organization: participatingOrgIds }
+            : { id_organization: participatingOrgIds, org_approved: true };
+            
         const participatingOrgs = await organization_model.findAll({
-            where: { id_organization: participatingOrgIds }
+            where: whereClause
         });
 
         return { 
@@ -159,8 +221,14 @@ async function create(orgData) {
             return { error: userValidation.error };
         }
 
+        //update: Set org_approved to false by default (will be set by model default)
+        const organizationData = {
+            ...orgData,
+            org_approved: false  // Explicitly set to false for new organizations
+        };
+
         //update: Create the organization
-        const organization = await organization_model.create(orgData);
+        const organization = await organization_model.create(organizationData);
         
         //update: Automatically add the creator as a participant AND manager
         await participant_model.create({
@@ -181,7 +249,7 @@ async function create(orgData) {
         };
         
         return { 
-            success: "¡Organización creada!",
+            success: "¡Organización creada! Pendiente de aprobación por el administrador.",
             data: orgWithManager
         };
     } catch (err) {
@@ -271,6 +339,47 @@ async function update(id, orgData) {
     }
 }
 
+//update: New function to approve/reject organization
+async function setApprovalStatus(id_organization, approved, adminUserId) {
+    try {
+        //update: Verify admin permissions
+        const isAdmin = await isUserAdmin(adminUserId);
+        if (!isAdmin) {
+            return { error: "No tienes permisos para aprobar organizaciones" };
+        }
+
+        const organization = await organization_model.findByPk(id_organization);
+        
+        if (!organization) {
+            return { error: "Organización no encontrada" };
+        }
+
+        await organization.update({ org_approved: approved });
+        
+        //update: Get updated organization with manager info
+        const manager = await user_model.findByPk(organization.id_user);
+        
+        const orgWithManager = {
+            ...organization.toJSON(),
+            manager: manager ? {
+                id_user: manager.id_user,
+                name_user: manager.name_user,
+                email_user: manager.email_user
+            } : null
+        };
+        
+        return { 
+            data: orgWithManager,
+            message: approved 
+                ? "Organización aprobada exitosamente" 
+                : "Organización rechazada"
+        };
+    } catch (err) {
+        console.error("-> organization_controller.js - setApprovalStatus() - Error = ", err);
+        return { error: "Error al cambiar el estado de aprobación" };
+    }
+}
+
 async function removeById(id_organization) {
     try {
         if (!id_organization) {
@@ -352,8 +461,10 @@ export {
     getAll, 
     getById,
     getByUserId,
+    getUnapproved,
     create, 
     update, 
+    setApprovalStatus,
     removeById,
     uploadImage
 };
@@ -362,8 +473,10 @@ export default {
     getAll, 
     getById,
     getByUserId,
+    getUnapproved,
     create, 
     update, 
+    setApprovalStatus,
     removeById,
     uploadImage
 };

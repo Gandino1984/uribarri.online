@@ -1,26 +1,42 @@
-//update: Path corrected for proper nesting
-// src/components/info_management/components/organization_creation_form/OrganizationCreationForm.jsx
-import React, { useState } from 'react';
-import { useAuth } from '../../../../../front-end/src/app_context/AuthContext.jsx';
-import { useUI } from '../../../../../front-end/src/app_context/UIContext.jsx';
+// src/components/info_management/components/OrganizationCreationForm.jsx
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
-import { Building2, MapPin, Image, X, Save, AlertCircle } from 'lucide-react';
+import { Building2, MapPin, Image, X, Save, AlertCircle, Edit } from 'lucide-react';
 import styles from '../../../../../public/css/OrganizationCreationForm.module.css';
 
-const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
+const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organizationData = null }) => {
   const { currentUser } = useAuth();
   const { setError, setSuccess } = useUI();
   
-  // Form state
+  //update: Initialize form with existing data if in edit mode
   const [formData, setFormData] = useState({
-    name_org: '',
-    scope_org: ''
+    name_org: editMode && organizationData ? organizationData.name_org : '',
+    scope_org: editMode && organizationData ? organizationData.scope_org || '' : ''
   });
   
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(
+    editMode && organizationData?.image_org 
+      ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`
+      : null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  
+  //update: Update form when organization data changes in edit mode
+  useEffect(() => {
+    if (editMode && organizationData) {
+      setFormData({
+        name_org: organizationData.name_org || '',
+        scope_org: organizationData.scope_org || ''
+      });
+      if (organizationData.image_org) {
+        setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`);
+      }
+    }
+  }, [editMode, organizationData]);
   
   // Handle input changes
   const handleInputChange = (e) => {
@@ -77,7 +93,12 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
   // Remove selected image
   const handleRemoveImage = () => {
     setImageFile(null);
-    setImagePreview(null);
+    //update: In edit mode, keep the original image unless a new one is selected
+    if (editMode && organizationData?.image_org) {
+      setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`);
+    } else {
+      setImagePreview(null);
+    }
     // Reset file input
     const fileInput = document.getElementById('org-image-input');
     if (fileInput) {
@@ -116,70 +137,119 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
     setIsSubmitting(true);
     
     try {
-      // Step 1: Create the organization
-      const createResponse = await axiosInstance.post('/organization/create', {
-        id_user: currentUser.id_user,
-        name_org: formData.name_org.trim(),
-        scope_org: formData.scope_org.trim() || null
-      });
-      
-      if (createResponse.data.error) {
-        setError(prev => ({
-          ...prev,
-          createError: createResponse.data.error
-        }));
-        setIsSubmitting(false);
-        return;
-      }
-      
-      const newOrganization = createResponse.data.data;
-      
-      // Step 2: Upload image if selected
-      if (imageFile && newOrganization) {
-        const formDataImage = new FormData();
-        formDataImage.append('image', imageFile);
+      if (editMode) {
+        //update: Update existing organization
+        const updateResponse = await axiosInstance.patch('/organization/update', {
+          id_organization: organizationData.id_organization,
+          name_org: formData.name_org.trim(),
+          scope_org: formData.scope_org.trim() || null
+        });
         
-        try {
-          await axiosInstance.post('/organization/upload-image', formDataImage, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              'x-organization-id': newOrganization.id_organization
-            }
-          });
-        } catch (imgError) {
-          console.error('Error uploading image:', imgError);
-          // Image upload failed but organization was created
+        if (updateResponse.data.error) {
           setError(prev => ({
             ...prev,
-            imageUploadError: 'La organización fue creada pero hubo un error al subir la imagen'
+            updateError: updateResponse.data.error
           }));
+          setIsSubmitting(false);
+          return;
+        }
+        
+        const updatedOrganization = updateResponse.data.data;
+        
+        //update: Upload new image if selected
+        if (imageFile && updatedOrganization) {
+          const formDataImage = new FormData();
+          formDataImage.append('image', imageFile);
+          
+          try {
+            await axiosInstance.post('/organization/upload-image', formDataImage, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-organization-id': updatedOrganization.id_organization
+              }
+            });
+          } catch (imgError) {
+            console.error('Error uploading image:', imgError);
+            setError(prev => ({
+              ...prev,
+              imageUploadError: 'La organización fue actualizada pero hubo un error al subir la imagen'
+            }));
+          }
+        }
+        
+        setSuccess(prev => ({
+          ...prev,
+          updateSuccess: '¡Organización actualizada exitosamente!'
+        }));
+        
+        // Call success callback with updated data
+        if (onSuccess) {
+          onSuccess(updatedOrganization);
+        }
+        
+      } else {
+        //update: Create new organization (existing code)
+        const createResponse = await axiosInstance.post('/organization/create', {
+          id_user: currentUser.id_user,
+          name_org: formData.name_org.trim(),
+          scope_org: formData.scope_org.trim() || null
+        });
+        
+        if (createResponse.data.error) {
+          setError(prev => ({
+            ...prev,
+            createError: createResponse.data.error
+          }));
+          setIsSubmitting(false);
+          return;
+        }
+        
+        const newOrganization = createResponse.data.data;
+        
+        // Upload image if selected
+        if (imageFile && newOrganization) {
+          const formDataImage = new FormData();
+          formDataImage.append('image', imageFile);
+          
+          try {
+            await axiosInstance.post('/organization/upload-image', formDataImage, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-organization-id': newOrganization.id_organization
+              }
+            });
+          } catch (imgError) {
+            console.error('Error uploading image:', imgError);
+            setError(prev => ({
+              ...prev,
+              imageUploadError: 'La organización fue creada pero hubo un error al subir la imagen'
+            }));
+          }
+        }
+        
+        setSuccess(prev => ({
+          ...prev,
+          createSuccess: '¡Organización creada exitosamente! Pendiente de aprobación del administrador.'
+        }));
+        
+        // Reset form
+        setFormData({
+          name_org: '',
+          scope_org: ''
+        });
+        handleRemoveImage();
+        
+        // Call success callback if provided
+        if (onSuccess) {
+          onSuccess(newOrganization);
         }
       }
       
-      //update: Manager status is now set automatically in the backend when creating an organization
-      
-      setSuccess(prev => ({
-        ...prev,
-        createSuccess: '¡Organización creada exitosamente!'
-      }));
-      
-      // Reset form
-      setFormData({
-        name_org: '',
-        scope_org: ''
-      });
-      handleRemoveImage();
-      
-      // Call success callback if provided
-      if (onSuccess) {
-        onSuccess(newOrganization);
-      }
-      
     } catch (err) {
-      console.error('Error creating organization:', err);
+      console.error(`Error ${editMode ? 'updating' : 'creating'} organization:`, err);
       setError(prev => ({
         ...prev,
-        createError: 'Error al crear la organización. Por favor intenta de nuevo.'
+        submitError: `Error al ${editMode ? 'actualizar' : 'crear'} la organización. Por favor intenta de nuevo.`
       }));
     } finally {
       setIsSubmitting(false);
@@ -189,11 +259,13 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
   // Handle cancel
   const handleCancel = () => {
     // Reset form
-    setFormData({
-      name_org: '',
-      scope_org: ''
-    });
-    handleRemoveImage();
+    if (!editMode) {
+      setFormData({
+        name_org: '',
+        scope_org: ''
+      });
+      handleRemoveImage();
+    }
     setFormErrors({});
     
     // Call cancel callback if provided
@@ -206,11 +278,14 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
     <div className={styles.container}>
       <div className={styles.formHeader}>
         <h2 className={styles.formTitle}>
-          <Building2 size={24} />
-          <span>Crear Nueva Organización</span>
+          {editMode ? <Edit size={24} /> : <Building2 size={24} />}
+          <span>{editMode ? 'Editar Organización' : 'Crear Nueva Organización'}</span>
         </h2>
         <p className={styles.formSubtitle}>
-          Como gestor, puedes crear una nueva organización para tu comunidad
+          {editMode 
+            ? 'Actualiza la información de tu organización'
+            : 'Como gestor, puedes crear una nueva organización para tu comunidad'
+          }
         </p>
       </div>
       
@@ -308,7 +383,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
                 onClick={handleRemoveImage}
                 className={styles.removeImageButton}
                 disabled={isSubmitting}
-                title="Eliminar imagen"
+                title={imageFile ? "Eliminar imagen" : "Cambiar imagen"}
               >
                 <X size={20} />
               </button>
@@ -336,12 +411,12 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
             {isSubmitting ? (
               <>
                 <span className={styles.loadingSpinner}></span>
-                <span>Creando...</span>
+                <span>{editMode ? 'Actualizando...' : 'Creando...'}</span>
               </>
             ) : (
               <>
                 <Save size={18} />
-                <span>Crear Organización</span>
+                <span>{editMode ? 'Actualizar Organización' : 'Crear Organización'}</span>
               </>
             )}
           </button>
@@ -349,13 +424,16 @@ const OrganizationCreationForm = ({ onSuccess, onCancel }) => {
       </form>
       
       {/* Information Note */}
-      <div className={styles.infoNote}>
-        <AlertCircle size={16} />
-        <p>
-          Al crear una organización, automáticamente serás asignado como su gestor. 
-          Podrás gestionar los participantes y las publicaciones de la organización.
-        </p>
-      </div>
+      {!editMode && (
+        <div className={styles.infoNote}>
+          <AlertCircle size={16} />
+          <p>
+            Al crear una organización, automáticamente serás asignado como su gestor. 
+            Podrás gestionar los participantes y las publicaciones de la organización.
+            La organización deberá ser aprobada por un administrador antes de ser visible públicamente.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

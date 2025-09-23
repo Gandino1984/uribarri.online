@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useOrganization } from '../../app_context/OrganizationContext.jsx';
+import { usePublication } from '../../app_context/PublicationContext.jsx';
 import InfoBoard from './components/InfoBoard.jsx';
 import FiltersForOrganizations from './components/FiltersForOrganizations.jsx';
 import OrganizationsList from './components/OrganizationsList.jsx';
@@ -14,9 +15,13 @@ const InfoManagement = () => {
   const { setShowTopBar } = useUI();
   const { currentUser } = useAuth();
   const { fetchUserOrganizations, userOrganizations, fetchAllOrganizations } = useOrganization();
+  const { setFilterByOrganization } = usePublication();
   
   const [activeView, setActiveView] = useState('board'); // 'board' or 'organizations'
   const [showCreationForm, setShowCreationForm] = useState(false);
+  //update: Add state for editing organization
+  const [editingOrganization, setEditingOrganization] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   
   useEffect(() => {
     // Show top bar when info management is active
@@ -50,6 +55,8 @@ const InfoManagement = () => {
   // Handle successful organization creation
   const handleOrganizationCreated = (newOrg) => {
     setShowCreationForm(false);
+    setIsEditMode(false);
+    setEditingOrganization(null);
     // Refresh organizations list
     fetchAllOrganizations();
     // Refresh user's organizations
@@ -60,9 +67,51 @@ const InfoManagement = () => {
     setActiveView('organizations');
   };
   
+  //update: Handle successful organization update
+  const handleOrganizationUpdated = (updatedOrg) => {
+    setShowCreationForm(false);
+    setIsEditMode(false);
+    setEditingOrganization(null);
+    // Refresh organizations list
+    fetchAllOrganizations();
+    // Refresh user's organizations
+    if (currentUser?.id_user) {
+      fetchUserOrganizations(currentUser.id_user);
+    }
+  };
+  
   // Toggle creation form
   const toggleCreationForm = () => {
+    if (showCreationForm && isEditMode) {
+      // If closing edit mode, reset everything
+      setIsEditMode(false);
+      setEditingOrganization(null);
+    }
     setShowCreationForm(prev => !prev);
+  };
+  
+  //update: Handle edit organization
+  const handleEditOrganization = (org) => {
+    console.log('Edit organization:', org);
+    setEditingOrganization(org);
+    setIsEditMode(true);
+    setShowCreationForm(true);
+  };
+  
+  //update: Handle view organization publications
+  const handleViewPublications = (org) => {
+    console.log('View publications for organization:', org);
+    // Set the filter to show only this organization's publications
+    setFilterByOrganization(org.id_organization);
+    // Switch to the board view to show publications
+    setActiveView('board');
+  };
+  
+  //update: Handle cancel form
+  const handleCancelForm = () => {
+    setShowCreationForm(false);
+    setIsEditMode(false);
+    setEditingOrganization(null);
   };
   
   return (
@@ -84,7 +133,11 @@ const InfoManagement = () => {
         <div className={styles.tabNavigation}>
           <button
             className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
-            onClick={() => setActiveView('board')}
+            onClick={() => {
+              setActiveView('board');
+              // Clear organization filter when switching to board
+              setFilterByOrganization(null);
+            }}
           >
             Publicaciones
           </button>
@@ -98,7 +151,7 @@ const InfoManagement = () => {
       )}
       
       {/* Show creation button for users with is_manager=true in organizations view */}
-      {isLoggedIn && isManager && activeView === 'organizations' && (
+      {isLoggedIn && isManager && activeView === 'organizations' && !isEditMode && (
         <div className={styles.managerActions}>
           <button
             className={`${styles.createButton} ${showCreationForm ? styles.createButtonActive : ''}`}
@@ -127,15 +180,20 @@ const InfoManagement = () => {
           // Show organizations view with conditional creation form
           isLoggedIn ? (
             <>
-              {/* Show creation form if toggled and user is a manager */}
-              {showCreationForm && isManager && (
+              {/* Show creation/edit form if toggled */}
+              {showCreationForm && (
                 <OrganizationCreationForm 
-                  onSuccess={handleOrganizationCreated}
-                  onCancel={() => setShowCreationForm(false)}
+                  onSuccess={isEditMode ? handleOrganizationUpdated : handleOrganizationCreated}
+                  onCancel={handleCancelForm}
+                  editMode={isEditMode}
+                  organizationData={editingOrganization}
                 />
               )}
               <FiltersForOrganizations />
-              <OrganizationsList />
+              <OrganizationsList 
+                onEditOrganization={handleEditOrganization}
+                onViewPublications={handleViewPublications}
+              />
             </>
           ) : (
             <div className={styles.loginMessage}>

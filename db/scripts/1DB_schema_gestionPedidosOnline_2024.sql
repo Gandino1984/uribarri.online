@@ -337,6 +337,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
   `id_publication` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_org` INT UNSIGNED NOT NULL,
   `title_pub` VARCHAR(150) NOT NULL,
   `content_pub` TEXT NOT NULL,
   `date_pub` DATE NOT NULL,

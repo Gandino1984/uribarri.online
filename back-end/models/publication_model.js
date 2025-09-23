@@ -10,6 +10,11 @@ const publication_model = sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
+         id_org: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: false,
+        },
+        //   `id_org` INT UNSIGNED NULL,
         title_pub: {
             type: DataTypes.STRING(150),
             allowNull: false

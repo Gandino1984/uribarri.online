@@ -5,12 +5,16 @@ import organizationApiController from "../controllers/organization/organization_
 const router = Router();
 
 router.get("/", organizationApiController.getAll);
+//update: New route to get unapproved organizations
+router.get("/unapproved", organizationApiController.getUnapproved);
 
 router.post("/by-id", organizationApiController.getById);
 router.post("/by-user-id", organizationApiController.getByUserId);
 router.post("/create", organizationApiController.create);
 
 router.patch("/update", organizationApiController.update);
+//update: New route to approve/reject organizations
+router.patch("/approve", organizationApiController.approve);
 
 router.delete("/remove-by-id/:id_organization", organizationApiController.removeById);
 
