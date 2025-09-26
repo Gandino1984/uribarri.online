@@ -4,7 +4,7 @@ import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import styles from '../../../../../public/css/InfoBoard.module.css';
-import { Calendar, User, Clock, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle } from 'lucide-react';
 
 const InfoBoard = () => {
   const { currentUser } = useAuth();
@@ -23,6 +23,9 @@ const InfoBoard = () => {
       
       if (response.data && !response.data.error) {
         let pubs = response.data.data || [];
+        
+        //update: Filter only approved publications for public view
+        pubs = pubs.filter(pub => pub.pub_approved === true);
         
         // Apply user filter if active
         if (filterByUser) {
@@ -158,8 +161,8 @@ const InfoBoard = () => {
           <AlertCircle size={48} className={styles.emptyIcon} />
           <p className={styles.emptyText}>
             {filterByUser 
-              ? "No hay publicaciones de este usuario"
-              : "No hay publicaciones disponibles en este momento"}
+              ? "No hay publicaciones aprobadas de este usuario"
+              : "No hay publicaciones aprobadas disponibles en este momento"}
           </p>
           {filterByUser && (
             <button 
@@ -199,6 +202,14 @@ const InfoBoard = () => {
                   </div>
                 )}
               </div>
+              
+              {/* Organization badge if exists */}
+              {publication.organization && (
+                <div className={styles.organizationBadge}>
+                  <CheckCircle size={14} />
+                  <span>{publication.organization.name_org}</span>
+                </div>
+              )}
               
               {/* Card content */}
               <div className={styles.cardContent}>
@@ -247,7 +258,7 @@ const InfoBoard = () => {
       {!loading && publications.length > 0 && (
         <div className={styles.publicationsCount}>
           <p>
-            Mostrando {publications.length} {publications.length === 1 ? 'publicación' : 'publicaciones'}
+            Mostrando {publications.length} {publications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
           </p>
         </div>
       )}

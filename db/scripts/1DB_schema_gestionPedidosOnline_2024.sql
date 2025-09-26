@@ -333,6 +333,25 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`participant_request`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant_request` (
+  `id_request` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_user` INT UNSIGNED NOT NULL,
+  `id_org` INT UNSIGNED NOT NULL,
+  `request_status` ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  `request_message` TEXT NULL,
+  `response_message` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_request`),
+  UNIQUE INDEX `unique_user_org_pending` (`id_user`, `id_org`, `request_status`),
+  INDEX `idx_org` (`id_org` ASC),
+  INDEX `idx_user` (`id_user` ASC),
+  INDEX `idx_status` (`request_status` ASC)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`publication`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (

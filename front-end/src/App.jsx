@@ -29,6 +29,7 @@ import RiderOrdersManagement from "../src/components/rider_order_management/Ride
 import EmailVerification from "../src/components/email_verification/EmailVerification.jsx";
 //update: Import InfoManagement component
 import InfoManagement from "../src/components/info_management/InfoManagement.jsx";
+import { ParticipantProvider } from "./app_context/ParticipantContext.jsx";
 
 const AppContent = () => {
   const { 
@@ -136,17 +137,19 @@ function App() {
     <UIProvider>
       <AuthProvider>
         <OrganizationProvider>
-          <ShopProvider>
-            <ProductProvider>
-              <PackageProvider>
-                <OrderProvider>
-                  <PublicationProvider>
-                    <AppContent />
-                  </PublicationProvider>
-                </OrderProvider>
-              </PackageProvider>
-            </ProductProvider>
-          </ShopProvider>
+          <ParticipantProvider>
+            <ShopProvider>
+              <ProductProvider>
+                <PackageProvider>
+                  <OrderProvider>
+                    <PublicationProvider>
+                      <AppContent />
+                    </PublicationProvider>
+                  </OrderProvider>
+                </PackageProvider>
+              </ProductProvider>
+            </ShopProvider>
+          </ParticipantProvider>
         </OrganizationProvider>
       </AuthProvider>
     </UIProvider>

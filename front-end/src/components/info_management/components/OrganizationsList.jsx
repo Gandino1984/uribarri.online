@@ -4,7 +4,10 @@ import { useOrganization } from '../../../../src/app_context/OrganizationContext
 import { usePublication } from '../../../../src/app_context/PublicationContext.jsx';
 import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
-import { Users, MapPin, User, AlertCircle, Shield, Clock, CheckCircle, XCircle, Edit, FileText } from 'lucide-react';
+//update: Add useParticipant and UserPlus icon
+import { useParticipant } from '../../../../src/app_context/ParticipantContext.jsx';
+import ParticipantRequests from '../components/ParticpantRequests.jsx';
+import { Users, MapPin, User, AlertCircle, Shield, Clock, CheckCircle, XCircle, Edit, FileText, UserPlus } from 'lucide-react';
 import axiosInstance from '../../../../src/utils/app/axiosConfig.js';
 import styles from '../../../../../public/css/OrganizationsList.module.css';
 
@@ -13,7 +16,6 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     organizations,
     userOrganizations,
     organizationsLoading,
-    joinOrganization,
     leaveOrganization,
     fetchUserOrganizations,
     fetchAllOrganizations
@@ -23,11 +25,24 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
   const { currentUser } = useAuth();
   const { setError, setSuccess, openImageModal } = useUI();
   
+  //update: Add participant request hooks
+  const { 
+    createJoinRequest,
+    fetchUserRequests,
+    userRequests,
+    fetchOrganizationRequests
+  } = useParticipant();
+  
   const [joinedOrgs, setJoinedOrgs] = useState(new Set());
-  const [joiningOrg, setJoiningOrg] = useState(null);
   const [leavingOrg, setLeavingOrg] = useState(null);
   const [approvingOrg, setApprovingOrg] = useState(null);
   const [rejectingOrg, setRejectingOrg] = useState(null);
+  //update: Replace joiningOrg with requestingJoin
+  const [requestingJoin, setRequestingJoin] = useState(null);
+  //update: Add state for requests modal
+  const [showRequestsModal, setShowRequestsModal] = useState(false);
+  const [selectedOrgForRequests, setSelectedOrgForRequests] = useState(null);
+  const [pendingRequestsCounts, setPendingRequestsCounts] = useState({});
 
   //update: Check if current user is admin
   const isAdmin = currentUser?.type_user === 'admin';
@@ -44,8 +59,29 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
         );
         setJoinedOrgs(joined);
       });
+      //update: Also fetch user's pending requests
+      fetchUserRequests(currentUser.id_user);
     }
-  }, [currentUser, fetchUserOrganizations]);
+  }, [currentUser, fetchUserOrganizations, fetchUserRequests]);
+
+  //update: Fetch pending requests counts for managed organizations
+  useEffect(() => {
+    const fetchPendingCounts = async () => {
+      const counts = {};
+      for (const participation of userOrganizations) {
+        if (participation.org_managed && participation.organization) {
+          const requests = await fetchOrganizationRequests(participation.organization.id_organization, 'pending');
+          const pendingCount = requests.filter(r => r.request_status === 'pending').length;
+          counts[participation.organization.id_organization] = pendingCount;
+        }
+      }
+      setPendingRequestsCounts(counts);
+    };
+    
+    if (userOrganizations && userOrganizations.length > 0) {
+      fetchPendingCounts();
+    }
+  }, [userOrganizations, fetchOrganizationRequests]);
 
   // Check if user has already joined an organization
   const hasJoined = (orgId) => {
@@ -63,6 +99,13 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     return org.id_user === currentUser?.id_user;
   };
 
+  //update: Check if user has pending request for an organization
+  const hasPendingRequest = (orgId) => {
+    return userRequests.some(req => 
+      req.id_org === orgId && req.request_status === 'pending'
+    );
+  };
+
   //update: Handle edit organization
   const handleEditOrganization = (org) => {
     if (onEditOrganization) {
@@ -78,31 +121,38 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     }
   };
 
-  // Handle join organization
+  //update: Handle view requests (for managers)
+  const handleViewRequests = (org) => {
+    setSelectedOrgForRequests(org);
+    setShowRequestsModal(true);
+  };
+
+  //update: Replace handleJoinOrganization with request-based version
   const handleJoinOrganization = async (orgId) => {
     if (!currentUser) {
       setError(prev => ({ 
         ...prev, 
-        authError: 'Debes iniciar sesión para unirte a una organización' 
+        authError: 'Debes iniciar sesión para solicitar unirte a una organización' 
       }));
       return;
     }
 
-    setJoiningOrg(orgId);
+    setRequestingJoin(orgId);
     
     try {
-      const success = await joinOrganization(orgId);
-      if (success) {
-        setJoinedOrgs(prev => new Set([...prev, orgId]));
+      const request = await createJoinRequest(orgId);
+      if (request) {
+        // Refresh user's requests to update UI
+        await fetchUserRequests(currentUser.id_user);
         setSuccess(prev => ({ 
           ...prev, 
-          joinSuccess: '¡Te has unido a la organización exitosamente!' 
+          requestSuccess: '¡Solicitud enviada! El gestor de la organización revisará tu solicitud.' 
         }));
       }
     } catch (error) {
-      console.error('Error joining organization:', error);
+      console.error('Error creating join request:', error);
     } finally {
-      setJoiningOrg(null);
+      setRequestingJoin(null);
     }
   };
 
@@ -122,6 +172,10 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
           ...prev, 
           leaveSuccess: 'Has salido de la organización' 
         }));
+        //update: Refresh user organizations to update UI
+        if (currentUser?.id_user) {
+          await fetchUserOrganizations(currentUser.id_user);
+        }
       }
     } catch (error) {
       console.error('Error leaving organization:', error);
@@ -260,10 +314,13 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
           const joined = hasJoined(org.id_organization);
           const manager = isManager(org.id_organization);
           const creator = isCreator(org);
-          const isJoining = joiningOrg === org.id_organization;
+          //update: Use requestingJoin instead of isJoining
+          const isRequesting = requestingJoin === org.id_organization;
           const isLeaving = leavingOrg === org.id_organization;
           const isApproving = approvingOrg === org.id_organization;
           const isRejecting = rejectingOrg === org.id_organization;
+          const pendingRequest = hasPendingRequest(org.id_organization);
+          const pendingCount = pendingRequestsCounts[org.id_organization] || 0;
           
           return (
             <div key={org.id_organization} className={`${styles.organizationCard} ${!org.org_approved ? styles.pendingCard : ''}`}>
@@ -317,7 +374,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
               </div>
 
               <div className={styles.cardActions}>
-                {/* update: Show manager action buttons */}
+                {/* update: Show manager action buttons with requests button */}
                 {manager && org.org_approved && (
                   <div className={styles.managerActions}>
                     <button
@@ -327,6 +384,17 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                     >
                       <Edit size={16} />
                       <span>Editar</span>
+                    </button>
+                    <button
+                      className={`${styles.actionButton} ${styles.requestsButton}`}
+                      onClick={() => handleViewRequests(org)}
+                      title="Ver solicitudes"
+                    >
+                      <UserPlus size={16} />
+                      <span>Solicitudes</span>
+                      {pendingCount > 0 && (
+                        <span className={styles.requestsBadge}>{pendingCount}</span>
+                      )}
                     </button>
                     <button
                       className={`${styles.actionButton} ${styles.publicationsButton}`}
@@ -404,21 +472,28 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                       <span>Salir</span>
                     )}
                   </button>
-                ) : org.org_approved && !joined ? (
+                ) : org.org_approved && !joined && !pendingRequest ? (
+                  //update: Change button text to "Solicitar Unirme"
                   <button
                     className={`${styles.actionButton} ${styles.joinButton}`}
                     onClick={() => handleJoinOrganization(org.id_organization)}
-                    disabled={isJoining}
+                    disabled={isRequesting}
                   >
-                    {isJoining ? (
+                    {isRequesting ? (
                       <>
                         <span className={styles.buttonLoader}></span>
-                        <span>Uniéndose...</span>
+                        <span>Enviando...</span>
                       </>
                     ) : (
-                      <span>Unirme</span>
+                      <span>Solicitar Unirme</span>
                     )}
                   </button>
+                ) : pendingRequest ? (
+                  //update: Show pending request badge
+                  <div className={styles.pendingRequestBadge}>
+                    <Clock size={14} />
+                    <span>Solicitud pendiente</span>
+                  </div>
                 ) : null}
               </div>
             </div>
@@ -436,6 +511,20 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
           )}
         </p>
       </div>
+      
+      {/* update: Add the ParticipantRequests modal */}
+      {showRequestsModal && selectedOrgForRequests && (
+        <ParticipantRequests
+          organizationId={selectedOrgForRequests.id_organization}
+          organizationName={selectedOrgForRequests.name_org}
+          onClose={() => {
+            setShowRequestsModal(false);
+            setSelectedOrgForRequests(null);
+            // Refresh pending counts after closing
+            fetchUserOrganizations(currentUser.id_user);
+          }}
+        />
+      )}
     </div>
   );
 };

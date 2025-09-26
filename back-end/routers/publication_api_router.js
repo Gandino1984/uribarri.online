@@ -15,13 +15,12 @@ router.post("/by-date-range", publicationApiController.getByDateRange);
 router.post("/by-organization", publicationApiController.getByOrganization);
 router.post("/create", publicationApiController.create);
 
-//update: PATCH routes
 router.patch("/update", publicationApiController.update);
 
-//update: DELETE routes
 router.delete("/remove-by-id/:id_publication", publicationApiController.removeById);
 
-//update: File upload routes
 router.post("/upload-image", publicationApiController.uploadImage);
+
+router.patch("/approve", publicationApiController.approvePublication);
 
 export default router;

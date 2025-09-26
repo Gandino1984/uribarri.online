@@ -10,11 +10,10 @@ const publication_model = sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
-         id_org: {
+        id_org: {
             type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
+            allowNull: true, //update: Changed to allowNull: true since not all publications belong to organizations
         },
-        //   `id_org` INT UNSIGNED NULL,
         title_pub: {
             type: DataTypes.STRING(150),
             allowNull: false
@@ -38,6 +37,12 @@ const publication_model = sequelize.define(
         image_pub: {
             type: DataTypes.STRING(255),
             allowNull: true
+        },
+        //update: Add pub_approved field for publication approval system
+        pub_approved: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     },
     {

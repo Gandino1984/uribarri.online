@@ -157,7 +157,8 @@ async function update(req, res) {
             time_pub,
             id_user_pub,
             id_org, //update: Add organization field
-            image_pub
+            image_pub,
+            pub_approved
         } = req.body;
         
         if (!id_publication) {
@@ -174,6 +175,7 @@ async function update(req, res) {
         if (id_user_pub !== undefined) updateData.id_user_pub = id_user_pub;
         if (id_org !== undefined) updateData.id_org = id_org; //update: Include organization
         if (image_pub !== undefined) updateData.image_pub = image_pub;
+        if (pub_approved !== undefined) updateData.pub_approved = pub_approved;
         
         const { error, data } = await publicationController.update(id_publication, updateData);
         
@@ -257,6 +259,41 @@ async function uploadImage(req, res) {
     }
 }
 
+async function approvePublication(req, res) {
+    try {
+        const {
+            id_publication,
+            pub_approved
+        } = req.body;
+        
+        if (!id_publication) {
+            return res.status(400).json({
+                error: 'El ID de la publicación es obligatorio'
+            });
+        }
+        
+        if (pub_approved === undefined) {
+            return res.status(400).json({
+                error: 'El estado de aprobación es obligatorio'
+            });
+        }
+        
+        const { error, data } = await publicationController.approvePublication(id_publication, pub_approved);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> publication_api_controller.js - approvePublication() - Error =", err);
+        res.status(500).json({
+            error: "Error al aprobar/rechazar la publicación",
+            details: err.message
+        });
+    }
+}
+
 // Export with new function included
 export {
     getAll,
@@ -267,7 +304,8 @@ export {
     create,
     update,
     removeById,
-    uploadImage
+    uploadImage,
+     approvePublication 
 };
 
 export default {
@@ -279,5 +317,6 @@ export default {
     create,
     update,
     removeById,
-    uploadImage
+    uploadImage,
+     approvePublication 
 };

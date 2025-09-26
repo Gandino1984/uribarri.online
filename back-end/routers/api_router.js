@@ -21,6 +21,7 @@ import shopValorationApiRouter from "./shop_valoration_api_router.js";
 import organizationApiRouter from "./organization_api_router.js";
 import participantApiRouter from "./participant_api_router.js";
 import publicationApiRouter from "./publication_api_router.js";
+import participantRequestApiRouter from "./participant_request_api_router.js";
 import socialEventApiRouter from "./social_event_api_router.js";
 
 
@@ -65,6 +66,8 @@ router.use("/organization", organizationApiRouter);
 router.use("/participant", participantApiRouter);
 
 router.use("/publication", publicationApiRouter);
+
+router.use("/participant-request", participantRequestApiRouter);
 
 router.use("/social-event", socialEventApiRouter);
 
