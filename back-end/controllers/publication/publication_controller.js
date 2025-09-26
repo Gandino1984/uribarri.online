@@ -487,17 +487,70 @@ async function uploadImage(id_publication, imagePath) {
     }
 }
 
+//update: Add approvePublication function
+async function approvePublication(id_publication, pub_approved) {
+    try {
+        const publication = await publication_model.findByPk(id_publication);
+        
+        if (!publication) {
+            console.log("Publicación no encontrada con id:", id_publication);
+            return { error: "Publicación no encontrada" };
+        }
+
+        // Update the approval status
+        await publication.update({ 
+            pub_approved: pub_approved,
+            reviewed: true // Mark as reviewed
+        });
+        
+        // Fetch updated publication with details
+        const updatedPub = await publication_model.findByPk(id_publication);
+        const publisher = await user_model.findByPk(updatedPub.id_user_pub);
+        let organization = null;
+        
+        if (updatedPub.id_org) {
+            organization = await organization_model.findByPk(updatedPub.id_org);
+        }
+        
+        const pubWithDetails = {
+            ...updatedPub.toJSON(),
+            publisher: publisher ? {
+                id_user: publisher.id_user,
+                name_user: publisher.name_user,
+                email_user: publisher.email_user,
+                image_user: publisher.image_user
+            } : null,
+            organization: organization ? {
+                id_organization: organization.id_organization,
+                name_org: organization.name_org,
+                image_org: organization.image_org
+            } : null
+        };
+        
+        console.log(`-> publication_controller.js - approvePublication() - Publicación ${pub_approved ? 'aprobada' : 'rechazada'} con id: ${id_publication}`);
+        
+        return { 
+            data: pubWithDetails,
+            message: pub_approved ? "Publicación aprobada exitosamente" : "Publicación rechazada"
+        };
+    } catch (err) {
+        console.error("-> publication_controller.js - approvePublication() - Error =", err);
+        return { error: "Error al aprobar/rechazar la publicación" };
+    }
+}
+
 // Export all functions
 export { 
     getAll, 
     getById,
     getByUserId,
     getByDateRange,
-    getByOrganizationId, //update: Add new function
+    getByOrganizationId,
     create, 
     update, 
     removeById,
-    uploadImage
+    uploadImage,
+    approvePublication //update: Add approvePublication to exports
 };
 
 export default { 
@@ -505,9 +558,10 @@ export default {
     getById,
     getByUserId,
     getByDateRange,
-    getByOrganizationId, //update: Add new function
+    getByOrganizationId,
     create, 
     update, 
     removeById,
-    uploadImage
+    uploadImage,
+    approvePublication //update: Add approvePublication to default export
 };
