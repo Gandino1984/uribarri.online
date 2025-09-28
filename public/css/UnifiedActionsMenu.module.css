@@ -1,4 +1,7 @@
-/*update: New styles for UnifiedActionsMenu with slide-down animation */
+/* ===============================================
+   UNIFIED ACTIONS MENU - MOBILE FIRST DESIGN
+   Base styles for screens 360px and up
+   =============================================== */
 
 /* Main container */
 .menuContainer {
@@ -6,13 +9,16 @@
   z-index: 1000;
 }
 
-/* Burger button */
+/* Burger button - Mobile first */
 .burgerButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
+  color: black;
+  font-weight: 600;
+  font-size: 0.9rem;
   background: white;
   border: 2px solid transparent;
   border-radius: 8px;
@@ -24,27 +30,27 @@
 
 .burgerButton:hover {
   background: lightgray;
-  /* border-color: var(--app-purple); */
 }
 
 .burgerButton.active {
-  /* background: var(--app-purple); */
   border-color: var(--app-purple);
-  /* color: white; */
 }
 
-/* Dropdown menu */
+/* Dropdown menu - Mobile first positioning */
 .dropdownMenu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
+  position: fixed; /* Use fixed positioning for mobile */
+  /* top: auto; */
+  bottom: 0; /* Anchor to bottom on mobile */
+  left: 0;
   right: 0;
-  min-width: 280px;
+  width: 100%;
+  max-height: 70vh; /* Limit height on mobile */
   background: white;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-radius: 12px 12px 0 0; /* Round only top corners on mobile */
+  /* box-shadow: 0 -20px 50px -5px rgba(0, 0, 0, 0.1), 0 -10px 10px -5px rgba(0, 0, 0, 0.04); */
   overflow: hidden;
-  transform-origin: top right;
+  transform-origin: bottom center;
   pointer-events: none;
   z-index: 1000;
 }
@@ -53,15 +59,16 @@
   pointer-events: auto;
 }
 
-/* Menu content */
+/* Menu content - Mobile first */
 .menuContent {
-  padding: 0.5rem;
+  padding: 1rem 0.5rem;
   max-height: 70vh;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   overflow-x: hidden;
+  /* padding-bottom: env(safe-area-inset-bottom, 20px);  */
 }
 
-/* Menu sections */
+/* Menu sections - Mobile first */
 .menuSection {
   margin-bottom: 0.5rem;
   border-radius: 8px;
@@ -73,17 +80,17 @@
   margin-bottom: 0;
 }
 
-/* Section button */
+/* Section button - Mobile first */
 .sectionButton {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   padding: 0.875rem 1rem;
   background: transparent;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #1f2937;
   cursor: pointer;
@@ -93,12 +100,13 @@
 }
 
 .sectionButton:hover {
-  background: rgba(147, 51, 234, 0.05);
+  background: lightgray;
 }
 
 .sectionButton.active {
-  background: white;
-  color: var(--app-purple);
+  background-color: var(--app-purple-transparent);
+  color: black;
+  border: 2px solid var(--app-purple);
 }
 
 .sectionButton span {
@@ -109,16 +117,18 @@
 .chevron {
   transition: transform 0.3s ease;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .chevron.rotated {
   transform: rotate(90deg);
 }
 
-/* Submenu */
+/* Submenu - Mobile first */
 .submenu {
+  /* position: absolute;   */
   background: white;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid lightgray;
   padding: 0.25rem;
   animation: slideDown 0.3s ease;
 }
@@ -126,7 +136,7 @@
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -134,20 +144,20 @@
   }
 }
 
-/* Submenu items */
+/* Submenu items - Mobile first */
 .submenuItem {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: left;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
   background: transparent;
   border: none;
   border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: black;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
@@ -182,75 +192,207 @@
   color: var(--app-purple);
 }
 
-/* Badge */
+/* Badge - Mobile first */
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
   background: linear-gradient(135deg, var(--saturated-orange), var(--dark-orange));
   color: white;
-  border-radius: 10px;
-  font-size: 0.75rem;
+  border-radius: 9px;
+  font-size: 0.7rem;
   font-weight: 600;
   margin-left: auto;
-}
-
-/* Mobile adjustments */
-@media (max-width: 480px) {
-  .dropdownMenu {
-    left: 0;
-    right: 0;
-    min-width: unset;
-    width: calc(100vw - 2rem);
-    max-width: 320px;
-    margin: 0 auto;
-  }
-  
-  .burgerButton {
-    width: 44px;
-    height: 44px;
-  }
-  
-  .sectionButton {
-    padding: 0.75rem 0.875rem;
-    font-size: 0.9rem;
-  }
-  
-  .submenuItem {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.825rem;
-  }
-}
-
-/* Desktop adjustments */
-@media (min-width: 768px) {
-  .dropdownMenu {
-    min-width: 320px;
-  }
-  
-  .menuContent {
-    max-height: 80vh;
-  }
+  flex-shrink: 0;
 }
 
 /* Scrollbar styling */
 .menuContent::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 .menuContent::-webkit-scrollbar-track {
   background: var(--light-gray);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .menuContent::-webkit-scrollbar-thumb {
   background: #cbd5e0;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .menuContent::-webkit-scrollbar-thumb:hover {
   background: #a0aec0;
+}
+
+/* ===============================================
+   SMALL PHONES (360px - 400px)
+   Special handling for very small screens
+   =============================================== */
+@media (min-width: 360px) and (max-width: 400px) {
+  .dropdownMenu {
+    border-radius: 12px 12px 0 0;
+    max-height: 60vh; /* Slightly less height on very small screens */
+  }
+  
+  .menuContent {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .sectionButton {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    gap: 0.5rem;
+  }
+  
+  .submenuItem {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8rem;
+    gap: 0.5rem;
+  }
+}
+
+/* ===============================================
+   LARGER PHONES (401px - 480px)
+   =============================================== */
+@media (min-width: 401px) and (max-width: 480px) {
+  .burgerButton {
+    width: 46px;
+    height: 46px;
+  }
+  
+  .sectionButton {
+    padding: 0.875rem 1rem;
+    font-size: 0.925rem;
+  }
+  
+  .submenuItem {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ===============================================
+   SMALL TABLETS & LANDSCAPE PHONES (481px - 768px)
+   Transition to dropdown menu
+   =============================================== */
+@media (min-width: 481px) {
+  /* Change from bottom sheet to dropdown */
+  .dropdownMenu {
+    position: absolute; /* Change back to absolute */
+    top: calc(100% + 0.5rem);
+    bottom: auto;
+    left: auto;
+    right: 0;
+    width: auto;
+    min-width: 280px;
+    max-width: min(320px, calc(100vw - 2rem));
+    max-height: min(80vh, 600px);
+    border-radius: 12px; /* All corners rounded */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform-origin: top right;
+  }
+  
+  .menuContent {
+    padding: 0.5rem;
+    padding-bottom: 0.5rem; /* Reset iOS safe area padding */
+    max-height: min(80vh, 600px);
+  }
+  
+  .burgerButton {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .sectionButton {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+    gap: 0.75rem;
+  }
+  
+  .submenuItem {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    gap: 0.75rem;
+  }
+}
+
+/* ===============================================
+   TABLETS & SMALL DESKTOPS (769px - 1024px)
+   =============================================== */
+@media (min-width: 769px) {
+  .dropdownMenu {
+    min-width: 300px;
+    max-width: 360px;
+  }
+  
+  .menuContent {
+    max-height: 85vh;
+  }
+  
+  .sectionButton {
+    padding: 0.9rem 1.125rem;
+  }
+  
+  .submenuItem {
+    padding: 0.8rem 1.125rem;
+  }
+  
+  /* Scrollbar gets slightly wider on desktop */
+  .menuContent::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .menuContent::-webkit-scrollbar-track {
+    border-radius: 3px;
+  }
+  
+  .menuContent::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+  }
+}
+
+/* ===============================================
+   DESKTOPS (1025px and up)
+   =============================================== */
+@media (min-width: 1025px) {
+  .dropdownMenu {
+    min-width: 320px;
+    max-width: 380px;
+  }
+  
+  .burgerButton {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .sectionButton {
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+  
+  .submenuItem {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.925rem;
+  }
+}
+
+/* ===============================================
+   LARGE DESKTOPS (1440px and up)
+   =============================================== */
+@media (min-width: 1440px) {
+  .dropdownMenu {
+    min-width: 340px;
+    max-width: 400px;
+  }
 }

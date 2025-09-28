@@ -1,0 +1,261 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+}
+
+.container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  color: #111827;
+}
+
+.summarySection {
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.summaryCard {
+  text-align: center;
+}
+
+.averageRating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.averageNumber {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.averageStars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.filledStar {
+  color: #fbbf24;
+}
+
+.emptyStar {
+  color: #d1d5db;
+}
+
+.totalCount {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.valorationsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.valorationCard {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.valorationCard:last-child {
+  border-bottom: none;
+}
+
+.valorationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userIcon {
+  width: 32px;
+  height: 32px;
+  background: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.userName {
+  font-weight: 500;
+  color: #111827;
+}
+
+.valorationMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.stars {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.valorationComment {
+  margin-left: 2.5rem;
+}
+
+.valorationComment p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.loadingContainer,
+.errorContainer {
+  padding: 3rem;
+  text-align: center;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorText {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.retryButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+
+.retryButton:hover {
+  background: #2563eb;
+}
+
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.emptyText {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .container {
+    max-height: 90vh;
+  }
+  
+  .valorationHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .valorationMeta {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .valorationComment {
+    margin-left: 0;
+    margin-top: 0.75rem;
+  }
+}

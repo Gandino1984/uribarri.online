@@ -296,6 +296,32 @@ async function riderResponse(req, res) {
     }
 }
 
+async function checkPurchase(req, res) {
+    try {
+        const { id_user, id_shop } = req.query;
+
+        if (!id_user || !id_shop) {
+            return res.status(400).json({
+                error: 'id_user e id_shop son obligatorios'
+            });
+        }
+
+        const result = await orderController.checkUserPurchase(id_user, id_shop);
+
+        if (result.error) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (err) {
+        console.error("-> order_api_controller.js - checkPurchase() - Error =", err);
+        res.status(500).json({
+            error: "Error al verificar compra",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -307,7 +333,8 @@ export {
     updateStatus,
     cancel,
     assignRider,
-    riderResponse
+    riderResponse,
+    checkPurchase 
 }
 
 export default {
@@ -321,5 +348,6 @@ export default {
     updateStatus,
     cancel,
     assignRider,
-    riderResponse
+    riderResponse,
+    checkPurchase 
 }

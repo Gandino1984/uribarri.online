@@ -18,8 +18,9 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
-  //update: Add Tag icon for the new button
-  Tag
+  Tag,
+  //update: Import ArrowLeft icon for back button
+  ArrowLeft
 } from 'lucide-react';
 import ShopCard from '../shop_card/ShopCard.jsx';
 import { shopsListAnimations } from '../../../../utils/animation/transitions.js';
@@ -27,7 +28,6 @@ import { formatImageUrl } from '../../../../utils/image/imageUploadService.js';
 
 import ShopLimitIndicator from './components/ShopLimitIndicator';
 import ShopOrdersList from '../shops_list_by_seller/components/shop_oders_list/ShopOrdersList.jsx';
-//update: Import the new ShopTypeManagementForm component
 import ShopTypeManagementForm from './components/ShopTypeManagementForm.jsx';
 
 const ShopsListBySeller = () => {
@@ -37,14 +37,21 @@ const ShopsListBySeller = () => {
   const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
   const [expandedShop, setExpandedShop] = useState(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  //update: Add state for showing the type management form
   const [showTypeManagement, setShowTypeManagement] = useState(false);
 
   const { currentUser } = useAuth();
   const { shops, selectedShop } = useShop();
   const { showProductManagement } = useProduct();
   const { shopOrders, fetchShopOrders } = useOrder();
-  const { setInfo, setShowInfoCard, openImageModal } = useUI();
+  const { 
+    setInfo, 
+    setShowInfoCard, 
+    openImageModal,
+    //update: Add navigation functions from UIContext
+    setShowShopsListBySeller,
+    setShowShopWindow,
+    setShowLandingPage
+  } = useUI();
 
   const maxSponsorShops = parseInt(import.meta?.env?.VITE_MAX_SPONSOR_SHOPS || '3');
   const maxRegularShops = parseInt(import.meta?.env?.VITE_MAX_REGULAR_SHOPS || '1');
@@ -63,6 +70,13 @@ const ShopsListBySeller = () => {
     isShopSelected,
     shouldShowShopCard
   } = ShopsListBySellerUtils();
+
+  //update: Add handleBackToShopWindow function
+  const handleBackToShopWindow = () => {
+    console.log('Navigating from ShopsListBySeller back to ShopWindow');
+    setShowShopsListBySeller(false);
+    setShowShopWindow(true);
+  };
 
   // Title animation
   const titleAnimation = useSpring({
@@ -135,7 +149,7 @@ const ShopsListBySeller = () => {
     if (shops && shops.length > 0 && isVisible) {
       setInfo(prevInfo => ({
         ...prevInfo,
-        shopInstructions: "Haz clic en una comercio para administrar sus productos"
+        shopInstructions: "Haz click en un comercio para administrar sus productos"
       }));
       setShowInfoCard(true);
     }
@@ -170,7 +184,6 @@ const ShopsListBySeller = () => {
     setExpandedShop(prev => prev === shopId ? null : shopId);
   };
 
-  //update: Helper function to render star rating
   const renderStarRating = (rating) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
@@ -306,15 +319,26 @@ const ShopsListBySeller = () => {
 
   return (
     <div className={styles.container}>
+      {/*update: Add back button at the top of the container */}
+      <div className={styles.backButtonContainer}>
+        <button 
+          onClick={handleBackToShopWindow}
+          className={styles.backButton}
+          title="Volver al barrio"
+        >
+          <ArrowLeft size={20} />
+          <span>Volver al barrio</span>
+        </button>
+      </div>
+      
       <div className={styles.content}>
         <div className={styles.headerContainer}>
           <animated.div style={titleAnimation} className={styles.header}>
             <h1 className={styles.title}>
-              Gestiona tus actividades comerciales en el barrio
+              Gestiona tus actividades comerciales aquí
             </h1>
             
             <div className={styles.headerButtons}>
-              {/*update: Add the new "Tipo de comercio" button for sponsor users */}
               {currentUser?.contributor_user && (
                 <button 
                   onClick={() => setShowTypeManagement(true)}
@@ -369,8 +393,6 @@ const ShopsListBySeller = () => {
                   <div className={styles.listHeaderContainer}>
                     <div className={styles.listHeader}>
                       <span className={styles.listTitle}>
-                        {/* <Store size={20} /> */}
-                        {/*update: Add username to the title */}
                         Comercios{currentUser?.name_user ? ` de ${currentUser.name_user}` : ''} ({shops.length})
                       </span>
                     </div>
@@ -400,7 +422,6 @@ const ShopsListBySeller = () => {
         <ShopOrdersList onClose={() => setShowOrdersList(false)} />
       )}
       
-      {/*update: Add the ShopTypeManagementForm modal */}
       {showTypeManagement && (
         <ShopTypeManagementForm onClose={() => setShowTypeManagement(false)} />
       )}

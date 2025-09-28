@@ -1,4 +1,4 @@
-# uribarri.online 
+# mibarrio.online 
 
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
@@ -9,7 +9,7 @@
 
 ## Descripción del Proyecto(desarrollo en curso)
 
-uribarri.online es un proyecto en desarrollo que a mediano plazo pretende ser de código abierto. Se trata de una plataforma de gestión de comercios online, agenda cultural y revista comunitaria diseñada específicamente para la gestión local del distrito02 de Bilbao: Uribarri. Esta solución permite a los establecimientos y agentes culturales de la zona ofrecer sus servicios y actividades culturales en formato digital de forma eficiente y accesible.
+mibarrio.online es un proyecto en desarrollo que a mediano plazo pretende ser de código abierto. Se trata de una plataforma de gestión de comercios online, agenda cultural y revista comunitaria diseñada específicamente para la gestión local del distrito02 de Bilbao: Uribarri. Esta solución permite a los establecimientos y agentes culturales de la zona ofrecer sus servicios y actividades culturales en formato digital de forma eficiente y accesible.
 
 ## Capturas de Pantalla(diseño en progreso ;)
 

@@ -9,45 +9,66 @@ import { ShopManagementUtils } from './ShopManagementUtils.jsx';
 import styles from '../../../../public/css/ShopManagement.module.css';
 
 const ShopManagement = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   
   const { 
     showShopCreationForm, 
     selectedShop
   } = useShop();
   
-  //update: Get both setShowShopManagement and showProductManagement from UI context
   const { 
     setShowShopManagement,
-    showProductManagement 
+    showProductManagement,
+    //update: Added setError to show verification error
+    setError
   } = useUI();
   
   const hasInitiallyFetchedShops = useRef(false);
   
   const shopManagementUtils = ShopManagementUtils ? ShopManagementUtils() : {};
   
-  
+  //update: Check email verification status
   useEffect(() => {
-    if (!currentUser || currentUser.type_user !== 'seller') {
-      console.log('Non-seller user in ShopManagement, redirecting to login 2');
+    if (!currentUser) {
+      console.log('No user in ShopManagement, redirecting');
       setShowShopManagement(false);
+      return;
     }
-  }, [currentUser, setShowShopManagement]);
+    
+    if (currentUser.type_user !== 'seller') {
+      console.log('Non-seller user in ShopManagement, redirecting');
+      setShowShopManagement(false);
+      return;
+    }
+    
+    //update: Check if email is verified
+    if (currentUser && !currentUser.email_verified) {
+      console.error('User email not verified - forcing logout');
+      setError(prevError => ({ 
+        ...prevError, 
+        authError: "Tu cuenta no está verificada. Por favor verifica tu correo electrónico antes de acceder." 
+      }));
+      logout();
+      setShowShopManagement(false);
+      return;
+    }
+  }, [currentUser, setShowShopManagement, setError, logout]);
   
   useEffect(() => {
     if (
       !hasInitiallyFetchedShops.current && 
       shopManagementUtils.fetchUserShops && 
-      currentUser?.id_user
+      currentUser?.id_user &&
+      currentUser?.email_verified // Only fetch if verified
     ) {
       console.log('Initial fetch of shops (once only) for user:', currentUser.id_user);
       shopManagementUtils.fetchUserShops();
       hasInitiallyFetchedShops.current = true;
     }
-  }, [currentUser?.id_user, shopManagementUtils]);
+  }, [currentUser?.id_user, currentUser?.email_verified, shopManagementUtils]);
 
-
-  if (!currentUser || currentUser.type_user !== 'seller') {
+  //update: Check verification before rendering
+  if (!currentUser || currentUser.type_user !== 'seller' || !currentUser.email_verified) {
     return null;
   }
   

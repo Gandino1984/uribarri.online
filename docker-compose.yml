@@ -23,8 +23,11 @@ services:
       - ${APP_PORT}:3000
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
-      - APP_PORT=${APP_PORT}
+      - MYSQL_PORT=3306
+      - MYSQL_HOST=${MYSQL_HOST}
     volumes:
       - .:/app
       - /app/node_modules

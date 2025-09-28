@@ -1,7 +1,11 @@
+// back-end/controllers/user/user_controller.js
 import { console } from "inspector";
 import user_model from "../../models/user_model.js";
 import bcrypt from "bcrypt";
+import { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail } from "../../services/emailService.js";
+import { Op } from "sequelize";
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validateUserData = (userData) => {
     console.log("-> user_controller.js - validateUserData() - userData = ", userData);
@@ -9,11 +13,23 @@ const validateUserData = (userData) => {
     const errors = [];
     const requiredFields = ['name_user', 'type_user', 'location_user'];
     
+    if (userData.is_manager !== undefined && typeof userData.is_manager !== 'boolean') {
+        errors.push('is_manager debe ser un valor booleano');
+    }
+
     requiredFields.forEach(field => {
         if (!userData[field]) {
             errors.push(`Falta el campo: ${field}`);
         }
     });
+    
+    if (userData.email_user !== undefined) {
+        if (!userData.email_user) {
+            errors.push('El email es requerido');
+        } else if (!emailRegex.test(userData.email_user)) {
+            errors.push('El formato del email no es válido');
+        }
+    }
     
     if (userData.name_user) {
         if (userData.name_user.length < 3) {
@@ -27,7 +43,7 @@ const validateUserData = (userData) => {
         }
     }
     if (userData.type_user) {
-        const validTypes = ['user', 'seller', 'rider' , 'provider', 'admin'];
+        const validTypes = ['user', 'seller', 'rider', 'admin'];
         if (!validTypes.includes(userData.type_user)) {
             errors.push('Tipo de usuari@ no valido');
         }
@@ -41,7 +57,6 @@ const validateUserData = (userData) => {
     if (userData.contributor_user !== undefined && typeof userData.contributor_user !== 'boolean') {
         errors.push('La categoría de usuario debe ser un valor booleano');
     }
-    //update: Added age_user validation
     if (userData.age_user !== undefined) {
         if (!Number.isInteger(userData.age_user) || userData.age_user < 0) {
             errors.push('La edad debe ser un número entero positivo');
@@ -87,8 +102,6 @@ async function getById(id) {
 
         const user = await user_model.findByPk(id);
         
-        // console.log("-> user_controller.js - getById() - Retrieved user = ", user);
-
         if (!user) {
             console.warn("-> user_controller.js - getById() - User not found");
             return { error: "Usuario no encontrado" };
@@ -111,7 +124,6 @@ async function getByUserName(userName) {
         });
     
         if (user) {
-            //erase this log later
             console.log('->  getByUserName() - Datos completos obtenidos = ', user);
             return { 
                 data: user
@@ -128,7 +140,6 @@ async function getByUserName(userName) {
             error: "Error al obtener el usuario"
         };
     }
-
 }
 
 async function create(userData) {
@@ -151,6 +162,23 @@ async function create(userData) {
                 error: "El usuario ya existe"
             };
         }
+        
+        //update: Check if email+type combination already exists
+        if (userData.email_user && userData.type_user) {
+            const existingEmailType = await user_model.findOne({ 
+                where: { 
+                    email_user: userData.email_user,
+                    type_user: userData.type_user
+                } 
+            });
+            
+            if (existingEmailType) {
+                return { 
+                    error: `Ya existe una cuenta de tipo ${userData.type_user} con este email`
+                };
+            }
+        }
+        
         // Create new user
         const user = await user_model.create(userData);
         console.log("Created user:", user);
@@ -193,6 +221,22 @@ async function login(userData) {
             };
         }
 
+        //update: Enhanced debugging for is_manager field
+        console.log('-> login() - Full user object from DB:', user);
+        console.log('-> login() - User dataValues:', user.dataValues);
+        console.log('-> login() - is_manager raw value:', user.dataValues.is_manager);
+        console.log('-> login() - is_manager type:', typeof user.dataValues.is_manager);
+
+        //update: Check if email is verified - BLOCK LOGIN if not verified
+        if (user.email_verified === false || user.email_verified === 0) {
+            console.log('-> login() - User email not verified, blocking login');
+            return {
+                error: "Por favor verifica tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.",
+                needsVerification: true,
+                email: user.email_user
+            };
+        }
+
         const isPasswordValid = await bcrypt.compare(userData.pass_user, user.pass_user);
 
         if (!isPasswordValid) {
@@ -202,19 +246,25 @@ async function login(userData) {
             };
         }
 
-        // Return user data including contributor_user
+        //update: Build complete user response including ALL fields from database
         const userResponse = {
-            id_user: user.id_user,
-            name_user: user.name_user,
-            type_user: user.type_user,
-            location_user: user.location_user,
-            image_user: user.image_user,
-            contributor_user: user.contributor_user,
-            //update: Added age_user to login response
-            age_user: user.age_user
+            id_user: user.dataValues.id_user,
+            name_user: user.dataValues.name_user,
+            email_user: user.dataValues.email_user,
+            type_user: user.dataValues.type_user,
+            location_user: user.dataValues.location_user,
+            image_user: user.dataValues.image_user,
+            contributor_user: user.dataValues.contributor_user,
+            age_user: user.dataValues.age_user,
+            calification_user: user.dataValues.calification_user,
+            email_verified: user.dataValues.email_verified,
+            is_manager: user.dataValues.is_manager // Use raw value from database
         };
 
-        console.log('-> login() - User response:', userResponse); 
+        //update: Final debug check before sending response
+        console.log('-> login() - FINAL userResponse being sent:', JSON.stringify(userResponse));
+        console.log('-> login() - FINAL is_manager value:', userResponse.is_manager);
+        console.log('-> login() - FINAL is_manager type:', typeof userResponse.is_manager);
 
         return {
             data: userResponse,
@@ -231,6 +281,11 @@ async function login(userData) {
 
 async function register(userData) {
     try {
+
+        if (userData.is_manager === undefined) {
+            userData.is_manager = false; 
+        }
+
         const validation = validateUserData(userData);
 
         if (!validation.isValid) {
@@ -252,38 +307,91 @@ async function register(userData) {
                 error: "El usuario ya existe",
             };
         }
+        
+        //update: Check if email+type combination already exists
+        const existingEmailType = await user_model.findOne({ 
+            where: { 
+                email_user: userData.email_user,
+                type_user: userData.type_user
+            } 
+        });
+        
+        if (existingEmailType) {
+            console.log('-> register() - Ya existe una cuenta con este email y tipo de usuario');
+            return { 
+                error: `Ya existe una cuenta de tipo ${userData.type_user} con este email. Puedes crear una cuenta con un tipo de usuario diferente.`,
+            };
+        }
+
+        //update: Check if email exists with other user types and suggest available types
+        const existingEmailAccounts = await user_model.findAll({ 
+            where: { 
+                email_user: userData.email_user
+            },
+            attributes: ['type_user'] 
+        });
+        
+        if (existingEmailAccounts.length > 0) {
+            const existingTypes = existingEmailAccounts.map(acc => acc.type_user);
+            const availableTypes = ['user', 'seller', 'rider', 'provider'].filter(type => !existingTypes.includes(type));
+            
+            console.log('-> register() - Email exists with types:', existingTypes);
+            console.log('-> register() - Available types for this email:', availableTypes);
+        }
 
         // Add default values if not provided
         if (userData.calification_user === undefined) {
             userData.calification_user = 5;
         }
         if (userData.contributor_user === undefined) {
-            //if category is false it means the user is not a sponsor of the app
-            //by default all users are not sponsors
             userData.contributor_user = false;
         }
-        //update: Added default age_user if not provided
         if (userData.age_user === undefined) {
             userData.age_user = 18;
         }
 
+        //update: Generate verification token and expiry
+        const verificationToken = generateVerificationToken();
+        const verificationTokenExpires = new Date();
+        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+
+        userData.verification_token = verificationToken;
+        userData.verification_token_expires = verificationTokenExpires;
+        userData.email_verified = false;
+
         const user = await user_model.create(userData);
+
+        //update: Send verification email
+        console.log('About to send verification email to:', userData.email_user);
+        const emailResult = await sendVerificationEmail(
+            userData.email_user,
+            userData.name_user,
+            verificationToken
+        );
+        console.log('Email send result:', emailResult);
+
+        if (!emailResult.success) {
+            console.error('Failed to send verification email:', emailResult.error);
+        }
 
         // Return user data without sensitive information
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
+            email_user: user.email_user,
             type_user: user.type_user,
             location_user: user.location_user,
             calification_user: user.calification_user,
             contributor_user: user.contributor_user,
-            //update: Added age_user to register response
-            age_user: user.age_user
+            age_user: user.age_user,
+            email_verified: user.email_verified,
+            is_manager: user.is_manager
         };
 
         return { 
-            message: "Registro exitoso", 
-            data: userResponse
+            message: "Registro exitoso. Por favor verifica tu correo electrónico.", 
+            data: userResponse,
+            verificationEmailSent: emailResult.success
         };
     } catch (err) {
         console.error("Error en el registro = ", err);
@@ -294,13 +402,109 @@ async function register(userData) {
     }
 }
 
+// Rest of functions remain the same...
+async function verifyEmail(email, token) {
+    try {
+        const users = await user_model.findAll({
+            where: {
+                email_user: email,
+                verification_token: token,
+                verification_token_expires: {
+                    [Op.gt]: new Date()
+                }
+            }
+        });
+
+        if (!users || users.length === 0) {
+            return {
+                error: "Token inválido o expirado"
+            };
+        }
+
+        for (const user of users) {
+            await user.update({
+                email_verified: true,
+                verification_token: null,
+                verification_token_expires: null
+            });
+            
+            await sendWelcomeEmail(user.email_user, user.name_user);
+        }
+
+        return {
+            message: "Email verificado exitosamente",
+            data: {
+                email_verified: true,
+                accounts_verified: users.length,
+                user_types: users.map(u => u.type_user)
+            }
+        };
+    } catch (err) {
+        console.error("Error verifying email:", err);
+        return {
+            error: "Error al verificar el email",
+            details: err.message
+        };
+    }
+}
+
+async function resendVerificationEmail(email) {
+    try {
+        const user = await user_model.findOne({
+            where: { email_user: email }
+        });
+
+        if (!user) {
+            return {
+                error: "Usuario no encontrado"
+            };
+        }
+
+        if (user.email_verified) {
+            return {
+                error: "El email ya está verificado"
+            };
+        }
+
+        const verificationToken = generateVerificationToken();
+        const verificationTokenExpires = new Date();
+        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+
+        await user.update({
+            verification_token: verificationToken,
+            verification_token_expires: verificationTokenExpires
+        });
+
+        const emailResult = await sendVerificationEmail(
+            user.email_user,
+            user.name_user,
+            verificationToken
+        );
+
+        if (!emailResult.success) {
+            return {
+                error: "Error al enviar el email de verificación"
+            };
+        }
+
+        return {
+            message: "Email de verificación reenviado exitosamente"
+        };
+    } catch (err) {
+        console.error("Error resending verification email:", err);
+        return {
+            error: "Error al reenviar el email de verificación",
+            details: err.message
+        };
+    }
+}
+
 async function update(id, userData) {
     try {
         if (!id) {
             return { error: "El ID de usuario es requerido" };
         }
 
-        // Check if userData is empty
         if (Object.keys(userData).length === 0) {
             return { 
                 error: "No hay campos para actualizar",
@@ -308,23 +512,58 @@ async function update(id, userData) {
             };
         }
 
-        // Find user
         const user = await user_model.findByPk(id);
         if (!user) {
             return { 
                 error: "El usuario no existe",
             };
         }
+        
+        //update: Check if email+type combination would be duplicated
+        if (userData.email_user && userData.email_user !== user.email_user) {
+            const existingEmailType = await user_model.findOne({ 
+                where: { 
+                    email_user: userData.email_user,
+                    type_user: user.type_user,
+                    id_user: { [Op.ne]: id }
+                } 
+            });
+            
+            if (existingEmailType) {
+                return { 
+                    error: `Ya existe otra cuenta de tipo ${user.type_user} con este email`,
+                };
+            }
 
-        // Validate the fields that are being updated
+            //update: If email is changed, require re-verification
+            userData.email_verified = false;
+            const verificationToken = generateVerificationToken();
+            const verificationTokenExpires = new Date();
+            verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+            
+            userData.verification_token = verificationToken;
+            userData.verification_token_expires = verificationTokenExpires;
+
+            await sendVerificationEmail(
+                userData.email_user,
+                user.name_user,
+                verificationToken
+            );
+        }
+
         const fieldsToUpdate = {};
+        if (userData.is_manager !== undefined) fieldsToUpdate.is_manager = userData.is_manager;
         if (userData.name_user) fieldsToUpdate.name_user = userData.name_user;
+        if (userData.email_user) fieldsToUpdate.email_user = userData.email_user;
         if (userData.pass_user) fieldsToUpdate.pass_user = userData.pass_user;
         if (userData.location_user) fieldsToUpdate.location_user = userData.location_user;
         if (userData.type_user) fieldsToUpdate.type_user = userData.type_user;
         if (userData.calification_user !== undefined) fieldsToUpdate.calification_user = userData.calification_user;
         if (userData.contributor_user !== undefined) fieldsToUpdate.contributor_user = userData.contributor_user;
         if (userData.age_user !== undefined) fieldsToUpdate.age_user = userData.age_user;
+        if (userData.email_verified !== undefined) fieldsToUpdate.email_verified = userData.email_verified;
+        if (userData.verification_token !== undefined) fieldsToUpdate.verification_token = userData.verification_token;
+        if (userData.verification_token_expires !== undefined) fieldsToUpdate.verification_token_expires = userData.verification_token_expires;
 
         const validation = validateUserData(fieldsToUpdate);
         if (!validation.isValid) {
@@ -334,15 +573,13 @@ async function update(id, userData) {
             };
         }
 
-        // Update user
         Object.assign(user, fieldsToUpdate);
         await user.save();
 
         console.log("Updated user:", user);
         return { 
-            message: "Usuario actualizado ." ,
+            message: userData.email_user ? "Usuario actualizado. Por favor verifica tu nuevo email." : "Usuario actualizado.",
             data: user
-            
         };
     } catch (error) {
         console.error("Error in update:", error);
@@ -371,7 +608,7 @@ async function removeById(id_user) {
         
         return { 
             data: id_user,
-            message: "El usuario se ha borrado ." 
+            message: "El usuario se ha borrado." 
         };
 
     } catch (err) {
@@ -395,12 +632,11 @@ async function updateProfileImage(userName, imagePath) {
             };
         }
         
-        // Store the path relative to the public directory
         await user.update({ image_user: imagePath });
 
         return {
             data: { image_user: imagePath },
-            message: "Imagen de perfil actualizada ."
+            message: "Imagen de perfil actualizada."
         };
     } catch (err) {
         console.error("Error updating profile image:", err);
@@ -420,7 +656,9 @@ export {
     login, 
     register,
     getByUserName,
-    updateProfileImage 
+    updateProfileImage,
+    verifyEmail,
+    resendVerificationEmail
 };
 
 export default { 
@@ -432,5 +670,7 @@ export default {
     login, 
     register,
     getByUserName,
-    updateProfileImage 
+    updateProfileImage,
+    verifyEmail,
+    resendVerificationEmail
 };

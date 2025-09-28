@@ -26,7 +26,6 @@ export const TopBarUtils = () => {
         setShowLandingPage,
         setShowImageModal,
         setShowShopsListBySeller,
-        //update: Added showShopWindow to destructuring
         showShopWindow,
         setShowShopWindow,
         showShopsListBySeller,
@@ -34,7 +33,9 @@ export const TopBarUtils = () => {
         showShopStore,
         setShowShopStore,
         selectedShopForStore,
-        setSelectedShopForStore
+        setSelectedShopForStore,
+        showInfoManagement,
+        setShowInfoManagement
     } = useUI();
 
     // Shop context values
@@ -63,7 +64,15 @@ export const TopBarUtils = () => {
     } = usePackage();
 
     const handleBack = async () => {
-        //update: Check ShopWindow navigation first (higher priority)
+        //update: Check InfoManagement navigation first
+        if (showInfoManagement) {
+            console.log('Navigating from InfoManagement back to LandingPage');
+            setShowInfoManagement(false);
+            setShowLandingPage(true);
+            return;
+        }
+        
+        //update: Check ShopWindow navigation (higher priority)
         if (showShopWindow && !showShopStore) {
             console.log('Navigating from ShopWindow back to LandingPage');
             setShowShopWindow(false);
@@ -113,7 +122,16 @@ export const TopBarUtils = () => {
             return;
         }
         
-        // If we're in ShopsListBySeller (no product management, no shop creation), go back to landing
+        //update: If we're in ShopsListBySeller as a seller, go back to ShopWindow
+        if (showShopsListBySeller && !showProductManagement && !showShopCreationForm && currentUser?.type_user === 'seller') {
+            console.log('Navigating from ShopsListBySeller back to ShopWindow');
+            setShowShopsListBySeller(false);
+            setShowShopWindow(true);
+            setSelectedShop(null);
+            return;
+        }
+        
+        //update: If we're in ShopsListBySeller (no product management, no shop creation), go back to landing
         if (showShopsListBySeller && !showProductManagement && !showShopCreationForm) {
             console.log('Navigating from ShopsListBySeller back to LandingPage');
             setShowShopsListBySeller(false);
@@ -158,6 +176,7 @@ export const TopBarUtils = () => {
         setShowShopWindow(false);
         setShowShopStore(false);
         setSelectedShopForStore(null);
+        setShowInfoManagement(false);
         
         // Also use Auth context's clearUserSession function
         authClearUserSession();

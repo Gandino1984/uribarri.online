@@ -6,7 +6,7 @@
    width: 100%;
    min-height: 100vh;
    gap: 1rem;
-   margin-top: 11rem; 
+   margin-top: 7rem; 
    overflow-x: hidden;
    overflow-y: auto;
 }
@@ -59,19 +59,17 @@
    align-items: center;
    justify-content: center;
    padding: 0.5rem 1rem;
-   background-color: rgba(255, 255, 255, 0.2);
-   color: white;
-   border: 1px solid rgba(255, 255, 255, 0.3);
+   background-color: white;
+   border: 2px solid transparent !important;
+   color: black;
    border-radius: 8px;
    cursor: pointer;
-   font-weight: 500;
+   font-weight: 600;
    transition: all 0.2s ease;
 }
 
 .backButton:hover {
-   background-color: rgba(255, 255, 255, 0.5);
-   border: 1px solid white;
-   box-shadow: 0 0 10px var(--saturated-blue-transparent);
+   background-color: lightgray !important;
 }
 
 .listTitle {
@@ -83,15 +81,12 @@
    margin: 0;
 }
 
-/* New Package List Card Styles */
 .header {
    display: flex;
    justify-content: space-between;
    align-items: center;
    padding: 1rem;
-   /* background: linear-gradient(135deg, var(--light-gradient-purple-start), var(--light-gradient-purple-end)); */
-   /* border-radius: 12px 12px 0 0; */
-   /* margin: 0 1rem; */
+   gap: 1rem;
 }
 
 .title {
@@ -101,7 +96,33 @@
    font-size: 1.25rem;
    font-weight: 600;
    color: black;
-   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+/*update: Styles for the offers board button */
+.offersButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #ff6b6b, #ff8787);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.offersButton:hover {
+  background: linear-gradient(135deg, #ff5252, #ff6b6b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.offersButton:active {
+  transform: translateY(0);
 }
 
 .packagesList {
@@ -121,7 +142,6 @@
 
 .packageCard:hover {
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-   /* transform: translateY(-2px); */
 }
 
 .packageHeader {
@@ -141,7 +161,6 @@
    min-width: 0;
 }
 
-/* update: Package image styles matching the app design */
 .packageImageContainer {
    position: relative;
    width: 80px;
@@ -162,7 +181,6 @@
 .packageImageContainer:hover {
    transform: scale(1.05);
    border-color: var(--app-purple);
-   /* box-shadow: 0 0 15px var(--saturated-blue-transparent); */
 }
 
 .packageImageContainer.noImage {
@@ -274,7 +292,6 @@
 
 .packagePricing {
    display: flex;
-   /* flex-direction: column; */
    align-items: flex-end;
    gap: 0.25rem;
    padding: 0 1rem;
@@ -296,9 +313,7 @@
    font-size: 0.9rem;
    color: gray;
    font-weight: 600;
-   /* background: rgba(5, 150, 105, 0.1); */
    padding: 0.125rem 0.5rem;
-   /* border-radius: 4px; */
 }
 
 .packageActions {
@@ -321,13 +336,9 @@
 
 .actionButton:hover {
    background: lightgray;
-   /* color: white; */
-   /* border-color: var(--saturated-blue); */
-   /* box-shadow: 0 0 10px var(--saturated-blue-transparent); */
 }
 
 .actionButton:disabled {
-   /* opacity: 0.5; */
    color: lightgray;
    cursor: not-allowed;
 }
@@ -347,11 +358,9 @@
 
 .expandButton:hover {
    color: lightgray;
-   /* background: rgba(59, 130, 246, 0.1); */
 }
 
 .packageDetails {
-   /* background: linear-gradient(135deg, rgba(249, 250, 251, 0.5), rgba(243, 244, 246, 0.5)); */
    padding: 1rem;
    border-top: 1px solid rgba(229, 231, 235, 0.5);
 }
@@ -380,20 +389,17 @@
    padding: 0.5rem;
    background: white;
    border-radius: 8px;
-   /* border-left: 3px solid var(--saturated-blue); */
    transition: all 0.2s ease;
 }
 
 .productItem:hover {
    background: var(--light-gray);
-   /* transform: translateX(2px); */
 }
 
 .productIndex {
    font-weight: 600;
    color: gray;
    font-size: .9rem;
-   /* color: var(--s-blue); */
    min-width: 1.5rem;
 }
 
@@ -422,12 +428,12 @@
 .creationDate {
    font-size: 0.75rem;
    color: #9ca3af;
-   font-weight: 500;
 }
 
 /* Empty states */
 .noShopContainer,
-.emptyContainer {
+.emptyContainer,
+.loadingContainer {
    display: flex;
    flex-direction: column;
    align-items: center;
@@ -440,15 +446,29 @@
 }
 
 .noShopContainer svg,
-.emptyContainer svg {
+.emptyContainer svg,
+.loadingContainer svg {
    color: rgba(255, 255, 255, 0.5);
 }
 
 .noShopContainer p,
-.emptyContainer p {
-   color: white;
-   font-weight: 500;
-   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+.emptyContainer p,
+.loadingContainer p {
+   color: gray;
+   font-weight: 600;
+}
+
+.loadingIcon {
+   animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+   from {
+      transform: rotate(0deg);
+   }
+   to {
+      transform: rotate(360deg);
+   }
 }
 
 .createButton {
@@ -1171,10 +1191,6 @@
     padding-top: 0.5rem;
   }
   
-  .searchInputWrapper {
-      /* padding: 0.5rem 0; */
-  }
-  
   .searchInput {
       font-size: 0.875rem;
   }
@@ -1234,10 +1250,23 @@
   .header {
     margin: 0 0.5rem;
     padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.75rem;
   }
   
   .title {
     font-size: 1.125rem;
+  }
+  
+  /*update: Mobile styles for offers button */
+  .offersButton {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+  
+  .offersButton span {
+    display: none; /* Hide text on mobile, show only icon */
   }
   
   .packagesList {

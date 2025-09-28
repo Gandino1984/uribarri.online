@@ -1,7 +1,7 @@
 :root {
 
   --app-purple:  #9747ff;
-  --app-purple-darker:  #813cdb;
+  --app-purple-darker:  #7431ca;
   --app-purple-transparent:  #af71ff15;  
   --app-green: #D1FF1F;
   --app-darkGreen: #0d2516;
@@ -102,8 +102,9 @@ html, body {
   width: 100%;
 }
 
-
-input[type="text"] {
+/*update: Combined text and email input styles for consistency*/
+input[type="text"],
+input[type="email"] {
   color: black;
   cursor: pointer;
   padding-left: 1rem;
@@ -111,17 +112,19 @@ input[type="text"] {
   border-radius: 8px;
   min-height: 2.5rem;
   width: 100%;
-  margin-bottom: .5rem;
+  /* margin-bottom: .5rem; */
   /* max-width: 20rem; */
   font-weight: 600;
   border: 2px solid lightgray;
 }
 
-input[type="text"]::placeholder {
+input[type="text"]::placeholder,
+input[type="email"]::placeholder {
   color: lightgray;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="email"]:focus {
   color: var(--app-purple); 
   border: 2px solid var(--app-purple);
   outline: none;
@@ -129,8 +132,33 @@ input[type="text"]:focus {
   background-color: var(--app-purple-transparent);
 }
 
-input[type="text"]:hover {
+input[type="text"]:hover,
+input[type="email"]:hover {
   border: 2px solid var(--app-purple);    
+}
+
+/*update: Email validation states - override default borders*/
+input[type="email"].inputValid {
+  border: 2px solid green !important;
+  color: black;
+}
+
+input[type="email"].inputInvalid {
+  border: 2px solid red !important;
+  color: black;
+}
+
+/*update: Maintain validation state on hover and focus*/
+input[type="email"].inputValid:hover,
+input[type="email"].inputValid:focus {
+  border: 2px solid green !important;
+  background-color: rgba(0, 255, 0, 0.05);
+}
+
+input[type="email"].inputInvalid:hover,
+input[type="email"].inputInvalid:focus {
+  border: 2px solid red !important;
+  background-color: rgba(255, 0, 0, 0.05);
 }
 
 input[type="time"] {

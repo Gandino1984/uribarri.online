@@ -694,12 +694,52 @@ async function create(orderData) {
                 }
 
                 const packageItem = packageValidation.package;
-                const totalPrice = packageItem.price_package * packageData.quantity;
+                
+                //update: Calculate package price from its products
+                let packagePrice = 0;
+                
+                // Get all product IDs from the package
+                const productIds = [
+                    packageItem.id_product1,
+                    packageItem.id_product2,
+                    packageItem.id_product3,
+                    packageItem.id_product4,
+                    packageItem.id_product5
+                ].filter(id => id !== null);
+                
+                // Calculate total price from products
+                for (const productId of productIds) {
+                    const product = await product_model.findByPk(productId);
+                    if (product) {
+                        packagePrice += parseFloat(product.price_product) || 0;
+                    }
+                }
+                
+                // Apply discount if exists
+                if (packageItem.discount_package && packageItem.discount_package > 0) {
+                    const discountAmount = (packagePrice * packageItem.discount_package) / 100;
+                    packagePrice = packagePrice - discountAmount;
+                }
+                
+                // Ensure we have a valid price
+                if (packagePrice === 0 || isNaN(packagePrice)) {
+                    console.error("Could not calculate package price for package:", packageItem.id_package);
+                    // Rollback
+                    for (const id of orderProductIds) {
+                        await order_product_model.destroy({ where: { id_order_product: id } });
+                    }
+                    for (const id of orderPackageIds) {
+                        await order_package_model.destroy({ where: { id_order_package: id } });
+                    }
+                    return { error: "No se pudo calcular el precio del paquete" };
+                }
+                
+                const totalPrice = packagePrice * packageData.quantity;
 
                 const orderPackage = await order_package_model.create({
                     id_package: packageData.id_package,
                     quantity: packageData.quantity,
-                    unit_price: packageItem.price_package,
+                    unit_price: packagePrice,
                     total_price: totalPrice,
                     package_notes: packageData.package_notes
                 });
@@ -801,7 +841,6 @@ async function cancel(id_order, cancellation_reason) {
     }
 }
 
-//update: Fixed assignRider to set rider_accepted to null (pending)
 async function assignRider(id_order, id_rider) {
     try {
         const order = await order_model.findByPk(id_order);
@@ -837,7 +876,6 @@ async function assignRider(id_order, id_rider) {
     }
 }
 
-//update: Fixed riderResponse to handle shop owner's response
 async function riderResponse(id_order, id_rider, accepted) {
     try {
         const order = await order_model.findByPk(id_order);
@@ -868,42 +906,77 @@ async function riderResponse(id_order, id_rider, accepted) {
                 rider_accepted: false
             });
         }
-        const updatedOrder = await getById(id_order);
-       
-       return { 
-           data: updatedOrder.data,
-           message: accepted ? "Repartidor aceptado por el comercio" : "Solicitud de repartidor rechazada"
-       };
-   } catch (err) {
-       console.error("Error al procesar respuesta del repartidor =", err);
-       return { error: "Error al procesar la respuesta del repartidor" };
-   }
+        
+const updatedOrder = await getById(id_order);
+        
+        return { 
+            data: updatedOrder.data,
+            message: accepted ? "Repartidor aceptado por el comercio" : "Solicitud de repartidor rechazada"
+        };
+    } catch (err) {
+        console.error("Error al procesar respuesta del repartidor =", err);
+        return { error: "Error al procesar la respuesta del repartidor" };
+    }
+}
+
+//update: Fixed checkUserPurchase to properly check for delivered orders
+async function checkUserPurchase(id_user, id_shop) {
+    try {
+        console.log("-> order_controller.js - checkUserPurchase() - Checking purchase for user:", id_user, "shop:", id_shop);
+        
+        const order = await order_model.findOne({
+            where: {
+                id_user: id_user,
+                id_shop: id_shop,
+                order_status: 'delivered'
+            }
+        });
+        
+        console.log("-> order_controller.js - checkUserPurchase() - Found order:", order ? "Yes" : "No");
+        
+        return {
+            hasPurchased: order !== null,
+            orderDetails: order ? {
+                id_order: order.id_order,
+                order_date: order.created_at,
+                order_status: order.order_status
+            } : null
+        };
+    } catch (err) {
+        console.error("Error checking user purchase:", err);
+        return {
+            error: "Error al verificar compras",
+            hasPurchased: false
+        };
+    }
 }
 
 export { 
-   getAll, 
-   getById,
-   getByUserId,
-   getByShopId,
-   getByRiderId,
-   getAvailableForRiders,
-   create, 
-   updateStatus,
-   cancel,
-   assignRider,
-   riderResponse
+    getAll, 
+    getById,
+    getByUserId,
+    getByShopId,
+    getByRiderId,
+    getAvailableForRiders,
+    create, 
+    updateStatus,
+    cancel,
+    assignRider,
+    riderResponse,
+    checkUserPurchase
 }
 
 export default { 
-   getAll, 
-   getById,
-   getByUserId,
-   getByShopId,
-   getByRiderId,
-   getAvailableForRiders,
-   create, 
-   updateStatus,
-   cancel,
-   assignRider,
-   riderResponse
+    getAll, 
+    getById,
+    getByUserId,
+    getByShopId,
+    getByRiderId,
+    getAvailableForRiders,
+    create, 
+    updateStatus,
+    cancel,
+    assignRider,
+    riderResponse,
+    checkUserPurchase
 }

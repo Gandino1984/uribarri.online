@@ -1,9 +1,20 @@
 import React, { memo } from 'react';
-import { Minimize2, Edit, Map, AlertTriangle } from 'lucide-react';
+import { Minimize2, Edit, Map, Star, AlertTriangle, User } from 'lucide-react';
 import styles from '../../../../../../../public/css/ShopCard.module.css';
 
-
-const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleMap, handleReport, isSeller }) => {
+const ShopHeader = memo(({ 
+  minimized, 
+  toggleMinimized, 
+  handleUpdateShop, 
+  toggleMap, 
+  handleToggleValoration,
+  handleReport,
+  handleShowOwnerInfo,
+  isSeller, 
+  canValorate,
+  showValorationForm,
+  showOwnerInfo
+}) => {
   if (minimized) return null;
   
   return (
@@ -37,7 +48,27 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
         <Map size={16} />
       </button>
       
-      {/*update: Added report button*/}
+      {canValorate && (
+        <button 
+          className={`${styles.active} ${showValorationForm ? styles.activeToggled : ''}`}
+          onClick={handleToggleValoration}
+          title="Valorar comercio"
+          aria-label="Valorar comercio"
+        >
+          <Star size={16} />
+        </button>
+      )}
+      
+      {/*update: Owner info button */}
+      <button 
+        className={`${styles.active} ${showOwnerInfo ? styles.activeToggled : ''}`}
+        onClick={handleShowOwnerInfo}
+        title="Ver información del propietario"
+        aria-label="Ver información del propietario"
+      >
+        <User size={16} />
+      </button>
+      
       <button 
         className={styles.active}
         onClick={handleReport}
@@ -49,5 +80,7 @@ const ShopHeader = memo(({ minimized, toggleMinimized, handleUpdateShop, toggleM
     </div>
   );
 });
+
+ShopHeader.displayName = 'ShopHeader';
 
 export default ShopHeader;

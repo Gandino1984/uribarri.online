@@ -32,30 +32,27 @@
 }
 
 .backButton {
-  position: fixed;
-  top: 70px;
-  right: 20px;
-  z-index: 2147483647 !important; /* Maximum z-index */
-  background-color: white;
-  color: #374151;
-  border: 2px solid #e5e7eb;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: .8;
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  color: black;
+  z-index: 2147483647 !important; /* Maximum z-index */
+  background-color: white;
+  color: #374151;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .backButton:hover {
-  color: white !important;
-  background-color: var(--saturated-blue) !important;
-  border-color: var(--saturated-blue) !important;
-  transform: scale(1.1);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  background-color: lightgray !important;
 }
 
 /* Fullscreen map overlay for mobile */

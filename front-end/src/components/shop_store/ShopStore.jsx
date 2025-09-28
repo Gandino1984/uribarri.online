@@ -3,6 +3,8 @@ import { ArrowLeft, ShoppingCart, Package, Clock, MapPin, Phone, Star, ShoppingB
 import { useAuth } from '../../app_context/AuthContext';
 import { useUI } from '../../app_context/UIContext';
 import { useOrder } from '../../app_context/OrderContext';
+//update: Import the new filters component
+import ShopStoreFilters from './components/ShopStoreFilters.jsx';
 //update: Import utility functions
 import {
   fetchProducts,
@@ -55,6 +57,11 @@ const ShopStore = () => {
   
   const [products, setProducts] = useState([]);
   const [packages, setPackages] = useState([]);
+  //update: Add filtered states
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredPackages, setFilteredPackages] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingPackages, setLoadingPackages] = useState(true);
   const [showCart, setShowCart] = useState(false);
@@ -75,11 +82,21 @@ const ShopStore = () => {
     }
   }, [selectedShopForStore, currentUser]);
   
+  //update: Initialize filtered data when original data changes
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
+  
+  useEffect(() => {
+    setFilteredPackages(packages);
+  }, [packages]);
+  
   //update: Filter orders for current shop
   useEffect(() => {
     if (userOrders && selectedShopForStore) {
       const filteredOrders = filterShopOrders(userOrders, selectedShopForStore.id_shop);
       setShopOrders(filteredOrders);
+      setFilteredOrders(filteredOrders);
     }
   }, [userOrders, selectedShopForStore]);
   
@@ -195,15 +212,28 @@ const ShopStore = () => {
         )}
       </div>
       
+      {/*update: Add filters component*/}
+      <ShopStoreFilters
+        products={products}
+        packages={packages}
+        orders={shopOrders}
+        onProductsFilter={setFilteredProducts}
+        onPackagesFilter={setFilteredPackages}
+        onOrdersFilter={setFilteredOrders}
+        activeTab={activeTab}
+      />
+      
       <div className={styles.content}>
         {activeTab === 'products' && (
           <div className={styles.productsList}>
             {loadingProducts ? (
               <div className={styles.loading}>Cargando productos...</div>
-            ) : products.length === 0 ? (
-              <div className={styles.emptyState}>No hay productos disponibles</div>
+            ) : filteredProducts.length === 0 ? (
+              <div className={styles.emptyState}>
+                {products.length === 0 ? 'No hay productos disponibles' : 'No se encontraron productos con los filtros aplicados'}
+              </div>
             ) : (
-              products.map(product => (
+              filteredProducts.map(product => (
                 <div key={product.id_product} className={styles.productCard}>
                   {product.image_product && (
                     <img 
@@ -224,6 +254,9 @@ const ShopStore = () => {
                       </span>
                       {product.discount_product > 0 && (
                         <span className={styles.discount}>-{product.discount_product}%</span>
+                      )}
+                      {product.calification_product > 0 && (
+                        <span className={styles.rating}>{product.calification_product}★</span>
                       )}
                     </div>
                   </div>
@@ -271,16 +304,20 @@ const ShopStore = () => {
           <div className={styles.packagesList}>
             {loadingPackages ? (
               <div className={styles.loading}>Cargando paquetes...</div>
-            ) : packages.length === 0 ? (
-              <div className={styles.emptyState}>No hay paquetes disponibles</div>
+            ) : filteredPackages.length === 0 ? (
+              <div className={styles.emptyState}>
+                {packages.length === 0 ? 'No hay paquetes disponibles' : 'No se encontraron paquetes con los filtros aplicados'}
+              </div>
             ) : (
-              packages.map(pkg => (
+              filteredPackages.map(pkg => (
                 <div key={pkg.id_package} className={styles.packageCard}>
                   <div className={styles.packageHeader}>
-                    {/* <Package size={24} /> */}
                     <h3 className={styles.packageName}>
                       {pkg.name_package || 'Paquete sin nombre'}
                     </h3>
+                    {pkg.discount_package > 0 && (
+                      <span className={styles.packageDiscount}>-{pkg.discount_package}%</span>
+                    )}
                   </div>
                   <div className={styles.packageProducts}>
                     {/* Display products from the package */}
@@ -367,10 +404,12 @@ const ShopStore = () => {
           <div className={styles.ordersList}>
             {loadingOrders ? (
               <div className={styles.loading}>Cargando pedidos...</div>
-            ) : shopOrders.length === 0 ? (
-              <div className={styles.emptyState}>No has realizado pedidos en este comercio</div>
+            ) : filteredOrders.length === 0 ? (
+              <div className={styles.emptyState}>
+                {shopOrders.length === 0 ? 'No has realizado pedidos en este comercio' : 'No se encontraron pedidos con los filtros aplicados'}
+              </div>
             ) : (
-              shopOrders.map(order => {
+              filteredOrders.map(order => {
                 const statusDisplay = getOrderStatusDisplay(order.order_status);
                 const StatusIcon = {
                   Clock, CheckCircle, AlertCircle, ShoppingBag, Truck, XCircle

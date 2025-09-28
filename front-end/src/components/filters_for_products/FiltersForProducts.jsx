@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useProduct } from '../../app_context/ProductContext.jsx';
 import styles from '../../../../public/css/FiltersForProducts.module.css';
-import { Calendar, Package, Percent, RefreshCw, EyeOff } from 'lucide-react';
+import { Calendar, Package, Percent, RefreshCw, EyeOff, X } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsUtils';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
 import PropTypes from 'prop-types';
 
-// ⚠️ UPDATE: Changed to use default parameter instead of defaultProps
-const FiltersForProducts = ({ onResetFilters = null }) => {
+//update: Added onClose prop to handle closing the filters
+const FiltersForProducts = ({ onResetFilters = null, onClose = null }) => {
 
   const { 
     filterOptions, 
@@ -47,9 +47,26 @@ const FiltersForProducts = ({ onResetFilters = null }) => {
     }
   };
 
+  //update: Handle close button click
+  const handleClose = () => {
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
   return (
     <div className={styles.filtersContainer}>
       <div className={styles.filterControls}>
+        {/*update: Add close button at top right corner */}
+        <button 
+          onClick={handleClose}
+          className={styles.closeButton}
+          type="button"
+          title="Cerrar filtros"
+        >
+          <X size={20} />
+        </button>
+
         {/* Select Filters Row */}
         <div className={styles.selectFiltersRow}>
           {/* Season Filter */}
@@ -266,9 +283,9 @@ const FiltersForProducts = ({ onResetFilters = null }) => {
 
 // Keep PropTypes for documentation and type-checking
 FiltersForProducts.propTypes = {
-  onResetFilters: PropTypes.func
+  onResetFilters: PropTypes.func,
+  //update: Added onClose prop type
+  onClose: PropTypes.func
 };
-
-// ⚠️ UPDATE: Removed defaultProps - now using default parameters in the function signature
 
 export default FiltersForProducts;

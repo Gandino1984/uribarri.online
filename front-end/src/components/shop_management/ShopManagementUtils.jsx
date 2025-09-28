@@ -6,18 +6,14 @@ import { useProduct } from '../../app_context/ProductContext.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
 export const ShopManagementUtils = () => {
-  // UPDATE: Using split context hooks instead of AppContext
   const { currentUser } = useAuth();
   const { setInfo, setShowShopManagement } = useUI();
   const { setShops, setSelectedShop } = useShop();
   const { setShowProductManagement } = useProduct();
   
-  // UPDATE: Usar un ref para rastrear si ya se ha hecho la petición
   const fetchInProgress = useRef(false);
 
-  // UPDATE: Uso de useCallback para prevenir recreaciones innecesarias de la función
   const fetchUserShops = useCallback(async () => {
-    // UPDATE: Evitar múltiples solicitudes simultáneas
     if (fetchInProgress.current) {
       console.log('Shop fetch already in progress, skipping redundant call');
       return;
@@ -30,62 +26,43 @@ export const ShopManagementUtils = () => {
         return;      
       }
 
-      // UPDATE: Marcar que la petición está en progreso
       fetchInProgress.current = true;
       console.log('ShopManagementUtils - Fetching shops for user ID:', currentUser.id_user);
 
-      // Try both endpoints for better compatibility
+      //update: Only use the correct endpoint and properly handle empty results
+      const response = await axiosInstance.post('/shop/by-user-id', {
+        id_user: currentUser.id_user
+      });
       
-      // First try with /shop/by-user-id endpoint (matches your Postman response)
-      try {
-        const response = await axiosInstance.post('/shop/by-user-id', {
-          id_user: currentUser.id_user
-        });
-        
-        console.log('Shop API response (by-user-id):', response.data);
+      console.log('Shop API response (by-user-id):', response.data);
 
-        if (!response.data.error) {
-          const userShops = response.data.data || [];
-          
-          console.log('Fetched shops (by-user-id):', userShops);
-          
-          if (Array.isArray(userShops) && userShops.length > 0) {
-            setShops(userShops);
-            // UPDATE: Desmarcar el progreso y retornar
-            fetchInProgress.current = false;
-            return;
-          }
+      //update: Handle both error with empty data and successful empty data
+      if (response.data) {
+        // Check if there's an error message but also data (empty array case)
+        if (response.data.error && response.data.data !== undefined) {
+          // This is the case where no shops exist for the user
+          console.log('No shops found for user (expected for new users)');
+          setShops(response.data.data || []);
+        } else if (!response.data.error && response.data.data) {
+          // Successful response with shops
+          const userShops = response.data.data;
+          console.log('Fetched shops:', userShops);
+          setShops(Array.isArray(userShops) ? userShops : []);
+        } else {
+          // Any other error case
+          console.warn('Unexpected response format:', response.data);
+          setShops([]);
         }
-      } catch (err) {
-        console.warn('Error with by-user-id endpoint:', err);
-      }
-      
-      // If the first attempt fails, try with /shop/user endpoint
-      try {
-        const altResponse = await axiosInstance.post('/shop/user', {
-          id_user: currentUser.id_user
-        });
-        
-        console.log('Shop API response (shop/user):', altResponse.data);
-
-        if (!altResponse.data.error) {
-          const altShops = altResponse.data.data || [];
-          
-          console.log('Fetched shops (shop/user):', altShops);
-          
-          if (Array.isArray(altShops)) {
-            setShops(altShops);
-          }
-        }
-      } catch (err) {
-        console.warn('Error with shop/user endpoint:', err);
+      } else {
+        console.warn('No response data received');
+        setShops([]);
       }
       
     } catch (err) {
-      console.warn('Fetching shops error:', err);
+      console.error('Error fetching shops:', err);
+      //update: Always set empty array on error, never fall back to fetching all shops
       setShops([]);
     } finally {
-      // UPDATE: Asegurarse de que siempre se desmarca el progreso
       fetchInProgress.current = false;
     }
   }, [currentUser, setShops]);

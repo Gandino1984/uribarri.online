@@ -286,6 +286,38 @@ async function recalculateShopAverageCalification(req, res) {
     }
 }
 
+//update: Add canUserRateShop function
+async function canUserRateShop(req, res) {
+    try {
+        const { id_user, id_shop } = req.body;
+
+        if (!id_user || !id_shop) {
+            return res.status(400).json({
+                error: 'id_user e id_shop son obligatorios',
+                missingFields: {
+                    id_user: !id_user,
+                    id_shop: !id_shop
+                }
+            });
+        }
+
+        const result = await shopValorationController.canUserRateShop(id_user, id_shop);
+
+        res.json({ 
+            error: null,
+            canRate: result.canRate,
+            reason: result.reason || null,
+            existingValoration: result.existingValoration || null
+        });
+    } catch (err) {
+        console.error("-> shop_valoration_api_controller.js - canUserRateShop() - Error =", err);
+        res.status(500).json({
+            error: "Error al verificar permisos de valoración",
+            details: err.message
+        });
+    }
+}
+
 export {
     create,
     update,
@@ -295,7 +327,8 @@ export {
     getByUserAndShop,
     removeById,
     getShopAverageCalification,
-    recalculateShopAverageCalification
+    recalculateShopAverageCalification,
+    canUserRateShop
 };
 
 export default {
@@ -307,5 +340,6 @@ export default {
     getByUserAndShop,
     removeById,
     getShopAverageCalification,
-    recalculateShopAverageCalification
+    recalculateShopAverageCalification,
+    canUserRateShop
 };
