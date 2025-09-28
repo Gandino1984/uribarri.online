@@ -2,6 +2,7 @@
 import organization_model from "../../models/organization_model.js";
 import participant_model from "../../models/participant_model.js";
 import user_model from "../../models/user_model.js";
+import sequelize from "../../config/sequelize.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -201,14 +202,20 @@ async function getByUserId(id_user) {
     }
 }
 
+//update: Fixed create function with proper transaction handling
 async function create(orgData) {
+    // Start a transaction
+    const t = await sequelize.transaction();
+    
     try {
         //update: Check if organization already exists by name
         const existingOrg = await organization_model.findOne({ 
-            where: { name_org: orgData.name_org } 
+            where: { name_org: orgData.name_org },
+            transaction: t
         });
 
         if (existingOrg) {
+            await t.rollback();
             console.error("Ya existe una organización con ese nombre");
             return { 
                 error: "Ya existe una organización con ese nombre"
@@ -218,29 +225,43 @@ async function create(orgData) {
         //update: Validate manager exists
         const userValidation = await validateUser(orgData.id_user);
         if (!userValidation.isValid) {
+            await t.rollback();
             return { error: userValidation.error };
         }
 
-        //update: Set org_approved to false by default (will be set by model default)
+        //update: Set org_approved to false by default
         const organizationData = {
             ...orgData,
-            org_approved: false  // Explicitly set to false for new organizations
+            org_approved: false
         };
 
-        //update: Create the organization
-        const organization = await organization_model.create(organizationData);
+        //update: Create the organization with transaction
+        const organization = await organization_model.create(organizationData, { transaction: t });
+        
+        console.log(`-> organization_controller.js - Organization created with ID: ${organization.id_organization}`);
         
         //update: Automatically add the creator as a participant AND manager
         await participant_model.create({
             id_org: organization.id_organization,
             id_user: orgData.id_user,
-            org_managed: true  //update: Set creator as manager automatically
-        });
+            org_managed: true
+        }, { transaction: t });
         
         console.log(`-> organization_controller.js - User ${orgData.id_user} set as manager for organization ${organization.id_organization}`);
         
+        // Commit the transaction
+        await t.commit();
+        
+        // Fetch the created organization to verify it was saved
+        const savedOrg = await organization_model.findByPk(organization.id_organization);
+        
+        if (!savedOrg) {
+            console.error("Organization was not properly saved to database");
+            return { error: "Error al guardar la organización en la base de datos" };
+        }
+        
         const orgWithManager = {
-            ...organization.toJSON(),
+            ...savedOrg.toJSON(),
             manager: {
                 id_user: userValidation.user.id_user,
                 name_user: userValidation.user.name_user,
@@ -248,21 +269,28 @@ async function create(orgData) {
             }
         };
         
+        console.log(`-> organization_controller.js - Successfully created and verified organization: ${savedOrg.name_org}`);
+        
         return { 
             success: "¡Organización creada! Pendiente de aprobación por el administrador.",
             data: orgWithManager
         };
     } catch (err) {
+        // Rollback the transaction in case of error
+        await t.rollback();
         console.error("-> organization_controller.js - create() - Error al crear la organización =", err);
-        return { error: "Error al crear la organización." };
+        return { error: "Error al crear la organización: " + err.message };
     }
 }
 
 async function update(id, orgData) {
+    const t = await sequelize.transaction();
+    
     try {
-        const organization = await organization_model.findByPk(id);
+        const organization = await organization_model.findByPk(id, { transaction: t });
         
         if (!organization) {
+            await t.rollback();
             console.log("Organización no encontrada con id:", id);
             return { error: "Organización no encontrada" };
         }
@@ -271,6 +299,7 @@ async function update(id, orgData) {
         if (orgData.id_user !== undefined && orgData.id_user !== organization.id_user) {
             const userValidation = await validateUser(orgData.id_user);
             if (!userValidation.isValid) {
+                await t.rollback();
                 return { error: userValidation.error };
             }
             
@@ -279,11 +308,12 @@ async function update(id, orgData) {
                 where: {
                     id_org: id,
                     id_user: organization.id_user
-                }
+                },
+                transaction: t
             });
             
             if (oldManagerParticipant) {
-                await oldManagerParticipant.update({ org_managed: false });
+                await oldManagerParticipant.update({ org_managed: false }, { transaction: t });
             }
             
             //update: Add new manager as participant with manager status if not already
@@ -291,33 +321,39 @@ async function update(id, orgData) {
                 where: {
                     id_org: id,
                     id_user: orgData.id_user
-                }
+                },
+                transaction: t
             });
             
             if (!existingParticipation) {
                 await participant_model.create({
                     id_org: id,
                     id_user: orgData.id_user,
-                    org_managed: true  //update: Set new manager with manager status
-                });
+                    org_managed: true
+                }, { transaction: t });
             } else {
                 //update: Update existing participant to be manager
-                await existingParticipation.update({ org_managed: true });
+                await existingParticipation.update({ org_managed: true }, { transaction: t });
             }
         }
 
         //update: Check if name is being changed and if it's already taken
         if (orgData.name_org && orgData.name_org !== organization.name_org) {
             const existingOrg = await organization_model.findOne({ 
-                where: { name_org: orgData.name_org } 
+                where: { name_org: orgData.name_org },
+                transaction: t
             });
             
             if (existingOrg) {
+                await t.rollback();
                 return { error: "Ya existe otra organización con ese nombre" };
             }
         }
 
-        await organization.update(orgData);
+        await organization.update(orgData, { transaction: t });
+        
+        // Commit the transaction
+        await t.commit();
         
         //update: Fetch updated organization with manager information
         const updatedOrg = await organization_model.findByPk(id);
@@ -334,6 +370,7 @@ async function update(id, orgData) {
         
         return { data: orgWithManager };
     } catch (err) {
+        await t.rollback();
         console.error("Error al actualizar la organización =", err);
         return { error: "Error al actualizar la organización" };
     }
@@ -381,14 +418,18 @@ async function setApprovalStatus(id_organization, approved, adminUserId) {
 }
 
 async function removeById(id_organization) {
+    const t = await sequelize.transaction();
+    
     try {
         if (!id_organization) {
+            await t.rollback();
             return { error: "Organización no encontrada" };
         }
 
-        const organization = await organization_model.findByPk(id_organization);
+        const organization = await organization_model.findByPk(id_organization, { transaction: t });
         
         if (!organization) {
+            await t.rollback();
             return { 
                 error: "Organización no encontrada"
             };
@@ -396,10 +437,12 @@ async function removeById(id_organization) {
 
         //update: Check if organization has participants (besides the manager)
         const participantsCount = await participant_model.count({
-            where: { id_org: id_organization }
+            where: { id_org: id_organization },
+            transaction: t
         });
         
         if (participantsCount > 1) { // More than just the manager
+            await t.rollback();
             return { 
                 error: `No se puede eliminar la organización porque tiene ${participantsCount} participante(s)`
             };
@@ -407,7 +450,8 @@ async function removeById(id_organization) {
 
         //update: Delete all participant records for this organization
         await participant_model.destroy({
-            where: { id_org: id_organization }
+            where: { id_org: id_organization },
+            transaction: t
         });
 
         //update: Delete organization folder if exists
@@ -422,13 +466,17 @@ async function removeById(id_organization) {
             }
         }
 
-        await organization.destroy();
+        await organization.destroy({ transaction: t });
+        
+        // Commit the transaction
+        await t.commit();
 
         return { 
             data: id_organization,
             message: "La organización se ha eliminado." 
         };
     } catch (err) {
+        await t.rollback();
         console.error("-> organization_controller.js - removeById() - Error = ", err);
         return { error: "Error al eliminar la organización" };
     }

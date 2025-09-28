@@ -13,6 +13,7 @@ router.post("/by-user-id", organizationApiController.getByUserId);
 router.post("/create", organizationApiController.create);
 
 router.patch("/update", organizationApiController.update);
+
 //update: New route to approve/reject organizations
 router.patch("/approve", organizationApiController.approve);
 

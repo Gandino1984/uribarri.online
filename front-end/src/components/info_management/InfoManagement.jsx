@@ -9,8 +9,8 @@ import FiltersForOrganizations from './components/FiltersForOrganizations.jsx';
 import OrganizationsList from './components/OrganizationsList.jsx';
 import OrganizationCreationForm from './components/OrganizationCreationForm.jsx';
 import PublicationCreationForm from './components/PublicationCreationForm.jsx';
-import PublicationManagement from './components/Publicationmanagement.jsx';
-import { Plus, X, FileText, Users } from 'lucide-react';
+import PublicationManagement from './components/PublicationManagement.jsx';
+import { Plus, X, FileText, Users, Settings, ArrowLeft } from 'lucide-react';
 import styles from '../../../../public/css/InfoManagement.module.css';
 
 const InfoManagement = () => {
@@ -19,14 +19,14 @@ const InfoManagement = () => {
   const { fetchUserOrganizations, userOrganizations, fetchAllOrganizations } = useOrganization();
   const { setFilterByOrganization } = usePublication();
   
-  const [activeView, setActiveView] = useState('board'); // 'board', 'organizations', or 'publications'
+  const [activeView, setActiveView] = useState('board'); // 'board', 'organizations', or 'management'
   const [showCreationForm, setShowCreationForm] = useState(false);
   const [showPublicationForm, setShowPublicationForm] = useState(false);
-  //update: Add state for editing
   const [editingOrganization, setEditingOrganization] = useState(null);
   const [editingPublication, setEditingPublication] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedOrgForManagement, setSelectedOrgForManagement] = useState(null);
+  const [showManagementButton, setShowManagementButton] = useState(false);
   
   useEffect(() => {
     // Show top bar when info management is active
@@ -40,16 +40,30 @@ const InfoManagement = () => {
     }
   }, [currentUser, fetchUserOrganizations]);
   
+  //update: Check if user manages any organization to show management button
+  useEffect(() => {
+    if (userOrganizations && userOrganizations.length > 0) {
+      const hasManagement = userOrganizations.some(p => p.org_managed);
+      setShowManagementButton(hasManagement);
+      
+      // If user manages only one org, auto-select it
+      const managedOrgs = userOrganizations.filter(p => p.org_managed);
+      if (managedOrgs.length === 1 && managedOrgs[0].organization) {
+        setSelectedOrgForManagement(managedOrgs[0].organization);
+      }
+    }
+  }, [userOrganizations]);
+  
   // Check if user is logged in
   const isLoggedIn = !!currentUser;
   
   // Check if user has is_manager permission from their user profile
   const isManager = currentUser?.is_manager === true || currentUser?.is_manager === 1;
   
-  //update: Check if user belongs to any organization
+  // Check if user belongs to any organization
   const belongsToOrganization = userOrganizations && userOrganizations.length > 0;
   
-  //update: Check if user manages any organization
+  // Check if user manages any organization
   const managesAnyOrganization = userOrganizations?.some(participation => participation.org_managed);
   
   // Handle successful organization creation
@@ -67,7 +81,7 @@ const InfoManagement = () => {
     setActiveView('organizations');
   };
   
-  //update: Handle successful organization update
+  // Handle successful organization update
   const handleOrganizationUpdated = (updatedOrg) => {
     setShowCreationForm(false);
     setIsEditMode(false);
@@ -80,7 +94,7 @@ const InfoManagement = () => {
     }
   };
   
-  //update: Handle successful publication creation
+  // Handle successful publication creation
   const handlePublicationCreated = (newPub) => {
     setShowPublicationForm(false);
     setEditingPublication(null);
@@ -98,7 +112,7 @@ const InfoManagement = () => {
     setShowCreationForm(prev => !prev);
   };
   
-  //update: Toggle publication form
+  // Toggle publication form
   const togglePublicationForm = () => {
     setShowPublicationForm(prev => !prev);
     if (editingPublication) {
@@ -106,7 +120,7 @@ const InfoManagement = () => {
     }
   };
   
-  //update: Handle edit organization
+  // Handle edit organization
   const handleEditOrganization = (org) => {
     console.log('Edit organization:', org);
     setEditingOrganization(org);
@@ -114,24 +128,29 @@ const InfoManagement = () => {
     setShowCreationForm(true);
   };
   
-  //update: Handle view organization publications
+  // Handle view organization publications
   const handleViewPublications = (org) => {
     console.log('View publications for organization:', org);
     // Set the filter to show only this organization's publications
     setFilterByOrganization(org.id_organization);
     setSelectedOrgForManagement(org);
-    // Switch to the publications view
-    setActiveView('publications');
+    // Switch to the management view
+    setActiveView('management');
   };
   
-  //update: Handle cancel form
+  //update: Handle open management view
+  const handleOpenManagement = () => {
+    setActiveView('management');
+  };
+  
+  // Handle cancel form
   const handleCancelForm = () => {
     setShowCreationForm(false);
     setIsEditMode(false);
     setEditingOrganization(null);
   };
   
-  //update: Handle cancel publication form
+  // Handle cancel publication form
   const handleCancelPublicationForm = () => {
     setShowPublicationForm(false);
     setEditingPublication(null);
@@ -150,13 +169,15 @@ const InfoManagement = () => {
             ? 'Mantente al día con las últimas novedades de tu barrio'
             : activeView === 'organizations' 
             ? 'Busca y únete a las asociaciones de tu comunidad'
-            : 'Gestiona las publicaciones de tu organización'
+            : selectedOrgForManagement 
+              ? `Gestionando: ${selectedOrgForManagement.name_org}`
+              : 'Gestiona las publicaciones de tu organización'
           }
         </p>
       </div>
       
       {/* Tab navigation only for logged-in users */}
-      {isLoggedIn && (
+      {isLoggedIn && activeView !== 'management' && (
         <div className={styles.tabNavigation}>
           <button
             className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
@@ -178,13 +199,45 @@ const InfoManagement = () => {
           >
             Asociaciones
           </button>
-          {managesAnyOrganization && (
-            <button
-              className={`${styles.tabButton} ${activeView === 'publications' ? styles.activeTab : ''}`}
-              onClick={() => setActiveView('publications')}
-            >
-              Gestionar Publicaciones
-            </button>
+        </div>
+      )}
+      
+      {/* Back button for management view */}
+      {activeView === 'management' && (
+        <div className={styles.backButtonContainer}>
+          <button
+            className={styles.backButton}
+            onClick={() => {
+              setActiveView('board');
+              setSelectedOrgForManagement(null);
+            }}
+          >
+            <ArrowLeft size={18} />
+            <span>Volver al tablón</span>
+          </button>
+          {managesAnyOrganization && userOrganizations.filter(p => p.org_managed).length > 1 && (
+            <div className={styles.orgSelector}>
+              <label>Organización:</label>
+              <select 
+                value={selectedOrgForManagement?.id_organization || ''}
+                onChange={(e) => {
+                  const orgId = parseInt(e.target.value);
+                  const org = userOrganizations.find(p => p.organization?.id_organization === orgId)?.organization;
+                  setSelectedOrgForManagement(org);
+                }}
+                className={styles.orgSelect}
+              >
+                <option value="">-- Selecciona --</option>
+                {userOrganizations
+                  .filter(p => p.org_managed && p.organization)
+                  .map(p => (
+                    <option key={p.organization.id_organization} value={p.organization.id_organization}>
+                      {p.organization.name_org}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
           )}
         </div>
       )}
@@ -205,40 +258,54 @@ const InfoManagement = () => {
             ) : (
               <>
                 <Plus size={18} />
-                <span>Crear Organización</span>
+                <span>Crear Asociación</span>
               </>
             )}
           </button>
         </div>
       )}
       
-      {/* update: Show create publication button for users who belong to organizations */}
-      {isLoggedIn && belongsToOrganization && activeView === 'board' && (
-        <div className={styles.publicationActions}>
-          <button
-            className={`${styles.createButton} ${showPublicationForm ? styles.createButtonActive : ''}`}
-            onClick={togglePublicationForm}
-            title={showPublicationForm ? "Cerrar formulario" : "Crear nueva publicación"}
-          >
-            {showPublicationForm ? (
-              <>
-                <X size={18} />
-                <span>Cerrar formulario</span>
-              </>
-            ) : (
-              <>
-                <FileText size={18} />
-                <span>Crear Publicación</span>
-              </>
-            )}
-          </button>
+      {/* Show create publication button and management access for board view */}
+      {isLoggedIn && activeView === 'board' && (
+        <div className={styles.boardActions}>
+          {belongsToOrganization && (
+            <button
+              className={`${styles.createButton} ${showPublicationForm ? styles.createButtonActive : ''}`}
+              onClick={togglePublicationForm}
+              title={showPublicationForm ? "Cerrar formulario" : "Crear nueva publicación"}
+            >
+              {showPublicationForm ? (
+                <>
+                  <X size={18} />
+                  <span>Cerrar formulario</span>
+                </>
+              ) : (
+                <>
+                  <FileText size={18} />
+                  <span>Crear Publicación</span>
+                </>
+              )}
+            </button>
+          )}
+          
+          {/* Show management button for managers */}
+          {showManagementButton && (
+            <button
+              className={styles.managementButton}
+              onClick={handleOpenManagement}
+              title="Gestionar publicaciones de tu organización"
+            >
+              <Settings size={18} />
+              <span>Gestionar mis publicaciones</span>
+            </button>
+          )}
         </div>
       )}
       
       <div className={styles.content}>
         {activeView === 'board' ? (
           <>
-            {/* update: Show publication creation form if toggled */}
+            {/* Show publication creation form if toggled */}
             {showPublicationForm && (
               <PublicationCreationForm 
                 onSuccess={handlePublicationCreated}
@@ -273,42 +340,15 @@ const InfoManagement = () => {
               <p>Debes iniciar sesión para ver y unirte a las asociaciones.</p>
             </div>
           )
-        ) : activeView === 'publications' ? (
-          // update: Show publication management for managers
+        ) : activeView === 'management' ? (
+          // Show publication management
           <>
-            {managesAnyOrganization ? (
-              <>
-                <div className={styles.orgSelector}>
-                  <label>Selecciona una organización para gestionar:</label>
-                  <select 
-                    value={selectedOrgForManagement?.id_organization || ''}
-                    onChange={(e) => {
-                      const orgId = parseInt(e.target.value);
-                      const org = userOrganizations.find(p => p.organization?.id_organization === orgId)?.organization;
-                      setSelectedOrgForManagement(org);
-                    }}
-                    className={styles.orgSelect}
-                  >
-                    <option value="">-- Selecciona una organización --</option>
-                    {userOrganizations
-                      .filter(p => p.org_managed && p.organization)
-                      .map(p => (
-                        <option key={p.organization.id_organization} value={p.organization.id_organization}>
-                          {p.organization.name_org}
-                        </option>
-                      ))
-                    }
-                  </select>
-                </div>
-                {selectedOrgForManagement && (
-                  <PublicationManagement organizationId={selectedOrgForManagement.id_organization} />
-                )}
-              </>
+            {selectedOrgForManagement ? (
+              <PublicationManagement organizationId={selectedOrgForManagement.id_organization} />
             ) : (
-              <div className={styles.noAccessMessage}>
+              <div className={styles.noOrgSelected}>
                 <Users size={48} />
-                <p>No gestionas ninguna organización.</p>
-                <p>Solo los gestores pueden aprobar publicaciones.</p>
+                <p>Por favor, selecciona una organización para gestionar sus publicaciones</p>
               </div>
             )}
           </>
