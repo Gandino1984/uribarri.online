@@ -1,12 +1,16 @@
+// front-end/src/components/user_info_card/UserInfoCard.jsx
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Loader, Eye, User, CircleUserRound, X } from 'lucide-react';
+import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
+import { useShop } from '../../app_context/ShopContext.jsx';
+import { useOrganization } from '../../app_context/OrganizationContext.jsx';
 import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
+import axiosInstance from '../../utils/app/axiosConfig.js';
 
-//update: Modified to accept userData prop for viewing other users
+//update: Modified to accept userData prop for viewing other users and fetch additional info
 const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const { 
     currentUser 
@@ -36,6 +40,12 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   
+  //update: New state for shops and organizations
+  const [userShops, setUserShops] = useState([]);
+  const [userOrganizations, setUserOrganizations] = useState([]);
+  const [managedOrganization, setManagedOrganization] = useState(null);
+  const [contextDataLoading, setContextDataLoading] = useState(false);
+  
   const profileContainerRef = useRef(null);
   const popupRef = useRef(null);
 
@@ -62,6 +72,162 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
       duration: 200
     }
   });
+
+  //update: Fetch user's shops and organizations when component mounts
+  useEffect(() => {
+    if (displayUser?.id_user) {
+      fetchUserContextData();
+    }
+  }, [displayUser?.id_user]);
+
+  //update: Function to fetch shops and organizations for the user
+  const fetchUserContextData = async () => {
+    if (!displayUser?.id_user) return;
+    
+    setContextDataLoading(true);
+    
+    try {
+      // Fetch shops if user is a seller
+      if (displayUser.type_user === 'seller') {
+        try {
+          const shopsResponse = await axiosInstance.post('/shop/by-user-id', {
+            id_user: displayUser.id_user
+          });
+          
+          if (shopsResponse.data && !shopsResponse.data.error) {
+            setUserShops(shopsResponse.data.data || []);
+          }
+        } catch (err) {
+          console.error('Error fetching user shops:', err);
+        }
+      }
+      
+      // Fetch organizations for any user type
+      try {
+        // First try to get participations
+        const orgsResponse = await axiosInstance.post('/participant/by-user', {
+          id_user: displayUser.id_user
+        });
+        
+        if (orgsResponse.data && !orgsResponse.data.error) {
+          const participations = orgsResponse.data.data || [];
+          
+          //update: Debug to see structure
+          console.log('Raw participations response:', participations);
+          
+          // If participations don't include full organization data, fetch organizations separately
+          const organizationsWithDetails = [];
+          
+          for (const participation of participations) {
+            // Get the organization ID
+            const orgId = participation.id_org || participation.id_organization;
+            
+            // Fetch organization details to get complete info including who created it
+            if (orgId) {
+              try {
+                const orgDetailResponse = await axiosInstance.post('/organization/by-id', {
+                  id_organization: orgId
+                });
+                
+                if (orgDetailResponse.data && !orgDetailResponse.data.error) {
+                  const orgData = orgDetailResponse.data.data;
+                  
+                  // Check if this user is the manager based on multiple sources:
+                  // 1. The participation record says they're manager
+                  // 2. They're the creator of the organization (orgData.id_user)
+                  // 3. They're listed as the manager in the organization data
+                  const isOrgManager = 
+                    (participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1') ||
+                    (orgData.id_user === displayUser.id_user) ||
+                    (orgData.manager?.id_user === displayUser.id_user);
+                  
+                  console.log(`Organization ${orgData.name_org}:`, {
+                    participation_is_manager: participation.is_manager,
+                    org_creator_id: orgData.id_user,
+                    org_manager_id: orgData.manager?.id_user,
+                    current_user_id: displayUser.id_user,
+                    calculated_is_manager: isOrgManager
+                  });
+                  
+                  organizationsWithDetails.push({
+                    ...orgData,
+                    is_manager: isOrgManager,
+                    participant_id: participation.id_participant,
+                    joined_date: participation.created_at || participation.joined_date
+                  });
+                }
+              } catch (err) {
+                console.error(`Error fetching organization ${orgId} details:`, err);
+                // Fallback: use participation data if fetch fails
+                organizationsWithDetails.push({
+                  id_org: orgId,
+                  name_org: participation.name_org || participation.organization?.name_org || 'Organización',
+                  is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
+                  scope_org: participation.scope_org || participation.organization?.scope_org,
+                  joined_date: participation.created_at || participation.joined_date
+                });
+              }
+            }
+          }
+          
+          console.log('Organizations with details:', organizationsWithDetails);
+          setUserOrganizations(organizationsWithDetails);
+          
+          // Check if user manages any organization
+          const managed = organizationsWithDetails.find(org => org.is_manager);
+          if (managed) {
+            console.log('User manages organization:', managed);
+            setManagedOrganization(managed);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching user organizations:', err);
+      }
+      
+      // Also check if user created any organizations directly
+      try {
+        const directOrgResponse = await axiosInstance.post('/organization/by-user-id', {
+          id_user: displayUser.id_user
+        });
+        
+        if (directOrgResponse.data && !directOrgResponse.data.error) {
+          const createdOrgs = directOrgResponse.data.data || [];
+          console.log('Organizations created by user:', createdOrgs);
+          
+          // Merge with existing organizations, marking created ones as managed
+          createdOrgs.forEach(createdOrg => {
+            const existingIndex = userOrganizations.findIndex(
+              org => (org.id_org || org.id_organization) === createdOrg.id_organization
+            );
+            
+            if (existingIndex === -1) {
+              // Add this organization as managed
+              setUserOrganizations(prev => [...prev, {
+                ...createdOrg,
+                is_manager: true,
+                is_founder: true
+              }]);
+            } else {
+              // Update existing to show as manager
+              setUserOrganizations(prev => {
+                const updated = [...prev];
+                updated[existingIndex] = {
+                  ...updated[existingIndex],
+                  is_manager: true,
+                  is_founder: true
+                };
+                return updated;
+              });
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching created organizations:', err);
+      }
+    } finally {
+      setContextDataLoading(false);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -202,7 +368,7 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
     switch(type) {
       case 'seller': return 'Vendedor/a';
       case 'rider': return 'Repartidor/a';
-      case 'user': return 'Usuaria/o';
+      case 'user': return 'Usuario/a';
       case 'admin': return 'Administrador/a';
       default: return type;
     }
@@ -357,6 +523,113 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
               <p className={styles.userEmail}>
                 {displayUser.email_user}
               </p>
+            )}
+            
+            {/*update: Display shops for sellers */}
+            {displayUser.type_user === 'seller' && userShops.length > 0 && (
+              <div className={styles.contextSection}>
+                <div className={styles.contextHeader}>
+                  <Store size={14} className={styles.contextIcon} />
+                  <span className={styles.contextTitle}>
+                    {userShops.length === 1 ? 'Tienda' : 'Tiendas'}
+                  </span>
+                </div>
+                <div className={styles.contextList}>
+                  {userShops.map(shop => (
+                    <div key={shop.id_shop} className={styles.contextItem}>
+                      <span className={styles.contextItemName}>{shop.name_shop}</span>
+                      {shop.location_shop && (
+                        <span className={styles.contextItemDetail}>📍 {shop.location_shop}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/*update: Display all organizations with role information */}
+            {userOrganizations.length > 0 && (
+              <div className={styles.contextSection}>
+                <div className={styles.contextHeader}>
+                  <Users size={14} className={styles.contextIcon} />
+                  <span className={styles.contextTitle}>
+                    {userOrganizations.length === 1 ? 'Organización' : 'Organizaciones'}
+                  </span>
+                </div>
+                <div className={styles.contextList}>
+                  {userOrganizations.map(org => {
+                    const orgId = org.id_org || org.id_organization;
+                    const orgName = org.name_org || org.organization?.name_org || 'Organización';
+                    // Check multiple sources for manager status
+                    const isManager = org.is_manager === true || 
+                                     org.is_manager === 1 || 
+                                     org.is_manager === '1' ||
+                                     org.id_user === displayUser.id_user ||
+                                     org.manager?.id_user === displayUser.id_user;
+                    const isFounder = org.is_founder || 
+                                     org.id_user === displayUser.id_user || 
+                                     org.created_by === displayUser.id_user;
+                    
+                    console.log(`Displaying ${orgName}:`, {
+                      is_manager: org.is_manager,
+                      isManager: isManager,
+                      isFounder: isFounder,
+                      org_id_user: org.id_user,
+                      display_user_id: displayUser.id_user
+                    });
+                    
+                    return (
+                      <div key={orgId} className={styles.contextItem}>
+                        <div className={styles.contextItemHeader}>
+                          {isManager && (
+                            <Shield size={12} className={styles.roleIcon} />
+                          )}
+                          <span className={styles.contextItemName}>{orgName}</span>
+                        </div>
+                        
+                        {org.scope_org && (
+                          <span className={styles.contextItemDetail}>
+                            Ámbito: {org.scope_org}
+                          </span>
+                        )}
+                        
+                        <div className={styles.roleInfo}>
+                          {isFounder && isManager ? (
+                            <span className={styles.contextItemBadge + ' ' + styles.founderBadge}>
+                              Fundador/a y Administrador/a
+                            </span>
+                          ) : isManager ? (
+                            <span className={styles.contextItemBadge + ' ' + styles.managerBadge}>
+                              Administrador/a
+                            </span>
+                          ) : (
+                            <span className={styles.contextItemBadge + ' ' + styles.memberBadge}>
+                              Miembro
+                            </span>
+                          )}
+                          
+                          {org.joined_date && (
+                            <span className={styles.joinedDate}>
+                              Desde: {new Date(org.joined_date).toLocaleDateString('es-ES', {
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/*update: Loading indicator for context data */}
+            {contextDataLoading && (
+              <div className={styles.contextLoading}>
+                <Loader size={14} className={styles.loadingIcon} />
+                <span>Cargando información adicional...</span>
+              </div>
             )}
           </div>
         </div>
