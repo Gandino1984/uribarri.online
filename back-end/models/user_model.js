@@ -12,6 +12,11 @@ const user_model = sequelize.define("user", {
         type: DataTypes.STRING(100),
         allowNull: false
     },
+    email_user: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        //update: Removed unique constraint to allow same email for different user types
+    },
     pass_user: {
         type: DataTypes.STRING(255), 
         allowNull: false
@@ -38,15 +43,44 @@ const user_model = sequelize.define("user", {
         allowNull: false,
         defaultValue: false
     },
-    //update: Added age_user field with default value of 18
     age_user: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 18
+    },
+    email_verified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    verification_token: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    verification_token_expires: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    is_manager: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     timestamps: false,
-    freezeTableName: true
+    freezeTableName: true,
+    //update: Added composite unique constraint for email_user + type_user
+    indexes: [
+        {
+            unique: true,
+            fields: ['email_user', 'type_user'],
+            name: 'unique_email_type'
+        },
+        {
+            fields: ['is_manager'],
+            name: 'idx_is_manager'
+        }
+    ]
 });
 
 export default user_model;

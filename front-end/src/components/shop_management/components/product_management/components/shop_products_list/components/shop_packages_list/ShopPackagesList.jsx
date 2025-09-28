@@ -16,13 +16,11 @@ import {
   AlertCircle,
   Tag,
   ArrowLeft,
-  //update: Import Monitor icon for offers board button
   Monitor
 } from 'lucide-react';
 import { formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
-//update: Import the new OffersBoard component
 import OffersBoard from './components/offers_board/OffersBoard.jsx';
 
 import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
@@ -42,7 +40,9 @@ const ShopPackagesList = ({ onBack }) => {
     setShowErrorCard,
     setSuccess,
     setShowSuccessCard,
-    openImageModal
+    openImageModal,
+    showOffersBoard,
+    setShowOffersBoard
   } = useUI();
   
   // Local state
@@ -53,8 +53,6 @@ const ShopPackagesList = ({ onBack }) => {
   const [isTogglingStatus, setIsTogglingStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [updateKey, setUpdateKey] = useState(0);
-  //update: Add state for OffersBoard visibility
-  const [showOffersBoard, setShowOffersBoard] = useState(false);
   
   // Fetch packages function
   const fetchPackages = async () => {
@@ -98,7 +96,6 @@ const ShopPackagesList = ({ onBack }) => {
     }
   };
 
-  //update: Add function to handle showing the offers board
   const handleShowOffersBoard = () => {
     // Only show if there are active packages
     const activePackages = packages.filter(pkg => 
@@ -168,19 +165,29 @@ const ShopPackagesList = ({ onBack }) => {
     
     try {
       setIsDeleting(true);
+      console.log('Attempting to delete package with ID:', packageToDelete.id_package);
       
-      // Use the correct endpoint with the package ID in the URL
-      const response = await axiosInstance.delete(`/package/remove/${packageToDelete.id_package}`);
+      //update: Use the correct endpoint path
+      const response = await axiosInstance.delete(`/api/package/remove/${packageToDelete.id_package}`);
       
-      if (response.data && response.data.success) {
+      console.log('Delete response:', response.data);
+      
+      if (response.data && (response.data.success || response.data.data)) {
         setSuccess(prev => ({
           ...prev,
-          productSuccess: response.data.success
+          productSuccess: response.data.success || 'Paquete eliminado exitosamente'
         }));
         setShowSuccessCard(true);
         
-        // Refresh the package list
-        await fetchPackages();
+        //update: Remove the package from the local state immediately
+        setPackages(prevPackages => 
+          prevPackages.filter(pkg => pkg.id_package !== packageToDelete.id_package)
+        );
+        
+        // Also refresh the package list to ensure sync with backend
+        setTimeout(() => {
+          fetchPackages();
+        }, 500);
         
         // Close modal
         setShowDeleteModal(false);
@@ -191,14 +198,28 @@ const ShopPackagesList = ({ onBack }) => {
           productError: response.data.error || 'Error al eliminar el paquete'
         }));
         setShowErrorCard(true);
+        
+        // Refresh packages on error to stay in sync
+        await fetchPackages();
       }
     } catch (error) {
       console.error('Error deleting package:', error);
-      setError(prevError => ({
-        ...prevError,
-        productError: error.response?.data?.error || 'Error al eliminar el paquete'
-      }));
-      setShowErrorCard(true);
+      console.error('Error response:', error.response);
+      
+      // Check if it's a 404 or successful deletion despite error
+      if (error.response && error.response.status === 404) {
+        // Package might already be deleted, refresh the list
+        console.log('Package not found, refreshing list...');
+        await fetchPackages();
+        setShowDeleteModal(false);
+        setPackageToDelete(null);
+      } else {
+        setError(prevError => ({
+          ...prevError,
+          productError: error.response?.data?.error || 'Error al eliminar el paquete'
+        }));
+        setShowErrorCard(true);
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -390,7 +411,6 @@ const ShopPackagesList = ({ onBack }) => {
           <h3 className={styles.title}>
             Paquetes ({packages.length})
           </h3>
-          {/*update: Add button to show offers board */}
           {packages.length > 0 && (
             <button 
               onClick={handleShowOffersBoard}
@@ -497,9 +517,14 @@ const ShopPackagesList = ({ onBack }) => {
                     </button>
                     
                     <button
-                      onClick={() => handleDeletePackage(pkg)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Delete button clicked for package ID:', pkg.id_package);
+                        handleDeletePackage(pkg);
+                      }}
                       className={styles.actionButton}
                       title="Eliminar"
+                      type="button"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -559,7 +584,6 @@ const ShopPackagesList = ({ onBack }) => {
         />
       )}
       
-      {/*update: Add OffersBoard component when showOffersBoard is true */}
       {showOffersBoard && (
         <OffersBoard 
           packages={packages}

@@ -1,0 +1,569 @@
+// src/components/info_management/components/PublicationCreationForm.jsx
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../app_context/UIContext.jsx';
+import { useOrganization } from '../../../app_context/OrganizationContext.jsx';
+import axiosInstance from '../../../utils/app/axiosConfig.js';
+import { FileText, Calendar, Clock, Image, X, Save, AlertCircle, Edit, Building2 } from 'lucide-react';
+import styles from '../../../../../public/css/PublicationCreationForm.module.css';
+
+const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, publicationData = null }) => {
+  const { currentUser } = useAuth();
+  const { setError, setSuccess } = useUI();
+  const { userOrganizations } = useOrganization();
+  
+  //update: Initialize form with existing data if in edit mode
+  const [formData, setFormData] = useState({
+    title_pub: editMode && publicationData ? publicationData.title_pub : '',
+    content_pub: editMode && publicationData ? publicationData.content_pub : '',
+    id_org: editMode && publicationData ? publicationData.id_org : '',
+    date_pub: editMode && publicationData ? publicationData.date_pub : new Date().toISOString().split('T')[0],
+    time_pub: editMode && publicationData ? publicationData.time_pub : new Date().toTimeString().split(' ')[0].substring(0, 5)
+  });
+  
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(
+    editMode && publicationData?.image_pub 
+      ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publicationData.image_pub}`
+      : null
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [userManagedOrgs, setUserManagedOrgs] = useState([]);
+  
+  //update: Get organizations where user is a manager
+  useEffect(() => {
+    if (userOrganizations && userOrganizations.length > 0) {
+      const managedOrgs = userOrganizations
+        .filter(participation => participation.org_managed && participation.organization)
+        .map(participation => participation.organization);
+      
+      setUserManagedOrgs(managedOrgs);
+      
+      // Auto-select if user manages only one organization
+      if (managedOrgs.length === 1 && !editMode) {
+        setFormData(prev => ({
+          ...prev,
+          id_org: managedOrgs[0].id_organization
+        }));
+      }
+    }
+  }, [userOrganizations, editMode]);
+  
+  //update: Update form when publication data changes in edit mode
+  useEffect(() => {
+    if (editMode && publicationData) {
+      setFormData({
+        title_pub: publicationData.title_pub || '',
+        content_pub: publicationData.content_pub || '',
+        id_org: publicationData.id_org || '',
+        date_pub: publicationData.date_pub || new Date().toISOString().split('T')[0],
+        time_pub: publicationData.time_pub ? publicationData.time_pub.substring(0, 5) : new Date().toTimeString().split(' ')[0].substring(0, 5)
+      });
+      if (publicationData.image_pub) {
+        setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publicationData.image_pub}`);
+      }
+    }
+  }, [editMode, publicationData]);
+  
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error for this field when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+  
+  // Handle image selection
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        setError(prev => ({
+          ...prev,
+          imageError: 'Por favor selecciona una imagen válida (JPG, PNG o WEBP)'
+        }));
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setError(prev => ({
+          ...prev,
+          imageError: 'La imagen no debe superar los 5MB'
+        }));
+        return;
+      }
+      
+      setImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Remove selected image
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    //update: In edit mode, keep the original image unless a new one is selected
+    if (editMode && publicationData?.image_pub) {
+      setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publicationData.image_pub}`);
+    } else {
+      setImagePreview(null);
+    }
+    // Reset file input
+    const fileInput = document.getElementById('pub-image-input');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+  
+  // Validate form
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.title_pub.trim()) {
+      errors.title_pub = 'El título es obligatorio';
+    } else if (formData.title_pub.trim().length < 3) {
+      errors.title_pub = 'El título debe tener al menos 3 caracteres';
+    } else if (formData.title_pub.trim().length > 150) {
+      errors.title_pub = 'El título no puede superar los 150 caracteres';
+    }
+    
+    if (!formData.content_pub.trim()) {
+      errors.content_pub = 'El contenido es obligatorio';
+    } else if (formData.content_pub.trim().length < 10) {
+      errors.content_pub = 'El contenido debe tener al menos 10 caracteres';
+    }
+    
+    if (!formData.id_org) {
+      errors.id_org = 'Debes seleccionar una organización';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      if (editMode) {
+        //update: Update existing publication
+        const updateResponse = await axiosInstance.patch('/publication/update', {
+          id_publication: publicationData.id_publication,
+          title_pub: formData.title_pub.trim(),
+          content_pub: formData.content_pub.trim(),
+          date_pub: formData.date_pub,
+          time_pub: formData.time_pub,
+          id_org: formData.id_org
+        });
+        
+        if (updateResponse.data.error) {
+          setError(prev => ({
+            ...prev,
+            updateError: updateResponse.data.error
+          }));
+          setIsSubmitting(false);
+          return;
+        }
+        
+        const updatedPublication = updateResponse.data.data;
+        
+        //update: Upload new image if selected
+        if (imageFile && updatedPublication) {
+          const formDataImage = new FormData();
+          formDataImage.append('image', imageFile);
+          
+          try {
+            await axiosInstance.post('/publication/upload-image', formDataImage, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-publication-id': updatedPublication.id_publication
+              }
+            });
+          } catch (imgError) {
+            console.error('Error uploading image:', imgError);
+            setError(prev => ({
+              ...prev,
+              imageUploadError: 'La publicación fue actualizada pero hubo un error al subir la imagen'
+            }));
+          }
+        }
+        
+        setSuccess(prev => ({
+          ...prev,
+          updateSuccess: '¡Publicación actualizada exitosamente!'
+        }));
+        
+        // Call success callback with updated data
+        if (onSuccess) {
+          onSuccess(updatedPublication);
+        }
+        
+      } else {
+        //update: Create new publication
+        const createResponse = await axiosInstance.post('/publication/create', {
+          title_pub: formData.title_pub.trim(),
+          content_pub: formData.content_pub.trim(),
+          date_pub: formData.date_pub,
+          time_pub: formData.time_pub,
+          id_user_pub: currentUser.id_user,
+          id_org: formData.id_org
+        });
+        
+        if (createResponse.data.error) {
+          setError(prev => ({
+            ...prev,
+            createError: createResponse.data.error
+          }));
+          setIsSubmitting(false);
+          return;
+        }
+        
+        const newPublication = createResponse.data.data;
+        
+        // Upload image if selected
+        if (imageFile && newPublication) {
+          const formDataImage = new FormData();
+          formDataImage.append('image', imageFile);
+          
+          try {
+            await axiosInstance.post('/publication/upload-image', formDataImage, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                'x-publication-id': newPublication.id_publication
+              }
+            });
+          } catch (imgError) {
+            console.error('Error uploading image:', imgError);
+            setError(prev => ({
+              ...prev,
+              imageUploadError: 'La publicación fue creada pero hubo un error al subir la imagen'
+            }));
+          }
+        }
+        
+        setSuccess(prev => ({
+          ...prev,
+          createSuccess: '¡Publicación creada! Pendiente de aprobación del gestor de la organización.'
+        }));
+        
+        // Reset form
+        setFormData({
+          title_pub: '',
+          content_pub: '',
+          id_org: userManagedOrgs.length === 1 ? userManagedOrgs[0].id_organization : '',
+          date_pub: new Date().toISOString().split('T')[0],
+          time_pub: new Date().toTimeString().split(' ')[0].substring(0, 5)
+        });
+        handleRemoveImage();
+        
+        // Call success callback if provided
+        if (onSuccess) {
+          onSuccess(newPublication);
+        }
+      }
+      
+    } catch (err) {
+      console.error(`Error ${editMode ? 'updating' : 'creating'} publication:`, err);
+      setError(prev => ({
+        ...prev,
+        submitError: `Error al ${editMode ? 'actualizar' : 'crear'} la publicación. Por favor intenta de nuevo.`
+      }));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle cancel
+  const handleCancel = () => {
+    // Reset form
+    if (!editMode) {
+      setFormData({
+        title_pub: '',
+        content_pub: '',
+        id_org: userManagedOrgs.length === 1 ? userManagedOrgs[0].id_organization : '',
+        date_pub: new Date().toISOString().split('T')[0],
+        time_pub: new Date().toTimeString().split(' ')[0].substring(0, 5)
+      });
+      handleRemoveImage();
+    }
+    setFormErrors({});
+    
+    // Call cancel callback if provided
+    if (onCancel) {
+      onCancel();
+    }
+  };
+  
+  // Check if user can create publications
+  const canCreatePublications = userManagedOrgs.length > 0 || (userOrganizations && userOrganizations.length > 0);
+  
+  if (!canCreatePublications) {
+    return (
+      <div className={styles.noAccessContainer}>
+        <AlertCircle size={48} />
+        <h3>No puedes crear publicaciones</h3>
+        <p>Debes ser miembro de al menos una organización para crear publicaciones.</p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className={styles.container}>
+      <div className={styles.formHeader}>
+        <h2 className={styles.formTitle}>
+          {editMode ? <Edit size={24} /> : <FileText size={24} />}
+          <span>{editMode ? 'Editar Publicación' : 'Crear Nueva Publicación'}</span>
+        </h2>
+        <p className={styles.formSubtitle}>
+          {editMode 
+            ? 'Actualiza la información de tu publicación'
+            : 'Crea una publicación para tu organización. Será revisada por el gestor antes de ser publicada.'
+          }
+        </p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Organization Selection Field */}
+        <div className={styles.formGroup}>
+          <label htmlFor="id_org" className={styles.label}>
+            <Building2 size={16} />
+            <span>Organización *</span>
+          </label>
+          <select
+            id="id_org"
+            name="id_org"
+            value={formData.id_org}
+            onChange={handleInputChange}
+            className={`${styles.select} ${formErrors.id_org ? styles.inputError : ''}`}
+            disabled={isSubmitting || userManagedOrgs.length === 1}
+          >
+            <option value="">Selecciona una organización</option>
+            {userOrganizations && userOrganizations.map(participation => {
+              if (participation.organization) {
+                return (
+                  <option 
+                    key={participation.organization.id_organization} 
+                    value={participation.organization.id_organization}
+                  >
+                    {participation.organization.name_org}
+                    {participation.org_managed ? ' (Gestor)' : ''}
+                  </option>
+                );
+              }
+              return null;
+            })}
+          </select>
+          {formErrors.id_org && (
+            <span className={styles.errorMessage}>
+              <AlertCircle size={14} />
+              {formErrors.id_org}
+            </span>
+          )}
+        </div>
+        
+        {/* Rest of the form remains the same... */}
+        {/* Publication Title Field */}
+        <div className={styles.formGroup}>
+          <label htmlFor="title_pub" className={styles.label}>
+            <FileText size={16} />
+            <span>Título de la Publicación *</span>
+          </label>
+          <input
+            type="text"
+            id="title_pub"
+            name="title_pub"
+            value={formData.title_pub}
+            onChange={handleInputChange}
+            placeholder="Ej: Reunión vecinal del próximo mes"
+            className={`${styles.input} ${formErrors.title_pub ? styles.inputError : ''}`}
+            maxLength={150}
+            disabled={isSubmitting}
+          />
+          {formErrors.title_pub && (
+            <span className={styles.errorMessage}>
+              <AlertCircle size={14} />
+              {formErrors.title_pub}
+            </span>
+          )}
+          <span className={styles.charCount}>
+            {formData.title_pub.length}/150 caracteres
+          </span>
+        </div>
+        
+        {/* Publication Content Field */}
+        <div className={styles.formGroup}>
+          <label htmlFor="content_pub" className={styles.label}>
+            <FileText size={16} />
+            <span>Contenido *</span>
+          </label>
+          <textarea
+            id="content_pub"
+            name="content_pub"
+            value={formData.content_pub}
+            onChange={handleInputChange}
+            placeholder="Escribe el contenido de tu publicación..."
+            className={`${styles.textarea} ${formErrors.content_pub ? styles.inputError : ''}`}
+            rows={6}
+            disabled={isSubmitting}
+          />
+          {formErrors.content_pub && (
+            <span className={styles.errorMessage}>
+              <AlertCircle size={14} />
+              {formErrors.content_pub}
+            </span>
+          )}
+        </div>
+        
+        {/* Date and Time Fields */}
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="date_pub" className={styles.label}>
+              <Calendar size={16} />
+              <span>Fecha</span>
+            </label>
+            <input
+              type="date"
+              id="date_pub"
+              name="date_pub"
+              value={formData.date_pub}
+              onChange={handleInputChange}
+              className={styles.input}
+              disabled={isSubmitting}
+            />
+          </div>
+          
+          <div className={styles.formGroup}>
+            <label htmlFor="time_pub" className={styles.label}>
+              <Clock size={16} />
+              <span>Hora</span>
+            </label>
+            <input
+              type="time"
+              id="time_pub"
+              name="time_pub"
+              value={formData.time_pub}
+              onChange={handleInputChange}
+              className={styles.input}
+              disabled={isSubmitting}
+            />
+          </div>
+        </div>
+        
+        {/* Image Upload Field */}
+        <div className={styles.formGroup}>
+          <label className={styles.label}>
+            <Image size={16} />
+            <span>Imagen de la Publicación</span>
+          </label>
+          
+          {!imagePreview ? (
+            <div className={styles.imageUploadArea}>
+              <input
+                type="file"
+                id="pub-image-input"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleImageSelect}
+                className={styles.fileInput}
+                disabled={isSubmitting}
+              />
+              <label htmlFor="pub-image-input" className={styles.fileInputLabel}>
+                <Image size={32} />
+                <span>Haz clic para seleccionar una imagen</span>
+                <span className={styles.fileInputHint}>
+                  JPG, PNG o WEBP (máx. 5MB)
+                </span>
+              </label>
+            </div>
+          ) : (
+            <div className={styles.imagePreviewContainer}>
+              <img 
+                src={imagePreview} 
+                alt="Vista previa" 
+                className={styles.imagePreview}
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className={styles.removeImageButton}
+                disabled={isSubmitting}
+                title={imageFile ? "Eliminar imagen" : "Cambiar imagen"}
+              >
+                <X size={20} />
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Form Actions */}
+        <div className={styles.formActions}>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className={styles.cancelButton}
+            disabled={isSubmitting}
+          >
+            <X size={18} />
+            <span>Cancelar</span>
+          </button>
+          
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isSubmitting || !formData.title_pub.trim() || !formData.content_pub.trim() || !formData.id_org}
+          >
+            {isSubmitting ? (
+              <>
+                <span className={styles.loadingSpinner}></span>
+                <span>{editMode ? 'Actualizando...' : 'Creando...'}</span>
+              </>
+            ) : (
+              <>
+                <Save size={18} />
+                <span>{editMode ? 'Actualizar Publicación' : 'Crear Publicación'}</span>
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+      
+      {/* Information Note */}
+      {!editMode && (
+        <div className={styles.infoNote}>
+          <AlertCircle size={16} />
+          <p>
+            Tu publicación será revisada por el gestor de la organización antes de ser visible en el tablón informativo.
+            Recibirás una notificación cuando tu publicación sea aprobada.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PublicationCreationForm;

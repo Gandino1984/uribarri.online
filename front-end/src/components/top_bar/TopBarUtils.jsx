@@ -33,7 +33,9 @@ export const TopBarUtils = () => {
         showShopStore,
         setShowShopStore,
         selectedShopForStore,
-        setSelectedShopForStore
+        setSelectedShopForStore,
+        showInfoManagement,
+        setShowInfoManagement
     } = useUI();
 
     // Shop context values
@@ -62,7 +64,15 @@ export const TopBarUtils = () => {
     } = usePackage();
 
     const handleBack = async () => {
-        //update: Check ShopWindow navigation first (higher priority)
+        //update: Check InfoManagement navigation first
+        if (showInfoManagement) {
+            console.log('Navigating from InfoManagement back to LandingPage');
+            setShowInfoManagement(false);
+            setShowLandingPage(true);
+            return;
+        }
+        
+        //update: Check ShopWindow navigation (higher priority)
         if (showShopWindow && !showShopStore) {
             console.log('Navigating from ShopWindow back to LandingPage');
             setShowShopWindow(false);
@@ -166,6 +176,7 @@ export const TopBarUtils = () => {
         setShowShopWindow(false);
         setShowShopStore(false);
         setSelectedShopForStore(null);
+        setShowInfoManagement(false);
         
         // Also use Auth context's clearUserSession function
         authClearUserSession();

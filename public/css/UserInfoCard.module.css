@@ -1,3 +1,4 @@
+/* front-end/public/css/UserInfoCard.module.css */
 /* update: Mobile-first design starting from 360px screens */
 
 /* update: Backdrop for modal overlay */
@@ -28,6 +29,8 @@
   min-width: 280px; /* Minimum width for very small screens */
   user-select: none;
   margin: 0 auto; /* Center horizontally */
+  max-height: 85vh; /* Limit height on mobile */
+  overflow-y: auto; /* Add scroll for long content */
 }
 
 /* update: Close button - smaller on mobile */
@@ -52,6 +55,15 @@
 .closeButton:hover {
   background-color: lightgray;
   /* border-color: var(--app-purple); */
+}
+
+/* update: Card title for owner view */
+.cardTitle {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* update: Card content container */
@@ -277,6 +289,18 @@
   letter-spacing: 0.05rem;
 }
 
+.userLocation {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 0.2rem 0 0 0;
+}
+
+.userAge {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 0.1rem 0 0 0;
+}
+
 .userEmail {
   font-size: 0.75rem; /* Smaller on mobile */
   color: gray;
@@ -284,6 +308,154 @@
   font-weight: 500;
   word-break: break-all; /* Handle long emails */
   max-width: 100%;
+}
+
+/*update: New styles for context sections (shops and organizations) - mobile first */
+.contextSection {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e0e0e0;
+  width: 100%;
+}
+
+.contextHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.contextIcon {
+  color: var(--app-purple);
+  width: 14px;
+  height: 14px;
+}
+
+.contextTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.contextList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.contextItem {
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: background-color 0.2s;
+  border: 1px solid transparent;
+}
+
+.contextItem:hover {
+  background-color: #e9ecef;
+  border-color: var(--app-purple);
+}
+
+.contextItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.roleIcon {
+  color: var(--app-purple);
+  flex-shrink: 0;
+}
+
+.contextItemName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #333;
+  word-break: break-word;
+}
+
+.contextItemDetail {
+  font-size: 0.65rem;
+  color: #777;
+  margin-left: 0.2rem;
+}
+
+.roleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.contextItemBadge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.2rem 0.4rem;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03rem;
+}
+
+.founderBadge {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+}
+
+.managerBadge {
+  background: var(--app-purple);
+}
+
+.memberBadge {
+  background: #6c757d;
+}
+
+.joinedDate {
+  font-size: 0.6rem;
+  color: #999;
+  font-style: italic;
+}
+
+.contextLoading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  color: #666;
+  font-size: 0.7rem;
+}
+
+.loadingIcon {
+  animation: spin 1s linear infinite;
+  width: 14px;
+  height: 14px;
+}
+
+/* Scrollbar styling for the card */
+.userInfoCard::-webkit-scrollbar {
+  width: 6px;
+}
+
+.userInfoCard::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.userInfoCard::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.userInfoCard::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 /* Small phones (360px - 480px) */
@@ -309,6 +481,30 @@
   
   .userType {
     font-size: 0.8rem;
+  }
+  
+  .contextHeader {
+    font-size: 0.8rem;
+  }
+  
+  .contextTitle {
+    font-size: 0.8rem;
+  }
+  
+  .contextItemName {
+    font-size: 0.8rem;
+  }
+  
+  .contextItemDetail {
+    font-size: 0.7rem;
+  }
+  
+  .contextItemBadge {
+    font-size: 0.65rem;
+  }
+  
+  .joinedDate {
+    font-size: 0.65rem;
   }
 }
 
@@ -360,6 +556,42 @@
     padding: 0.45rem 0.7rem;
     font-size: 0.85rem;
   }
+  
+  .contextSection {
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+  
+  .contextHeader {
+    gap: 0.5rem;
+  }
+  
+  .contextIcon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .roleIcon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .contextTitle {
+    font-size: 0.85rem;
+  }
+  
+  .contextItemName {
+    font-size: 0.85rem;
+  }
+  
+  .contextItemBadge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .joinedDate {
+    font-size: 0.7rem;
+  }
 }
 
 /* Tablets (641px - 1024px) */
@@ -402,6 +634,27 @@
   .userInfo {
     gap: 0.4rem;
   }
+  
+  .contextSection {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+  }
+  
+  .contextTitle {
+    font-size: 0.9rem;
+  }
+  
+  .contextItemName {
+    font-size: 0.9rem;
+  }
+  
+  .contextItemDetail {
+    font-size: 0.75rem;
+  }
+  
+  .contextItemBadge {
+    font-size: 0.75rem;
+  }
 }
 
 /* Desktop (1025px+) */
@@ -431,5 +684,31 @@
   
   .userInfo {
     gap: 0.5rem;
+  }
+  
+  .contextIcon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .contextTitle {
+    font-size: 0.95rem;
+  }
+  
+  .contextItem {
+    padding: 0.75rem;
+  }
+  
+  .contextItemName {
+    font-size: 0.95rem;
+  }
+  
+  .contextItemDetail {
+    font-size: 0.8rem;
+  }
+  
+  .contextItemBadge {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
   }
 }

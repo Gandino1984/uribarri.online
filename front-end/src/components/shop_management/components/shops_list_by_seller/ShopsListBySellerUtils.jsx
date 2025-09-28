@@ -28,10 +28,8 @@ const ShopsListBySellerUtils = () => {
     selectedShop
   } = useShop();
 
-  // UPDATE: Only keep shopCount state, remove shopLimit
   const [shopCount, setShopCount] = useState(0);
   
-  // Estado para gestionar el comportamiento de doble clic
   const [shopClickState, setShopClickState] = useState({
     lastClickedShopId: null,
     showCard: false,
@@ -39,34 +37,31 @@ const ShopsListBySellerUtils = () => {
     lastClickTime: 0
   });
   
-  // Utilizar la función fetchUserShops de ShopManagementUtils para evitar duplicación
   const { fetchUserShops: fetchShopsFromManagement } = ShopManagementUtils ? ShopManagementUtils() : { fetchUserShops: null };
   
-  // Crear una versión memorizada de fetchUserShops que use la implementación compartida
+  //update: Improved fetchUserShops to ensure it always uses the correct implementation
   const fetchUserShops = useCallback(() => {
-    if (fetchShopsFromManagement) {
+    if (fetchShopsFromManagement && currentUser?.id_user) {
+      console.log('ShopsListBySellerUtils - Calling fetchUserShops for user:', currentUser.id_user);
       return fetchShopsFromManagement();
     }
     
-    // Fallback en caso de que no se pueda obtener la función compartida
-    console.warn('Using fallback shop fetch implementation');
+    //update: If no function available or no user, set empty shops array
+    console.warn('Cannot fetch shops: missing function or user');
+    setShops([]);
     return null;
-  }, [fetchShopsFromManagement]);
+  }, [fetchShopsFromManagement, currentUser?.id_user, setShops]);
 
-  // UPDATE: Removed the effect for shopLimit determination
-
-  // Establecer el conteo de tiendas cada vez que cambian las tiendas
   useEffect(() => {
     if (Array.isArray(shops)) {
       setShopCount(shops.length);
     }
   }, [shops]);
 
-  // Modificamos el handler para implementar la lógica de selección de tienda
   const handleSelectShop = useCallback((shop) => {
     const currentTime = new Date().getTime();
     const sameShop = shopClickState.lastClickedShopId === shop.id_shop;
-    const isDoubleClick = sameShop && (currentTime - shopClickState.lastClickTime < 500); // 500ms threshold for double click
+    const isDoubleClick = sameShop && (currentTime - shopClickState.lastClickTime < 500);
     
     console.log('ShopsListBySellerUtils - handleSelectShop called with shop:', shop.id_shop);
     console.log('Current click state:', {
@@ -76,11 +71,9 @@ const ShopsListBySellerUtils = () => {
       isDoubleClick
     });
     
-    // Set the selected shop in the context
     setSelectedShop(shop);
     
     if (isDoubleClick) {
-      // Double click or second click on the same shop - show products
       setShopClickState({
         lastClickedShopId: shop.id_shop,
         showCard: false,
@@ -88,13 +81,11 @@ const ShopsListBySellerUtils = () => {
         lastClickTime: currentTime
       });
       
-      // Show product management
       setShowProductManagement(true);
       setShowShopCreationForm(false);
       
       console.log('Double click or second selection - showing product management');
     } else if (sameShop && shopClickState.showCard) {
-      // Second click on the same shop - transition to product management
       setShopClickState({
         lastClickedShopId: shop.id_shop,
         showCard: false,
@@ -102,13 +93,11 @@ const ShopsListBySellerUtils = () => {
         lastClickTime: currentTime
       });
       
-      // Show product management
       setShowProductManagement(true);
       setShowShopCreationForm(false);
       
       console.log('Second click on same shop - transitioning to product management');
     } else {
-      // First click on a shop or click on a different shop - show shop card
       setShopClickState({
         lastClickedShopId: shop.id_shop,
         showCard: true,
@@ -116,7 +105,6 @@ const ShopsListBySellerUtils = () => {
         lastClickTime: currentTime
       });
       
-      // Hide product management
       setShowProductManagement(false);
       setShowShopCreationForm(false);
       
@@ -129,22 +117,17 @@ const ShopsListBySellerUtils = () => {
     setShowShopCreationForm
   ]);
 
-  // Método para comprobar si una tienda está seleccionada
   const isShopSelected = useCallback((shopId) => {
     return shopClickState.lastClickedShopId === shopId;
   }, [shopClickState.lastClickedShopId]);
 
-  // Método para saber si mostrar la tarjeta de tienda
   const shouldShowShopCard = useCallback(() => {
     return !!shopClickState.showCard && !!shopClickState.lastClickedShopId;
   }, [shopClickState]);
 
-  // UPDATE: Modified to accept shopLimit as a parameter instead of using internal state
   const handleAddShop = useCallback((shopLimit) => {
-    // Get the shopLimit from the parent component through parameters if available
     const effectiveShopLimit = shopLimit || (currentUser?.contributor_user ? 3 : 1);
     
-    // Verificar si el usuario ha alcanzado el límite
     if (shopCount >= effectiveShopLimit) {
       setError(prevError => ({ 
         ...prevError, 
@@ -153,7 +136,6 @@ const ShopsListBySellerUtils = () => {
       return;
     }
     
-    // Resetear el estado de selección de tienda
     setShopClickState({
       lastClickedShopId: null,
       showCard: false,
@@ -161,7 +143,6 @@ const ShopsListBySellerUtils = () => {
       lastClickTime: 0
     });
     
-    // Limpiar la tienda seleccionada antes de mostrar el formulario
     setSelectedShop(null);
     setShowShopCreationForm(true);
     setShowProductManagement(false);
@@ -174,11 +155,9 @@ const ShopsListBySellerUtils = () => {
     setSelectedShop
   ]);
 
-  // Mejorada la función handleUpdateShop
   const handleUpdateShop = useCallback((shop) => {
     console.log('ShopsListBySellerUtils - handleUpdateShop called with shop:', shop);
     
-    // Resetear el estado de selección de tienda
     setShopClickState({
       lastClickedShopId: null,
       showCard: false,
@@ -186,17 +165,13 @@ const ShopsListBySellerUtils = () => {
       lastClickTime: 0
     });
     
-    // Primero configuramos la tienda seleccionada
     setSelectedShop(shop);
-    
-    // Luego mostramos el formulario y ocultamos la gestión de productos
     setShowShopCreationForm(true);
     setShowProductManagement(false);
     
     console.log('Navigation states updated for edit: showShopCreationForm=true, showProductManagement=false');
   }, [setSelectedShop, setShowShopCreationForm, setShowProductManagement]);
 
-  // Keep track of the shop to be deleted
   const [shopToDelete, setShopToDelete] = useState(null);
 
   const handleDeleteShop = useCallback((id_shop) => {
@@ -205,9 +180,7 @@ const ShopsListBySellerUtils = () => {
     setIsModalOpen(true);
   }, [setModalMessage, setIsModalOpen]);
 
-  // Watch for modal confirmation
   useEffect(() => {
-    // Solo ejecutar si isAccepted y shopToDelete son válidos
     if (!isAccepted || !shopToDelete) return;
     
     const deleteShop = async () => {
@@ -221,7 +194,6 @@ const ShopsListBySellerUtils = () => {
     
         setShops(existingShops => existingShops.filter(shop => shop.id_shop !== shopToDelete));
         
-        // Si la tienda eliminada era la tienda seleccionada, limpiar los estados
         if (selectedShop && selectedShop.id_shop === shopToDelete) {
           setSelectedShop(null);
           setShopClickState({
@@ -232,13 +204,11 @@ const ShopsListBySellerUtils = () => {
           });
         }
         
-        // Mostrar mensaje de éxito
         setSuccess(prevSuccess => ({ ...prevSuccess, shopSuccess: "Comercio eliminado." }));
         setShowSuccessCard(true);
       } catch (err) {
         console.error('Error deleting shop:', err);
       } finally {
-        // Limpiar estados después de la operación
         setShopToDelete(null);
         setIsAccepted(false);
       }

@@ -34,7 +34,10 @@ function TopBar() {
     setShowLandingPage,
     showProductManagement,
     showShopsListBySeller,
-    showShopStore
+    showShopStore,
+    showInfoManagement,
+    //update: Added setShowInfoManagement to handle navigation
+    setShowInfoManagement
   } = useUI();
   
   const {
@@ -101,6 +104,10 @@ function TopBar() {
   };
   
   const handleLoginClick = () => {
+    //update: Handle login from InfoManagement
+    if (showInfoManagement) {
+      setShowInfoManagement(false);
+    }
     setShowShopWindow(false);
     setShowLandingPage(false);
     setIsLoggingIn(true);
@@ -117,6 +124,8 @@ function TopBar() {
   };
   
   const shouldShowBackButton = () => {
+    //update: Add InfoManagement back button
+    if (showInfoManagement) return true;
     if (showShopStore) return true;
     if (showShopCreationForm) return true;
     if (selectedShop && showProductManagement) return true;
@@ -156,7 +165,7 @@ function TopBar() {
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
               <span className={styles.title}>
-                uribarri.online
+                mibarrio.online
               </span>
           </div>
 
@@ -183,7 +192,8 @@ function TopBar() {
                 </button>
               </>
             ) : (
-              showShopWindow && (
+              //update: Show login button in both ShopWindow and InfoManagement
+              (showShopWindow || showInfoManagement) && (
                 <button 
                   type="button" 
                   className={styles.loginButton} 
@@ -203,8 +213,8 @@ function TopBar() {
             )}
           </div>
 
-          {/* Show burger menu for both logged in users and non-logged in users in ShopWindow */}
-          {(currentUser || (!currentUser && showShopWindow)) && (
+          {/* update: Show burger menu for logged in users OR non-logged in users in ShopWindow/InfoManagement */}
+          {(currentUser || (!currentUser && (showShopWindow || showInfoManagement))) && (
             <div className={styles.mobileMenuContainer}>
               <button 
                 className={`${styles.burgerButton} ${mobileMenuOpen ? styles.active : ''}`}
@@ -260,7 +270,8 @@ function TopBar() {
                     </button>
                   </>
                 ) : (
-                  showShopWindow && (
+                  //update: Show login button in mobile menu for both ShopWindow and InfoManagement
+                  (showShopWindow || showInfoManagement) && (
                     <button 
                       className={styles.loginButton}
                       onClick={handleLoginClick}

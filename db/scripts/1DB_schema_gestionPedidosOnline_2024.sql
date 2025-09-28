@@ -12,6 +12,7 @@ DROP SCHEMA IF EXISTS `DB_gestionPedidosOnline_2024`;
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `DB_gestionPedidosOnline_2024` DEFAULT CHARACTER SET utf8;
 USE `DB_gestionPedidosOnline_2024`;
+-- UPDATE user SET email_verified = 1 WHERE name_user = 'german andino';
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`ip_registry`
@@ -30,16 +31,25 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `id_user` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name_user` VARCHAR(100) NOT NULL,
   `pass_user` VARCHAR(255) NOT NULL,
+  `email_user` VARCHAR(255) NOT NULL, 
   `location_user` VARCHAR(100) NOT NULL,
   `type_user` VARCHAR(45) NOT NULL,
   `image_user` VARCHAR(255) NULL,
   `calification_user` INT NOT NULL DEFAULT 5,
   `contributor_user` TINYINT(1) NOT NULL DEFAULT 0,
   `age_user` INT NOT NULL DEFAULT 18,
+  `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
+  `verification_token` VARCHAR(255) NULL,
+  `verification_token_expires` DATETIME NULL,
+  `is_manager` TINYINT(1) NOT NULL DEFAULT 0,  -- NEW FIELD
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE,
-  -- update: Add index for type_user to improve performance when filtering riders
-  INDEX `idx_type_user` (`type_user` ASC) VISIBLE
+  UNIQUE INDEX `unique_email_type` (`email_user` ASC, `type_user` ASC) VISIBLE,
+  INDEX `idx_type_user` (`type_user` ASC) VISIBLE,
+  INDEX `idx_verification_token` (`verification_token` ASC) VISIBLE,
+  INDEX `idx_email_verified` (`email_verified` ASC) VISIBLE,
+  INDEX `idx_email_user` (`email_user` ASC) VISIBLE,
+  INDEX `idx_is_manager` (`is_manager` ASC) VISIBLE  -- NEW INDEX
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -291,29 +301,123 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`organization`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`organization` (
+  `id_organization` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_user` INT UNSIGNED NOT NULL,
+  `name_org` VARCHAR(100) NOT NULL,
+  `scope_org` VARCHAR(255) NULL,
+  `image_org` VARCHAR(255) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_organization`),
+  UNIQUE INDEX `id_organization_UNIQUE` (`id_organization` ASC) VISIBLE,
+  UNIQUE INDEX `name_org_UNIQUE` (`name_org` ASC) VISIBLE,
+  INDEX `idx_manager` (`id_user` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`participant`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant` (
+  `id_participant` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_org` INT UNSIGNED NOT NULL,
+  `id_user` INT UNSIGNED NOT NULL,
+  `org_managed` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Indicates if the user is a manager of this organization',
+  PRIMARY KEY (`id_participant`),
+  UNIQUE INDEX `unique_org_user` (`id_org`, `id_user`),
+  INDEX `idx_org` (`id_org` ASC) VISIBLE,
+  INDEX `idx_user` (`id_user` ASC) VISIBLE,
+  INDEX `idx_is_manager` (`org_managed` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`participant_request`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant_request` (
+  `id_request` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_user` INT UNSIGNED NOT NULL,
+  `id_org` INT UNSIGNED NOT NULL,
+  `request_status` ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  `request_message` TEXT NULL,
+  `response_message` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_request`),
+  UNIQUE INDEX `unique_user_org_pending` (`id_user`, `id_org`, `request_status`),
+  INDEX `idx_org` (`id_org` ASC),
+  INDEX `idx_user` (`id_user` ASC),
+  INDEX `idx_status` (`request_status` ASC)
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`publication`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
+  `id_publication` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_org` INT UNSIGNED NOT NULL,
+  `title_pub` VARCHAR(150) NOT NULL,
+  `content_pub` TEXT NOT NULL,
+  `date_pub` DATE NOT NULL,
+  `time_pub` TIME NOT NULL,
+  `id_user_pub` INT UNSIGNED NOT NULL,
+  `image_pub` VARCHAR(255) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_publication`),
+  UNIQUE INDEX `id_publication_UNIQUE` (`id_publication` ASC) VISIBLE,
+  INDEX `idx_user_pub` (`id_user_pub` ASC) VISIBLE,
+  INDEX `idx_date_pub` (`date_pub` DESC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`social_event`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`social_event` (
+  `id_social_event` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title_soc_ev` VARCHAR(150) NOT NULL,
+  `creation_date_soc_ev` DATE NOT NULL,
+  `initial_date_soc_ev` DATE NOT NULL,
+  `final_date_soc_ev` DATE NOT NULL,
+  `start_time_soc_ev` TIME NOT NULL,
+  `end_time_soc_ev` TIME NOT NULL,
+  `image_soc_ev` VARCHAR(255) NULL,
+  `id_user_creator` INT UNSIGNED NOT NULL,
+  `location_soc_ev` VARCHAR(255) NULL,
+  `description_soc_ev` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_social_event`),
+  UNIQUE INDEX `id_social_event_UNIQUE` (`id_social_event` ASC) VISIBLE,
+  INDEX `idx_user_creator` (`id_user_creator` ASC) VISIBLE,
+  INDEX `idx_initial_date` (`initial_date_soc_ev` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`provider`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`provider` (
-  `id_provider` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name_provider` VARCHAR(100) NOT NULL,
-  `location_provider` VARCHAR(100) NOT NULL,
-  `pass_provider` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id_provider`),
-  UNIQUE INDEX `id_provider_UNIQUE` (`id_provider` ASC) VISIBLE
-) ENGINE = InnoDB;
+-- CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`provider` (
+--   `id_provider` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+--   `name_provider` VARCHAR(100) NOT NULL,
+--   `location_provider` VARCHAR(100) NOT NULL,
+--   `pass_provider` VARCHAR(255) NOT NULL,
+--   PRIMARY KEY (`id_provider`),
+--   UNIQUE INDEX `id_provider_UNIQUE` (`id_provider` ASC) VISIBLE
+-- ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`buys`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
-  `id_buys` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_shop` INT UNSIGNED NOT NULL,
-  `id_provider` INT UNSIGNED NOT NULL,
-  `id_product` INT UNSIGNED NOT NULL,
-  `quantity` INT NOT NULL DEFAULT 0,
-  `price_provider` DECIMAL(10,2) NOT NULL DEFAULT 0.0,
-  PRIMARY KEY (`id_buys`)
-) ENGINE = InnoDB;
+-- CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
+--   `id_buys` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+--   `id_shop` INT UNSIGNED NOT NULL,
+--   `id_provider` INT UNSIGNED NOT NULL,
+--   `id_product` INT UNSIGNED NOT NULL,
+--   `quantity` INT NOT NULL DEFAULT 0,
+--   `price_provider` DECIMAL(10,2) NOT NULL DEFAULT 0.0,
+--   PRIMARY KEY (`id_buys`)
+-- ) ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

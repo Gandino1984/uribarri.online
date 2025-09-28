@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import styles from '../../../../../public/css/FiltersForShops.module.css';
+import styles from '../../../../../../public/css/FiltersForShops.module.css';
 import { 
   Store, 
   Truck, 
@@ -9,7 +9,7 @@ import {
   Search,
   X 
 } from 'lucide-react';
-import CustomToggleSwitch from '../../navigation_components/CustomToggleSwitch.jsx';
+import CustomToggleSwitch from '../../../navigation_components/CustomToggleSwitch.jsx';
 import PropTypes from 'prop-types';
 
 //update: Added onClose prop to handle closing the filters

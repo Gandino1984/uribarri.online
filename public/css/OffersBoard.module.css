@@ -166,25 +166,20 @@
 
 /*update: Package name with better contrast */
 .packageName {
-  font-size: 2.8rem;
-  font-weight: 800;
+  font-size: 3.5rem;
+  font-weight: 900;
   color: white;
   text-align: center;
   margin: 20px 0 35px 0;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   /* text-shadow: 2px 2px 4px rgba(255,255,255,0.8); */
   line-height: 1.2;
 }
 
-/*update: Products list with enhanced visibility */
 .productsList {
   margin-bottom: 30px;
   padding: 25px;
-  background: rgba(0,0,0,0.05);
-  border-radius: 15px;
-  border: 2px solid rgba(0,0,0,0.1);
-  backdrop-filter: blur(10px);
 }
 
 .includesTitle {
@@ -202,17 +197,12 @@
   display: flex;
   align-items: center;
   padding: 12px 10px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  font-size: 1.15rem;
-  background: rgba(255,255,255,0.5);
+  /* border-bottom: 1px solid rgba(0,0,0,0.08); */
+  font-size: 3rem;
+  /* background: rgba(255,255,255,0.5); */
   margin-bottom: 8px;
   border-radius: 8px;
   transition: all 0.2s ease;
-}
-
-.productItem:hover {
-  background: rgba(255,255,255,0.8);
-  transform: translateX(5px);
 }
 
 .productItem:last-child {
@@ -221,7 +211,7 @@
 }
 
 .productBullet {
-  color: #3498db;
+  color: var(--app-purple);
   font-size: 1.8rem;
   margin-right: 12px;
   font-weight: bold;
@@ -229,9 +219,10 @@
 
 .productName {
   flex: 1;
-  color: #2c3e50;
+  color: white;
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 2rem;
+  font-weight: 500;
 }
 
 .productPrice {
@@ -245,45 +236,52 @@
 
 /*update: Enhanced price section */
 .priceSection {
-  border-top: 3px solid rgba(0,0,0,0.1);
+  /* border-top: 3px solid rgba(0,0,0,0.1); */
   padding-top: 25px;
   margin-top: 25px;
-  background: rgba(255,255,255,0.6);
-  border-radius: 15px;
+  /* background: rgba(255,255,255,0.6); */
+  /* border-radius: 15px; */
   padding: 25px;
 }
 
 .originalPrice {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 12px;
   padding: 8px 0;
 }
 
 .priceLabel {
-  color: #34495e;
-  font-size: 1.1rem;
-  font-weight: 600;
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
 }
 
 .strikethrough {
   text-decoration: line-through;
-  color: #95a5a6;
-  font-size: 1.3rem;
+  color: white;
+  font-size: 2rem;
   font-weight: 500;
 }
 
 .savings {
-  text-align: center;
+  text-align: left;
   padding: 12px;
-  background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+  /* background: linear-gradient(135deg, rgba(255, 255, 255, 0.402), rgba(211, 211, 211, 0.282)); */
   border-radius: 12px;
   margin-bottom: 18px;
-  color: #d63031;
+  /* color: #d63031; */
   font-weight: 700;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 12px rgba(253,203,110,0.3);
+  /* font-size: 1.1rem; */
+  /* box-shadow: 0 4px 12px rgba(253,203,110,0.3); */
+}
+
+.savings span{
+  font-weight: 500;
+  font-size: 2rem;
+  color: white;
 }
 
 .finalPrice {
@@ -291,22 +289,22 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.15) 0%, 
-    rgba(118, 75, 162, 0.15) 100%);
+  background: rgba(0, 0, 0, 0.258);
   border-radius: 12px;
-  border: 2px solid rgba(102, 126, 234, 0.3);
+  border: 2px solid var(--app-purple-darker);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
 }
 
 .priceValue {
   font-size: 2.2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--app-purple);
+  text-shadow: 3px 3px 0px white;
+  /* background: linear-gradient(135deg, var(--app-purple)); */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: none;
+  /* text-shadow: none; */
 }
 
 .navButtonLeft,

@@ -6,7 +6,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 // import fs from 'fs';
 import { handleProfileImageUpload } from '../middleware/ProfileUploadMiddleware.js';
-
+//update: Import user controller for verification functions
+import userController from "../controllers/user/user_controller.js";
 
 dotenv.config();
 
@@ -122,6 +123,60 @@ router.post('/register', async (req, res) => {
 
 router.post("/details", userApiController.getByUserName);
 
+//update: Add email verification route
+router.post('/verify-email', async (req, res) => {
+    try {
+        const { email, token } = req.body;
+
+        if (!email || !token) {
+            return res.status(400).json({
+                error: 'Email y token son requeridos'
+            });
+        }
+
+        const result = await userController.verifyEmail(email, token);
+
+        if (result.error) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error verifying email:', error);
+        res.status(500).json({
+            error: 'Error al verificar el email',
+            details: error.message
+        });
+    }
+});
+
+//update: Add resend verification email route
+router.post('/resend-verification', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                error: 'Email es requerido'
+            });
+        }
+
+        const result = await userController.resendVerificationEmail(email);
+
+        if (result.error) {
+            return res.status(400).json(result);
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error resending verification email:', error);
+        res.status(500).json({
+            error: 'Error al reenviar el email de verificación',
+            details: error.message
+        });
+    }
+});
+
 router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) => {
     try {
         if (!req.file || !req.body.name_user) {
@@ -157,6 +212,33 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
         return res.status(500).json({ 
             error: 'Error en la carga de la imagen de perfil',
             details: error.message 
+        });
+    }
+});
+
+
+// Add this test route temporarily
+router.post('/test-email-direct', async (req, res) => {
+    try {
+        console.log('Direct email test starting...');
+        const { sendVerificationEmail, generateVerificationToken } = await import('../services/emailService.js');
+        
+        const testToken = generateVerificationToken();
+        const testEmail = req.body.email || 'andinogerman@gmail.com';
+        
+        console.log('Sending test email to:', testEmail);
+        const result = await sendVerificationEmail(testEmail, 'Test User', testToken);
+        console.log('Test email result:', result);
+        
+        res.json({
+            message: 'Email test completed',
+            result: result
+        });
+    } catch (error) {
+        console.error('Test email error:', error);
+        res.status(500).json({
+            error: 'Email test failed',
+            details: error.message
         });
     }
 });

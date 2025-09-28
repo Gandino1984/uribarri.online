@@ -1,3 +1,4 @@
+// back-end/controllers/user/user_api_controller.js
 import userController from "./user_controller.js";
 import bcrypt from 'bcrypt';
 import user_model from "../../models/user_model.js";
@@ -9,9 +10,9 @@ async function getAll(req, res) {
 }
 
 async function create(req, res) {
-    //update: Added age_user to destructured fields
-    const {name_user, pass_user, location_user, type_user, image_user, age_user } = req.body;
-    const {error, data} = await userController.create({name_user, pass_user, location_user, type_user, image_user, age_user});
+    //update: Added email_user and is_manager to destructured fields
+    const {name_user, pass_user, email_user, location_user, type_user, image_user, age_user, is_manager } = req.body;
+    const {error, data} = await userController.create({name_user, pass_user, email_user, location_user, type_user, image_user, age_user, is_manager });
     res.json({error, data});
 }
 
@@ -35,26 +36,38 @@ async function login(req, res) {
                 error: 'Los parámetros name_user, pass_user son obligatorios', 
                 requestBody: req.body 
             });
+            return;
         }
         
-        const {error, data} = await userController.login({ name_user, pass_user});
+        const {error, data, message} = await userController.login({ name_user, pass_user});
 
-        res.json({error, data});
+        //update: Log what we're about to send to frontend
+        console.log('=== user_api_controller LOGIN RESPONSE ===');
+        console.log('Response error:', error);
+        console.log('Response data:', data);
+        console.log('data.is_manager:', data?.is_manager);
+        console.log('typeof data.is_manager:', typeof data?.is_manager);
+        console.log('Full response being sent:', JSON.stringify({error, data}));
+        console.log('==========================================');
+
+        res.json({error, data, message});
     } catch (error) {
+        console.error('Login API error:', error);
         res.status(500).json({ error: 'Error al iniciar sesión' });
     }
- 
 }
 
 async function register(req, res) {
-    //update: Added age_user to destructured fields
-    let {name_user, pass_user, location_user, type_user, image_user, calification_user, age_user } = req.body;
+    //update: Added email_user and is_manager to destructured fields
+    let {name_user, pass_user, email_user, location_user, type_user, image_user, calification_user, age_user, is_manager  } = req.body;
     try{
-        if(!name_user || !pass_user || !location_user || !type_user){
+        //update: Added email_user to required fields check
+        if(!name_user || !pass_user || !email_user || !location_user || !type_user){
             res.status(400).json({ 
-                error: 'Los parámetros name_user, pass_user, location_user y type_user son obligatorios', 
+                error: 'Los parámetros name_user, pass_user, email_user, location_user y type_user son obligatorios', 
                 requestBody: req.body 
             });
+            return;
         }
 
         if (calification_user !== undefined && calification_user < 0) {
@@ -67,18 +80,20 @@ async function register(req, res) {
 
         pass_user = hashedPassword;
 
-        const {error, data} = await userController.register({
+        const {error, data, message, verificationEmailSent} = await userController.register({
             name_user, 
-            pass_user, 
+            pass_user,
+            //update: Added email_user and is_manager to register call
+            email_user,
             location_user, 
             type_user, 
             image_user, 
             calification_user,
-            //update: Added age_user to register call
-            age_user
+            age_user,
+            is_manager 
         });
 
-        res.json({error, data});
+        res.json({error, data, message, verificationEmailSent});
     }catch(err){
         console.error('-> user_api_controller.js - register() - Error = ', err);
         res.status(500).json({ error: 'Error en el registro de usuario' });
@@ -88,14 +103,17 @@ async function register(req, res) {
 async function update(req, res) {
     const {
         id_user, 
-        name_user, 
+        name_user,
+        //update: Added email_user and is_manager
+        email_user,
         pass_user, 
         location_user, 
         type_user, 
         image_user, 
         calification_user,
         contributor_user,
-        age_user 
+        age_user,
+        is_manager  
     } = req.body;
     
     if (calification_user !== undefined && calification_user < 0) {
@@ -104,18 +122,21 @@ async function update(req, res) {
         });
     }
     
-    const {error, data} = await userController.update(id_user, { 
-        name_user, 
+    const {error, data, message} = await userController.update(id_user, { 
+        name_user,
+        //update: Added email_user and is_manager to update call
+        email_user,
         pass_user, 
         location_user, 
         type_user, 
         image_user,
         calification_user,
         contributor_user,
-        age_user 
+        age_user,
+        is_manager  
     });
     
-    res.json({error, data});
+    res.json({error, data, message});
 }
 
 async function removeById(req, res) {
@@ -123,7 +144,7 @@ async function removeById(req, res) {
         const id_user = req.params.id_user;
 
         if (!id_user) {
-            res.status(400).json({ error: 'El ID del usuario es obligatorio' });
+            return res.status(400).json({ error: 'El ID del usuario es obligatorio' });
         }
 
         const { error, data } = await userController.removeById(id_user);

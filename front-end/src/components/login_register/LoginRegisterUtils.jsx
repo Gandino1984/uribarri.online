@@ -1,3 +1,4 @@
+//update: Removed organization_manager/participant handling
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
@@ -10,6 +11,7 @@ export const LoginRegisterUtils = () => {
   const {
     isLoggingIn, setIsLoggingIn,
     name_user, setNameUser,
+    email_user, setEmailUser,
     password, setPassword,
     passwordRepeat, setPasswordRepeat,
     showPasswordRepeat, setShowPasswordRepeat,
@@ -25,12 +27,12 @@ export const LoginRegisterUtils = () => {
     setError,
     setSuccess,
     setShowInfoCard,
-    // UPDATE: Using the standardized setter name
     setShowShopManagement,
-    //update: Add shop store related setters
     setShowShopStore,
     selectedShopForStore,
-    setShowShopWindow
+    setShowShopWindow,
+    setInfo,
+    setShowInfoManagement
   } = useUI();
 
   // Shop-related state and functions from ShopContext
@@ -43,7 +45,10 @@ export const LoginRegisterUtils = () => {
   } = useShop();
 
   const { validateUsername } = useUsernameValidation();
+  
   const { validateIPRegistration } = useIPValidation();
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const isButtonDisabled = () => {
     const { isValid } = validateUsername(name_user);
@@ -53,8 +58,11 @@ export const LoginRegisterUtils = () => {
     if (isLoggingIn) {
       return password.length !== 4;
     } else {
-      // For registration, require a 4-digit password, matching password repeat, and a selected user type
-      return password.length !== 4 || 
+      const isEmailValid = emailRegex.test(email_user);
+      
+      // For registration, require a valid email, 4-digit password, matching password repeat, and a selected user type
+      return !isEmailValid ||
+              password.length !== 4 || 
               passwordRepeat.length !== 4 || 
               password !== passwordRepeat || 
               type_user === '';
@@ -64,6 +72,11 @@ export const LoginRegisterUtils = () => {
   const handleUsernameChange = (e) => {
     const rawUsername = e.target.value;
     setNameUser(rawUsername);
+  };
+  
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setEmailUser(email);
   };
     
   const handleUserLocationChange = (e) => {
@@ -76,7 +89,6 @@ export const LoginRegisterUtils = () => {
       setDisplayedPassword('');
       setShowPasswordRepeat(true);
       setShowRepeatPasswordMessage(true);
-      // UPDATE: Show the InfoCard when we need to display the repeat password message
       setShowInfoCard(true);
       setKeyboardKey((prev) => prev + 1);
     } else {
@@ -90,7 +102,6 @@ export const LoginRegisterUtils = () => {
     if (!isLogin && showPasswordRepeat) {
       setPasswordRepeat(newPassword);
       setShowRepeatPasswordMessage(newPassword.length < 4);
-      // UPDATE: Manage InfoCard visibility
       setShowInfoCard(newPassword.length < 4);
     } else {
       setPassword(newPassword);
@@ -109,11 +120,9 @@ export const LoginRegisterUtils = () => {
     // Update message visibility based on password completion
     if (newPassword.length === 4) {
       setShowRepeatPasswordMessage(false);
-      // UPDATE: Hide the InfoCard when password is complete
       setShowInfoCard(false);
     } else {
       setShowRepeatPasswordMessage(true);
-      // UPDATE: Show the InfoCard when password is not complete
       setShowInfoCard(true);
     }
   };
@@ -141,6 +150,15 @@ export const LoginRegisterUtils = () => {
       }
   
       if (response.data.error) {
+        //update: Check if error is about email verification
+        if (response.data.needsVerification) {
+          setError(prevError => ({ 
+            ...prevError, 
+            userError: response.data.error 
+          }));
+          // Don't proceed with login
+          return;
+        }
         setError(prevError => ({ ...prevError, databaseResponseError: "Error en el login" }));
         throw new Error(response.data.error);
       }
@@ -149,6 +167,8 @@ export const LoginRegisterUtils = () => {
       console.log('User data:', userData);
   
       console.log('-> handleLoginResponse() - userData = ', userData);
+      //update: Log is_manager specifically
+      console.log('-> handleLoginResponse() - is_manager from response = ', userData.is_manager);
   
       // check the database response in depth
       if (!userData || !userData.id_user || !userData.name_user || !userData.type_user) {
@@ -161,15 +181,24 @@ export const LoginRegisterUtils = () => {
       setUserType(userData.type_user);
       console.log('Setting user type to:', userData.type_user);
   
-      // Normalize user data structure using the server-provided user type
+      //update: Include ALL fields from userData including is_manager
       const normalizedUserData = {
         id_user: userData.id_user, 
         name_user: userData.name_user,
+        email_user: userData.email_user,
         type_user: userData.type_user,
         location_user: userData.location_user,
         image_user: userData.image_user,
-        contributor_user: userData.contributor_user       
+        contributor_user: userData.contributor_user,
+        email_verified: userData.email_verified,
+        is_manager: userData.is_manager, // CRITICAL: Include is_manager field
+        age_user: userData.age_user,
+        calification_user: userData.calification_user
       };
+      
+      //update: Log what we're passing to login
+      console.log('-> handleLoginResponse() - normalizedUserData being passed to login:', normalizedUserData);
+      console.log('-> handleLoginResponse() - is_manager in normalizedUserData:', normalizedUserData.is_manager);
   
       // Call login to setup user data
       await login(normalizedUserData);
@@ -177,14 +206,14 @@ export const LoginRegisterUtils = () => {
       // Store the user type to avoid race conditions
       const userType = userData.type_user;
       
-      // Special handling for seller type
+      //update: Simplified routing without organization_manager type
       if (userType === 'seller') {
         console.log('User is seller, loading shops list view');
         // For sellers, always show the shops list first
         setShowShopManagement(true);
+        setShowInfoManagement(false);
         
         try {
-          // UPDATE: Using the correct endpoint for fetching shops by user ID
           const shopsResponse = await axiosInstance.post('/shop/by-user-id', {
             id_user: userData.id_user
           });
@@ -204,7 +233,6 @@ export const LoginRegisterUtils = () => {
           setShowShopCreationForm(false);
         }
       } else if (userType === 'user') {
-        //update: Handle regular user login
         console.log('User is regular user type');
         
         // Check if there was a selected shop before login
@@ -213,23 +241,34 @@ export const LoginRegisterUtils = () => {
           setShowShopStore(true);
           setShowShopWindow(false);
           setShowShopManagement(false);
+          setShowInfoManagement(false);
         } else {
           console.log('Showing shop window for user to browse shops');
           setShowShopWindow(true);
           setShowShopManagement(false);
+          setShowInfoManagement(false);
         }
         
         setShowShopCreationForm(false);
-      } else {
-        console.log('User is not a seller, showing UserManagement');
-        // For other user types (provider), show UserManagement
+      } else if (userType === 'rider') {
+        console.log('User is rider type, showing rider management');
         setShowShopManagement(true);
+        setShowShopWindow(false);
+        setShowInfoManagement(false);
+        setShowShopCreationForm(false);
+      } else {
+        console.log('User type not recognized, showing default view');
+        // For other user types, show UserManagement
+        setShowShopManagement(true);
+        setShowInfoManagement(false);
         setShowShopCreationForm(false); // Ensure creation form is not shown
       }
     } catch (err) {
       console.error('-> LoginRegisterUtils.jsx - handleLoginResponse() - Error = ', err);
     }  
   };
+
+// ... (keep the rest of the file the same)
 
   const handleLogin = async (cleanedUsername, password) => {
     try {
@@ -268,6 +307,14 @@ export const LoginRegisterUtils = () => {
 
       // Check if the login was successful
       if (loginResponse.data.error) {
+        //update: Check if error is about email verification
+        if (loginResponse.data.needsVerification) {
+          setError(prevError => ({ 
+            ...prevError, 
+            userError: loginResponse.data.error 
+          }));
+          return; // Don't proceed with login
+        }
         setError(prevError => ({ ...prevError, userError: "Error al iniciar sesión" }));
         return;
       } else {
@@ -303,63 +350,41 @@ export const LoginRegisterUtils = () => {
         throw new Error('Error en el registro: datos de usuario incompletos');
       }
   
-      // Set user type first to ensure it's available for component rendering decisions
-      setUserType(userData.type_user);
-      console.log('Registration success. Setting user type to:', userData.type_user);
+      //update: DO NOT automatically log in the user after registration
+      // Instead, show a message about email verification
+      console.log('Registration successful. User must verify email before logging in.');
       
-      const normalizedUserData = {
-        id_user: userData.id_user,
-        name_user: userData.name_user,
-        type_user: userData.type_user,
-        location_user: userData.location_user,
-        contributor_user: userData.contributor_user
-      };
-  
-      // Login the user - ensure we await this to complete before proceeding
-      await login(normalizedUserData);
+      // Clear the form but stay on the login screen
+      clearUserSession();
+      setIsLoggingIn(true); // Switch to login mode
       
-      // Store user type to avoid race conditions
-      const userType = userData.type_user;
+      // Show success message with verification instructions
+      setSuccess(prevSuccess => ({ 
+        ...prevSuccess, 
+        registrationSuccess: "Registro exitoso! Por favor revisa tu correo electrónico para verificar tu cuenta antes de iniciar sesión." 
+      }));
       
-      // Adjust routing logic based on the confirmed user type
-      if (userType === 'seller') {
-        console.log('User registered as seller, showing ShopsListBySeller view');
-        // For new sellers, show ShopsListBySeller instead of ShopCreationForm
-        setShowShopManagement(true);
-        setIsAddingShop(false); // Don't show add shop form initially
-        setShowShopCreationForm(false); // Explicitly hide the shop creation form
-      } else if (userType === 'user') {
-        console.log('User registered as regular user, setting up user view');
-        //update: Handle user registration redirect
-        // Check if there was a selected shop before registration
-        if (selectedShopForStore) {
-          console.log('Redirecting to selected shop store after registration:', selectedShopForStore.name_shop);
-          setShowShopStore(true);
-          setShowShopWindow(false);
-          setShowShopManagement(false);
-        } else {
-          console.log('Showing shop window for newly registered user');
-          setShowShopWindow(true);
-          setShowShopManagement(false);
-        }
-        setSelectedShopType(null);
-        setShowShopCreationForm(false); // Ensure form is not shown
-      } else {
-        console.log('User registered as other type, setting up general view');
-        // For other types, show general screen
-        setShowShopManagement(true);
-        setShowShopCreationForm(false); // Ensure form is not shown
-      }
+      // Also set an info message that persists longer
+      setInfo(prevInfo => ({
+        ...prevInfo,
+        verificationPending: `Hemos enviado un correo de verificación a ${userData.email_user}. Por favor verifica tu cuenta antes de iniciar sesión.`
+      }));
+      setShowInfoCard(true);
+      
+      // DO NOT call login() or set any user session data
+      // DO NOT redirect to ShopManagement or any other authenticated view
+      
     } catch (err) {
-      console.error('-> handleRegistrationResponse() - Error = ', err);
+      console.error('-> handleRegistrationResponse() = ', err);
     }
   };
 
-  const handleRegistration = async (cleanedUsername, password, type_user, userLocation) => {
+  const handleRegistration = async (cleanedUsername, password, type_user, userLocation, userEmail) => {
     try {    
       const registrationData = {
         name_user: cleanedUsername,
         pass_user: password,
+        email_user: userEmail,
         type_user: type_user,
         location_user: userLocation,
         calification_user: 5 
@@ -378,7 +403,6 @@ export const LoginRegisterUtils = () => {
       setShowPasswordRepeat(false);
       setUserType('');
   
-      toggleForm();
     } catch (err) {
       console.error('-> LoginRegisterUtils.jsx - handleRegistration() - Error = ', err);
       setError(prevError => ({ ...prevError, userError: "Error al registrar el usuario" }));
@@ -399,6 +423,12 @@ export const LoginRegisterUtils = () => {
           setError(prevError => ({ ...prevError, ipError: "Demasiados registros." }));
 
           console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Validación de IP fallida. No se permite el registro.');
+          return;
+        }
+        
+        if (!emailRegex.test(email_user)) {
+          setError(prevError => ({ ...prevError, emailError: "El formato del email no es válido" }));
+          console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Email inválido');
           return;
         }
       }
@@ -432,9 +462,9 @@ export const LoginRegisterUtils = () => {
         await handleLogin(cleanedUsername, password);
       
       } else {
-        console.log('-> Registrando usuario', { cleanedUsername, type_user });
+        console.log('-> Registrando usuario', { cleanedUsername, type_user, email_user });
 
-        await handleRegistration(cleanedUsername, password, type_user, location_user);
+        await handleRegistration(cleanedUsername, password, type_user, location_user, email_user);
         
       }
     } catch (err) {
@@ -459,5 +489,6 @@ export const LoginRegisterUtils = () => {
     handleUserTypeChange,
     handleUsernameChange,
     handleUserLocationChange,
+    handleEmailChange,
   };
 };

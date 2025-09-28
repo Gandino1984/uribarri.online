@@ -4,7 +4,7 @@ import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
-import FiltersForShops from './components/FiltersForShops.jsx';
+import FiltersForShops from './components/filters_for_shops/FiltersForShops.jsx';
 import RecommendedFilters from './components/recommendedFilters/RecommendedFilters.jsx';
 import useShopWindow from './ShopWindowUtils.jsx';
 import styles from '../../../../public/css/ShopWindow.module.css';
