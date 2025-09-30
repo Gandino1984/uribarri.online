@@ -32,13 +32,12 @@ const InfoBoard = () => {
       if (response.data && !response.data.error) {
         let pubs = response.data.data || [];
         
-        //update: Filter only approved and active publications for public view
-        // But show all to managers of the respective organizations
+        //update: Filter based on approval and active status - using publication_active field
         const isManager = userOrganizations?.some(p => p.org_managed);
         
         if (!isManager) {
           // Regular users only see approved and active publications
-          pubs = pubs.filter(pub => pub.pub_approved === true && pub.pub_active !== false);
+          pubs = pubs.filter(pub => pub.pub_approved === true && pub.publication_active !== false);
         } else {
           // Managers see all approved publications (including inactive ones from their orgs)
           pubs = pubs.filter(pub => {
@@ -51,7 +50,7 @@ const InfoBoard = () => {
               if (isManagedOrg) return true;
               
               // For non-managed orgs, only show active publications
-              return pub.pub_active !== false;
+              return pub.publication_active !== false;
             }
             return false;
           });
@@ -116,13 +115,13 @@ const InfoBoard = () => {
     fetchPublications();
   };
   
-  //update: Handle toggle active status
+  //update: Handle toggle active status - using publication_active field
   const handleToggleActive = (publicationId, newStatus) => {
     // Update the local state immediately for better UX
     setPublications(prevPubs => 
       prevPubs.map(pub => 
         pub.id_publication === publicationId 
-          ? { ...pub, pub_active: newStatus }
+          ? { ...pub, publication_active: newStatus }
           : pub
       )
     );
@@ -264,7 +263,7 @@ const InfoBoard = () => {
               {publications.map(publication => (
                 <article 
                   key={publication.id_publication} 
-                  className={`${styles.publicationCard} ${publication.pub_active === false ? styles.inactiveCard : ''}`}
+                  className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
                 >
                   {/* update: Add action buttons for managers */}
                   <div className={styles.cardHeaderWrapper}>
@@ -301,8 +300,8 @@ const InfoBoard = () => {
                     />
                   </div>
                   
-                  {/* update: Show inactive badge if publication is inactive */}
-                  {publication.pub_active === false && (
+                  {/* update: Show inactive badge if publication is inactive - using publication_active field */}
+                  {publication.publication_active === false && (
                     <div className={styles.inactiveBadge}>
                       <EyeOff size={14} />
                       <span>Publicación desactivada</span>

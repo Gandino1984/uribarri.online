@@ -160,8 +160,8 @@ const InfoManagement = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          {activeView === 'board' ? 'Tablón Informativo' : 
-           activeView === 'organizations' ? 'Asociaciones de la Comunidad' :
+          {activeView === 'board' ? 'Tablón Informativo de Uribarri' : 
+           activeView === 'organizations' ? 'Asociaciones de Uribarri' :
            'Gestión de Publicaciones'}
         </h1>
         <p className={styles.subtitle}>
@@ -288,8 +288,8 @@ const InfoManagement = () => {
             </button>
           )}
           
-          {/* Show management button for managers */}
-          {showManagementButton && (
+          
+          {/* {showManagementButton && (
             <button
               className={styles.managementButton}
               onClick={handleOpenManagement}
@@ -298,7 +298,7 @@ const InfoManagement = () => {
               <Settings size={18} />
               <span>Gestionar mis publicaciones</span>
             </button>
-          )}
+          )} */}
         </div>
       )}
       

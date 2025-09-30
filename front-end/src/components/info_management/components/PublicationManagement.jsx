@@ -4,7 +4,10 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { useOrganization } from '../../../app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
-import { CheckCircle, XCircle, Clock, FileText, User, Calendar, Image as ImageIcon, AlertCircle } from 'lucide-react';
+//update: Import ActionButtonsPublication and PublicationCreationForm
+import ActionButtonsPublication from './ActionButtonsPublication.jsx';
+import PublicationCreationForm from './PublicationCreationForm.jsx';
+import { CheckCircle, XCircle, Clock, FileText, User, Calendar, Image as ImageIcon, AlertCircle, EyeOff } from 'lucide-react';
 import styles from '../../../../../public/css/PublicationManagement.module.css';
 
 const PublicationManagement = ({ organizationId }) => {
@@ -14,9 +17,12 @@ const PublicationManagement = ({ organizationId }) => {
   
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState('all'); // all, pending, approved, rejected
+  const [filterStatus, setFilterStatus] = useState('all'); // all, pending, approved, rejected, active, inactive
   const [approvingPub, setApprovingPub] = useState(null);
   const [rejectingPub, setRejectingPub] = useState(null);
+  //update: Add state for edit form
+  const [editingPublication, setEditingPublication] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   
   // Check if user is manager of the organization
   const isManager = userOrganizations?.some(
@@ -124,6 +130,46 @@ const PublicationManagement = ({ organizationId }) => {
     }
   };
   
+  //update: Handle edit publication
+  const handleEditPublication = (publication) => {
+    setEditingPublication(publication);
+    setShowEditForm(true);
+  };
+  
+  //update: Handle successful edit
+  const handleEditSuccess = (updatedPublication) => {
+    setShowEditForm(false);
+    setEditingPublication(null);
+    // Refresh publications
+    fetchOrganizationPublications();
+  };
+  
+  //update: Handle cancel edit
+  const handleCancelEdit = () => {
+    setShowEditForm(false);
+    setEditingPublication(null);
+  };
+  
+  //update: Handle delete publication (called from ActionButtonsPublication)
+  const handleDeletePublication = (publicationId) => {
+    // Just refresh the list after deletion
+    fetchOrganizationPublications();
+  };
+  
+  //update: Handle toggle active status (called from ActionButtonsPublication)
+  const handleToggleActive = (publicationId, newStatus) => {
+    // Update the local state immediately for better UX
+    setPublications(prevPubs => 
+      prevPubs.map(pub => 
+        pub.id_publication === publicationId 
+          ? { ...pub, publication_active: newStatus }
+          : pub
+      )
+    );
+    // Then refresh to ensure sync with database
+    fetchOrganizationPublications();
+  };
+  
   // Format date for display
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -142,8 +188,10 @@ const PublicationManagement = ({ organizationId }) => {
         return publications.filter(pub => !pub.pub_approved);
       case 'approved':
         return publications.filter(pub => pub.pub_approved === true);
-      case 'rejected':
-        return publications.filter(pub => pub.pub_approved === false && pub.reviewed);
+      case 'active':
+        return publications.filter(pub => pub.pub_approved === true && pub.publication_active !== false);
+      case 'inactive':
+        return publications.filter(pub => pub.publication_active === false);
       default:
         return publications;
     }
@@ -169,12 +217,24 @@ const PublicationManagement = ({ organizationId }) => {
     );
   }
   
+  //update: Show edit form if editing
+  if (showEditForm && editingPublication) {
+    return (
+      <PublicationCreationForm 
+        onSuccess={handleEditSuccess}
+        onCancel={handleCancelEdit}
+        editMode={true}
+        publicationData={editingPublication}
+      />
+    );
+  }
+  
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Gestión de Publicaciones</h3>
+        {/* <h3 className={styles.title}>Gestión de Publicaciones</h3> */}
         <p className={styles.subtitle}>
-          Aprueba o rechaza las publicaciones de los miembros de tu organización
+          Administra las publicaciones de tu organización
         </p>
       </div>
       
@@ -198,32 +258,68 @@ const PublicationManagement = ({ organizationId }) => {
         >
           Aprobadas ({publications.filter(p => p.pub_approved === true).length})
         </button>
+        <button
+          className={`${styles.filterTab} ${filterStatus === 'active' ? styles.active : ''}`}
+          onClick={() => setFilterStatus('active')}
+        >
+          Activas ({publications.filter(p => p.pub_approved === true && p.publication_active !== false).length})
+        </button>
+        <button
+          className={`${styles.filterTab} ${filterStatus === 'inactive' ? styles.active : ''}`}
+          onClick={() => setFilterStatus('inactive')}
+        >
+          Inactivas ({publications.filter(p => p.publication_active === false).length})
+        </button>
       </div>
       
       {/* Publications list */}
       {filteredPublications.length === 0 ? (
         <div className={styles.emptyContainer}>
           <FileText size={48} />
-          <p>No hay publicaciones {filterStatus !== 'all' ? `${filterStatus === 'pending' ? 'pendientes' : 'aprobadas'}` : ''}</p>
+          <p>No hay publicaciones {filterStatus !== 'all' ? `${
+            filterStatus === 'pending' ? 'pendientes' : 
+            filterStatus === 'approved' ? 'aprobadas' :
+            filterStatus === 'active' ? 'activas' :
+            'inactivas'
+          }` : ''}</p>
         </div>
       ) : (
         <div className={styles.publicationsList}>
           {filteredPublications.map(pub => (
-            <div key={pub.id_publication} className={`${styles.publicationCard} ${!pub.pub_approved ? styles.pending : ''}`}>
+            <div key={pub.id_publication} className={`${styles.publicationCard} ${!pub.pub_approved ? styles.pending : ''} ${pub.publication_active === false ? styles.inactive : ''}`}>
               {/* Status badge */}
-              <div className={`${styles.statusBadge} ${pub.pub_approved ? styles.approved : styles.pendingBadge}`}>
-                {pub.pub_approved ? (
-                  <>
-                    <CheckCircle size={14} />
-                    <span>Aprobada</span>
-                  </>
-                ) : (
-                  <>
-                    <Clock size={14} />
-                    <span>Pendiente</span>
-                  </>
-                )}
+              <div className={styles.cardHeaderWrapper}>
+                <div className={`${styles.statusBadge} ${pub.pub_approved ? styles.approved : styles.pendingBadge}`}>
+                  {pub.pub_approved ? (
+                    <>
+                      <CheckCircle size={14} />
+                      <span>Aprobada</span>
+                    </>
+                  ) : (
+                    <>
+                      <Clock size={14} />
+                      <span>Pendiente</span>
+                    </>
+                  )}
+                </div>
+                
+                {/* update: Add ActionButtonsPublication for all publications */}
+                <ActionButtonsPublication
+                  publication={pub}
+                  onEdit={handleEditPublication}
+                  onDelete={handleDeletePublication}
+                  onToggleActive={handleToggleActive}
+                  onRefresh={fetchOrganizationPublications}
+                />
               </div>
+              
+              {/* update: Show inactive badge if publication is inactive */}
+              {pub.publication_active === false && (
+                <div className={styles.inactiveBadge}>
+                  <EyeOff size={14} />
+                  <span>Publicación desactivada</span>
+                </div>
+              )}
               
               <div className={styles.publicationHeader}>
                 <h4 className={styles.publicationTitle}>{pub.title_pub}</h4>

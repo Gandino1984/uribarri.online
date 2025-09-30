@@ -165,7 +165,7 @@ function TopBar() {
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
               <span className={styles.title}>
-                mibarrio.online
+                uribarri.online
               </span>
           </div>
 

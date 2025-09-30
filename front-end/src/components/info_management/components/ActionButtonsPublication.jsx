@@ -22,13 +22,40 @@ const ActionButtonsPublication = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentAction, setCurrentAction] = useState(null);
   
-  //update: Check if current user manages the organization of this publication
+  // Add event listener for clicks outside - MUST be before any conditional returns
+  React.useEffect(() => {
+    const handleClickOutside = (e) => {
+      // Only close menu if it's actually open and click is outside
+      if (showMenu && !e.target.closest(`.${styles.container}`)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      // Add a small delay to prevent immediate closing
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
+      
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, [showMenu]);
+  
+  //update: Fixed manager check to properly match organization IDs
   const isManagerOfPublication = () => {
     if (!currentUser || !publication.id_org) return false;
     
     // Check if user manages the organization that owns this publication
+    // The userOrganizations array contains participation objects where
+    // the organization data is nested inside an 'organization' property
     const managedOrg = userOrganizations?.find(
-      participation => participation.id_org === publication.id_org && participation.org_managed
+      participation => {
+        // Check both possible structures for organization ID
+        const orgId = participation.organization?.id_organization || participation.id_org;
+        return orgId === publication.id_org && participation.org_managed;
+      }
     );
     
     return !!managedOrg;
@@ -106,13 +133,13 @@ const ActionButtonsPublication = ({
     setCurrentAction('toggle');
     
     try {
-      // Toggle the pub_active status (default to true if undefined)
-      const currentStatus = publication.pub_active !== false;
+      // Toggle the publication_active status (default to true if undefined)
+      const currentStatus = publication.publication_active !== false;
       const newActiveStatus = !currentStatus;
       
       const response = await axiosInstance.patch('/publication/update', {
         id_publication: publication.id_publication,
-        pub_active: newActiveStatus
+        publication_active: newActiveStatus
       });
       
       if (!response.data.error) {
@@ -154,23 +181,6 @@ const ActionButtonsPublication = ({
     setShowMenu(prev => !prev);
   };
   
-  //update: Close menu when clicking outside
-  const handleClickOutside = () => {
-    if (showMenu) {
-      setShowMenu(false);
-    }
-  };
-  
-  // Add event listener for clicks outside
-  React.useEffect(() => {
-    if (showMenu) {
-      document.addEventListener('click', handleClickOutside);
-      return () => {
-        document.removeEventListener('click', handleClickOutside);
-      };
-    }
-  }, [showMenu]);
-  
   return (
     <div className={styles.container}>
       <button
@@ -200,9 +210,9 @@ const ActionButtonsPublication = ({
           <button
             className={`${styles.menuItem} ${styles.toggleItem}`}
             onClick={handleToggleActive}
-            title={publication.pub_active !== false ? "Desactivar publicación" : "Activar publicación"}
+            title={publication.publication_active !== false ? "Desactivar publicación" : "Activar publicación"}
           >
-            {publication.pub_active !== false ? (
+            {publication.publication_active !== false ? (
               <>
                 <EyeOff size={16} />
                 <span>Desactivar</span>

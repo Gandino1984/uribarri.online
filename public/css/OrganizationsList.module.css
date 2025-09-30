@@ -183,6 +183,15 @@
     flex-wrap: wrap;
 }
 
+.managerActions{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: .5rem;
+    width: 100%;
+}
+
 /* update: Admin actions for approval/reject */
 .adminActions {
     display: flex;
@@ -191,6 +200,7 @@
 }
 
 .actionButton {
+    background-color: var(--light-gray);
     flex: 1;
     padding: 0.5rem 1rem;
     border: none;
@@ -299,13 +309,13 @@
 /* Add these styles to existing OrganizationsList.module.css */
 
 .requestsButton {
-  background: #2196F3;
-  color: white;
+  background: var(--light-gray);
+  color: black;
   position: relative;
 }
 
 .requestsButton:hover {
-  background: #1976D2;
+  background: lightgray;
 }
 
 .requestsBadge {
