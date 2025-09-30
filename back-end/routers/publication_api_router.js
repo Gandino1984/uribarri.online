@@ -11,16 +11,19 @@ router.get("/", publicationApiController.getAll);
 router.post("/by-id", publicationApiController.getById);
 router.post("/by-user-id", publicationApiController.getByUserId);
 router.post("/by-date-range", publicationApiController.getByDateRange);
-//update: Add missing by-organization route
 router.post("/by-organization", publicationApiController.getByOrganization);
 router.post("/create", publicationApiController.create);
 
+//update: PATCH routes
 router.patch("/update", publicationApiController.update);
+router.patch("/approve", publicationApiController.approvePublication);
+//update: Add toggle-active route for manager control
+router.patch("/toggle-active", publicationApiController.toggleActive);
 
+//update: DELETE routes
 router.delete("/remove-by-id/:id_publication", publicationApiController.removeById);
 
+//update: POST route for image upload
 router.post("/upload-image", publicationApiController.uploadImage);
-
-router.patch("/approve", publicationApiController.approvePublication);
 
 export default router;

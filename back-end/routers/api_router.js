@@ -23,6 +23,8 @@ import participantApiRouter from "./participant_api_router.js";
 import publicationApiRouter from "./publication_api_router.js";
 import participantRequestApiRouter from "./participant_request_api_router.js";
 import socialEventApiRouter from "./social_event_api_router.js";
+//update: Add participant_publication router
+import participantPublicationApiRouter from "./participant_publication_api_router.js";
 
 
 const router = Router();
@@ -70,5 +72,8 @@ router.use("/publication", publicationApiRouter);
 router.use("/participant-request", participantRequestApiRouter);
 
 router.use("/social-event", socialEventApiRouter);
+
+//update: Add participant-publication route
+router.use("/participant-publication", participantPublicationApiRouter);
 
 export default router;

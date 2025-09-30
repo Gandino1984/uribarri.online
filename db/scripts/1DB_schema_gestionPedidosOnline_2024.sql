@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
   `verification_token` VARCHAR(255) NULL,
   `verification_token_expires` DATETIME NULL,
-  `is_manager` TINYINT(1) NOT NULL DEFAULT 0,  -- NEW FIELD
+  `is_manager` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE,
   UNIQUE INDEX `unique_email_type` (`email_user` ASC, `type_user` ASC) VISIBLE,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   INDEX `idx_verification_token` (`verification_token` ASC) VISIBLE,
   INDEX `idx_email_verified` (`email_verified` ASC) VISIBLE,
   INDEX `idx_email_user` (`email_user` ASC) VISIBLE,
-  INDEX `idx_is_manager` (`is_manager` ASC) VISIBLE  -- NEW INDEX
+  INDEX `idx_is_manager` (`is_manager` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -278,8 +278,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
   `id_user` INT UNSIGNED NOT NULL,
   `id_shop` INT UNSIGNED NOT NULL,
   `id_rider` INT UNSIGNED NULL,
-  -- update: rider_accepted field to track rider request status
-  -- NULL = no request, FALSE = request declined, TRUE = request accepted
   `rider_accepted` TINYINT(1) NULL DEFAULT NULL,
   `id_order_products` JSON DEFAULT NULL,
   `id_order_packages` JSON DEFAULT NULL,
@@ -291,7 +289,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`order` (
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_order`),
-  -- update: Add indexes for better query performance
   INDEX `idx_order_status` (`order_status` ASC),
   INDEX `idx_id_shop` (`id_shop` ASC),
   INDEX `idx_id_user` (`id_user` ASC),
@@ -363,12 +360,33 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
   `time_pub` TIME NOT NULL,
   `id_user_pub` INT UNSIGNED NOT NULL,
   `image_pub` VARCHAR(255) NULL,
+  `pub_approved` TINYINT(1) NOT NULL DEFAULT 0,
+  --update: Add publication_active field for manager control
+  `publication_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indicates if the publication is active or deactivated by manager',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_publication`),
   UNIQUE INDEX `id_publication_UNIQUE` (`id_publication` ASC) VISIBLE,
   INDEX `idx_user_pub` (`id_user_pub` ASC) VISIBLE,
-  INDEX `idx_date_pub` (`date_pub` DESC) VISIBLE
+  INDEX `idx_date_pub` (`date_pub` DESC) VISIBLE,
+  --update: Add index for active publications
+  INDEX `idx_publication_active` (`publication_active` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+--update: New Table `DB_gestionPedidosOnline_2024`.`participant_publication`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant_publication` (
+  `id_participant_publication` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_participant` INT UNSIGNED NOT NULL,
+  `id_publication` INT UNSIGNED NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_participant_publication`),
+  UNIQUE INDEX `unique_participant_publication` (`id_participant`, `id_publication`),
+  INDEX `idx_participant` (`id_participant` ASC) VISIBLE,
+  INDEX `idx_publication` (`id_publication` ASC) VISIBLE,
+  INDEX `idx_created_at` (`created_at` DESC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -393,32 +411,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`social_event` (
   INDEX `idx_user_creator` (`id_user_creator` ASC) VISIBLE,
   INDEX `idx_initial_date` (`initial_date_soc_ev` ASC) VISIBLE
 ) ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`provider`
--- -----------------------------------------------------
--- CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`provider` (
---   `id_provider` INT UNSIGNED NOT NULL AUTO_INCREMENT,
---   `name_provider` VARCHAR(100) NOT NULL,
---   `location_provider` VARCHAR(100) NOT NULL,
---   `pass_provider` VARCHAR(255) NOT NULL,
---   PRIMARY KEY (`id_provider`),
---   UNIQUE INDEX `id_provider_UNIQUE` (`id_provider` ASC) VISIBLE
--- ) ENGINE = InnoDB;
-
--- -----------------------------------------------------
--- Table `DB_gestionPedidosOnline_2024`.`buys`
--- -----------------------------------------------------
--- CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`buys` (
---   `id_buys` INT UNSIGNED NOT NULL AUTO_INCREMENT,
---   `id_shop` INT UNSIGNED NOT NULL,
---   `id_provider` INT UNSIGNED NOT NULL,
---   `id_product` INT UNSIGNED NOT NULL,
---   `quantity` INT NOT NULL DEFAULT 0,
---   `price_provider` DECIMAL(10,2) NOT NULL DEFAULT 0.0,
---   PRIMARY KEY (`id_buys`)
--- ) ENGINE = InnoDB;
-
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

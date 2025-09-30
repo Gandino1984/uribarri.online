@@ -12,7 +12,7 @@ const publication_model = sequelize.define(
         },
         id_org: {
             type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: true, //update: Changed to allowNull: true since not all publications belong to organizations
+            allowNull: true,
         },
         title_pub: {
             type: DataTypes.STRING(150),
@@ -38,11 +38,17 @@ const publication_model = sequelize.define(
             type: DataTypes.STRING(255),
             allowNull: true
         },
-        //update: Add pub_approved field for publication approval system
         pub_approved: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
+        },
+        //update: Add publication_active field for manager control
+        publication_active: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+            comment: 'Indicates if the publication is active or deactivated by manager'
         }
     },
     {

@@ -1,0 +1,172 @@
+/* public/css/ActionButtonsPublication.module.css */
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menuButton:hover:not(:disabled) {
+  background-color: var(--bg-hover, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+.menuButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e5e5;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  min-width: 160px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1),
+              0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: var(--text-primary, #1f2937);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.menuItem:hover {
+  background-color: var(--bg-hover, #f9fafb);
+}
+
+.menuItem svg {
+  flex-shrink: 0;
+}
+
+.toggleItem {
+  color: #6366f1;
+}
+
+.toggleItem:hover {
+  background-color: #eef2ff;
+}
+
+.deleteItem {
+  color: #ef4444;
+}
+
+.deleteItem:hover {
+  background-color: #fef2f2;
+}
+
+.menuDivider {
+  height: 1px;
+  margin: 4px 0;
+  background-color: #e5e7eb;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .dropdownMenu {
+    right: auto;
+    left: -130px;
+  }
+  
+  .menuButton {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .menuItem {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .menuButton {
+    color: #9ca3af;
+  }
+  
+  .menuButton:hover:not(:disabled) {
+    background-color: #374151;
+    color: #f3f4f6;
+  }
+  
+  .dropdownMenu {
+    background: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .menuItem {
+    color: #f3f4f6;
+  }
+  
+  .menuItem:hover {
+    background-color: #374151;
+  }
+  
+  .toggleItem:hover {
+    background-color: #312e81;
+  }
+  
+  .deleteItem:hover {
+    background-color: #7f1d1d;
+  }
+  
+  .menuDivider {
+    background-color: #374151;
+  }
+}

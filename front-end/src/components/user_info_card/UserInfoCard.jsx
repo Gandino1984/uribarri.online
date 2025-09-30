@@ -520,13 +520,13 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 <div className={styles.contextHeader}>
                   <Users size={14} className={styles.contextIcon} />
                   <span className={styles.contextTitle}>
-                    {userOrganizations.length === 1 ? 'Organización' : 'Organizaciones'}
+                    {userOrganizations.length === 1 ? 'Asociación' : 'Asociaciones'}
                   </span>
                 </div>
                 <div className={styles.contextList}>
                   {userOrganizations.map(org => {
                     const orgId = org.id_org || org.id_organization;
-                    const orgName = org.name_org || org.organization?.name_org || 'Organización';
+                    const orgName = org.name_org || org.organization?.name_org || 'Asociación';
                     const isManager = org.is_manager;
                     const isFounder = org.id_user === displayUser.id_user || 
                                      org.manager?.id_user === displayUser.id_user;
