@@ -1,10 +1,9 @@
-// src/components/info_management/components/info_board/InfoBoard.jsx
+//update: src/components/info_management/components/info_board/InfoBoard.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
 import { useOrganization } from '../../../../src/app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
-//update: Import ActionButtonsPublication and PublicationCreationForm
 import ActionButtonsPublication from '../components/ActionButtonsPublication.jsx';
 import PublicationCreationForm from '../components/PublicationCreationForm.jsx';
 import styles from '../../../../../public/css/InfoBoard.module.css';
@@ -19,11 +18,12 @@ const InfoBoard = () => {
   const [loading, setLoading] = useState(true);
   const [filterByUser, setFilterByUser] = useState(null);
   const [sortOrder, setSortOrder] = useState('newest');
-  //update: Add state for edit form
   const [editingPublication, setEditingPublication] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   
-  // Fetch all publications
+  //update: Get API base URL for image paths
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
+  
   const fetchPublications = useCallback(async () => {
     try {
       setLoading(true);
@@ -32,36 +32,28 @@ const InfoBoard = () => {
       if (response.data && !response.data.error) {
         let pubs = response.data.data || [];
         
-        //update: Filter based on approval and active status - using publication_active field
         const isManager = userOrganizations?.some(p => p.org_managed);
         
         if (!isManager) {
-          // Regular users only see approved and active publications
           pubs = pubs.filter(pub => pub.pub_approved === true && pub.publication_active !== false);
         } else {
-          // Managers see all approved publications (including inactive ones from their orgs)
           pubs = pubs.filter(pub => {
-            // Always show approved publications
             if (pub.pub_approved === true) {
-              // If it's from a managed org, show regardless of active status
               const isManagedOrg = userOrganizations?.some(
                 p => p.org_managed && p.id_org === pub.id_org
               );
               if (isManagedOrg) return true;
               
-              // For non-managed orgs, only show active publications
               return pub.publication_active !== false;
             }
             return false;
           });
         }
         
-        // Apply user filter if active
         if (filterByUser) {
           pubs = pubs.filter(pub => pub.id_user_pub === filterByUser);
         }
         
-        // Apply sort order
         if (sortOrder === 'oldest') {
           pubs.reverse();
         }
@@ -84,40 +76,31 @@ const InfoBoard = () => {
     }
   }, [filterByUser, sortOrder, setError, userOrganizations]);
   
-  // Initial load
   useEffect(() => {
     fetchPublications();
   }, [fetchPublications]);
   
-  //update: Handle edit publication
   const handleEditPublication = (publication) => {
     setEditingPublication(publication);
     setShowEditForm(true);
   };
   
-  //update: Handle successful edit
   const handleEditSuccess = (updatedPublication) => {
     setShowEditForm(false);
     setEditingPublication(null);
-    // Refresh publications
     fetchPublications();
   };
   
-  //update: Handle cancel edit
   const handleCancelEdit = () => {
     setShowEditForm(false);
     setEditingPublication(null);
   };
   
-  //update: Handle delete publication
   const handleDeletePublication = (publicationId) => {
-    // Just refresh the list after deletion
     fetchPublications();
   };
   
-  //update: Handle toggle active status - using publication_active field
   const handleToggleActive = (publicationId, newStatus) => {
-    // Update the local state immediately for better UX
     setPublications(prevPubs => 
       prevPubs.map(pub => 
         pub.id_publication === publicationId 
@@ -125,11 +108,9 @@ const InfoBoard = () => {
           : pub
       )
     );
-    // Then refresh to ensure sync with database
     fetchPublications();
   };
   
-  // Format date for display
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     const options = { 
@@ -140,33 +121,30 @@ const InfoBoard = () => {
     return date.toLocaleDateString('es-ES', options);
   };
   
-  // Format time for display
   const formatTime = (timeStr) => {
     if (!timeStr) return '';
     const [hours, minutes] = timeStr.split(':');
     return `${hours}:${minutes}`;
   };
   
-  // Handle image click
+  //update: Fixed handleImageClick to construct full URL properly
   const handleImageClick = (imagePath) => {
     if (imagePath) {
-      const fullImagePath = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${imagePath}`;
+      const fullImagePath = `${API_BASE_URL}/${imagePath}`;
+      console.log('Opening image modal with path:', fullImagePath);
       openImageModal(fullImagePath);
     }
   };
   
-  // Handle filter change
   const handleFilterChange = (e) => {
     const value = e.target.value;
     setFilterByUser(value === 'all' ? null : parseInt(value));
   };
   
-  // Handle sort change
   const handleSortChange = (e) => {
     setSortOrder(e.target.value);
   };
   
-  // Get unique publishers for filter dropdown
   const getUniquePublishers = () => {
     const publishers = new Map();
     publications.forEach(pub => {
@@ -177,9 +155,14 @@ const InfoBoard = () => {
     return Array.from(publishers, ([id, name]) => ({ id, name }));
   };
   
+  //update: Helper function to construct image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    return `${API_BASE_URL}/${imagePath}`;
+  };
+  
   return (
     <div className={styles.container}>
-      {/* Show edit form if editing */}
       {showEditForm && editingPublication && (
         <PublicationCreationForm 
           onSuccess={handleEditSuccess}
@@ -189,10 +172,8 @@ const InfoBoard = () => {
         />
       )}
       
-      {/* Only show controls if not editing */}
       {!showEditForm && (
         <>
-          {/* Filters and controls */}
           <div className={styles.controls}>
             <div className={styles.filterSection}>
               <label htmlFor="userFilter" className={styles.filterLabel}>
@@ -229,7 +210,6 @@ const InfoBoard = () => {
             </div>
           </div>
           
-          {/* Loading state */}
           {loading && (
             <div className={styles.loadingContainer}>
               <div className={styles.loader}></div>
@@ -237,7 +217,6 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {/* Empty state */}
           {!loading && publications.length === 0 && (
             <div className={styles.emptyContainer}>
               <AlertCircle size={48} className={styles.emptyIcon} />
@@ -257,7 +236,6 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {/* Publications grid */}
           {!loading && publications.length > 0 && (
             <div className={styles.publicationsGrid}>
               {publications.map(publication => (
@@ -265,18 +243,20 @@ const InfoBoard = () => {
                   key={publication.id_publication} 
                   className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
                 >
-                  {/* update: Add action buttons for managers */}
                   <div className={styles.cardHeaderWrapper}>
-                    {/* Card header */}
                     <div className={styles.cardHeader}>
                       <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
                       {publication.publisher && (
                         <div className={styles.publisherInfo}>
                           {publication.publisher.image_user ? (
                             <img 
-                              src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publication.publisher.image_user}`}
+                              src={getImageUrl(publication.publisher.image_user)}
                               alt={publication.publisher.name_user}
                               className={styles.publisherAvatar}
+                              onError={(e) => {
+                                console.error('Failed to load publisher image:', publication.publisher.image_user);
+                                e.target.style.display = 'none';
+                              }}
                             />
                           ) : (
                             <div className={styles.publisherAvatarPlaceholder}>
@@ -290,7 +270,6 @@ const InfoBoard = () => {
                       )}
                     </div>
                     
-                    {/* update: Add action buttons */}
                     <ActionButtonsPublication
                       publication={publication}
                       onEdit={handleEditPublication}
@@ -300,7 +279,6 @@ const InfoBoard = () => {
                     />
                   </div>
                   
-                  {/* update: Show inactive badge if publication is inactive - using publication_active field */}
                   {publication.publication_active === false && (
                     <div className={styles.inactiveBadge}>
                       <EyeOff size={14} />
@@ -308,7 +286,6 @@ const InfoBoard = () => {
                     </div>
                   )}
                   
-                  {/* Organization badge if exists */}
                   {publication.organization && (
                     <div className={styles.organizationBadge}>
                       <CheckCircle size={14} />
@@ -316,30 +293,36 @@ const InfoBoard = () => {
                     </div>
                   )}
                   
-                  {/* Card content */}
+                  {/*update: Moved image above text content */}
+                  {publication.image_pub && (
+                    <div 
+                      className={styles.publicationImageWrapper}
+                      onClick={() => handleImageClick(publication.image_pub)}
+                    >
+                      <img 
+                        src={getImageUrl(publication.image_pub)}
+                        alt={publication.title_pub}
+                        className={styles.publicationImage}
+                        onLoad={() => {
+                          console.log('Publication image loaded successfully:', publication.image_pub);
+                        }}
+                        onError={(e) => {
+                          console.error('Failed to load publication image:', publication.image_pub);
+                          console.error('Attempted URL:', getImageUrl(publication.image_pub));
+                          e.target.parentElement.style.display = 'none';
+                        }}
+                      />
+                      <div className={styles.imageOverlay}>
+                        <ImageIcon size={24} />
+                        <span>Ver imagen</span>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className={styles.cardContent}>
                     <p className={styles.publicationContent}>{publication.content_pub}</p>
-                    
-                    {/* Publication image if exists */}
-                    {publication.image_pub && (
-                      <div 
-                        className={styles.publicationImageWrapper}
-                        onClick={() => handleImageClick(publication.image_pub)}
-                      >
-                        <img 
-                          src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publication.image_pub}`}
-                          alt={publication.title_pub}
-                          className={styles.publicationImage}
-                        />
-                        <div className={styles.imageOverlay}>
-                          <ImageIcon size={24} />
-                          <span>Ver imagen</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                   
-                  {/* Card footer */}
                   <div className={styles.cardFooter}>
                     <div className={styles.dateTime}>
                       <div className={styles.dateTimeItem}>
@@ -359,7 +342,6 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {/* Publications count */}
           {!loading && publications.length > 0 && (
             <div className={styles.publicationsCount}>
               <p>

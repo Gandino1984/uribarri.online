@@ -1,3 +1,4 @@
+//update: back-end/controllers/publication/publication_api_controller.js
 import publicationController from "./publication_controller.js";
 import path from 'path';
 
@@ -77,7 +78,6 @@ async function getByDateRange(req, res) {
     }
 }
 
-//update: Add getByOrganization endpoint
 async function getByOrganization(req, res) {
     try {
         const { id_org } = req.body;
@@ -109,10 +109,9 @@ async function create(req, res) {
             id_user_pub,
             id_org,
             image_pub,
-            publication_active //update: Add publication_active field
+            publication_active
         } = req.body;
         
-        //update: Validate required fields
         if (!title_pub || !content_pub || !id_user_pub) {
             return res.status(400).json({
                 error: 'Campos obligatorios son requeridos',
@@ -132,7 +131,7 @@ async function create(req, res) {
             id_user_pub,
             id_org: id_org || null,
             image_pub: image_pub || null,
-            publication_active: publication_active !== undefined ? publication_active : true //update: Default to true
+            publication_active: publication_active !== undefined ? publication_active : true
         });
         
         if (error) {
@@ -161,7 +160,7 @@ async function update(req, res) {
             id_org,
             image_pub,
             pub_approved,
-            publication_active //update: Add publication_active field
+            publication_active
         } = req.body;
         
         if (!id_publication) {
@@ -179,7 +178,7 @@ async function update(req, res) {
         if (id_org !== undefined) updateData.id_org = id_org;
         if (image_pub !== undefined) updateData.image_pub = image_pub;
         if (pub_approved !== undefined) updateData.pub_approved = pub_approved;
-        if (publication_active !== undefined) updateData.publication_active = publication_active; //update: Include publication_active
+        if (publication_active !== undefined) updateData.publication_active = publication_active;
         
         const { error, data } = await publicationController.update(id_publication, updateData);
         
@@ -239,7 +238,6 @@ async function uploadImage(req, res) {
             });
         }
         
-        // Construct the relative path for storing in the database
         const relativePath = path.join(
             'images', 
             'uploads', 
@@ -298,7 +296,6 @@ async function approvePublication(req, res) {
     }
 }
 
-//update: Add toggleActive endpoint for manager control
 async function toggleActive(req, res) {
     try {
         const {
@@ -334,7 +331,6 @@ async function toggleActive(req, res) {
     }
 }
 
-// Export with new function included
 export {
     getAll,
     getById,
@@ -346,7 +342,7 @@ export {
     removeById,
     uploadImage,
     approvePublication,
-    toggleActive //update: Add toggleActive to exports
+    toggleActive
 };
 
 export default {
@@ -360,5 +356,5 @@ export default {
     removeById,
     uploadImage,
     approvePublication,
-    toggleActive //update: Add toggleActive to default export
+    toggleActive
 };
