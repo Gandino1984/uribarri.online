@@ -4,6 +4,7 @@
 .container {
   width: 100%;
   padding: 0.5rem;
+  overflow-x: hidden; /*update: Prevent horizontal scroll */
 }
 
 /*update: Loading container */
@@ -15,7 +16,6 @@
   padding: 4rem 1.5rem;
   background: white;
   border-radius: 12px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
   gap: 1rem;
 }
 
@@ -40,9 +40,6 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 1.5rem;
-  /* background: white; */
-  /* border-radius: 12px; */
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
   gap: 1rem;
   text-align: center;
 }
@@ -65,15 +62,17 @@
   line-height: 1.5;
 }
 
-/*update: Organizations grid with responsive columns */
+/*update: Organizations grid - mobile-first with single column */
 .organizationsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /*update: Single column on mobile, no minmax constraint */
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  width: 100%; /*update: Ensure full width */
 }
 
-/*update: Organization card with modern design */
+/*update: Organization card with constrained content */
 .organizationCard {
   background: white;
   border-radius: 12px;
@@ -82,6 +81,9 @@
   transition: all 0.3s ease;
   position: relative;
   border: 2px solid transparent;
+  /*update: Prevent card overflow */
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .organizationCard:hover {
@@ -170,7 +172,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  /*update: Constrain to prevent overflow */
   min-width: 0;
+  max-width: 100%;
 }
 
 .orgName {
@@ -178,9 +182,10 @@
   font-weight: 700;
   color: #1f2937;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /*update: Better text handling */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .orgScope {
@@ -190,9 +195,9 @@
   font-size: 0.85rem;
   color: #6b7280;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /*update: Better text handling */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .orgManager {
@@ -202,9 +207,9 @@
   font-size: 0.8rem;
   color: #9ca3af;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /*update: Better text handling */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /*update: Card actions section */
@@ -213,6 +218,8 @@
   gap: 0.5rem;
   margin-top: 1rem;
   flex-wrap: wrap;
+  /*update: Ensure actions don't overflow */
+  width: 100%;
 }
 
 .managerActions,
@@ -223,11 +230,15 @@
   flex-direction: row;
   gap: 0.5rem;
   width: 100%;
+  /*update: Allow wrapping if needed */
+  flex-wrap: wrap;
 }
 
 /*update: Action button styling matching ShopManagement */
 .actionButton {
   flex: 1;
+  /*update: Add min-width to prevent too narrow buttons */
+  min-width: 100px;
   padding: 0.65rem 1rem;
   border: 2px solid transparent;
   border-radius: 8px;
@@ -325,6 +336,9 @@
   text-transform: uppercase;
   letter-spacing: 0.03rem;
   box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3);
+  /*update: Prevent overflow */
+  word-wrap: break-word;
+  text-align: center;
 }
 
 .pendingMessage {
@@ -340,6 +354,9 @@
   font-weight: 600;
   width: 100%;
   justify-content: center;
+  /*update: Allow text wrapping */
+  flex-wrap: wrap;
+  text-align: center;
 }
 
 .requestsButton {
@@ -373,6 +390,9 @@
   font-weight: 600;
   width: 100%;
   justify-content: center;
+  /*update: Allow text wrapping */
+  flex-wrap: wrap;
+  text-align: center;
 }
 
 .buttonLoader {
@@ -403,6 +423,7 @@
     padding: 0.25rem;
   }
   
+  /*update: Single column maintained */
   .organizationsGrid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
@@ -448,6 +469,8 @@
   
   .actionButton {
     width: 100%;
+    /*update: Remove min-width on mobile */
+    min-width: auto;
     padding: 0.6rem 0.85rem;
     font-size: 0.75rem;
   }
@@ -460,6 +483,7 @@
 
 /* Small Mobile (481px - 640px) */
 @media (min-width: 481px) and (max-width: 640px) {
+  /*update: Still single column */
   .organizationsGrid {
     grid-template-columns: 1fr;
     gap: 0.85rem;
@@ -491,8 +515,9 @@
     padding: 0.75rem;
   }
   
+  /*update: Two columns on tablet */
   .organizationsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem;
   }
   
@@ -522,8 +547,9 @@
     padding: 1rem;
   }
   
+  /*update: Three columns on desktop */
   .organizationsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
   }
   
@@ -549,8 +575,9 @@
 
 /* Large Desktop (1440px+) */
 @media (min-width: 1440px) {
+  /*update: Four columns on large screens */
   .organizationsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.75rem;
   }
   
@@ -576,8 +603,9 @@
 
 /* Landscape (phones) */
 @media (max-height: 600px) and (orientation: landscape) {
+  /*update: Two columns in landscape to maximize space */
   .organizationsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
   
