@@ -14,12 +14,17 @@ import { Plus, X, FileText, Users, Settings, ArrowLeft } from 'lucide-react';
 import styles from '../../../../public/css/InfoManagement.module.css';
 
 const InfoManagement = () => {
-  const { setShowTopBar } = useUI();
+  //update: Add navigation functions
+  const { 
+    setShowTopBar,
+    setShowInfoManagement,
+    setShowShopWindow
+  } = useUI();
   const { currentUser } = useAuth();
   const { fetchUserOrganizations, userOrganizations, fetchAllOrganizations } = useOrganization();
   const { setFilterByOrganization } = usePublication();
   
-  const [activeView, setActiveView] = useState('board'); // 'board', 'organizations', or 'management'
+  const [activeView, setActiveView] = useState('board');
   const [showCreationForm, setShowCreationForm] = useState(false);
   const [showPublicationForm, setShowPublicationForm] = useState(false);
   const [editingOrganization, setEditingOrganization] = useState(null);
@@ -29,24 +34,20 @@ const InfoManagement = () => {
   const [showManagementButton, setShowManagementButton] = useState(false);
   
   useEffect(() => {
-    // Show top bar when info management is active
     setShowTopBar(true);
   }, [setShowTopBar]);
   
   useEffect(() => {
-    // Fetch user's organizations when component mounts
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user);
     }
   }, [currentUser, fetchUserOrganizations]);
   
-  //update: Check if user manages any organization to show management button
   useEffect(() => {
     if (userOrganizations && userOrganizations.length > 0) {
       const hasManagement = userOrganizations.some(p => p.org_managed);
       setShowManagementButton(hasManagement);
       
-      // If user manages only one org, auto-select it
       const managedOrgs = userOrganizations.filter(p => p.org_managed);
       if (managedOrgs.length === 1 && managedOrgs[0].organization) {
         setSelectedOrgForManagement(managedOrgs[0].organization);
@@ -54,65 +55,53 @@ const InfoManagement = () => {
     }
   }, [userOrganizations]);
   
-  // Check if user is logged in
+  //update: Handle back to shop window
+  const handleBackToShopWindow = () => {
+    console.log('Navigating from InfoManagement back to ShopWindow');
+    setShowInfoManagement(false);
+    setShowShopWindow(true);
+  };
+  
   const isLoggedIn = !!currentUser;
-  
-  // Check if user has is_manager permission from their user profile
   const isManager = currentUser?.is_manager === true || currentUser?.is_manager === 1;
-  
-  // Check if user belongs to any organization
   const belongsToOrganization = userOrganizations && userOrganizations.length > 0;
-  
-  // Check if user manages any organization
   const managesAnyOrganization = userOrganizations?.some(participation => participation.org_managed);
   
-  // Handle successful organization creation
   const handleOrganizationCreated = (newOrg) => {
     setShowCreationForm(false);
     setIsEditMode(false);
     setEditingOrganization(null);
-    // Refresh organizations list
     fetchAllOrganizations();
-    // Refresh user's organizations
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user);
     }
-    // Optionally switch to organizations view
     setActiveView('organizations');
   };
   
-  // Handle successful organization update
   const handleOrganizationUpdated = (updatedOrg) => {
     setShowCreationForm(false);
     setIsEditMode(false);
     setEditingOrganization(null);
-    // Refresh organizations list
     fetchAllOrganizations();
-    // Refresh user's organizations
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user);
     }
   };
   
-  // Handle successful publication creation
   const handlePublicationCreated = (newPub) => {
     setShowPublicationForm(false);
     setEditingPublication(null);
-    // Optionally refresh publications
     setActiveView('board');
   };
   
-  // Toggle creation form
   const toggleCreationForm = () => {
     if (showCreationForm && isEditMode) {
-      // If closing edit mode, reset everything
       setIsEditMode(false);
       setEditingOrganization(null);
     }
     setShowCreationForm(prev => !prev);
   };
   
-  // Toggle publication form
   const togglePublicationForm = () => {
     setShowPublicationForm(prev => !prev);
     if (editingPublication) {
@@ -120,7 +109,6 @@ const InfoManagement = () => {
     }
   };
   
-  // Handle edit organization
   const handleEditOrganization = (org) => {
     console.log('Edit organization:', org);
     setEditingOrganization(org);
@@ -128,29 +116,23 @@ const InfoManagement = () => {
     setShowCreationForm(true);
   };
   
-  // Handle view organization publications
   const handleViewPublications = (org) => {
     console.log('View publications for organization:', org);
-    // Set the filter to show only this organization's publications
     setFilterByOrganization(org.id_organization);
     setSelectedOrgForManagement(org);
-    // Switch to the management view
     setActiveView('management');
   };
   
-  //update: Handle open management view
   const handleOpenManagement = () => {
     setActiveView('management');
   };
   
-  // Handle cancel form
   const handleCancelForm = () => {
     setShowCreationForm(false);
     setIsEditMode(false);
     setEditingOrganization(null);
   };
   
-  // Handle cancel publication form
   const handleCancelPublicationForm = () => {
     setShowPublicationForm(false);
     setEditingPublication(null);
@@ -158,6 +140,18 @@ const InfoManagement = () => {
   
   return (
     <div className={styles.container}>
+      {/*update: Add back button at the top of the container */}
+      <div className={styles.backButtonContainer}>
+        <button 
+          onClick={handleBackToShopWindow}
+          className={styles.backButton}
+          title="Volver al escaparate"
+        >
+          <ArrowLeft size={20} />
+          <span>Al escaparate</span>
+        </button>
+      </div>
+      
       <div className={styles.header}>
         <h1 className={styles.title}>
           {activeView === 'board' ? 'Tablón Informativo de Uribarri' : 
@@ -176,14 +170,12 @@ const InfoManagement = () => {
         </p>
       </div>
       
-      {/* Tab navigation only for logged-in users */}
       {isLoggedIn && activeView !== 'management' && (
         <div className={styles.tabNavigation}>
           <button
             className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
             onClick={() => {
               setActiveView('board');
-              // Clear organization filter when switching to board
               setFilterByOrganization(null);
               setSelectedOrgForManagement(null);
             }}
@@ -202,7 +194,6 @@ const InfoManagement = () => {
         </div>
       )}
       
-      {/* Back button for management view */}
       {activeView === 'management' && (
         <div className={styles.backButtonContainer}>
           <button
@@ -242,7 +233,6 @@ const InfoManagement = () => {
         </div>
       )}
       
-      {/* Show creation button for organizations view */}
       {isLoggedIn && isManager && activeView === 'organizations' && !isEditMode && (
         <div className={styles.managerActions}>
           <button
@@ -265,7 +255,7 @@ const InfoManagement = () => {
         </div>
       )}
       
-      {/* Show create publication button and management access for board view */}
+      
       {isLoggedIn && activeView === 'board' && (
         <div className={styles.boardActions}>
           {belongsToOrganization && (
@@ -287,25 +277,12 @@ const InfoManagement = () => {
               )}
             </button>
           )}
-          
-          
-          {/* {showManagementButton && (
-            <button
-              className={styles.managementButton}
-              onClick={handleOpenManagement}
-              title="Gestionar publicaciones de tu organización"
-            >
-              <Settings size={18} />
-              <span>Gestionar mis publicaciones</span>
-            </button>
-          )} */}
         </div>
       )}
       
       <div className={styles.content}>
         {activeView === 'board' ? (
           <>
-            {/* Show publication creation form if toggled */}
             {showPublicationForm && (
               <PublicationCreationForm 
                 onSuccess={handlePublicationCreated}
@@ -317,10 +294,8 @@ const InfoManagement = () => {
             <InfoBoard />
           </>
         ) : activeView === 'organizations' ? (
-          // Show organizations view with conditional creation form
           isLoggedIn ? (
             <>
-              {/* Show creation/edit form if toggled */}
               {showCreationForm && (
                 <OrganizationCreationForm 
                   onSuccess={isEditMode ? handleOrganizationUpdated : handleOrganizationCreated}
@@ -341,7 +316,6 @@ const InfoManagement = () => {
             </div>
           )
         ) : activeView === 'management' ? (
-          // Show publication management
           <>
             {selectedOrgForManagement ? (
               <PublicationManagement organizationId={selectedOrgForManagement.id_organization} />

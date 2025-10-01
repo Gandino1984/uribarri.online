@@ -244,7 +244,7 @@ const InfoBoard = () => {
               <p className={styles.emptyText}>
                 {filterByUser 
                   ? "No hay publicaciones aprobadas de este usuario"
-                  : "No hay publicaciones aprobadas disponibles en este momento"}
+                  : "No hay publicaciones aprobadas disponibles"}
               </p>
               {filterByUser && (
                 <button 

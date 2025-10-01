@@ -1,147 +1,234 @@
 /* public/css/InfoManagement.module.css */
+/* Mobile-first responsive design - Enhanced for 360px to ultra-wide screens */
 
 .container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  gap: 1.5rem;
+  margin-top: 5.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/*update: Back button container */
+.backButtonContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   width: 100%;
   max-width: 1200px;
-  margin-top: 4rem;
-  padding: 20px;
-  min-height: calc(100vh - 120px);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/*update: Back button styling */
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.backButton:hover {
+  background: lightgray;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
+}
+
+.backButton span {
+  font-size: 0.95rem;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
-  padding: 20px 0;
-  border-bottom: 2px solid #e5e7eb;
+  padding: 1.5rem 1rem;
+  /* background: white; */
+  border-radius: 12px;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 10px 0;
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: .1rem;
+  color: rgb(27, 27, 27);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: #6b7280;
+  font-size: 0.9rem;
+  color: black;
+  font-weight: 500;
   margin: 0;
+  line-height: 1.4;
 }
 
 .tabNavigation {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 0;
+  align-items: center;
+  justify-content: center;
+  /* flex-direction: column; */
+  gap: 1rem;
+  padding: 0 1rem;
+  max-width: 1200px;
+  /* margin: 0 auto; */
+  width: 100%;
+  /* flex-shrink: 0; */
+  scrollbar-width: none;
+}
+
+.tabNavigation::-webkit-scrollbar {
+  display: none;
 }
 
 .tabButton {
-  padding: 12px 24px;
-  background: transparent;
+  padding: 0.75rem 1.5rem;
+  background: white;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #6b7280;
-  font-size: 1rem;
-  font-weight: 500;
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: -2px;
+  margin-bottom: .5rem;
+  white-space: nowrap;
+  flex-shrink: 1;
+  width: 100%;
 }
 
 .tabButton:hover {
-  color: #374151;
-  background: #f9fafb;
+  background-color: lightgray;
 }
 
 .activeTab {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
+  color: var(--app-purple);
+  background-color: var(--app-purple-transparent);
+  border: 2px solid var(--app-purple);
+  letter-spacing: .08rem;
+  font-weight: 800;
 }
 
 .activeTab:hover {
-  color: #3b82f6;
+  color: var(--app-purple);
   background: transparent;
 }
 
-/*update: Manager actions section */
-.managerActions {
+.managerActions,
+.boardActions {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-  padding: 0 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
-.createButton {
+/*update: Consistent button styling matching ShopManagement */
+.createButton,
+.managementButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: #3b82f6;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--app-purple);
   color: white;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  /* box-shadow: 0 2px 8px rgba(151, 71, 255, 0.3); */
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
 }
 
-.createButton:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+.createButton:hover,
+.managementButton:hover {
+  background-color: var(--app-purple-darker); 
+  /* transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(151, 71, 255, 0.4); */
 }
 
-.createButton svg {
+.createButton svg,
+.managementButton svg {
   transition: transform 0.3s ease;
 }
 
-.createButton:hover svg {
+.createButton:hover svg,
+.managementButton:hover svg {
   transform: scale(1.1);
 }
 
+/*update: Active state for close button */
 .createButtonActive {
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .createButtonActive:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .content {
   width: 100%;
-  padding: 0 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
+/*update: Login message styling */
 .loginMessage {
   text-align: center;
-  padding: 60px 20px;
-  background: #f9fafb;
+  padding: 3rem 1.5rem;
+  background: white;
   border-radius: 12px;
   color: #6b7280;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .loginMessage p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin: 0;
+  line-height: 1.5;
 }
 
-/* Loading states */
+/*update: Loading states */
 .loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 20px;
+  padding: 4rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .loader {
   width: 40px;
   height: 40px;
   border: 4px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border-top-color: var(--app-purple);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -153,20 +240,163 @@
 }
 
 .loadingText {
-  margin-top: 20px;
+  margin-top: 1.25rem;
   color: #6b7280;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/*update: No organization selected state */
+.noOrgSelected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  color: #6b7280;
+}
+
+.noOrgSelected svg {
+  color: #9ca3af;
+}
+
+.noOrgSelected p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/*update: Organization selector for management view */
+.orgSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 1rem;
+}
+
+.orgSelector label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.orgSelect {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.orgSelect:hover {
+  border-color: var(--app-purple);
+}
+
+.orgSelect:focus {
+  outline: none;
+  border-color: var(--app-purple);
+  box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1);
+}
+
+/* Mobile (360px - 480px) */
+@media (max-width: 480px) {
   .container {
-    padding: 15px;
+    margin-top: 8rem;
+    gap: 1rem;
+  }
+  
+  .backButtonContainer {
+    padding: 0 0.5rem;
+  }
+  
+  .backButton {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .backButton span {
+    font-size: 0.85rem;
   }
   
   .header {
-    padding: 15px 0;
-    margin-bottom: 20px;
+    padding: 1rem 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.35rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .tabNavigation {
+    gap: 0.25rem;
+    padding: 0 0.5rem;
+  }
+  
+  .tabButton {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .managerActions,
+  .boardActions {
+    flex-direction: column;
+    padding: 0 0.5rem;
+    gap: 0.75rem;
+  }
+  
+  .createButton,
+  .managementButton {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.85rem;
+  }
+  
+  .content {
+    padding: 0 0.5rem;
+  }
+  
+  .loginMessage {
+    padding: 2rem 1rem;
+  }
+  
+  .loginMessage p {
+    font-size: 0.9rem;
+  }
+  
+  .orgSelector {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  .orgSelect {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Small Mobile (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .container {
+    margin-top: 8.5rem;
+  }
+  
+  .header {
+    padding: 1.25rem 1rem;
   }
   
   .title {
@@ -174,44 +404,141 @@
   }
   
   .subtitle {
-    font-size: 0.95rem;
-  }
-  
-  .tabNavigation {
-    gap: 5px;
-  }
-  
-  .tabButton {
-    padding: 10px 16px;
     font-size: 0.9rem;
   }
   
-  /*update: Responsive manager actions */
-  .managerActions {
-    padding: 0;
-    margin-bottom: 15px;
+  .tabButton {
+    padding: 0.7rem 1.25rem;
+    font-size: 0.85rem;
   }
   
-  .createButton {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 20px;
+  .managerActions,
+  .boardActions {
+    gap: 0.85rem;
   }
   
-  .content {
-    padding: 0;
+  .createButton,
+  .managementButton {
+    padding: 0.8rem 1.4rem;
+    font-size: 0.88rem;
   }
 }
 
-@media (max-width: 480px) {
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
   .container {
-    padding: 10px;
-    min-height: calc(100vh - 100px);
+    margin-top: 9rem;
+    gap: 1.75rem;
+  }
+  
+  .backButton {
+    padding: 0.8rem 1.4rem;
   }
   
   .header {
-    padding: 10px 0;
-    margin-bottom: 15px;
+    padding: 1.75rem 1.5rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .tabButton {
+    padding: 0.85rem 1.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .managerActions,
+  .boardActions {
+    flex-direction: row;
+    gap: 1.25rem;
+  }
+  
+  .createButton,
+  .managementButton {
+    padding: 0.85rem 1.75rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Desktop (1025px - 1439px) */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .container {
+    margin-top: 6rem;
+    gap: 2rem;
+  }
+  
+  .backButton {
+    padding: 0.85rem 1.5rem;
+  }
+  
+  .header {
+    padding: 2rem 2rem;
+  }
+  
+  .title {
+    font-size: 2.25rem;
+  }
+  
+  .subtitle {
+    font-size: 1.05rem;
+  }
+  
+  .tabButton {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .createButton,
+  .managementButton {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Large Desktop (1440px+) */
+@media (min-width: 1440px) {
+  .container {
+    gap: 2.5rem;
+  }
+  
+  .header {
+    padding: 2.5rem 2.5rem;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .tabButton {
+    padding: 1rem 2.5rem;
+    font-size: 1.05rem;
+  }
+  
+  .createButton,
+  .managementButton {
+    padding: 1rem 2.5rem;
+    font-size: 1.05rem;
+  }
+}
+
+/* Landscape (phones) */
+@media (max-height: 600px) and (orientation: landscape) {
+  .container {
+    margin-top: 5rem;
+    gap: 1rem;
+  }
+  
+  .header {
+    padding: 1rem;
   }
   
   .title {
@@ -219,25 +546,23 @@
   }
   
   .subtitle {
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-  
-  .tabNavigation {
-    gap: 0;
+    font-size: 0.8rem;
   }
   
   .tabButton {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
   }
   
-  .loginMessage {
-    padding: 40px 15px;
+  .createButton,
+  .managementButton {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.8rem;
   }
   
-  .loginMessage p {
-    font-size: 0.95rem;
+  .loginMessage,
+  .loadingContainer,
+  .noOrgSelected {
+    padding: 2rem 1rem;
   }
 }

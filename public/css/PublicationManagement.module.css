@@ -1,211 +1,236 @@
 /* public/css/PublicationManagement.module.css */
+/* Mobile-first responsive design - Enhanced for 360px to ultra-wide screens */
 
 .container {
-  padding: 20px;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .header {
-  margin-bottom: 30px;
+  margin-bottom: 1.5rem;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 8px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
 .subtitle {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.9rem;
+  color: #6b7280;
   margin: 0;
+  line-height: 1.5;
 }
 
-/* Filter tabs */
+/*update: Filter tabs with responsive design */
 .filterTabs {
   display: flex;
-  /* flex-direction: row; */
-  gap: 10px;
-  margin-bottom: 25px;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 10px;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0;
   flex-wrap: wrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
 }
 
 .filterTab {
-  padding: 8px 16px;
+  padding: 0.65rem 1.25rem;
   border: none;
   background: transparent;
-  color: #666;
-  font-size: 14px;
-  font-weight: 500;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   transition: all 0.3s ease;
   position: relative;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .filterTab:hover {
-  color: #333;
+  color: #374151;
+  background: rgba(243, 244, 246, 0.5);
+  border-radius: 8px 8px 0 0;
 }
 
 .filterTab.active {
-  color: #4CAF50;
-  border-bottom-color: #4CAF50;
+  color: var(--app-purple);
+  border-bottom-color: var(--app-purple);
 }
 
-/* Publications list */
+/*update: Publications list */
 .publicationsList {
   display: grid;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
+/*update: Publication card with modern styling */
 .publicationCard {
   background: white;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e0e0e0;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
   transition: all 0.3s ease;
   position: relative;
 }
 
 .publicationCard:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: rgba(151, 71, 255, 0.2);
 }
 
 .publicationCard.pending {
-  border-left: 4px solid #FFC107;
+  border-left: 4px solid #fbbf24;
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
 }
 
 .publicationCard.inactive {
   opacity: 0.7;
-  background: #f9f9f9;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
 }
 
-/* Card header wrapper */
+/*update: Card header wrapper */
 .cardHeaderWrapper {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
 }
 
-/* Status badges */
+/*update: Status badges */
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .statusBadge.approved {
-  background: #E8F5E9;
-  color: #2E7D32;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
 }
 
 .statusBadge.pendingBadge {
-  background: #FFF8E1;
-  color: #F9A825;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
 }
 
 .inactiveBadge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  background: #FFEBEE;
-  color: #C62828;
-  margin-bottom: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  margin-bottom: 0.75rem;
 }
 
-/* Publication content */
 .publicationHeader {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .publicationTitle {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.65rem 0;
+  line-height: 1.3;
 }
 
 .publisherInfo {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  color: #666;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .publicationContent {
-  font-size: 14px;
+  font-size: 0.9rem;
   line-height: 1.6;
-  color: #333;
-  margin-bottom: 15px;
+  color: #374151;
+  margin-bottom: 1rem;
+  word-break: break-word;
 }
 
 .publicationImage {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 8px 12px;
-  background: #f5f5f5;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  background: #f3f4f6;
   border-radius: 8px;
-  font-size: 13px;
-  color: #666;
+  font-size: 0.8rem;
+  color: #6b7280;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 15px;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .publicationImage:hover {
-  background: #e8e8e8;
-  color: #333;
+  background: #e5e7eb;
+  color: #374151;
 }
 
 .publicationMeta {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  color: #999;
-  padding-top: 15px;
-  border-top: 1px solid #f0f0f0;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+  font-weight: 500;
 }
 
-/* Approval actions */
+/*update: Approval actions */
 .approvalActions {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #f0f0f0;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
 }
 
 .actionButton {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 8px 16px;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  min-width: 120px;
 }
 
 .actionButton:disabled {
@@ -214,24 +239,30 @@
 }
 
 .approveButton {
-  background: #4CAF50;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
 }
 
 .approveButton:hover:not(:disabled) {
-  background: #45a049;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 .rejectButton {
-  background: #f44336;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
 .rejectButton:hover:not(:disabled) {
-  background: #da190b;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
-/* Loading and empty states */
+/*update: Loading and empty states */
 .loadingContainer,
 .emptyContainer,
 .noAccessContainer {
@@ -239,25 +270,28 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 4rem 1.5rem;
   text-align: center;
-  color: #666;
+  color: gray;
+  /* background: white; */
+  border-radius: 12px;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
 }
 
 .emptyContainer svg,
 .noAccessContainer svg {
-  color: #ccc;
-  margin-bottom: 20px;
+  color: #9ca3af;
+  margin-bottom: 1.25rem;
 }
 
 .loader {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #4CAF50;
+  border: 4px solid #e5e7eb;
+  border-top-color: var(--app-purple);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .buttonLoader {
@@ -274,32 +308,162 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
+/* Mobile (360px - 480px) */
+@media (max-width: 480px) {
   .container {
-    padding: 15px;
+    padding: 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.35rem;
+    gap: 0.5rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
   }
   
   .filterTabs {
-    flex-direction: row;
+    gap: 0.35rem;
   }
   
   .filterTab {
-    width: 100%;
-    text-align: left;
-    padding: 10px 15px;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
   }
   
   .publicationCard {
-    padding: 15px;
+    padding: 1rem;
+  }
+  
+  .publicationTitle {
+    font-size: 1rem;
+  }
+  
+  .publisherInfo {
+    font-size: 0.75rem;
+  }
+  
+  .publicationContent {
+    font-size: 0.85rem;
   }
   
   .approvalActions {
     flex-direction: column;
+    gap: 0.65rem;
   }
   
   .actionButton {
     width: 100%;
-    justify-content: center;
+    min-width: auto;
+    padding: 0.65rem 1.15rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Small Mobile (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .container {
+    padding: 0.85rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .filterTab {
+    padding: 0.65rem 1.15rem;
+    font-size: 0.85rem;
+  }
+  
+  .publicationTitle {
+    font-size: 1.05rem;
+  }
+  
+  .approvalActions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .actionButton {
+    width: 100%;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .title {
+    font-size: 1.85rem;
+  }
+  
+  .filterTab {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .publicationCard {
+    padding: 1.35rem;
+  }
+  
+  .publicationTitle {
+    font-size: 1.15rem;
+  }
+  
+  .actionButton {
+    padding: 0.75rem 1.35rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Desktop (1025px+) */
+@media (min-width: 1025px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .filterTab {
+    padding: 0.8rem 1.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .publicationCard {
+    padding: 1.5rem;
+  }
+  
+  .publicationTitle {
+    font-size: 1.25rem;
+  }
+  
+  .actionButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Landscape (phones) */
+@media (max-height: 600px) and (orientation: landscape) {
+  .container {
+    padding: 0.5rem;
+  }
+  
+  .title {
+    font-size: 1.15rem;
+  }
+  
+  .publicationCard {
+    padding: 0.85rem;
+  }
+  
+  .publicationTitle {
+    font-size: 0.95rem;
+  }
+  
+  .approvalActions {
+    gap: 0.5rem;
+  }
+  
+  .actionButton {
+    padding: 0.55rem 1rem;
+    font-size: 0.75rem;
   }
 }

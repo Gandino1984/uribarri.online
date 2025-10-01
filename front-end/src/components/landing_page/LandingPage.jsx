@@ -200,17 +200,17 @@ const LandingPage = () => {
   
   //update: Text animations
   const titleSpring = useSpring({
-    from: { opacity: 0, transform: 'translateY(30px)' },
-    to: { opacity: 1, transform: 'translateY(0px)' },
+    from: { opacity: 0, transform: 'translateY(-50px)' },
+    to: { opacity: 1, transform: 'translateY(-150px)' },
     delay: 500,
-    config: config.molasses
+    config: config.gentle
   });
   
   const subtitleSpring = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: 1},
+    from: { opacity: 0, transform: 'translateY(-50px)' },
+    to: { opacity: 1, transform: 'translateY(-150px)'},
     delay: 800,
-    config: config.molasses
+    config: config.gentle
   });
   
   //update: Scroll hint animation
