@@ -10,17 +10,20 @@ import OrganizationsList from './components/OrganizationsList.jsx';
 import OrganizationCreationForm from './components/OrganizationCreationForm.jsx';
 import PublicationCreationForm from './components/PublicationCreationForm.jsx';
 import PublicationManagement from './components/PublicationManagement.jsx';
-import { Plus, X, FileText, Users, Settings, ArrowLeft } from 'lucide-react';
+import { Plus, X, FileText, Users, Settings, ArrowLeft, LogIn } from 'lucide-react';
 import styles from '../../../../public/css/InfoManagement.module.css';
 
 const InfoManagement = () => {
-  //update: Add navigation functions
   const { 
     setShowTopBar,
     setShowInfoManagement,
-    setShowShopWindow
+    setShowShopWindow,
+    //update: Add setShowLandingPage for login redirect
+    setShowLandingPage,
+    //update: Add navigation intent
+    setNavigationIntent
   } = useUI();
-  const { currentUser } = useAuth();
+  const { currentUser, setIsLoggingIn } = useAuth();
   const { fetchUserOrganizations, userOrganizations, fetchAllOrganizations } = useOrganization();
   const { setFilterByOrganization } = usePublication();
   
@@ -37,6 +40,7 @@ const InfoManagement = () => {
     setShowTopBar(true);
   }, [setShowTopBar]);
   
+  //update: Only fetch user organizations if logged in
   useEffect(() => {
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user);
@@ -55,11 +59,19 @@ const InfoManagement = () => {
     }
   }, [userOrganizations]);
   
-  //update: Handle back to shop window
   const handleBackToShopWindow = () => {
     console.log('Navigating from InfoManagement back to ShopWindow');
     setShowInfoManagement(false);
     setShowShopWindow(true);
+  };
+  
+  //update: Helper to redirect to login with intent
+  const handleLoginRedirect = (intent) => {
+    console.log('Redirecting to login with intent:', intent);
+    setNavigationIntent(intent);
+    setShowInfoManagement(false);
+    setShowLandingPage(false);
+    setIsLoggingIn(true);
   };
   
   const isLoggedIn = !!currentUser;
@@ -95,6 +107,12 @@ const InfoManagement = () => {
   };
   
   const toggleCreationForm = () => {
+    //update: Check if logged in before allowing creation
+    if (!isLoggedIn) {
+      handleLoginRedirect('info');
+      return;
+    }
+    
     if (showCreationForm && isEditMode) {
       setIsEditMode(false);
       setEditingOrganization(null);
@@ -103,6 +121,12 @@ const InfoManagement = () => {
   };
   
   const togglePublicationForm = () => {
+    //update: Check if logged in before allowing publication creation
+    if (!isLoggedIn) {
+      handleLoginRedirect('info');
+      return;
+    }
+    
     setShowPublicationForm(prev => !prev);
     if (editingPublication) {
       setEditingPublication(null);
@@ -110,6 +134,12 @@ const InfoManagement = () => {
   };
   
   const handleEditOrganization = (org) => {
+    //update: Check if logged in before allowing edit
+    if (!isLoggedIn) {
+      handleLoginRedirect('info');
+      return;
+    }
+    
     console.log('Edit organization:', org);
     setEditingOrganization(org);
     setIsEditMode(true);
@@ -140,7 +170,6 @@ const InfoManagement = () => {
   
   return (
     <div className={styles.container}>
-      {/*update: Add back button at the top of the container */}
       <div className={styles.backButtonContainer}>
         <button 
           onClick={handleBackToShopWindow}
@@ -150,6 +179,17 @@ const InfoManagement = () => {
           <ArrowLeft size={20} />
           <span>Al escaparate</span>
         </button>
+        {/*update: Show login button if not logged in */}
+        {!isLoggedIn && (
+          <button 
+            onClick={() => handleLoginRedirect('info')}
+            className={styles.loginButton}
+            title="Iniciar sesión para participar"
+          >
+            <LogIn size={18} />
+            <span>Iniciar sesión</span>
+          </button>
+        )}
       </div>
       
       <div className={styles.header}>
@@ -168,31 +208,42 @@ const InfoManagement = () => {
               : 'Gestiona las publicaciones de tu organización'
           }
         </p>
+        {/*update: Show info message for non-logged users */}
+        {!isLoggedIn && activeView === 'board' && (
+          <p className={styles.publicAccessNote}>
+            Estás viendo el tablón en modo público. <button onClick={() => handleLoginRedirect('info')} className={styles.inlineLoginLink}>Inicia sesión</button> para crear publicaciones y unirte a asociaciones.
+          </p>
+        )}
       </div>
       
-      {isLoggedIn && activeView !== 'management' && (
-        <div className={styles.tabNavigation}>
-          <button
-            className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
-            onClick={() => {
-              setActiveView('board');
-              setFilterByOrganization(null);
-              setSelectedOrgForManagement(null);
-            }}
-          >
-            Publicaciones
-          </button>
-          <button
-            className={`${styles.tabButton} ${activeView === 'organizations' ? styles.activeTab : ''}`}
-            onClick={() => {
-              setActiveView('organizations');
-              setSelectedOrgForManagement(null);
-            }}
-          >
-            Asociaciones
-          </button>
-        </div>
-      )}
+      {/*update: Show tabs for everyone, but some actions require login */}
+      <div className={styles.tabNavigation}>
+        <button
+          className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
+          onClick={() => {
+            setActiveView('board');
+            setFilterByOrganization(null);
+            setSelectedOrgForManagement(null);
+          }}
+        >
+          Publicaciones
+        </button>
+        <button
+          className={`${styles.tabButton} ${activeView === 'organizations' ? styles.activeTab : ''}`}
+          onClick={() => {
+            //update: Check if logged in before showing organizations
+            if (!isLoggedIn) {
+              handleLoginRedirect('info');
+              return;
+            }
+            setActiveView('organizations');
+            setSelectedOrgForManagement(null);
+          }}
+        >
+          Asociaciones
+          {!isLoggedIn && <span className={styles.loginRequiredBadge}>🔒</span>}
+        </button>
+      </div>
       
       {activeView === 'management' && (
         <div className={styles.backButtonContainer}>
@@ -255,7 +306,6 @@ const InfoManagement = () => {
         </div>
       )}
       
-      
       {isLoggedIn && activeView === 'board' && (
         <div className={styles.boardActions}>
           {belongsToOrganization && (
@@ -291,6 +341,7 @@ const InfoManagement = () => {
                 publicationData={editingPublication}
               />
             )}
+            {/*update: Show InfoBoard for everyone (public access) */}
             <InfoBoard />
           </>
         ) : activeView === 'organizations' ? (
@@ -312,7 +363,11 @@ const InfoManagement = () => {
             </>
           ) : (
             <div className={styles.loginMessage}>
+              <LogIn size={48} />
               <p>Debes iniciar sesión para ver y unirte a las asociaciones.</p>
+              <button onClick={() => handleLoginRedirect('info')} className={styles.loginCTA}>
+                Iniciar sesión
+              </button>
             </div>
           )
         ) : activeView === 'management' ? (

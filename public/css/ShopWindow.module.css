@@ -1,4 +1,4 @@
-/*update: Mobile-First Base Styles (320px - 359px) */
+/*update: Mobile-First Base Styles with public access support */
 .container {
   margin-top: 4rem;
   width: 100%;
@@ -7,7 +7,6 @@
   background-color: var(--light-gray);
 }
 
-/*update: Header section mobile-first */
 .headerSection {
   width: 100%;
   text-align: center;
@@ -23,7 +22,21 @@
   margin: 0;
 }
 
-/*update: Filter button section mobile-first */
+/*update: Public browsing notification */
+.publicBrowsingNote {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(151, 71, 255, 0.12) 0%, rgba(120, 50, 220, 0.08) 100%);
+  border-left: 4px solid var(--app-purple);
+  border-radius: 6px;
+  color: black;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
 .filterButtonSection {
   display: flex;
   justify-content: center;
@@ -37,7 +50,6 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  /* padding: 0.2rem 0.4rem; */
   background: white;
   border: 2px solid transparent;
   border-radius: 8px;
@@ -81,7 +93,6 @@
   transform: rotate(180deg);
 }
 
-/*update: Shops count mobile-first */
 .shopsCount {
   margin-bottom: 0.5rem;
   padding: 0.25rem;
@@ -95,7 +106,6 @@
   margin: 0;
 }
 
-/*update: Reset button mobile-first */
 .resetButton {
   padding: 0.438rem 0.875rem;
   background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -115,7 +125,6 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
 
-/*update: Loading State mobile-first */
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -147,7 +156,6 @@
   margin: 0;
 }
 
-/*update: Error State mobile-first */
 .errorContainer {
   display: flex;
   flex-direction: column;
@@ -186,7 +194,6 @@
   box-shadow: 0 4px 12px rgba(146, 51, 234, 0.151);
 }
 
-/*update: Empty State mobile-first */
 .emptyContainer {
   display: flex;
   flex-direction: column;
@@ -208,7 +215,6 @@
   margin: 0;
 }
 
-/*update: Shops Grid mobile-first (single column) */
 .shopsGrid {
   display: grid;
   grid-template-columns: 1fr;
@@ -218,11 +224,9 @@
 }
 
 .shopCardWrapper {
-  /* width: 100%; */
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
   transition: all 0.3s ease;
   margin: 0;
 }
@@ -232,90 +236,19 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-/* @media (min-width: 360px) {
-  .container {
-    padding: 0.75rem;
-    margin-top: 4.5rem;
-  }
-
-  .title {
-    font-size: 1.625rem;
-  }
-
-  .filterButton {
-    font-size: 0.875rem;
-  }
-
-  .filterBadge {
-    font-size: 0.688rem;
-    padding: 0.125rem 0.375rem;
-  }
-
-  .filterArrow {
-    width: 16px;
-    height: 16px;
-  }
-
-  .shopsCount p {
-    font-size: 0.813rem;
-  }
-
-  .shopsGrid {
-    gap: 0.75rem;
-  }
-
-  .loadingText {
-    font-size: 0.813rem;
-  }
-
-  .loader {
-    width: 36px;
-    height: 36px;
-  }
-} */
-
-
-/* @media (min-width: 411px) {
-  .container {
-    padding: 0.875rem;
-  }
-
-  .headerSection {
-    margin-bottom: 0.75rem;
-  }
-
-  .title {
-    font-size: 1.688rem;
-  }
-
-  .filterButtonSection {
-    margin-bottom: 1rem;
-  }
-
-  .filterButton {
-    padding: 0.563rem .8rem;
-  }
-
-  .resetButton {
-    font-size: 0.813rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .shopsGrid {
-    gap: 0.875rem;
-  }
-} */
-
-/*update: Large phones (480px - 639px) */
 @media (min-width: 480px) {
   .container {
     padding: 1rem;
-    /* padding-top: rem; */
   }
 
   .title {
     font-size: 1.75rem;
     padding: 0.625rem 0;
+  }
+  
+  .publicBrowsingNote {
+    font-size: 0.92rem;
+    padding: 0.8rem 1.15rem;
   }
 
   .filterButton {
@@ -351,7 +284,6 @@
   }
 }
 
-/*update: Small tablets/Large phones landscape (640px - 767px) */
 @media (min-width: 640px) {
   .container {
     padding: 1.25rem;
@@ -385,7 +317,6 @@
     font-size: 0.938rem;
   }
 
-  /*update: 2 columns grid for small tablets */
   .shopsGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.125rem;
@@ -396,7 +327,6 @@
   }
 }
 
-/*update: Tablets (768px - 1023px) */
 @media (min-width: 768px) {
   .container {
     padding: 1.5rem;
@@ -405,6 +335,10 @@
   .title {
     font-size: 2rem;
     letter-spacing: 0.03em;
+  }
+  
+  .publicBrowsingNote {
+    font-size: 0.95rem;
   }
 
   .filterButton {
@@ -457,7 +391,6 @@
   }
 }
 
-/*update: Small desktop (1024px - 1279px) */
 @media (min-width: 1024px) {
   .container {
     padding: 2rem;
@@ -499,7 +432,6 @@
     padding: 3rem 2rem;
   }
 
-  /*update: 3 columns grid for desktop */
   .shopsGrid {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
@@ -511,7 +443,6 @@
   }
 }
 
-/*update: Large desktop (1280px - 1535px) */
 @media (min-width: 1280px) {
   .container {
     max-width: 1280px;
@@ -530,14 +461,12 @@
     font-size: 1rem;
   }
 
-  /*update: 4 columns grid for large desktop */
   .shopsGrid {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.75rem;
   }
 }
 
-/*update: Extra large desktop (1536px - 1919px) */
 @media (min-width: 1536px) {
   .container {
     max-width: 1536px;
@@ -561,14 +490,12 @@
     font-size: 1rem;
   }
 
-  /*update: 5 columns grid for extra large desktop */
   .shopsGrid {
     grid-template-columns: repeat(5, 1fr);
     gap: 2rem;
   }
 }
 
-/*update: Full HD (1920px - 2559px) */
 @media (min-width: 1920px) {
   .container {
     max-width: 1800px;
@@ -602,14 +529,12 @@
     padding: 0.625rem 1.375rem;
   }
 
-  /*update: 6 columns grid for Full HD */
   .shopsGrid {
     grid-template-columns: repeat(6, 1fr);
     gap: 2.25rem;
   }
 }
 
-/*update: Ultra wide monitors (2560px - 3839px) */
 @media (min-width: 2560px) {
   .container {
     max-width: 2400px;
@@ -625,7 +550,6 @@
     font-size: 1.125rem;
   }
 
-  /*update: 7 columns grid for ultra wide screens */
   .shopsGrid {
     grid-template-columns: repeat(7, 1fr);
     gap: 2.5rem;
@@ -645,7 +569,6 @@
   }
 }
 
-/*update: 4K displays (3840px and up) */
 @media (min-width: 3840px) {
   .container {
     max-width: 3600px;
@@ -732,7 +655,6 @@
     line-height: 1.6;
   }
 
-  /*update: 10 columns grid for 4K displays */
   .shopsGrid {
     grid-template-columns: repeat(10, 1fr);
     gap: 3rem;

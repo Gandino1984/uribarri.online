@@ -1,5 +1,4 @@
-/* public/css/InfoManagement.module.css */
-/* Mobile-first responsive design - Enhanced for 360px to ultra-wide screens */
+/*update: Mobile-first responsive design with public access support */
 
 .container {
   display: flex;
@@ -12,18 +11,18 @@
   overflow-y: auto;
 }
 
-/*update: Back button container */
 .backButtonContainer {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-/*update: Back button styling */
 .backButton {
   display: flex;
   align-items: center;
@@ -36,24 +35,44 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 .backButton:hover {
   background: lightgray;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
 }
 
 .backButton span {
   font-size: 0.95rem;
 }
 
+/*update: Login button in header for anonymous users */
+.loginButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, var(--app-green) 0%, rgba(180, 220, 20, 0.9) 100%);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(209, 255, 31, 0.3);
+  text-transform: uppercase;
+}
+
+.loginButton:hover {
+  background: linear-gradient(135deg, rgba(180, 220, 20, 1) 0%, var(--app-green) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(209, 255, 31, 0.4);
+}
+
 .header {
   text-align: center;
   padding: 1.5rem 1rem;
-  /* background: white; */
   border-radius: 12px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
@@ -76,17 +95,46 @@
   line-height: 1.4;
 }
 
+/*update: Public access notification */
+.publicAccessNote {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1.15rem;
+  background: linear-gradient(135deg, rgba(209, 255, 31, 0.12) 0%, rgba(180, 220, 20, 0.08) 100%);
+  border-left: 4px solid var(--app-green);
+  border-radius: 6px;
+  color: black;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/*update: Inline login link */
+.inlineLoginLink {
+  background: none;
+  border: none;
+  color: var(--app-purple);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0;
+  margin: 0 0.25rem;
+  transition: color 0.2s ease;
+  font-size: inherit;
+}
+
+.inlineLoginLink:hover {
+  color: var(--app-purple-darker);
+}
+
 .tabNavigation {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* flex-direction: column; */
   gap: 1rem;
   padding: 0 1rem;
   max-width: 1200px;
-  /* margin: 0 auto; */
   width: 100%;
-  /* flex-shrink: 0; */
   scrollbar-width: none;
 }
 
@@ -108,6 +156,7 @@
   white-space: nowrap;
   flex-shrink: 1;
   width: 100%;
+  position: relative;
 }
 
 .tabButton:hover {
@@ -127,6 +176,14 @@
   background: transparent;
 }
 
+/*update: Lock badge for restricted tabs */
+.loginRequiredBadge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
 .managerActions,
 .boardActions {
   display: flex;
@@ -140,7 +197,6 @@
   flex-wrap: wrap;
 }
 
-/*update: Consistent button styling matching ShopManagement */
 .createButton,
 .managementButton {
   display: flex;
@@ -156,7 +212,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  /* box-shadow: 0 2px 8px rgba(151, 71, 255, 0.3); */
   text-transform: uppercase;
   letter-spacing: 0.05rem;
 }
@@ -164,8 +219,6 @@
 .createButton:hover,
 .managementButton:hover {
   background-color: var(--app-purple-darker); 
-  /* transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(151, 71, 255, 0.4); */
 }
 
 .createButton svg,
@@ -178,7 +231,6 @@
   transform: scale(1.1);
 }
 
-/*update: Active state for close button */
 .createButtonActive {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
@@ -196,8 +248,13 @@
   padding: 0 1rem;
 }
 
-/*update: Login message styling */
+/*update: Enhanced login message */
 .loginMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   text-align: center;
   padding: 3rem 1.5rem;
   background: white;
@@ -206,13 +263,38 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+.loginMessage svg {
+  color: var(--app-purple);
+}
+
 .loginMessage p {
   font-size: 1rem;
   margin: 0;
   line-height: 1.5;
 }
 
-/*update: Loading states */
+/*update: Login CTA button */
+.loginCTA {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--app-purple) 0%, var(--app-purple-darker) 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(151, 71, 255, 0.3);
+  text-transform: uppercase;
+}
+
+.loginCTA:hover {
+  background: linear-gradient(135deg, var(--app-purple-darker) 0%, var(--app-purple) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(151, 71, 255, 0.4);
+}
+
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -246,7 +328,6 @@
   font-weight: 500;
 }
 
-/*update: No organization selected state */
 .noOrgSelected {
   display: flex;
   flex-direction: column;
@@ -271,7 +352,6 @@
   margin: 0;
 }
 
-/*update: Organization selector for management view */
 .orgSelector {
   display: flex;
   align-items: center;
@@ -318,7 +398,8 @@
     padding: 0 0.5rem;
   }
   
-  .backButton {
+  .backButton,
+  .loginButton {
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
   }
@@ -337,6 +418,11 @@
   
   .subtitle {
     font-size: 0.85rem;
+  }
+  
+  .publicAccessNote {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
   }
   
   .tabNavigation {
@@ -373,6 +459,11 @@
   
   .loginMessage p {
     font-size: 0.9rem;
+  }
+  
+  .loginCTA {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
   }
   
   .orgSelector {
@@ -431,7 +522,8 @@
     gap: 1.75rem;
   }
   
-  .backButton {
+  .backButton,
+  .loginButton {
     padding: 0.8rem 1.4rem;
   }
   
@@ -472,7 +564,8 @@
     gap: 2rem;
   }
   
-  .backButton {
+  .backButton,
+  .loginButton {
     padding: 0.85rem 1.5rem;
   }
   
