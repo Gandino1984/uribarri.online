@@ -10,6 +10,8 @@ import OrganizationsList from './components/OrganizationsList.jsx';
 import OrganizationCreationForm from './components/OrganizationCreationForm.jsx';
 import PublicationCreationForm from './components/PublicationCreationForm.jsx';
 import PublicationManagement from './components/PublicationManagement.jsx';
+//update: Import PendingTransfersBadge
+import PendingTransfersBadge from './components/PendingTransfersBadge.jsx';
 import { Plus, X, FileText, Users, Settings, ArrowLeft, LogIn } from 'lucide-react';
 import styles from '../../../../public/css/InfoManagement.module.css';
 
@@ -18,9 +20,7 @@ const InfoManagement = () => {
     setShowTopBar,
     setShowInfoManagement,
     setShowShopWindow,
-    //update: Add setShowLandingPage for login redirect
     setShowLandingPage,
-    //update: Add navigation intent
     setNavigationIntent
   } = useUI();
   const { currentUser, setIsLoggingIn } = useAuth();
@@ -40,7 +40,6 @@ const InfoManagement = () => {
     setShowTopBar(true);
   }, [setShowTopBar]);
   
-  //update: Only fetch user organizations if logged in
   useEffect(() => {
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user);
@@ -65,13 +64,21 @@ const InfoManagement = () => {
     setShowShopWindow(true);
   };
   
-  //update: Helper to redirect to login with intent
   const handleLoginRedirect = (intent) => {
     console.log('Redirecting to login with intent:', intent);
     setNavigationIntent(intent);
     setShowInfoManagement(false);
     setShowLandingPage(false);
     setIsLoggingIn(true);
+  };
+  
+  //update: Handler for when transfer is processed
+  const handleTransferProcessed = () => {
+    console.log('Transfer processed, refreshing organizations');
+    if (currentUser?.id_user) {
+      fetchUserOrganizations(currentUser.id_user);
+      fetchAllOrganizations();
+    }
   };
   
   const isLoggedIn = !!currentUser;
@@ -107,7 +114,6 @@ const InfoManagement = () => {
   };
   
   const toggleCreationForm = () => {
-    //update: Check if logged in before allowing creation
     if (!isLoggedIn) {
       handleLoginRedirect('info');
       return;
@@ -121,7 +127,6 @@ const InfoManagement = () => {
   };
   
   const togglePublicationForm = () => {
-    //update: Check if logged in before allowing publication creation
     if (!isLoggedIn) {
       handleLoginRedirect('info');
       return;
@@ -134,7 +139,6 @@ const InfoManagement = () => {
   };
   
   const handleEditOrganization = (org) => {
-    //update: Check if logged in before allowing edit
     if (!isLoggedIn) {
       handleLoginRedirect('info');
       return;
@@ -179,7 +183,6 @@ const InfoManagement = () => {
           <ArrowLeft size={20} />
           <span>Al escaparate</span>
         </button>
-        {/*update: Show login button if not logged in */}
         {!isLoggedIn && (
           <button 
             onClick={() => handleLoginRedirect('info')}
@@ -189,6 +192,10 @@ const InfoManagement = () => {
             <LogIn size={18} />
             <span>Iniciar sesión</span>
           </button>
+        )}
+        {/*update: Add PendingTransfersBadge for logged in users */}
+        {isLoggedIn && (
+          <PendingTransfersBadge onTransferProcessed={handleTransferProcessed} />
         )}
       </div>
       
@@ -208,15 +215,13 @@ const InfoManagement = () => {
               : 'Gestiona las publicaciones de tu organización'
           }
         </p>
-        {/*update: Show info message for non-logged users */}
         {!isLoggedIn && activeView === 'board' && (
           <p className={styles.publicAccessNote}>
-            Estás viendo el tablón en modo público. <button onClick={() => handleLoginRedirect('info')} className={styles.inlineLoginLink}>Inicia sesión</button> para crear publicaciones y unirte a asociaciones.
+            Estás viendo el tablón en modo público. Inicia sesión para crear publicaciones y unirte a asociaciones.
           </p>
         )}
       </div>
       
-      {/*update: Show tabs for everyone, but some actions require login */}
       <div className={styles.tabNavigation}>
         <button
           className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
@@ -231,7 +236,6 @@ const InfoManagement = () => {
         <button
           className={`${styles.tabButton} ${activeView === 'organizations' ? styles.activeTab : ''}`}
           onClick={() => {
-            //update: Check if logged in before showing organizations
             if (!isLoggedIn) {
               handleLoginRedirect('info');
               return;
@@ -341,7 +345,6 @@ const InfoManagement = () => {
                 publicationData={editingPublication}
               />
             )}
-            {/*update: Show InfoBoard for everyone (public access) */}
             <InfoBoard />
           </>
         ) : activeView === 'organizations' ? (

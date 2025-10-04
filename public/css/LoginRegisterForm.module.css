@@ -141,6 +141,74 @@ background-color: white;
   /* opacity: 0.3; */
 }
 
+/* Add these styles to your LoginRegisterForm.module.css file */
+
+/*update: Back button styles for returning to landing page */
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-transform: none;
+}
+
+.backButton:hover {
+  background: white;
+  border-color: var(--app-purple);
+  color: var(--app-purple);
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(151, 71, 255, 0.25);
+}
+
+.backButton:active {
+  transform: translateX(-2px);
+}
+
+.backButton svg {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.backButton:hover svg {
+  transform: translateX(-2px);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .backButton {
+    top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .backButton span {
+    display: none;
+  }
+}
+
+/* Very small mobile */
+@media (max-width: 480px) {
+  .backButton {
+    top: 8px;
+    left: 8px;
+    padding: 6px 10px;
+  }
+}
+
 @media screen and (min-width: 500px) {
   .container {
     display: flex;

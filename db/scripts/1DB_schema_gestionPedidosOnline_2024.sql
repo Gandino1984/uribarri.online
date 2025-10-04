@@ -390,6 +390,27 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant_publicati
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `DB_gestionPedidosOnline_2024`.`organization_transfer_request`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`organization_transfer_request` (
+  `id_transfer_request` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_organization` INT UNSIGNED NOT NULL,
+  `from_user_id` INT UNSIGNED NOT NULL,
+  `to_user_id` INT UNSIGNED NOT NULL,
+  `status` ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  `request_message` TEXT NULL,
+  `response_message` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_transfer_request`),
+  INDEX `idx_organization` (`id_organization` ASC) VISIBLE,
+  INDEX `idx_from_user` (`from_user_id` ASC) VISIBLE,
+  INDEX `idx_to_user` (`to_user_id` ASC) VISIBLE,
+  INDEX `idx_status` (`status` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `DB_gestionPedidosOnline_2024`.`social_event`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`social_event` (
@@ -415,3 +436,4 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`social_event` (
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+

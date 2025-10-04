@@ -6,7 +6,7 @@
   width: 100%;
   min-height: 100vh;
   gap: 1.5rem;
-  margin-top: 5.5rem;
+  margin-top: 3rem;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -51,22 +51,20 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, var(--app-green) 0%, rgba(180, 220, 20, 0.9) 100%);
+  background-color: var(--app-purple);
   border: 2px solid transparent;
   border-radius: 8px;
-  color: black;
+  color: white;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(209, 255, 31, 0.3);
+  /* box-shadow: 0 2px 8px rgba(209, 255, 31, 0.3); */
   text-transform: uppercase;
 }
 
 .loginButton:hover {
-  background: linear-gradient(135deg, rgba(180, 220, 20, 1) 0%, var(--app-green) 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(209, 255, 31, 0.4);
+  background-color: var(--app-purple-darker);
 }
 
 .header {
@@ -79,12 +77,12 @@
 }
 
 .title {
-  font-size: 1.75rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  letter-spacing: .1rem;
-  color: rgb(27, 27, 27);
+  letter-spacing: .05rem;
+  color: black;
   margin: 0 0 0.5rem 0;
-  line-height: 1.2;
+  line-height: 1.8;
 }
 
 .subtitle {
@@ -99,14 +97,14 @@
 .publicAccessNote {
   margin-top: 0.75rem;
   padding: 0.85rem 1.15rem;
-  background: linear-gradient(135deg, rgba(209, 255, 31, 0.12) 0%, rgba(180, 220, 20, 0.08) 100%);
-  border-left: 4px solid var(--app-green);
+  background-color: var(--app-purple-transparent);
+  /* border-left: 4px solid var(--app-green); */
   border-radius: 6px;
-  color: black;
+  color: var(--app-purple);
   font-size: 0.9rem;
   line-height: 1.6;
   font-weight: 500;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
 }
 
 /*update: Inline login link */

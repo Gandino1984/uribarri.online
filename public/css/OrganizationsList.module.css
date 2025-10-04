@@ -417,6 +417,30 @@
   font-weight: 700;
 }
 
+/*update: Transfer button styles */
+.transferButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.transferButton:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.transferButton:active {
+  transform: translateY(0);
+}
+
+.transferButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
 /* Mobile (360px - 480px) */
 @media (max-width: 480px) {
   .container {

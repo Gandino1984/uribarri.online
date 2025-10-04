@@ -81,6 +81,12 @@ router.post("/login", userApiController.login);
 
 router.post("/create", userApiController.create);
 
+//update: Route for searching by email
+router.post("/by-email", userApiController.getByEmail);
+
+//update: Route for searching by name (partial match)
+router.post("/search-by-name", userApiController.searchByName);
+
 router.patch("/update", userApiController.update);
 
 router.delete("/remove/:id_user", userApiController.removeById);
@@ -242,6 +248,8 @@ router.post('/test-email-direct', async (req, res) => {
         });
     }
 });
+
+
 
 
 export default router;

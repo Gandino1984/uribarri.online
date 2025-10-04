@@ -647,6 +647,57 @@ async function updateProfileImage(userName, imagePath) {
     }
 }
 
+//update: Get user by email
+async function getByEmail(email_user) {
+    try {
+        if (!email_user) {
+            return { error: "El email es obligatorio" };
+        }
+
+        const user = await user_model.findOne({
+            where: { email_user: email_user },
+            attributes: { exclude: ['pass_user'] }
+        });
+
+        if (!user) {
+            return { error: "Usuario no encontrado con ese email" };
+        }
+
+        return { data: user };
+    } catch (err) {
+        console.error("-> user_controller.js - getByEmail() - Error = ", err);
+        return { error: "Error al buscar usuario por email" };
+    }
+}
+
+//update: Search users by name (partial match using LIKE)
+async function searchByName(name_user) {
+    try {
+        if (!name_user || name_user.length < 2) {
+            return { error: "Ingresa al menos 2 caracteres para buscar" };
+        }
+
+        const users = await user_model.findAll({
+            where: {
+                name_user: {
+                    [Op.like]: `%${name_user}%`
+                }
+            },
+            attributes: { exclude: ['pass_user'] },
+            limit: 10
+        });
+
+        if (!users || users.length === 0) {
+            return { error: "No se encontraron usuarios con ese nombre", data: [] };
+        }
+
+        return { data: users };
+    } catch (err) {
+        console.error("-> user_controller.js - searchByName() - Error = ", err);
+        return { error: "Error al buscar usuarios por nombre" };
+    }
+}
+
 export { 
     getAll, 
     getById, 
@@ -658,7 +709,9 @@ export {
     getByUserName,
     updateProfileImage,
     verifyEmail,
-    resendVerificationEmail
+    resendVerificationEmail,
+     getByEmail,  
+    searchByName  
 };
 
 export default { 
@@ -672,5 +725,7 @@ export default {
     getByUserName,
     updateProfileImage,
     verifyEmail,
-    resendVerificationEmail
+    resendVerificationEmail,
+     getByEmail,  
+    searchByName  
 };

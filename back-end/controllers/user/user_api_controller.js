@@ -187,6 +187,50 @@ async function updateProfileImage(userName, imagePath) {
     }
 }
 
+//update: Search user by email
+async function getByEmail(req, res) {
+    try {
+        const { email_user } = req.body;
+        
+        if (!email_user) {
+            return res.status(400).json({ 
+                error: 'El email es obligatorio' 
+            });
+        }
+        
+        const { error, data } = await userController.getByEmail(email_user);
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> user_api_controller.js - getByEmail() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al buscar usuario por email",
+            details: err.message
+        });
+    }
+}
+
+//update: Search users by name (partial match)
+async function searchByName(req, res) {
+    try {
+        const { name_user } = req.body;
+        
+        if (!name_user) {
+            return res.status(400).json({ 
+                error: 'El nombre es obligatorio para la búsqueda' 
+            });
+        }
+        
+        const { error, data } = await userController.searchByName(name_user);
+        res.json({ error, data });
+    } catch (err) {
+        console.error("-> user_api_controller.js - searchByName() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al buscar usuarios por nombre",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -196,7 +240,9 @@ export {
     login,
     register,
     getByUserName,
-    updateProfileImage
+    updateProfileImage,
+    getByEmail, 
+    searchByName
 }
 
 export default {
@@ -208,5 +254,7 @@ export default {
     login,
     register,
     getByUserName,
-    updateProfileImage
+    updateProfileImage,
+    getByEmail,  
+    searchByName
 }

@@ -233,7 +233,7 @@
     border: none;
     border-radius: 8px;
     color: black;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
@@ -316,7 +316,7 @@
     box-shadow: 0 3px 12px rgba(128, 128, 128, 0.15);
 }
 
-/*update: Login button for mobile menu */
+
 .loginMenuButton {
     display: flex;
     align-items: center;
@@ -337,8 +337,8 @@
 }
 
 .loginMenuButton:hover {
-    background-color: var(--app-darkGreen);
-    color: var(--app-green);
+    background-color: var(--light-gray);
+    /* color: var(--app-green); */
     border-color: var(--app-green);
 }
 
@@ -389,16 +389,6 @@
     height: 1px;
     background: #e5e7eb;
     margin: 0.25rem 0;
-}
-
-.buttonIcon {
-    color: black;
-    flex-shrink: 0;
-}
-
-.buttonText {
-    flex: 1;
-    color: black;
 }
 
 @media (min-width: 501px) {
