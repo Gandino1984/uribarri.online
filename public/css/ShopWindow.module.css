@@ -25,16 +25,16 @@
 /*update: Public browsing notification */
 .publicBrowsingNote {
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, rgba(151, 71, 255, 0.12) 0%, rgba(120, 50, 220, 0.08) 100%);
-  border-left: 4px solid var(--app-purple);
+  background-color: var(--app-purple-transparent);
+  /* border-left: 4px solid var(--app-purple); */
   border-radius: 6px;
-  color: black;
+  color: var(--app-purple);
   font-size: 0.9rem;
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 500;
   line-height: 1.5;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
 }
 
 .filterButtonSection {

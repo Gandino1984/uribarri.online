@@ -1,4 +1,4 @@
-/*update: Mobile-first responsive design with public access support */
+/* Mobile-first responsive design with public access support and radio toggle */
 
 .container {
   display: flex;
@@ -6,7 +6,6 @@
   width: 100%;
   min-height: 100vh;
   gap: 1.5rem;
-  margin-top: 3rem;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -45,7 +44,6 @@
   font-size: 0.95rem;
 }
 
-/*update: Login button in header for anonymous users */
 .loginButton {
   display: flex;
   align-items: center;
@@ -59,7 +57,6 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  /* box-shadow: 0 2px 8px rgba(209, 255, 31, 0.3); */
   text-transform: uppercase;
 }
 
@@ -93,21 +90,17 @@
   line-height: 1.4;
 }
 
-/*update: Public access notification */
 .publicAccessNote {
   margin-top: 0.75rem;
   padding: 0.85rem 1.15rem;
   background-color: var(--app-purple-transparent);
-  /* border-left: 4px solid var(--app-green); */
   border-radius: 6px;
   color: var(--app-purple);
   font-size: 0.9rem;
   line-height: 1.6;
   font-weight: 500;
-  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
 }
 
-/*update: Inline login link */
 .inlineLoginLink {
   background: none;
   border: none;
@@ -125,61 +118,86 @@
   color: var(--app-purple-darker);
 }
 
-.tabNavigation {
+/*update: Modern radio toggle container */
+.radioToggleContainer {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 1rem;
+  align-items: center;
   padding: 0 1rem;
   max-width: 1200px;
   width: 100%;
-  scrollbar-width: none;
+  margin: 0 auto;
 }
 
-.tabNavigation::-webkit-scrollbar {
-  display: none;
-}
-
-.tabButton {
-  padding: 0.75rem 1.5rem;
+/*update: Radio toggle switch */
+.radioToggle {
+  position: relative;
+  display: inline-flex;
   background: white;
-  border: none;
-  border-bottom: 3px solid transparent;
-  color: black;
+  border-radius: 50px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
+}
+
+/*update: Hide default radio inputs */
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*update: Radio label styling */
+.radioLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.75rem;
   font-size: 0.9rem;
   font-weight: 600;
+  color: #6b7280;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: .5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
   white-space: nowrap;
-  flex-shrink: 1;
-  width: 100%;
-  position: relative;
+  user-select: none;
+  min-width: 140px;
+  text-align: center;
 }
 
-.tabButton:hover {
-  background-color: lightgray;
-}
-
-.activeTab {
-  color: var(--app-purple);
-  background-color: var(--app-purple-transparent);
-  border: 2px solid var(--app-purple);
-  letter-spacing: .08rem;
+/*update: Active label state */
+.radioInput:checked + .radioLabel {
+  color: white;
   font-weight: 800;
+  letter-spacing: 0.05rem;
 }
 
-.activeTab:hover {
-  color: var(--app-purple);
-  background: transparent;
-}
-
-/*update: Lock badge for restricted tabs */
-.loginRequiredBadge {
+/*update: Lock icon for restricted option */
+.lockIcon {
   display: inline-block;
   margin-left: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   opacity: 0.7;
+}
+
+/*update: Animated slider background */
+.radioSlider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  height: calc(100% - 8px);
+  width: calc(50% - 4px);
+  background: linear-gradient(135deg, var(--app-purple) 0%, var(--app-purple-darker) 100%);
+  border-radius: 50px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(151, 71, 255, 0.3);
+}
+
+/*update: Slider position when organizations is selected */
+.radioInput:checked[value="organizations"] ~ .radioSlider {
+  transform: translateX(calc(100% + 4px));
 }
 
 .managerActions,
@@ -246,7 +264,6 @@
   padding: 0 1rem;
 }
 
-/*update: Enhanced login message */
 .loginMessage {
   display: flex;
   flex-direction: column;
@@ -271,7 +288,6 @@
   line-height: 1.5;
 }
 
-/*update: Login CTA button */
 .loginCTA {
   padding: 0.75rem 2rem;
   background: linear-gradient(135deg, var(--app-purple) 0%, var(--app-purple-darker) 100%);
@@ -423,14 +439,25 @@
     padding: 0.75rem 1rem;
   }
   
-  .tabNavigation {
-    gap: 0.25rem;
+  /*update: Mobile radio toggle */
+  .radioToggleContainer {
     padding: 0 0.5rem;
   }
   
-  .tabButton {
-    padding: 0.65rem 1rem;
+  .radioToggle {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .radioLabel {
+    padding: 0.65rem 1.25rem;
     font-size: 0.8rem;
+    min-width: auto;
+    flex: 1;
+  }
+  
+  .lockIcon {
+    font-size: 0.7rem;
   }
   
   .managerActions,
@@ -496,8 +523,9 @@
     font-size: 0.9rem;
   }
   
-  .tabButton {
-    padding: 0.7rem 1.25rem;
+  /*update: Small mobile radio toggle */
+  .radioLabel {
+    padding: 0.7rem 1.5rem;
     font-size: 0.85rem;
   }
   
@@ -537,9 +565,11 @@
     font-size: 1rem;
   }
   
-  .tabButton {
-    padding: 0.85rem 1.75rem;
+  /*update: Tablet radio toggle */
+  .radioLabel {
+    padding: 0.85rem 2rem;
     font-size: 0.95rem;
+    min-width: 160px;
   }
   
   .managerActions,
@@ -579,9 +609,11 @@
     font-size: 1.05rem;
   }
   
-  .tabButton {
-    padding: 0.9rem 2rem;
+  /*update: Desktop radio toggle */
+  .radioLabel {
+    padding: 0.9rem 2.25rem;
     font-size: 1rem;
+    min-width: 180px;
   }
   
   .createButton,
@@ -609,9 +641,11 @@
     font-size: 1.1rem;
   }
   
-  .tabButton {
+  /*update: Large desktop radio toggle */
+  .radioLabel {
     padding: 1rem 2.5rem;
     font-size: 1.05rem;
+    min-width: 200px;
   }
   
   .createButton,
@@ -640,9 +674,11 @@
     font-size: 0.8rem;
   }
   
-  .tabButton {
-    padding: 0.6rem 1rem;
+  /*update: Landscape radio toggle */
+  .radioLabel {
+    padding: 0.6rem 1.5rem;
     font-size: 0.8rem;
+    min-width: 120px;
   }
   
   .createButton,

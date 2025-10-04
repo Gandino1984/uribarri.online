@@ -8,6 +8,8 @@ import EmailVerificationPending from "../email_verification/EmailVerificationPen
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
+//update: Import ArrowLeft icon for back button
+import { ArrowLeft } from 'lucide-react';
 import styles from '../../../../public/css/LoginRegisterForm.module.css';
 
 // Memoize form content
@@ -38,13 +40,20 @@ const LoginRegisterForm = () => {
     setShowTopBar,
     showShopStore,
     showShopWindow,
-    //update: Get success state to check for registration success
-    success
+    success,
+    //update: Import navigation functions for back button
+    setShowLandingPage,
+    setNavigationIntent,
+    setShowInfoManagement,
+    setShowShopsListBySeller,
+    setShowRiderManagement,
+    setShowShopManagement,
+    setShowShopStore,
+    setShowShopWindow
   } = useUI();
   
   // Track if mounted, not animation state
   const [isMounted, setIsMounted] = useState(false);
-  //update: Add state to track if we should show the verification pending screen
   const [showVerificationPending, setShowVerificationPending] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
   
@@ -59,7 +68,6 @@ const LoginRegisterForm = () => {
     }
   }, [shouldShow, setShowTopBar, isMounted]);
   
-  //update: Check for registration success and show verification pending screen
   useEffect(() => {
     if (success?.registrationSuccess && email_user) {
       console.log('Registration successful, showing verification pending screen');
@@ -67,6 +75,37 @@ const LoginRegisterForm = () => {
       setShowVerificationPending(true);
     }
   }, [success, email_user]);
+
+  //update: Handler for back to landing page
+  const handleBackToLanding = useCallback(() => {
+    console.log('Navigating back to LandingPage from LoginRegisterForm');
+    
+    // Clear navigation intent
+    setNavigationIntent(null);
+    localStorage.removeItem('navigationIntent');
+    
+    // Reset all navigation states
+    setShowLandingPage(true);
+    setShowTopBar(false);
+    setShowShopManagement(false);
+    setShowShopStore(false);
+    setShowShopWindow(false);
+    setShowInfoManagement(false);
+    setShowShopsListBySeller(false);
+    setShowRiderManagement(false);
+    
+    console.log('Successfully navigated to LandingPage');
+  }, [
+    setShowLandingPage,
+    setShowTopBar,
+    setShowShopManagement,
+    setShowShopStore,
+    setShowShopWindow,
+    setShowInfoManagement,
+    setShowShopsListBySeller,
+    setShowRiderManagement,
+    setNavigationIntent
+  ]);
 
   const getTransition = useCallback(() => {
     return {
@@ -79,7 +118,6 @@ const LoginRegisterForm = () => {
   
   const transitions = useTransition(shouldShow, getTransition());
   
-  //update: Handle back to login from verification pending
   const handleBackToLogin = useCallback(() => {
     setShowVerificationPending(false);
     setPendingEmail('');
@@ -104,8 +142,17 @@ const LoginRegisterForm = () => {
       <animated.div 
         className={styles.container} 
         style={style}
-      >
+      >     
         <div className={styles.formContainer}>
+          <button 
+            onClick={handleBackToLanding}
+            className={styles.backButton}
+            title="Volver al inicio"
+          >
+            <ArrowLeft size={20} />
+            <span>Volver al Inicio</span>
+          </button>
+
           <FormContent />
         </div>
       </animated.div>
