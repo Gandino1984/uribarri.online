@@ -1,21 +1,29 @@
-// src/components/info_management/components/info_board/InfoBoard.jsx
+//update: src/components/info_management/components/info_board/InfoBoard.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
+import { useOrganization } from '../../../../src/app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
+import ActionButtonsPublication from '../components/ActionButtonsPublication.jsx';
+import PublicationCreationForm from '../components/PublicationCreationForm.jsx';
 import styles from '../../../../../public/css/InfoBoard.module.css';
-import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle } from 'lucide-react';
+import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff } from 'lucide-react';
 
 const InfoBoard = () => {
   const { currentUser } = useAuth();
   const { setError, setSuccess, openImageModal } = useUI();
+  const { userOrganizations } = useOrganization();
   
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterByUser, setFilterByUser] = useState(null);
   const [sortOrder, setSortOrder] = useState('newest');
+  const [editingPublication, setEditingPublication] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   
-  // Fetch all publications
+  //update: Get API base URL for image paths
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
+  
   const fetchPublications = useCallback(async () => {
     try {
       setLoading(true);
@@ -24,15 +32,28 @@ const InfoBoard = () => {
       if (response.data && !response.data.error) {
         let pubs = response.data.data || [];
         
-        //update: Filter only approved publications for public view
-        pubs = pubs.filter(pub => pub.pub_approved === true);
+        const isManager = userOrganizations?.some(p => p.org_managed);
         
-        // Apply user filter if active
+        if (!isManager) {
+          pubs = pubs.filter(pub => pub.pub_approved === true && pub.publication_active !== false);
+        } else {
+          pubs = pubs.filter(pub => {
+            if (pub.pub_approved === true) {
+              const isManagedOrg = userOrganizations?.some(
+                p => p.org_managed && p.id_org === pub.id_org
+              );
+              if (isManagedOrg) return true;
+              
+              return pub.publication_active !== false;
+            }
+            return false;
+          });
+        }
+        
         if (filterByUser) {
           pubs = pubs.filter(pub => pub.id_user_pub === filterByUser);
         }
         
-        // Apply sort order
         if (sortOrder === 'oldest') {
           pubs.reverse();
         }
@@ -53,14 +74,43 @@ const InfoBoard = () => {
     } finally {
       setLoading(false);
     }
-  }, [filterByUser, sortOrder, setError]);
+  }, [filterByUser, sortOrder, setError, userOrganizations]);
   
-  // Initial load
   useEffect(() => {
     fetchPublications();
   }, [fetchPublications]);
   
-  // Format date for display
+  const handleEditPublication = (publication) => {
+    setEditingPublication(publication);
+    setShowEditForm(true);
+  };
+  
+  const handleEditSuccess = (updatedPublication) => {
+    setShowEditForm(false);
+    setEditingPublication(null);
+    fetchPublications();
+  };
+  
+  const handleCancelEdit = () => {
+    setShowEditForm(false);
+    setEditingPublication(null);
+  };
+  
+  const handleDeletePublication = (publicationId) => {
+    fetchPublications();
+  };
+  
+  const handleToggleActive = (publicationId, newStatus) => {
+    setPublications(prevPubs => 
+      prevPubs.map(pub => 
+        pub.id_publication === publicationId 
+          ? { ...pub, publication_active: newStatus }
+          : pub
+      )
+    );
+    fetchPublications();
+  };
+  
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     const options = { 
@@ -71,33 +121,30 @@ const InfoBoard = () => {
     return date.toLocaleDateString('es-ES', options);
   };
   
-  // Format time for display
   const formatTime = (timeStr) => {
     if (!timeStr) return '';
     const [hours, minutes] = timeStr.split(':');
     return `${hours}:${minutes}`;
   };
   
-  // Handle image click
+  //update: Fixed handleImageClick to construct full URL properly
   const handleImageClick = (imagePath) => {
     if (imagePath) {
-      const fullImagePath = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${imagePath}`;
+      const fullImagePath = `${API_BASE_URL}/${imagePath}`;
+      console.log('Opening image modal with path:', fullImagePath);
       openImageModal(fullImagePath);
     }
   };
   
-  // Handle filter change
   const handleFilterChange = (e) => {
     const value = e.target.value;
     setFilterByUser(value === 'all' ? null : parseInt(value));
   };
   
-  // Handle sort change
   const handleSortChange = (e) => {
     setSortOrder(e.target.value);
   };
   
-  // Get unique publishers for filter dropdown
   const getUniquePublishers = () => {
     const publishers = new Map();
     publications.forEach(pub => {
@@ -108,159 +155,201 @@ const InfoBoard = () => {
     return Array.from(publishers, ([id, name]) => ({ id, name }));
   };
   
+  //update: Helper function to construct image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    return `${API_BASE_URL}/${imagePath}`;
+  };
+  
   return (
     <div className={styles.container}>
-      {/* Filters and controls */}
-      <div className={styles.controls}>
-        <div className={styles.filterSection}>
-          <label htmlFor="userFilter" className={styles.filterLabel}>
-            Filtrar por usuario:
-          </label>
-          <select 
-            id="userFilter"
-            className={styles.filterSelect}
-            onChange={handleFilterChange}
-            value={filterByUser || 'all'}
-          >
-            <option value="all">Todos los usuarios</option>
-            {getUniquePublishers().map(publisher => (
-              <option key={publisher.id} value={publisher.id}>
-                {publisher.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        
-        <div className={styles.sortSection}>
-          <label htmlFor="sortOrder" className={styles.filterLabel}>
-            Ordenar:
-          </label>
-          <select 
-            id="sortOrder"
-            className={styles.filterSelect}
-            onChange={handleSortChange}
-            value={sortOrder}
-          >
-            <option value="newest">Más recientes</option>
-            <option value="oldest">Más antiguos</option>
-          </select>
-        </div>
-      </div>
-      
-      {/* Loading state */}
-      {loading && (
-        <div className={styles.loadingContainer}>
-          <div className={styles.loader}></div>
-          <p className={styles.loadingText}>Cargando publicaciones...</p>
-        </div>
+      {showEditForm && editingPublication && (
+        <PublicationCreationForm 
+          onSuccess={handleEditSuccess}
+          onCancel={handleCancelEdit}
+          editMode={true}
+          publicationData={editingPublication}
+        />
       )}
       
-      {/* Empty state */}
-      {!loading && publications.length === 0 && (
-        <div className={styles.emptyContainer}>
-          <AlertCircle size={48} className={styles.emptyIcon} />
-          <p className={styles.emptyText}>
-            {filterByUser 
-              ? "No hay publicaciones aprobadas de este usuario"
-              : "No hay publicaciones aprobadas disponibles en este momento"}
-          </p>
-          {filterByUser && (
-            <button 
-              className={styles.resetButton}
-              onClick={() => setFilterByUser(null)}
-            >
-              Ver todas las publicaciones
-            </button>
+      {!showEditForm && (
+        <>
+          <div className={styles.controls}>
+            <div className={styles.filterSection}>
+              <label htmlFor="userFilter" className={styles.filterLabel}>
+                Filtrar por usuario:
+              </label>
+              <select 
+                id="userFilter"
+                className={styles.filterSelect}
+                onChange={handleFilterChange}
+                value={filterByUser || 'all'}
+              >
+                <option value="all">Todos los usuarios</option>
+                {getUniquePublishers().map(publisher => (
+                  <option key={publisher.id} value={publisher.id}>
+                    {publisher.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className={styles.sortSection}>
+              <label htmlFor="sortOrder" className={styles.filterLabel}>
+                Ordenar:
+              </label>
+              <select 
+                id="sortOrder"
+                className={styles.filterSelect}
+                onChange={handleSortChange}
+                value={sortOrder}
+              >
+                <option value="newest">Más recientes</option>
+                <option value="oldest">Más antiguos</option>
+              </select>
+            </div>
+          </div>
+          
+          {loading && (
+            <div className={styles.loadingContainer}>
+              <div className={styles.loader}></div>
+              <p className={styles.loadingText}>Cargando publicaciones...</p>
+            </div>
           )}
-        </div>
-      )}
-      
-      {/* Publications grid */}
-      {!loading && publications.length > 0 && (
-        <div className={styles.publicationsGrid}>
-          {publications.map(publication => (
-            <article key={publication.id_publication} className={styles.publicationCard}>
-              {/* Card header */}
-              <div className={styles.cardHeader}>
-                <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
-                {publication.publisher && (
-                  <div className={styles.publisherInfo}>
-                    {publication.publisher.image_user ? (
-                      <img 
-                        src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publication.publisher.image_user}`}
-                        alt={publication.publisher.name_user}
-                        className={styles.publisherAvatar}
-                      />
-                    ) : (
-                      <div className={styles.publisherAvatarPlaceholder}>
-                        <User size={16} />
-                      </div>
-                    )}
-                    <span className={styles.publisherName}>
-                      {publication.publisher.name_user}
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Organization badge if exists */}
-              {publication.organization && (
-                <div className={styles.organizationBadge}>
-                  <CheckCircle size={14} />
-                  <span>{publication.organization.name_org}</span>
-                </div>
+          
+          {!loading && publications.length === 0 && (
+            <div className={styles.emptyContainer}>
+              <AlertCircle size={48} className={styles.emptyIcon} />
+              <p className={styles.emptyText}>
+                {filterByUser 
+                  ? "No hay publicaciones aprobadas de este usuario"
+                  : "No hay publicaciones aprobadas disponibles"}
+              </p>
+              {filterByUser && (
+                <button 
+                  className={styles.resetButton}
+                  onClick={() => setFilterByUser(null)}
+                >
+                  Ver todas las publicaciones
+                </button>
               )}
-              
-              {/* Card content */}
-              <div className={styles.cardContent}>
-                <p className={styles.publicationContent}>{publication.content_pub}</p>
-                
-                {/* Publication image if exists */}
-                {publication.image_pub && (
-                  <div 
-                    className={styles.publicationImageWrapper}
-                    onClick={() => handleImageClick(publication.image_pub)}
-                  >
-                    <img 
-                      src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publication.image_pub}`}
-                      alt={publication.title_pub}
-                      className={styles.publicationImage}
-                    />
-                    <div className={styles.imageOverlay}>
-                      <ImageIcon size={24} />
-                      <span>Ver imagen</span>
+            </div>
+          )}
+          
+          {!loading && publications.length > 0 && (
+            <div className={styles.publicationsGrid}>
+              {publications.map(publication => (
+                <article 
+                  key={publication.id_publication} 
+                  className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
+                >
+                  <div className={styles.cardHeaderWrapper}>
+                    <div className={styles.cardHeader}>
+                      <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
+                      {publication.publisher && (
+                        <div className={styles.publisherInfo}>
+                          {publication.publisher.image_user ? (
+                            <img 
+                              src={getImageUrl(publication.publisher.image_user)}
+                              alt={publication.publisher.name_user}
+                              className={styles.publisherAvatar}
+                              onError={(e) => {
+                                console.error('Failed to load publisher image:', publication.publisher.image_user);
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className={styles.publisherAvatarPlaceholder}>
+                              <User size={16} />
+                            </div>
+                          )}
+                          <span className={styles.publisherName}>
+                            {publication.publisher.name_user}
+                          </span>
+                        </div>
+                      )}
                     </div>
+                    
+                    <ActionButtonsPublication
+                      publication={publication}
+                      onEdit={handleEditPublication}
+                      onDelete={handleDeletePublication}
+                      onToggleActive={handleToggleActive}
+                      onRefresh={fetchPublications}
+                    />
                   </div>
-                )}
-              </div>
-              
-              {/* Card footer */}
-              <div className={styles.cardFooter}>
-                <div className={styles.dateTime}>
-                  <div className={styles.dateTimeItem}>
-                    <Calendar size={14} />
-                    <span>{formatDate(publication.date_pub)}</span>
-                  </div>
-                  {publication.time_pub && (
-                    <div className={styles.dateTimeItem}>
-                      <Clock size={14} />
-                      <span>{formatTime(publication.time_pub)}</span>
+                  
+                  {publication.publication_active === false && (
+                    <div className={styles.inactiveBadge}>
+                      <EyeOff size={14} />
+                      <span>Publicación desactivada</span>
                     </div>
                   )}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-      
-      {/* Publications count */}
-      {!loading && publications.length > 0 && (
-        <div className={styles.publicationsCount}>
-          <p>
-            Mostrando {publications.length} {publications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
-          </p>
-        </div>
+                  
+                  {publication.organization && (
+                    <div className={styles.organizationBadge}>
+                      <CheckCircle size={14} />
+                      <span>{publication.organization.name_org}</span>
+                    </div>
+                  )}
+                  
+                  {/*update: Moved image above text content */}
+                  {publication.image_pub && (
+                    <div 
+                      className={styles.publicationImageWrapper}
+                      onClick={() => handleImageClick(publication.image_pub)}
+                    >
+                      <img 
+                        src={getImageUrl(publication.image_pub)}
+                        alt={publication.title_pub}
+                        className={styles.publicationImage}
+                        onLoad={() => {
+                          console.log('Publication image loaded successfully:', publication.image_pub);
+                        }}
+                        onError={(e) => {
+                          console.error('Failed to load publication image:', publication.image_pub);
+                          console.error('Attempted URL:', getImageUrl(publication.image_pub));
+                          e.target.parentElement.style.display = 'none';
+                        }}
+                      />
+                      <div className={styles.imageOverlay}>
+                        <ImageIcon size={24} />
+                        <span>Ver imagen</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className={styles.cardContent}>
+                    <p className={styles.publicationContent}>{publication.content_pub}</p>
+                  </div>
+                  
+                  <div className={styles.cardFooter}>
+                    <div className={styles.dateTime}>
+                      <div className={styles.dateTimeItem}>
+                        <Calendar size={14} />
+                        <span>{formatDate(publication.date_pub)}</span>
+                      </div>
+                      {publication.time_pub && (
+                        <div className={styles.dateTimeItem}>
+                          <Clock size={14} />
+                          <span>{formatTime(publication.time_pub)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+          
+          {!loading && publications.length > 0 && (
+            <div className={styles.publicationsCount}>
+              <p>
+                Mostrando {publications.length} {publications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

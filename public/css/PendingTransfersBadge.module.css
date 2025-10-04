@@ -1,0 +1,215 @@
+/* public/css/PendingTransfersBadge.module.css */
+
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.badgeButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.badgeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.badgeButton:active {
+  transform: translateY(0);
+}
+
+.count {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  min-width: 320px;
+  max-width: 400px;
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+.dropdownHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dropdownHeader h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.transfersList {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.transferItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.transferItem:hover {
+  background: #f3f4f6;
+}
+
+.transferItem:last-child {
+  margin-bottom: 0;
+}
+
+.transferInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.transferInfo strong {
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.fromUser {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.message {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #4b5563;
+  border-left: 3px solid #667eea;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.acceptBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #10b981;
+  color: white;
+}
+
+.acceptBtn:hover:not(:disabled) {
+  background: #059669;
+  transform: scale(1.05);
+}
+
+.acceptBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rejectBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #ef4444;
+  color: white;
+}
+
+.rejectBtn:hover:not(:disabled) {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.rejectBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    max-width: 100%;
+    border-radius: 12px 12px 0 0;
+    max-height: 80vh;
+  }
+  
+  .transfersList {
+    max-height: calc(80vh - 60px);
+  }
+}

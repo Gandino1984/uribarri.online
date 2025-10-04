@@ -119,53 +119,34 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
           const organizationsWithDetails = [];
           
           for (const participation of participations) {
-            // Get the organization ID
-            const orgId = participation.id_org || participation.id_organization;
-            
-            // Fetch organization details to get complete info including who created it
-            if (orgId) {
+            // Check if organization data is already included
+            if (participation.name_org || participation.organization?.name_org) {
+              // Organization data is already present
+              organizationsWithDetails.push({
+                id_org: participation.id_org || participation.id_organization,
+                name_org: participation.name_org || participation.organization?.name_org,
+                is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
+                scope_org: participation.scope_org || participation.organization?.scope_org,
+                ...participation
+              });
+            } else if (participation.id_org || participation.id_organization) {
+              // Need to fetch organization details
               try {
+                const orgId = participation.id_org || participation.id_organization;
                 const orgDetailResponse = await axiosInstance.post('/organization/by-id', {
                   id_organization: orgId
                 });
                 
                 if (orgDetailResponse.data && !orgDetailResponse.data.error) {
                   const orgData = orgDetailResponse.data.data;
-                  
-                  // Check if this user is the manager based on multiple sources:
-                  // 1. The participation record says they're manager
-                  // 2. They're the creator of the organization (orgData.id_user)
-                  // 3. They're listed as the manager in the organization data
-                  const isOrgManager = 
-                    (participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1') ||
-                    (orgData.id_user === displayUser.id_user) ||
-                    (orgData.manager?.id_user === displayUser.id_user);
-                  
-                  console.log(`Organization ${orgData.name_org}:`, {
-                    participation_is_manager: participation.is_manager,
-                    org_creator_id: orgData.id_user,
-                    org_manager_id: orgData.manager?.id_user,
-                    current_user_id: displayUser.id_user,
-                    calculated_is_manager: isOrgManager
-                  });
-                  
                   organizationsWithDetails.push({
                     ...orgData,
-                    is_manager: isOrgManager,
-                    participant_id: participation.id_participant,
-                    joined_date: participation.created_at || participation.joined_date
+                    is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
+                    participant_id: participation.id_participant
                   });
                 }
               } catch (err) {
-                console.error(`Error fetching organization ${orgId} details:`, err);
-                // Fallback: use participation data if fetch fails
-                organizationsWithDetails.push({
-                  id_org: orgId,
-                  name_org: participation.name_org || participation.organization?.name_org || 'Organización',
-                  is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
-                  scope_org: participation.scope_org || participation.organization?.scope_org,
-                  joined_date: participation.created_at || participation.joined_date
-                });
+                console.error(`Error fetching organization ${participation.id_org} details:`, err);
               }
             }
           }
@@ -184,45 +165,31 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
         console.error('Error fetching user organizations:', err);
       }
       
-      // Also check if user created any organizations directly
-      try {
-        const directOrgResponse = await axiosInstance.post('/organization/by-user-id', {
-          id_user: displayUser.id_user
-        });
-        
-        if (directOrgResponse.data && !directOrgResponse.data.error) {
-          const createdOrgs = directOrgResponse.data.data || [];
-          console.log('Organizations created by user:', createdOrgs);
+      // Alternative: Try to fetch organizations by user ID directly if available
+      if (userOrganizations.length === 0) {
+        try {
+          const directOrgResponse = await axiosInstance.post('/organization/by-user-id', {
+            id_user: displayUser.id_user
+          });
           
-          // Merge with existing organizations, marking created ones as managed
-          createdOrgs.forEach(createdOrg => {
-            const existingIndex = userOrganizations.findIndex(
-              org => (org.id_org || org.id_organization) === createdOrg.id_organization
+          if (directOrgResponse.data && !directOrgResponse.data.error) {
+            const orgs = directOrgResponse.data.data || [];
+            console.log('Direct organization fetch:', orgs);
+            
+            // Check if this is the user's managed organization
+            const managedOrgs = orgs.filter(org => 
+              org.id_user === displayUser.id_user || 
+              org.manager?.id_user === displayUser.id_user
             );
             
-            if (existingIndex === -1) {
-              // Add this organization as managed
-              setUserOrganizations(prev => [...prev, {
-                ...createdOrg,
-                is_manager: true,
-                is_founder: true
-              }]);
-            } else {
-              // Update existing to show as manager
-              setUserOrganizations(prev => {
-                const updated = [...prev];
-                updated[existingIndex] = {
-                  ...updated[existingIndex],
-                  is_manager: true,
-                  is_founder: true
-                };
-                return updated;
-              });
+            if (managedOrgs.length > 0) {
+              setManagedOrganization(managedOrgs[0]);
+              setUserOrganizations(orgs);
             }
-          });
+          }
+        } catch (err) {
+          console.error('Error in alternative organization fetch:', err);
         }
-      } catch (err) {
-        console.error('Error fetching created organizations:', err);
       }
     } finally {
       setContextDataLoading(false);
@@ -514,11 +481,11 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 📍 {displayUser.location_user}
               </p>
             )}
-            {displayUser.age_user && (
+            {/* {displayUser.age_user && (
               <p className={styles.userAge}>
                 Edad: {displayUser.age_user} años
               </p>
-            )}
+            )} */}
             {displayUser.email_user && (
               <p className={styles.userEmail}>
                 {displayUser.email_user}
@@ -553,30 +520,16 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 <div className={styles.contextHeader}>
                   <Users size={14} className={styles.contextIcon} />
                   <span className={styles.contextTitle}>
-                    {userOrganizations.length === 1 ? 'Organización' : 'Organizaciones'}
+                    {userOrganizations.length === 1 ? 'Asociación' : 'Asociaciones'}
                   </span>
                 </div>
                 <div className={styles.contextList}>
                   {userOrganizations.map(org => {
                     const orgId = org.id_org || org.id_organization;
-                    const orgName = org.name_org || org.organization?.name_org || 'Organización';
-                    // Check multiple sources for manager status
-                    const isManager = org.is_manager === true || 
-                                     org.is_manager === 1 || 
-                                     org.is_manager === '1' ||
-                                     org.id_user === displayUser.id_user ||
+                    const orgName = org.name_org || org.organization?.name_org || 'Asociación';
+                    const isManager = org.is_manager;
+                    const isFounder = org.id_user === displayUser.id_user || 
                                      org.manager?.id_user === displayUser.id_user;
-                    const isFounder = org.is_founder || 
-                                     org.id_user === displayUser.id_user || 
-                                     org.created_by === displayUser.id_user;
-                    
-                    console.log(`Displaying ${orgName}:`, {
-                      is_manager: org.is_manager,
-                      isManager: isManager,
-                      isFounder: isFounder,
-                      org_id_user: org.id_user,
-                      display_user_id: displayUser.id_user
-                    });
                     
                     return (
                       <div key={orgId} className={styles.contextItem}>

@@ -1,3 +1,4 @@
+//update: Enhanced with public navigation support and clearNavigationState
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
@@ -5,7 +6,6 @@ import { useProduct } from '../../app_context/ProductContext.jsx';
 import { usePackage } from '../../app_context/PackageContext.jsx';
 
 export const TopBarUtils = () => {
-    // Auth context values
     const {
         setIsLoggingIn, setNameUser, 
         setPassword, setPasswordRepeat,
@@ -16,9 +16,7 @@ export const TopBarUtils = () => {
         clearUserSession: authClearUserSession
     } = useAuth();
 
-    // UI context values
     const {
-        // setError, setSuccess, setInfo,
         setShowErrorCard, setShowSuccessCard, setShowInfoCard,
         clearError, clearSuccess, clearInfo,
         setShowShopManagement,
@@ -35,10 +33,10 @@ export const TopBarUtils = () => {
         selectedShopForStore,
         setSelectedShopForStore,
         showInfoManagement,
-        setShowInfoManagement
+        setShowInfoManagement,
+        clearNavigationState
     } = useUI();
 
-    // Shop context values
     const {
         showShopManagement,
         setShowShopCreationForm,
@@ -48,7 +46,6 @@ export const TopBarUtils = () => {
         closeShopFormWithAnimation
     } = useShop();
 
-    // Product context values
     const {
         isUpdatingProduct, 
         setIsUpdatingProduct, 
@@ -56,7 +53,6 @@ export const TopBarUtils = () => {
         setProducts
     } = useProduct();
     
-    // Package context values
     const {
         showPackageCreationForm,
         setShowPackageCreationForm,
@@ -64,22 +60,43 @@ export const TopBarUtils = () => {
     } = usePackage();
 
     const handleBack = async () => {
-        //update: Check InfoManagement navigation first
+        //update: Enhanced back navigation for public pages
+        
+        // From InfoManagement - check if user is logged in
         if (showInfoManagement) {
-            console.log('Navigating from InfoManagement back to LandingPage');
-            setShowInfoManagement(false);
-            setShowLandingPage(true);
+            console.log('Navigating from InfoManagement');
+            if (currentUser) {
+                // Logged in users can go to ShopWindow or LandingPage
+                console.log('-> Logged in user going to ShopWindow');
+                setShowInfoManagement(false);
+                setShowShopWindow(true);
+            } else {
+                // Anonymous users go to LandingPage
+                console.log('-> Anonymous user going to LandingPage');
+                setShowInfoManagement(false);
+                setShowLandingPage(true);
+            }
             return;
         }
         
-        //update: Check ShopWindow navigation (higher priority)
+        // From ShopWindow - check if user is logged in
         if (showShopWindow && !showShopStore) {
-            console.log('Navigating from ShopWindow back to LandingPage');
-            setShowShopWindow(false);
-            setShowLandingPage(true);
+            console.log('Navigating from ShopWindow');
+            if (currentUser && currentUser.type_user === 'seller') {
+                // Sellers might have come from ShopsListBySeller
+                console.log('-> Seller going to ShopsListBySeller');
+                setShowShopWindow(false);
+                setShowShopsListBySeller(true);
+            } else {
+                // Everyone else goes to LandingPage
+                console.log('-> Going to LandingPage');
+                setShowShopWindow(false);
+                setShowLandingPage(true);
+            }
             return;
         }
         
+        // From ShopStore back to ShopWindow
         if (showShopStore) {
             console.log('Navigating from ShopStore back to ShopWindow');
             setShowShopStore(false);
@@ -88,14 +105,14 @@ export const TopBarUtils = () => {
             return;
         }
         
-        // If creating packages within product management, go back to products list
+        // From PackageCreationForm back to ShopProductsList
         if (selectedShop && showProductManagement && showPackageCreationForm) {
             console.log('Navigating from PackageCreationForm back to ShopProductsList');
             await closePackageFormWithAnimation();
             return;
         }
         
-        // When in ProductCreationForm, go back to ShopProductsList
+        // From ProductCreationForm back to ShopProductsList
         if (selectedShop && showProductManagement && isUpdatingProduct) {
             console.log('Navigating from ProductCreationForm back to ShopProductsList');
             setIsUpdatingProduct(false);
@@ -103,26 +120,21 @@ export const TopBarUtils = () => {
             return;
         }
         
-        // When in ShopProductsList (ProductManagement), go back to ShopsListBySeller
+        // From ShopProductsList back to ShopsListBySeller
         if (showProductManagement && selectedShop && !isUpdatingProduct && !showPackageCreationForm) {
             console.log('Navigating from ShopProductsList back to ShopsListBySeller');
-            
-            // Just toggle showProductManagement, ShopManagement will handle the rendering
             setShowProductManagement(false);
-            // Don't clear selectedShop - ShopsListBySeller needs it to show the shop card
-            
             return;
         }
         
-        // If we're creating a shop, go back to shops list
+        // From ShopCreationForm back to ShopsListBySeller
         if (showShopCreationForm) {
             console.log('Navigating from ShopCreationForm back to ShopsListBySeller');
             await closeShopFormWithAnimation();
-            // No need to set showShopsListBySeller - ShopManagement handles this
             return;
         }
         
-        //update: If we're in ShopsListBySeller as a seller, go back to ShopWindow
+        // From ShopsListBySeller - sellers go to ShopWindow
         if (showShopsListBySeller && !showProductManagement && !showShopCreationForm && currentUser?.type_user === 'seller') {
             console.log('Navigating from ShopsListBySeller back to ShopWindow');
             setShowShopsListBySeller(false);
@@ -131,7 +143,7 @@ export const TopBarUtils = () => {
             return;
         }
         
-        //update: If we're in ShopsListBySeller (no product management, no shop creation), go back to landing
+        // From ShopsListBySeller (generic fallback)
         if (showShopsListBySeller && !showProductManagement && !showShopCreationForm) {
             console.log('Navigating from ShopsListBySeller back to LandingPage');
             setShowShopsListBySeller(false);
@@ -142,6 +154,8 @@ export const TopBarUtils = () => {
     };
 
     const clearUserSession = () => {
+        console.log('=== CLEARING USER SESSION ===');
+        
         // Handle Auth context cleanup
         if (currentUser) {
             setCurrentUser(null);
@@ -181,6 +195,9 @@ export const TopBarUtils = () => {
         // Also use Auth context's clearUserSession function
         authClearUserSession();
         
+        //update: Clear navigation state from UIContext and localStorage
+        clearNavigationState();
+        
         // Clear localStorage
         localStorage.removeItem('currentUser');
 
@@ -195,6 +212,8 @@ export const TopBarUtils = () => {
         
         // Complete logout
         logout();
+        
+        console.log('User session cleared - redirected to LandingPage');
     };
 
     return {

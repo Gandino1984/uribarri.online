@@ -1,95 +1,113 @@
 /* public/css/FiltersForOrganizations.module.css */
+/* Mobile-first responsive design - Enhanced for 360px to ultra-wide screens */
 
 .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 1rem;
+  padding: 0.75rem;
   margin-bottom: 1rem;
 }
 
+/*update: Search section with responsive layout */
 .searchSection {
   display: flex;
   gap: 1rem;
   align-items: center;
-  max-width: 600px;
-  margin: 0 auto;
+  justify-content:center;
+  width: 100%;
+  /* margin: 0 auto; */
 }
 
+/*update: Search input wrapper */
 .searchInputWrapper {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* flex: 1; */
   position: relative;
+  /* width: 100%; */
 }
 
 .searchInput {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid lightgray;
   border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
   background: white;
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--app-purple);
+  /* box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1); */
 }
 
 .searchInput:disabled {
   background: #f5f5f5;
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .searchInput::placeholder {
-  color: #999;
+  color: gray;
 }
 
+/*update: Clear button styling */
 .clearButton {
   position: absolute;
   right: 0.75rem;
   top: 50%;
-  transform: translateY(-50%);
+  /* transform: translateY(-50%); */
   background: none;
   border: none;
-  color: #999;
+  color: #6b7280;
   cursor: pointer;
   padding: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: color 0.2s, background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .clearButton:hover {
-  color: #666;
+  color: #374151;
   background: rgba(0, 0, 0, 0.05);
 }
 
+/*update: Search button with gradient matching app design */
 .searchButton {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.75rem 1.25rem;
+  background: var(--app-purple);
   color: white;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   white-space: nowrap;
+  /* box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3); */
+  text-transform: uppercase;
+  letter-spacing: 0.03rem;
 }
 
 .searchButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: var(--app-purple-darker);
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 4px 12px rgba(151, 71, 255, 0.4); */
 }
 
 .searchButton:active:not(:disabled) {
-  transform: translateY(0);
+  /* transform: translateY(0); */
 }
 
 .searchButton:disabled {
@@ -99,9 +117,10 @@
 }
 
 .searchButton.searching {
-  background: linear-gradient(135deg, #999 0%, #777 100%);
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
 }
 
+/*update: Loading spinner */
 .loadingSpinner {
   width: 16px;
   height: 16px;
@@ -116,11 +135,12 @@
   100% { transform: rotate(360deg); }
 }
 
+/*update: Search info */
 .searchInfo {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   text-align: center;
-  color: #666;
-  font-size: 0.9rem;
+  color: #6b7280;
+  font-size: 0.85rem;
 }
 
 .searchInfo p {
@@ -128,13 +148,46 @@
 }
 
 .searchInfo strong {
-  color: #333;
+  color: var(--app-purple);
+  font-weight: 700;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 576px) {
+/* Mobile (360px - 480px) */
+@media (max-width: 480px) {
   .container {
-    padding: 0.75rem;
+    padding: 0.5rem;
+  }
+  
+  .searchSection {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  
+  .searchInputWrapper {
+    width: 100%;
+  }
+  
+  .searchInput {
+    padding: 0.65rem 2.25rem 0.65rem 0.85rem;
+    font-size: 0.85rem;
+  }
+  
+  .searchButton {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1.15rem;
+    font-size: 0.8rem;
+  }
+  
+  .searchInfo {
+    font-size: 0.8rem;
+  }
+}
+
+/* Small Mobile (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .container {
+    padding: 0.65rem;
   }
   
   .searchSection {
@@ -149,9 +202,105 @@
   .searchButton {
     width: 100%;
     justify-content: center;
+    padding: 0.75rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding: 0.85rem;
+  }
+  
+  .searchSection {
+    flex-direction: row;
+    max-width: 700px;
+  }
+  
+  .searchInput {
+    padding: 0.8rem 2.75rem 0.8rem 1.15rem;
+    font-size: 0.95rem;
+  }
+  
+  .searchButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
   }
   
   .searchInfo {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Desktop (1025px - 1439px) */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .searchSection {
+    max-width: 800px;
+  }
+  
+  .searchInput {
+    padding: 0.85rem 2.75rem 0.85rem 1.25rem;
+    font-size: 1rem;
+  }
+  
+  .searchButton {
+    padding: 0.85rem 1.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .searchInfo {
+    font-size: 0.95rem;
+  }
+}
+
+/* Large Desktop (1440px+) */
+@media (min-width: 1440px) {
+  .searchSection {
+    max-width: 900px;
+  }
+  
+  .searchInput {
+    padding: 0.9rem 3rem 0.9rem 1.35rem;
+    font-size: 1.05rem;
+  }
+  
+  .searchButton {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .searchInfo {
+    font-size: 1rem;
+  }
+}
+
+/* Landscape (phones) */
+@media (max-height: 600px) and (orientation: landscape) {
+  .container {
+    padding: 0.5rem;
+  }
+  
+  .searchSection {
+    gap: 0.5rem;
+  }
+  
+  .searchInput {
+    padding: 0.6rem 2rem 0.6rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  
+  .searchButton {
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+  }
+  
+  .searchInfo {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
   }
 }

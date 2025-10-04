@@ -1,5 +1,5 @@
 Please confirm you have read all my requirements. Read this instructions carefully line by line, study deeply the file tree of the project so you don't make any mistakes.
-	
+		
 VERY IMPORTANT: Please follow my instructions at all times. Do not modify my code or parts of the code's functionality unless I ask you to. We can only do this in the parts of the code that I require specifically to be modified. When you modify my code (under my command only) you should add an "//update:" comment above it so I know what parts of the code were updated or modified. Remove old or previous "//update:" comments so the only update comments are the latest. Also, erase old or previous "update" comments in the css styles.
 
 VERY IMPORTANT: always give me the complete updated files. I don't want code snipets.
@@ -29,8 +29,8 @@ COPY . .
 # Create necessary directories and set permissions
 # Note: Changed path to match the actual structure
 RUN mkdir -p /app/public/images/uploads/users \
-            /app/public/images/uploads/shops \
-            /app/public/images/uploads/temp && \
+	    /app/public/images/uploads/shops \
+	    /app/public/images/uploads/temp && \
     find /app/public/images/uploads -type d -exec chmod 755 {} + && \
     find /app/public/images/uploads -type f -exec chmod 755 {} + && \
     chown -R node:node /app/public/images/uploads
@@ -179,6 +179,8 @@ volumes:
 			├── ProductContext.jsx
 			├── ShopContext.jsx
 			├── OrderContext.jsx
+			├── OrganizationContext.jsx
+			├── PublicationContext.jsx
 			└── UIContext.jsx
 		└── /components
 			├──  card_display
@@ -279,6 +281,7 @@ volumes:
 					├── FiltersForOrganizations.jsx
 					├── InfoBoard.jsx
 					├── OrganizationsList.jsx
+					└── OrganizationCreationForm.jsx
 				└── InfoManagement.jsx
 			├── /user_info_card
 				├── UserInfoCard.jsx

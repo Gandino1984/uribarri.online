@@ -1,7 +1,8 @@
+//update: Enhanced to support public navigation for ShopWindow and InfoManagement
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../../public/css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
-import { ArrowLeft, DoorClosed, Menu, X, User, CircleUserRound } from 'lucide-react';
+import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -11,9 +12,9 @@ import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 function TopBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserInfoCard, setShowUserInfoCard] = useState(false);
-  //update: Add state for scroll behavior
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const burgerButtonRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -36,8 +37,10 @@ function TopBar() {
     showShopsListBySeller,
     showShopStore,
     showInfoManagement,
-    //update: Added setShowInfoManagement to handle navigation
-    setShowInfoManagement
+    setShowInfoManagement,
+    //update: Add setters for navigation
+    setShowShopsListBySeller,
+    setShowShopManagement
   } = useUI();
   
   const {
@@ -49,30 +52,23 @@ function TopBar() {
     clearUserSession
   } = TopBarUtils();
 
-  //update: Add scroll handler
   useEffect(() => {
     const controlTopBar = () => {
       const currentScrollY = window.scrollY;
-      
-      // Define scroll threshold
       const scrollThreshold = 10;
       
-      // If mobile menu is open, keep TopBar visible
       if (mobileMenuOpen) {
         setIsVisible(true);
         setLastScrollY(currentScrollY);
         return;
       }
       
-      // Show TopBar when at the top of the page
       if (currentScrollY < scrollThreshold) {
         setIsVisible(true);
       }
-      // Hide when scrolling down
       else if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
         setIsVisible(false);
       }
-      // Show when scrolling up
       else if (currentScrollY < lastScrollY) {
         setIsVisible(true);
       }
@@ -80,7 +76,6 @@ function TopBar() {
       setLastScrollY(currentScrollY);
     };
     
-    // Add scroll event listener with throttling for performance
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
@@ -104,7 +99,6 @@ function TopBar() {
   };
   
   const handleLoginClick = () => {
-    //update: Handle login from InfoManagement
     if (showInfoManagement) {
       setShowInfoManagement(false);
     }
@@ -123,8 +117,33 @@ function TopBar() {
     setShowUserInfoCard(false);
   };
   
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    window.location.reload();
+  };
+  
+  //update: Public navigation handlers
+  const handleShopWindowClick = () => {
+    console.log('TopBar: Navigating to ShopWindow');
+    setShowShopWindow(true);
+    setShowLandingPage(false);
+    setShowShopManagement(false);
+    setShowInfoManagement(false);
+    setShowShopsListBySeller(false);
+    setMobileMenuOpen(false);
+  };
+  
+  const handleInfoManagementClick = () => {
+    console.log('TopBar: Navigating to InfoManagement');
+    setShowInfoManagement(true);
+    setShowLandingPage(false);
+    setShowShopManagement(false);
+    setShowShopWindow(false);
+    setShowShopsListBySeller(false);
+    setMobileMenuOpen(false);
+  };
+  
   const shouldShowBackButton = () => {
-    //update: Add InfoManagement back button
     if (showInfoManagement) return true;
     if (showShopStore) return true;
     if (showShopCreationForm) return true;
@@ -133,6 +152,11 @@ function TopBar() {
     if (showShopWindow) return true;
     if (isUpdatingProduct) return true;
     return false;
+  };
+  
+  //update: Show navigation buttons in desktop view
+  const shouldShowPublicNav = () => {
+    return !showShopsListBySeller && !showProductManagement && !showShopCreationForm;
   };
   
   useEffect(() => {
@@ -160,18 +184,52 @@ function TopBar() {
 
   return (
     <>
-      {/*update: Add dynamic className based on visibility state */}
       <div className={`${styles.container} ${isVisible ? styles.visible : styles.hidden}`}>
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
               <span className={styles.title}>
-                mibarrio.online
+                uribarri.online
               </span>
           </div>
+
+          {/*update: Public navigation buttons in desktop view */}
+          {shouldShowPublicNav() && (
+            <div className={styles.publicNavButtons}>
+              <button 
+                type="button" 
+                className={`${styles.navButton} ${showShopWindow ? styles.activeNav : ''}`}
+                onClick={handleShopWindowClick}
+                title="Ver comercios"
+              >
+                <ShoppingBag size={18} />
+                <span>Comercios</span>
+              </button>
+              
+              <button 
+                type="button" 
+                className={`${styles.navButton} ${showInfoManagement ? styles.activeNav : ''}`}
+                onClick={handleInfoManagementClick}
+                title="Ver tablón informativo"
+              >
+                <Newspaper size={18} />
+                <span>Tablón</span>
+              </button>
+            </div>
+          )}
 
           <div className={styles.buttonsContainer}>
             {currentUser ? (
               <>
+                <button 
+                  type="button" 
+                  className={`${styles.refreshButton} ${isRefreshing ? styles.refreshing : ''}`}
+                  onClick={handleRefresh}
+                  title="Refrescar página"
+                >
+                  <RefreshCw size={16} className={styles.refreshIcon}/>
+                  <span>Refrescar</span>
+                </button>
+                
                 <button 
                   type="button" 
                   className={styles.profileButton} 
@@ -181,6 +239,7 @@ function TopBar() {
                   <CircleUserRound size={16}/>
                   <span>Mi Perfil</span>
                 </button>
+                
                 <button 
                   type="button" 
                   className={styles.active} 
@@ -192,7 +251,7 @@ function TopBar() {
                 </button>
               </>
             ) : (
-              //update: Show login button in both ShopWindow and InfoManagement
+              //update: Show login button for anonymous users on public pages
               (showShopWindow || showInfoManagement) && (
                 <button 
                   type="button" 
@@ -213,7 +272,6 @@ function TopBar() {
             )}
           </div>
 
-          {/* update: Show burger menu for logged in users OR non-logged in users in ShopWindow/InfoManagement */}
           {(currentUser || (!currentUser && (showShopWindow || showInfoManagement))) && (
             <div className={styles.mobileMenuContainer}>
               <button 
@@ -242,12 +300,45 @@ function TopBar() {
                       <span className={styles.buttonText}>Volver</span>
                     </button>
                     
-                    {currentUser && <div className={styles.menuDivider}></div>}
+                    <div className={styles.menuDivider}></div>
+                  </>
+                )}
+
+                {/*update: Public navigation in mobile menu */}
+                {shouldShowPublicNav() && (
+                  <>
+                    <button 
+                      className={`${styles.navMenuButton} ${showShopWindow ? styles.activeNav : ''}`}
+                      onClick={handleShopWindowClick}
+                    >
+                      <ShoppingBag size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Comercios</span>
+                    </button>
+                    
+                    <button 
+                      className={`${styles.navMenuButton} ${showInfoManagement ? styles.activeNav : ''}`}
+                      onClick={handleInfoManagementClick}
+                    >
+                      <Newspaper size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Tablón</span>
+                    </button>
+                    
+                    <div className={styles.menuDivider}></div>
                   </>
                 )}
 
                 {currentUser ? (
                   <>
+                    <button 
+                      className={`${styles.refreshMenuButton} ${isRefreshing ? styles.refreshing : ''}`}
+                      onClick={handleRefresh}
+                    >
+                      <RefreshCw size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Refrescar</span>
+                    </button>
+                    
+                    <div className={styles.menuDivider}></div>
+                    
                     <button 
                       className={styles.profileMenuButton}
                       onClick={handleProfileClick}
@@ -270,10 +361,10 @@ function TopBar() {
                     </button>
                   </>
                 ) : (
-                  //update: Show login button in mobile menu for both ShopWindow and InfoManagement
+                  //update: Login button for anonymous users in mobile menu
                   (showShopWindow || showInfoManagement) && (
                     <button 
-                      className={styles.loginButton}
+                      className={styles.loginMenuButton}
                       onClick={handleLoginClick}
                     >
                       <img 
@@ -283,7 +374,7 @@ function TopBar() {
                         width={16}
                         height={16}
                       />
-                      <span className={styles.buttonText}>entrar</span>
+                      <span className={styles.buttonText}>ENTRAR</span>
                     </button>
                   )
                 )}
