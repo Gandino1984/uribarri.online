@@ -137,7 +137,12 @@
   border-radius: 50px;
   padding: 4px;
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
-  border: 2px solid #e5e7eb;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.radioToggle:hover {
+  border: 2px solid var(--app-green);
 }
 
 /*update: Hide default radio inputs */
@@ -153,10 +158,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.75rem;
-  font-size: 0.9rem;
+  padding: 0.7rem 1.7rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #6b7280;
+  color: gray;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;

@@ -225,7 +225,10 @@ const InfoManagement = () => {
             onChange={() => handleViewChange('board')}
             className={styles.radioInput}
           />
-          <label htmlFor="viewBoard" className={styles.radioLabel}>
+          <label htmlFor="viewBoard" 
+          className={styles.radioLabel}
+           title="Ir al tablón informativo"
+          >
             Publicaciones
           </label>
           
@@ -238,7 +241,10 @@ const InfoManagement = () => {
               onChange={() => handleViewChange('organizations')}
             className={styles.radioInput}
           />
-          <label htmlFor="viewOrganizations" className={styles.radioLabel}>
+          <label htmlFor="viewOrganizations" 
+          className={styles.radioLabel}
+          title="Gestiona tus asociaciones"
+          >
             Asociaciones
             {!isLoggedIn && <span className={styles.lockIcon}>🔒</span>}
           </label>
@@ -246,7 +252,7 @@ const InfoManagement = () => {
           <div className={styles.radioSlider}></div>
         </div>
       </div>
-      
+
         {!isLoggedIn && (
           <button 
             onClick={() => handleLoginRedirect('info')}

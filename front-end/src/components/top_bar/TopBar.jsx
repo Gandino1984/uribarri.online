@@ -320,7 +320,7 @@ function TopBar() {
                 {shouldShowPublicNav() && (
                   <>
                     <button 
-                      className={`${styles.navMenuButton} ${showShopWindow ? styles.activeNav : ''}`}
+                      className={` ${styles.navMenuButton} ${showShopWindow ? styles.activeNav : ''}`}
                       onClick={handleShopWindowClick}
                     >
                       <ShoppingBag size={16} className={styles.buttonIcon} />
@@ -328,7 +328,7 @@ function TopBar() {
                     </button>
                     
                     <button 
-                      className={`${styles.navMenuButton} ${showInfoManagement ? styles.activeNav : ''}`}
+                      className={`${styles.navMenuButton} ${showInfoManagement ? styles.activeNavGreen : ''}`}
                       onClick={handleInfoManagementClick}
                     >
                       <Newspaper size={16} className={styles.buttonIcon} />

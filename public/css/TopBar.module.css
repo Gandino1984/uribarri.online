@@ -108,6 +108,13 @@
     font-weight: 700;
 }
 
+.activeNavGreen {
+    background-color: var(--app-green-transparent) !important;
+    border: 2px solid  var(--app-green) !important;
+    color: var(--app-green-darker) !important;
+    font-weight: 700 !important;
+}
+
 .userInfoWrapper {
     display: none;
 }
