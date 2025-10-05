@@ -5,7 +5,7 @@ import { usePublication } from '../../../../src/app_context/PublicationContext.j
 import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
 import { useParticipant } from '../../../../src/app_context/ParticipantContext.jsx';
-import ParticipantRequests from '../components/ParticpantRequests.jsx';
+import ParticipantRequests from './ParticipantRequests.jsx';
 //update: Import TransferOrganization component
 import TransferOrganization from '../components/TransferOrganization.jsx';
 //update: Import ArrowRightLeft icon for transfer button

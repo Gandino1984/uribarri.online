@@ -1,4 +1,4 @@
-/*update: Mobile-First Base Styles with scroll animations and public navigation support */
+/*update: Mobile-First Base Styles with scroll animations, public navigation support, and dynamic title colors */
 .container {
     width: 100%;
     display: flex;
@@ -55,10 +55,19 @@
     font-size: 1.2rem;
     letter-spacing: .1rem;
     font-weight: 800;
-    color: var(--app-purple);
     position: relative;
     display: flex;
     align-items: center;
+    transition: color 0.3s ease;
+}
+
+/*update: Dynamic title colors based on scenario*/
+.titlePurple {
+    color: var(--app-purple);
+}
+
+.titleGreen {
+    color: var(--app-green-darker);
 }
 
 /*update: Public navigation buttons - hidden on mobile */
@@ -338,7 +347,6 @@
 
 .loginMenuButton:hover {
     background-color: var(--light-gray);
-    /* color: var(--app-green); */
     border-color: var(--app-green);
 }
 

@@ -204,44 +204,16 @@ const InfoManagement = () => {
   return (
     <div className={styles.container}>
       <div className={styles.backButtonContainer}>
-        <button 
+        {/* <button 
           onClick={handleBackToShopWindow}
           className={styles.backButton}
           title="Volver al escaparate"
         >
           <ArrowLeft size={20} />
           <span>Al escaparate</span>
-        </button>
-        {!isLoggedIn && (
-          <button 
-            onClick={() => handleLoginRedirect('info')}
-            className={styles.loginButton}
-            title="Iniciar sesión para participar"
-          >
-            <LogIn size={18} />
-            <span>Iniciar sesión</span>
-          </button>
-        )}
-        {isLoggedIn && (
-          <PendingTransfersBadge onTransferProcessed={handleTransferProcessed} />
-        )}
-      </div>
-      
-      <div className={styles.header}>
-        <h1 className={styles.title}>
-          {getHeaderTitle(activeView, selectedOrgForManagement)}
-        </h1>
-        <p className={styles.subtitle}>
-          {getHeaderSubtitle(activeView, selectedOrgForManagement)}
-        </p>
-        {!isLoggedIn && activeView === 'board' && (
-          <p className={styles.publicAccessNote}>
-            Estás viendo el tablón en modo público. Inicia sesión para crear publicaciones y unirte a asociaciones.
-          </p>
-        )}
-      </div>
-      
-      {/*update: Modern radio button toggle for navigation */}
+        </button> */}
+
+           {/*update: Modern radio button toggle for navigation */}
       <div className={styles.radioToggleContainer}>
         <div className={styles.radioToggle}>
           <input
@@ -262,8 +234,8 @@ const InfoManagement = () => {
             id="viewOrganizations"
             name="viewToggle"
             value="organizations"
-            checked={activeView === 'organizations'}
-            onChange={() => handleViewChange('organizations')}
+              checked={activeView === 'organizations'}
+              onChange={() => handleViewChange('organizations')}
             className={styles.radioInput}
           />
           <label htmlFor="viewOrganizations" className={styles.radioLabel}>
@@ -274,6 +246,39 @@ const InfoManagement = () => {
           <div className={styles.radioSlider}></div>
         </div>
       </div>
+      
+        {!isLoggedIn && (
+          <button 
+            onClick={() => handleLoginRedirect('info')}
+            className={styles.loginButton}
+            title="Iniciar sesión para participar"
+          >
+            <LogIn size={18} />
+            <span>Iniciar sesión</span>
+          </button>
+        )}
+        {isLoggedIn && (
+          <PendingTransfersBadge onTransferProcessed={handleTransferProcessed} />
+        )}
+      </div>
+
+
+   
+      
+      <div className={styles.header}>
+        <h1 className={styles.title}>
+          {getHeaderTitle(activeView, selectedOrgForManagement)}
+        </h1>
+        <p className={styles.subtitle}>
+          {getHeaderSubtitle(activeView, selectedOrgForManagement)}
+        </p>
+        {!isLoggedIn && activeView === 'board' && (
+          <p className={styles.publicAccessNote}>
+            Estás viendo el tablón en modo público. Inicia sesión para crear publicaciones y unirte a asociaciones.
+          </p>
+        )}
+      </div>
+      
       
       {activeView === 'management' && (
         <div className={styles.backButtonContainer}>

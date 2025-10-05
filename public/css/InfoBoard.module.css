@@ -50,13 +50,13 @@
 }
 
 .filterSelect:hover {
-  border-color: var(--app-purple);
+  border-color: var(--app-green);
   box-shadow: 0 2px 6px rgba(151, 71, 255, 0.15);
 }
 
 .filterSelect:focus {
   outline: none;
-  border-color: var(--app-purple);
+  border-color: var(--app-green);
   box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1);
 }
 
@@ -76,7 +76,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid #e5e7eb;
-  border-top-color: var(--app-purple);
+  border-top-color: var(--app-green);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -115,7 +115,7 @@
 
 .resetButton {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--app-purple) 0%, rgba(120, 50, 220, 0.9) 100%);
+  background: linear-gradient(135deg, var(--app-green) 0%, rgba(120, 50, 220, 0.9) 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -127,7 +127,7 @@
 }
 
 .resetButton:hover {
-  background: linear-gradient(135deg, rgba(120, 50, 220, 0.9) 0%, var(--app-purple) 100%);
+  background: linear-gradient(135deg, rgba(120, 50, 220, 0.9) 0%, var(--app-green) 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(151, 71, 255, 0.4);
 }
@@ -146,14 +146,16 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  padding-left: .5rem;
+  padding-right: .5rem;
   transition: all 0.3s ease;
   border: 2px solid transparent;
 }
 
 .publicationCard:hover {
-  transform: translateY(-4px);
+  /* transform: translateY(-4px); */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border-color: rgba(151, 71, 255, 0.2);
+  background-color: var(--app-green-transparent);
 }
 
 .inactiveCard {
@@ -201,7 +203,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--app-purple) 0%, rgba(120, 50, 220, 0.9) 100%);
+  background-color: lightgray;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -219,12 +221,13 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.75rem;
-  background: linear-gradient(135deg, rgba(151, 71, 255, 0.1) 0%, rgba(120, 50, 220, 0.1) 100%);
-  color: var(--app-purple);
+  background-color: var(--app-green-transparent);
+  color: var(--app-green);
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   margin-top: 0.5rem;
+  margin-left: .5rem;
 }
 
 .inactiveBadge {
@@ -318,7 +321,7 @@
 }
 
 .dateTimeItem svg {
-  color: var(--app-purple);
+  color: var(--app-green);
 }
 
 .publicationsCount {
