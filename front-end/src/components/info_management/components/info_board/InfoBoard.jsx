@@ -1,80 +1,38 @@
 //update: src/components/info_management/components/info_board/InfoBoard.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
-import { useUI } from '../../../../src/app_context/UIContext.jsx';
-import { useOrganization } from '../../../../src/app_context/OrganizationContext.jsx';
-import axiosInstance from '../../../utils/app/axiosConfig.js';
-import ActionButtonsPublication from '../components/ActionButtonsPublication.jsx';
-import PublicationCreationForm from '../components/PublicationCreationForm.jsx';
-import styles from '../../../../../public/css/InfoBoard.module.css';
-import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff } from 'lucide-react';
+import { useAuth } from '../../../../app_context/AuthContext.jsx';
+import { useUI } from '../../../../app_context/UIContext.jsx';
+import { useOrganization } from '../../../../app_context/OrganizationContext.jsx';
+import { usePublication } from '../../../../app_context/PublicationContext.jsx';
+import ActionButtonsPublication from '../../components/ActionButtonsPublication.jsx';
+import PublicationCreationForm from '../../components/PublicationCreationForm.jsx';
+import FiltersForPublications from './components/FiltersForPublications.jsx';
+import styles from '../../../../../../public/css/InfoBoard.module.css';
+import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff, Filter } from 'lucide-react';
 
 const InfoBoard = () => {
   const { currentUser } = useAuth();
   const { setError, setSuccess, openImageModal } = useUI();
   const { userOrganizations } = useOrganization();
+  const { 
+    filteredPublications, 
+    publicationsLoading,
+    fetchAllPublications,
+    filters,
+    publications
+  } = usePublication();
   
-  const [publications, setPublications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filterByUser, setFilterByUser] = useState(null);
-  const [sortOrder, setSortOrder] = useState('newest');
   const [editingPublication, setEditingPublication] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
+  //update: Add state for showing/hiding filters
+  const [showFilters, setShowFilters] = useState(false);
   
   //update: Get API base URL for image paths
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
   
   const fetchPublications = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get('/publication');
-      
-      if (response.data && !response.data.error) {
-        let pubs = response.data.data || [];
-        
-        const isManager = userOrganizations?.some(p => p.org_managed);
-        
-        if (!isManager) {
-          pubs = pubs.filter(pub => pub.pub_approved === true && pub.publication_active !== false);
-        } else {
-          pubs = pubs.filter(pub => {
-            if (pub.pub_approved === true) {
-              const isManagedOrg = userOrganizations?.some(
-                p => p.org_managed && p.id_org === pub.id_org
-              );
-              if (isManagedOrg) return true;
-              
-              return pub.publication_active !== false;
-            }
-            return false;
-          });
-        }
-        
-        if (filterByUser) {
-          pubs = pubs.filter(pub => pub.id_user_pub === filterByUser);
-        }
-        
-        if (sortOrder === 'oldest') {
-          pubs.reverse();
-        }
-        
-        setPublications(pubs);
-      } else {
-        setError(prev => ({ 
-          ...prev, 
-          publicationError: response.data.error || 'Error al cargar publicaciones' 
-        }));
-      }
-    } catch (err) {
-      console.error('Error fetching publications:', err);
-      setError(prev => ({ 
-        ...prev, 
-        publicationError: 'Error al cargar las publicaciones' 
-      }));
-    } finally {
-      setLoading(false);
-    }
-  }, [filterByUser, sortOrder, setError, userOrganizations]);
+    await fetchAllPublications();
+  }, [fetchAllPublications]);
   
   useEffect(() => {
     fetchPublications();
@@ -101,13 +59,6 @@ const InfoBoard = () => {
   };
   
   const handleToggleActive = (publicationId, newStatus) => {
-    setPublications(prevPubs => 
-      prevPubs.map(pub => 
-        pub.id_publication === publicationId 
-          ? { ...pub, publication_active: newStatus }
-          : pub
-      )
-    );
     fetchPublications();
   };
   
@@ -127,7 +78,6 @@ const InfoBoard = () => {
     return `${hours}:${minutes}`;
   };
   
-  //update: Fixed handleImageClick to construct full URL properly
   const handleImageClick = (imagePath) => {
     if (imagePath) {
       const fullImagePath = `${API_BASE_URL}/${imagePath}`;
@@ -136,29 +86,24 @@ const InfoBoard = () => {
     }
   };
   
-  const handleFilterChange = (e) => {
-    const value = e.target.value;
-    setFilterByUser(value === 'all' ? null : parseInt(value));
-  };
-  
-  const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
-  };
-  
-  const getUniquePublishers = () => {
-    const publishers = new Map();
-    publications.forEach(pub => {
-      if (pub.publisher) {
-        publishers.set(pub.publisher.id_user, pub.publisher.name_user);
-      }
-    });
-    return Array.from(publishers, ([id, name]) => ({ id, name }));
-  };
-  
-  //update: Helper function to construct image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     return `${API_BASE_URL}/${imagePath}`;
+  };
+  
+  //update: Count active filters for badge
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (filters.searchTerm) count++;
+    if (filters.filterByOrganization) count++;
+    if (filters.filterByUser) count++;
+    if (filters.sortOrder !== 'newest') count++;
+    return count;
+  };
+  
+  //update: Toggle filters visibility
+  const handleToggleFilters = () => {
+    setShowFilters(prev => !prev);
   };
   
   return (
@@ -174,61 +119,56 @@ const InfoBoard = () => {
       
       {!showEditForm && (
         <>
-          <div className={styles.controls}>
-            <div className={styles.filterSection}>
-              <label htmlFor="userFilter" className={styles.filterLabel}>
-                Filtrar por usuario:
-              </label>
-              <select 
-                id="userFilter"
-                className={styles.filterSelect}
-                onChange={handleFilterChange}
-                value={filterByUser || 'all'}
-              >
-                <option value="all">Todos los usuarios</option>
-                {getUniquePublishers().map(publisher => (
-                  <option key={publisher.id} value={publisher.id}>
-                    {publisher.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className={styles.sortSection}>
-              <label htmlFor="sortOrder" className={styles.filterLabel}>
-                Ordenar:
-              </label>
-              <select 
-                id="sortOrder"
-                className={styles.filterSelect}
-                onChange={handleSortChange}
-                value={sortOrder}
-              >
-                <option value="newest">Más recientes</option>
-                <option value="oldest">Más antiguos</option>
-              </select>
+          {/*update: Filters button with active filter count badge */}
+          <div className={styles.filtersButtonContainer}>
+            <button
+              className={`${styles.filtersButton} ${showFilters ? styles.filtersButtonActive : ''}`}
+              onClick={handleToggleFilters}
+              type="button"
+              title={showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+            >
+              <Filter size={18} />
+              <span>Filtros</span>
+              {getActiveFiltersCount() > 0 && (
+                <span className={styles.filtersBadge}>{getActiveFiltersCount()}</span>
+              )}
+            </button>
+            <div className={styles.resultsCount}>
+              {filteredPublications.length !== publications.length && (
+                <span className={styles.filteredCount}>
+                  {filteredPublications.length} de {publications.length} publicaciones
+                </span>
+              )}
             </div>
           </div>
+
+          {/*update: Conditionally render FiltersForPublications with onClose prop */}
+          {showFilters && (
+            <FiltersForPublications onClose={() => setShowFilters(false)} />
+          )}
           
-          {loading && (
+          {publicationsLoading && (
             <div className={styles.loadingContainer}>
               <div className={styles.loader}></div>
               <p className={styles.loadingText}>Cargando publicaciones...</p>
             </div>
           )}
           
-          {!loading && publications.length === 0 && (
+          {!publicationsLoading && filteredPublications.length === 0 && (
             <div className={styles.emptyContainer}>
               <AlertCircle size={48} className={styles.emptyIcon} />
               <p className={styles.emptyText}>
-                {filterByUser 
-                  ? "No hay publicaciones aprobadas de este usuario"
-                  : "No hay publicaciones aprobadas disponibles"}
+                {filters.searchTerm 
+                  ? `No se encontraron publicaciones que coincidan con "${filters.searchTerm}"`
+                  : filters.filterByUser || filters.filterByOrganization
+                    ? "No hay publicaciones con los filtros seleccionados"
+                    : "No hay publicaciones aprobadas disponibles"
+                }
               </p>
-              {filterByUser && (
+              {(filters.filterByUser || filters.filterByOrganization || filters.searchTerm) && (
                 <button 
                   className={styles.resetButton}
-                  onClick={() => setFilterByUser(null)}
+                  onClick={() => setShowFilters(true)}
                 >
                   Ver todas las publicaciones
                 </button>
@@ -236,9 +176,9 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!loading && publications.length > 0 && (
+          {!publicationsLoading && filteredPublications.length > 0 && (
             <div className={styles.publicationsGrid}>
-              {publications.map(publication => (
+              {filteredPublications.map(publication => (
                 <article 
                   key={publication.id_publication} 
                   className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
@@ -293,7 +233,6 @@ const InfoBoard = () => {
                     </div>
                   )}
                   
-                  {/*update: Moved image above text content */}
                   {publication.image_pub && (
                     <div 
                       className={styles.publicationImageWrapper}
@@ -342,10 +281,11 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!loading && publications.length > 0 && (
+          {!publicationsLoading && filteredPublications.length > 0 && (
             <div className={styles.publicationsCount}>
               <p>
-                Mostrando {publications.length} {publications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
+                Mostrando {filteredPublications.length} {filteredPublications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
+                {filters.searchTerm && ` para "${filters.searchTerm}"`}
               </p>
             </div>
           )}

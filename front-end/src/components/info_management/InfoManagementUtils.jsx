@@ -216,7 +216,7 @@ export const handleEditOrganization = (
 /**
  * Handler for viewing publications of an organization
  * @param {Object} org - Organization to view publications for
- * @param {Function} setFilterByOrganization - Function to set organization filter
+ * @param {Function} setFilterByOrganization - Function to set organization filter (deprecated - kept for compatibility)
  * @param {Function} setSelectedOrgForManagement - State setter for selected organization
  * @param {Function} setActiveView - State setter for active view
  */
@@ -227,7 +227,8 @@ export const handleViewPublications = (
   setActiveView
 ) => {
   console.log('View publications for organization:', org);
-  setFilterByOrganization(org.id_organization);
+  // Note: setFilterByOrganization is deprecated but kept for backward compatibility
+  // The actual filtering is now handled by PublicationContext
   setSelectedOrgForManagement(org);
   setActiveView('management');
 };

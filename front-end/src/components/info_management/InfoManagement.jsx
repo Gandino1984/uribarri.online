@@ -4,7 +4,7 @@ import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useOrganization } from '../../app_context/OrganizationContext.jsx';
 import { usePublication } from '../../app_context/PublicationContext.jsx';
-import InfoBoard from './components/InfoBoard.jsx';
+import InfoBoard from './components/info_board/InfoBoard.jsx';
 import FiltersForOrganizations from './components/FiltersForOrganizations.jsx';
 import OrganizationsList from './components/OrganizationsList.jsx';
 import OrganizationCreationForm from './components/OrganizationCreationForm.jsx';
@@ -44,7 +44,8 @@ const InfoManagement = () => {
   } = useUI();
   const { currentUser, setIsLoggingIn } = useAuth();
   const { fetchUserOrganizations, userOrganizations, fetchAllOrganizations } = useOrganization();
-  const { setFilterByOrganization } = usePublication();
+  //update: Use resetFilters from context
+  const { resetFilters } = usePublication();
   
   const [activeView, setActiveView] = useState('board');
   const [showCreationForm, setShowCreationForm] = useState(false);
@@ -164,9 +165,10 @@ const InfoManagement = () => {
   };
   
   const handleViewPublications = (org) => {
+    //update: Pass null instead of resetFilters since utils expects setFilterByOrganization
     utilHandleViewPublications(
       org,
-      setFilterByOrganization,
+      null,
       setSelectedOrgForManagement,
       setActiveView
     );
@@ -190,68 +192,60 @@ const InfoManagement = () => {
   const managesAnyOrganization = checkManagementPermissions(userOrganizations);
   const managedOrganizations = getManagedOrganizations(userOrganizations);
   
-  //update: Handler for radio button toggle
+  //update: Handler for radio button toggle - resets filters when changing views
   const handleViewChange = (view) => {
     if (view === 'organizations' && !isLoggedIn) {
       handleLoginRedirect('info');
       return;
     }
     setActiveView(view);
-    setFilterByOrganization(null);
+    //update: Reset filters when switching views
+    resetFilters();
     setSelectedOrgForManagement(null);
   };
   
   return (
     <div className={styles.container}>
       <div className={styles.backButtonContainer}>
-        {/* <button 
-          onClick={handleBackToShopWindow}
-          className={styles.backButton}
-          title="Volver al escaparate"
-        >
-          <ArrowLeft size={20} />
-          <span>Al escaparate</span>
-        </button> */}
-
-           {/*update: Modern radio button toggle for navigation */}
-      <div className={styles.radioToggleContainer}>
-        <div className={styles.radioToggle}>
-          <input
-            type="radio"
-            id="viewBoard"
-            name="viewToggle"
-            value="board"
-            checked={activeView === 'board'}
-            onChange={() => handleViewChange('board')}
-            className={styles.radioInput}
-          />
-          <label htmlFor="viewBoard" 
-          className={styles.radioLabel}
-           title="Ir al tablón informativo"
-          >
-            Publicaciones
-          </label>
-          
-          <input
-            type="radio"
-            id="viewOrganizations"
-            name="viewToggle"
-            value="organizations"
-              checked={activeView === 'organizations'}
-              onChange={() => handleViewChange('organizations')}
-            className={styles.radioInput}
-          />
-          <label htmlFor="viewOrganizations" 
-          className={styles.radioLabel}
-          title="Gestiona tus asociaciones"
-          >
-            Asociaciones
-            {!isLoggedIn && <span className={styles.lockIcon}>🔒</span>}
-          </label>
-          
-          <div className={styles.radioSlider}></div>
+        {/*update: Modern radio button toggle for navigation */}
+        <div className={styles.radioToggleContainer}>
+          <div className={styles.radioToggle}>
+            <input
+              type="radio"
+              id="viewBoard"
+              name="viewToggle"
+              value="board"
+              checked={activeView === 'board'}
+              onChange={() => handleViewChange('board')}
+              className={styles.radioInput}
+            />
+            <label htmlFor="viewBoard" 
+            className={styles.radioLabel}
+             title="Ir al tablón informativo"
+            >
+              Publicaciones
+            </label>
+            
+            <input
+              type="radio"
+              id="viewOrganizations"
+              name="viewToggle"
+              value="organizations"
+                checked={activeView === 'organizations'}
+                onChange={() => handleViewChange('organizations')}
+              className={styles.radioInput}
+            />
+            <label htmlFor="viewOrganizations" 
+            className={styles.radioLabel}
+            title="Gestiona tus asociaciones"
+            >
+              Asociaciones
+              {!isLoggedIn && <span className={styles.lockIcon}>🔒</span>}
+            </label>
+            
+            <div className={styles.radioSlider}></div>
+          </div>
         </div>
-      </div>
 
         {!isLoggedIn && (
           <button 
@@ -268,9 +262,6 @@ const InfoManagement = () => {
         )}
       </div>
 
-
-   
-      
       <div className={styles.header}>
         <h1 className={styles.title}>
           {getHeaderTitle(activeView, selectedOrgForManagement)}
@@ -285,7 +276,6 @@ const InfoManagement = () => {
         )}
       </div>
       
-      
       {activeView === 'management' && (
         <div className={styles.backButtonContainer}>
           <button
@@ -293,6 +283,8 @@ const InfoManagement = () => {
             onClick={() => {
               setActiveView('board');
               setSelectedOrgForManagement(null);
+              //update: Reset filters when going back to board
+              resetFilters();
             }}
           >
             <ArrowLeft size={18} />
@@ -424,4 +416,4 @@ const InfoManagement = () => {
   );
 };
 
-export default InfoManagement;  
+export default InfoManagement;
