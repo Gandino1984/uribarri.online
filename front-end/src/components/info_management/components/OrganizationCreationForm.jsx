@@ -10,7 +10,6 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
   const { currentUser } = useAuth();
   const { setError, setSuccess } = useUI();
   
-  //update: Initialize form with existing data if in edit mode
   const [formData, setFormData] = useState({
     name_org: editMode && organizationData ? organizationData.name_org : '',
     scope_org: editMode && organizationData ? organizationData.scope_org || '' : ''
@@ -25,7 +24,6 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   
-  //update: Update form when organization data changes in edit mode
   useEffect(() => {
     if (editMode && organizationData) {
       setFormData({
@@ -70,11 +68,11 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         return;
       }
       
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (10MB max for initial upload - will be compressed)
+      if (file.size > 10 * 1024 * 1024) {
         setError(prev => ({
           ...prev,
-          imageError: 'La imagen no debe superar los 5MB'
+          imageError: 'La imagen no debe superar los 10MB'
         }));
         return;
       }
@@ -93,7 +91,6 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
   // Remove selected image
   const handleRemoveImage = () => {
     setImageFile(null);
-    //update: In edit mode, keep the original image unless a new one is selected
     if (editMode && organizationData?.image_org) {
       setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`);
     } else {
@@ -138,7 +135,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
     
     try {
       if (editMode) {
-        //update: Update existing organization
+        // Update existing organization
         const updateResponse = await axiosInstance.patch('/organization/update', {
           id_organization: organizationData.id_organization,
           name_org: formData.name_org.trim(),
@@ -156,18 +153,31 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         
         const updatedOrganization = updateResponse.data.data;
         
-        //update: Upload new image if selected
+        // Upload new image if selected
         if (imageFile && updatedOrganization) {
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
           
           try {
-            await axiosInstance.post('/organization/upload-image', formDataImage, {
+            //update: Use correct endpoint and headers for organization image upload
+            console.log('Uploading organization image for ID:', updatedOrganization.id_organization);
+            
+            const uploadResponse = await axiosInstance.post('/organization/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                'x-organization-id': updatedOrganization.id_organization
+                'X-Organization-ID': updatedOrganization.id_organization.toString()
               }
             });
+            
+            console.log('Image upload response:', uploadResponse.data);
+            
+            if (uploadResponse.data.error) {
+              console.error('Error in upload response:', uploadResponse.data.error);
+              setError(prev => ({
+                ...prev,
+                imageUploadError: 'La organización fue actualizada pero hubo un error al subir la imagen'
+              }));
+            }
           } catch (imgError) {
             console.error('Error uploading image:', imgError);
             setError(prev => ({
@@ -188,12 +198,20 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         }
         
       } else {
-        //update: Create new organization (existing code)
+        // Create new organization
+        console.log('Creating new organization with data:', {
+          id_user: currentUser.id_user,
+          name_org: formData.name_org.trim(),
+          scope_org: formData.scope_org.trim() || null
+        });
+        
         const createResponse = await axiosInstance.post('/organization/create', {
           id_user: currentUser.id_user,
           name_org: formData.name_org.trim(),
           scope_org: formData.scope_org.trim() || null
         });
+        
+        console.log('Create response:', createResponse.data);
         
         if (createResponse.data.error) {
           setError(prev => ({
@@ -205,6 +223,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         }
         
         const newOrganization = createResponse.data.data;
+        console.log('New organization created:', newOrganization);
         
         // Upload image if selected
         if (imageFile && newOrganization) {
@@ -212,12 +231,25 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
           formDataImage.append('image', imageFile);
           
           try {
-            await axiosInstance.post('/organization/upload-image', formDataImage, {
+            //update: Use correct endpoint and headers for organization image upload
+            console.log('Uploading organization image for ID:', newOrganization.id_organization);
+            
+            const uploadResponse = await axiosInstance.post('/organization/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                'x-organization-id': newOrganization.id_organization
+                'X-Organization-ID': newOrganization.id_organization.toString()
               }
             });
+            
+            console.log('Image upload response:', uploadResponse.data);
+            
+            if (uploadResponse.data.error) {
+              console.error('Error in upload response:', uploadResponse.data.error);
+              setError(prev => ({
+                ...prev,
+                imageUploadError: 'La organización fue creada pero hubo un error al subir la imagen'
+              }));
+            }
           } catch (imgError) {
             console.error('Error uploading image:', imgError);
             setError(prev => ({
@@ -367,7 +399,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
                 <Image size={32} />
                 <span>Haz clic para seleccionar una imagen</span>
                 <span className={styles.fileInputHint}>
-                  JPG, PNG o WEBP (máx. 5MB)
+                  JPG, PNG o WEBP (máx. 10MB)
                 </span>
               </label>
             </div>

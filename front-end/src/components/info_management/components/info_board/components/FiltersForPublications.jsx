@@ -226,7 +226,7 @@ const FiltersForPublications = ({ onClose = null }) => {
         )}
 
         {/* Active Filter Info */}
-        {(filters.filterByOrganization || filters.filterByUser || searchInput) && (
+        {/* {(filters.filterByOrganization || filters.filterByUser || searchInput) && (
           <div className={styles.activeFiltersInfo}>
             {filters.filterByOrganization && (
               <span className={styles.activeFilter}>
@@ -244,7 +244,7 @@ const FiltersForPublications = ({ onClose = null }) => {
               </span>
             )}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
