@@ -49,19 +49,21 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background-color: var(--app-green);
+  background-color: white;
   border: 2px solid transparent;
   border-radius: 8px;
-  color: white;
+  color: black;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .loginButton:hover {
-  background-color: var(--app-green-darker);
+  background-color: lightgray;
 }
 
 .header {
@@ -118,27 +120,30 @@
   color: var(--app-green-darker);
 }
 
-/*update: Modern radio toggle container */
+/*update: Modern radio toggle container - responsive layout */
 .radioToggleContainer {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
   padding: 0 1rem;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-/*update: Radio toggle switch */
+/*update: Radio toggle switch - flexible sizing */
 .radioToggle {
   position: relative;
   display: inline-flex;
   background: white;
   border-radius: 50px;
   padding: 4px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   border: 2px solid transparent;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .radioToggle:hover {
@@ -169,6 +174,7 @@
   user-select: none;
   min-width: 140px;
   text-align: center;
+  text-transform: uppercase;
 }
 
 /*update: Active label state */
@@ -444,18 +450,22 @@
     padding: 0.75rem 1rem;
   }
   
-  /*update: Mobile radio toggle */
+  /*update: Mobile radio toggle container - stack vertically */
   .radioToggleContainer {
     padding: 0 0.5rem;
+    /* flex-direction: row; */
+    gap: 0.75rem;
+    align-items: stretch;
   }
   
+  /*update: Mobile radio toggle - full width */
   .radioToggle {
     width: 100%;
     max-width: 100%;
   }
   
   .radioLabel {
-    padding: 0.65rem 1.25rem;
+    padding: 0.65rem 1rem;
     font-size: 0.8rem;
     min-width: auto;
     flex: 1;
@@ -463,6 +473,14 @@
   
   .lockIcon {
     font-size: 0.7rem;
+  }
+  
+  /*update: Mobile login button - full width */
+  .loginButton {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
   }
   
   .managerActions,
@@ -528,10 +546,21 @@
     font-size: 0.9rem;
   }
   
+  /*update: Small mobile radio toggle container */
+  .radioToggleContainer {
+    gap: 1rem;
+  }
+  
   /*update: Small mobile radio toggle */
   .radioLabel {
     padding: 0.7rem 1.5rem;
     font-size: 0.85rem;
+  }
+  
+  /*update: Small mobile login button */
+  .loginButton {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.88rem;
   }
   
   .managerActions,
@@ -570,11 +599,22 @@
     font-size: 1rem;
   }
   
+  /*update: Tablet radio toggle container */
+  .radioToggleContainer {
+    gap: 1rem;
+  }
+  
   /*update: Tablet radio toggle */
   .radioLabel {
     padding: 0.85rem 2rem;
     font-size: 0.95rem;
     min-width: 160px;
+  }
+  
+  /*update: Tablet login button */
+  .loginButton {
+    padding: 0.8rem 1.4rem;
+    font-size: 0.9rem;
   }
   
   .managerActions,
@@ -614,11 +654,22 @@
     font-size: 1.05rem;
   }
   
+  /*update: Desktop radio toggle container */
+  .radioToggleContainer {
+    gap: 1.25rem;
+  }
+  
   /*update: Desktop radio toggle */
   .radioLabel {
     padding: 0.9rem 2.25rem;
     font-size: 1rem;
     min-width: 180px;
+  }
+  
+  /*update: Desktop login button */
+  .loginButton {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
   }
   
   .createButton,
@@ -646,11 +697,22 @@
     font-size: 1.1rem;
   }
   
+  /*update: Large desktop radio toggle container */
+  .radioToggleContainer {
+    gap: 1.5rem;
+  }
+  
   /*update: Large desktop radio toggle */
   .radioLabel {
     padding: 1rem 2.5rem;
     font-size: 1.05rem;
     min-width: 200px;
+  }
+  
+  /*update: Large desktop login button */
+  .loginButton {
+    padding: 0.9rem 1.75rem;
+    font-size: 1rem;
   }
   
   .createButton,
@@ -679,11 +741,22 @@
     font-size: 0.8rem;
   }
   
+  /*update: Landscape radio toggle container */
+  .radioToggleContainer {
+    gap: 0.75rem;
+  }
+  
   /*update: Landscape radio toggle */
   .radioLabel {
     padding: 0.6rem 1.5rem;
     font-size: 0.8rem;
     min-width: 120px;
+  }
+  
+  /*update: Landscape login button */
+  .loginButton {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.8rem;
   }
   
   .createButton,

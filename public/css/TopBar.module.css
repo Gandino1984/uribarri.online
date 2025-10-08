@@ -98,7 +98,7 @@
 
 .navButton:hover {
     background-color: var(--light-gray);
-    border-color: var(--app-purple);
+    /* border-color: var(--app-purple); */
 }
 
 .navButton.activeNav {

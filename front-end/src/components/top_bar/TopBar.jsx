@@ -219,7 +219,7 @@ function TopBar() {
               
               <button 
                 type="button" 
-                className={`${styles.navButton} ${showInfoManagement ? styles.activeNav : ''}`}
+                className={`${styles.navButton} ${showInfoManagement ? styles.activeNavGreen : ''}`}
                 onClick={handleInfoManagementClick}
                 title="Ver tablón informativo"
               >
