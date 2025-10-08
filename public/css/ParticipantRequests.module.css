@@ -1,4 +1,6 @@
 /* public/css/ParticipantRequests.module.css */
+/* Mobile-first responsive design - Enhanced for 360px to ultra-wide screens */
+
 .overlay {
   position: fixed;
   top: 0;
@@ -10,7 +12,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 1rem;
 }
 
 .container {
@@ -18,94 +20,114 @@
   border-radius: 12px;
   width: 100%;
   max-width: 800px;
-  max-height: 80vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .header {
-  padding: 24px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .titleSection {
   flex: 1;
+  min-width: 0;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .closeButton {
-  background: none;
+  background: var(--light-gray);
   border: none;
-  padding: 8px;
+  padding: 0.5rem;
   cursor: pointer;
-  color: #666;
+  color: #6b7280;
   border-radius: 8px;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .closeButton:hover {
-  background: #f5f5f5;
-  color: #333;
+  background: lightgray;
+  color: #374151;
 }
 
+/*update: Filter tabs */
 .filterTabs {
   display: flex;
-  gap: 8px;
-  padding: 16px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
 }
 
 .filterTab {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: 1px solid #ddd;
   background: white;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
-  color: #666;
+  font-size: 0.8rem;
+  color: #6b7280;
   transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 600;
 }
 
 .filterTab.active {
-  background: #4CAF50;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
-  border-color: #4CAF50;
+  border-color: #16a34a;
 }
 
 .filterTab:hover:not(.active) {
   background: #f5f5f5;
 }
 
+/*update: Requests list */
 .requestsList {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .requestCard {
   background: white;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 20px;
+  padding: 1.25rem;
   transition: all 0.2s;
 }
 
@@ -117,13 +139,16 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
 }
 
 .userInfo {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   align-items: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .userAvatar {
@@ -131,141 +156,161 @@
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(151, 71, 255, 0.2);
 }
 
 .userAvatarPlaceholder {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #f0f0f0;
+  background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #999;
+  flex-shrink: 0;
 }
 
 .userDetails {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .userName {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2937;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .userEmail {
-  font-size: 13px;
-  color: #666;
+  font-size: 0.8rem;
+  color: #6b7280;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .userLocation {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.75rem;
+  color: #9ca3af;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
   margin: 0;
 }
 
 .statusBadge {
-  padding: 6px 12px;
+  padding: 0.4rem 0.85rem;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.35rem;
+  flex-shrink: 0;
 }
 
 .statusBadge.pending {
-  background: #FFF3CD;
-  color: #856404;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
 }
 
 .statusBadge.approved {
-  background: #D4EDDA;
-  color: #155724;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
 }
 
 .statusBadge.rejected {
-  background: #F8D7DA;
-  color: #721C24;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
 }
 
 .requestMessage,
 .responseMessage {
-  background: #f8f9fa;
-  padding: 12px;
+  background: #f9fafb;
+  padding: 0.85rem;
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   align-items: flex-start;
 }
 
 .requestMessage p,
 .responseMessage p {
   margin: 0;
-  font-size: 14px;
-  color: #555;
+  font-size: 0.85rem;
+  color: #374151;
   flex: 1;
+  line-height: 1.5;
 }
 
 .requestFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 12px;
+  margin-top: 0.75rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .requestDate {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.75rem;
+  color: #9ca3af;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.35rem;
   margin: 0;
+  font-weight: 500;
 }
 
 .requestActions {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .actionButton {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.4rem;
   transition: all 0.2s;
 }
 
 .approveButton {
-  background: #4CAF50;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
 }
 
 .approveButton:hover {
-  background: #45A049;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 .rejectButton {
-  background: #f44336;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
 .rejectButton:hover {
-  background: #da190b;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .actionButton:disabled {
@@ -288,20 +333,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 24px;
-  color: #999;
+  padding: 4rem 1.5rem;
+  color: #6b7280;
 }
 
 .loader {
   width: 40px;
   height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #22c55e;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
-/* Modal styles */
+/*update: Modal styles */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -313,95 +358,238 @@
   justify-content: center;
   align-items: center;
   z-index: 1100;
+  padding: 1rem;
 }
 
 .modal {
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: 1.5rem;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .modalTitle {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
 }
 
 .modalSubtitle {
-  font-size: 14px;
-  color: #666;
-  margin: 0 0 20px 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 1.25rem 0;
 }
 
 .modalContent {
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
 .modalLabel {
   display: block;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .modalTextarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 0.85rem;
   resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.modalTextarea:focus {
+  outline: none;
+  border-color: var(--app-green);
+  box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1);
 }
 
 .modalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .modalCancelButton {
-  padding: 10px 20px;
-  border: 1px solid #ddd;
+  padding: 0.65rem 1.25rem;
+  border: 2px solid #e5e7eb;
   background: white;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  color: #666;
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.modalCancelButton:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .modalSubmitButton {
-  padding: 10px 20px;
+  padding: 0.65rem 1.25rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: white;
+  transition: all 0.2s;
 }
 
 .modalSubmitButton.approveAction {
-  background: #4CAF50;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+}
+
+.modalSubmitButton.approveAction:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 .modalSubmitButton.rejectAction {
-  background: #f44336;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+
+.modalSubmitButton.rejectAction:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-@media (max-width: 768px) {
+/* Mobile (360px - 480px) */
+@media (max-width: 480px) {
+  .overlay {
+    padding: 0.5rem;
+  }
+  
   .container {
     max-height: 90vh;
   }
   
+  .header {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.15rem;
+  }
+  
+  .subtitle {
+    font-size: 0.75rem;
+  }
+  
   .filterTabs {
-    overflow-x: auto;
-    padding-bottom: 8px;
+    padding: 0.75rem 1rem;
+    gap: 0.35rem;
+  }
+  
+  .filterTab {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
+  }
+  
+  .requestsList {
+    padding: 1rem;
+    gap: 0.85rem;
+  }
+  
+  .requestCard {
+    padding: 1rem;
+  }
+  
+  .userAvatar,
+  .userAvatarPlaceholder {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .userName {
+    font-size: 0.9rem;
+  }
+  
+  .userEmail {
+    font-size: 0.75rem;
+  }
+  
+  .statusBadge {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.7rem;
+  }
+  
+  .requestActions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .modal {
+    padding: 1.25rem;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+  }
+  
+  .modalCancelButton,
+  .modalSubmitButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .title {
+    font-size: 1.35rem;
+  }
+  
+  .filterTab {
+    padding: 0.6rem 1.15rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Landscape (phones) */
+@media (max-height: 600px) and (orientation: landscape) {
+  .container {
+    max-height: 95vh;
+  }
+  
+  .header {
+    padding: 0.85rem 1.25rem;
+  }
+  
+  .title {
+    font-size: 1.1rem;
+  }
+  
+  .filterTabs {
+    padding: 0.65rem 1rem;
+  }
+  
+  .requestsList {
+    padding: 1rem;
+  }
+  
+  .requestCard {
+    padding: 0.85rem;
   }
 }

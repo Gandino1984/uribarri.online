@@ -1,3 +1,4 @@
+//update: back-end/controllers/publication/publication_api_controller.js
 import publicationController from "./publication_controller.js";
 import path from 'path';
 
@@ -77,7 +78,6 @@ async function getByDateRange(req, res) {
     }
 }
 
-//update: Add getByOrganization endpoint
 async function getByOrganization(req, res) {
     try {
         const { id_org } = req.body;
@@ -107,11 +107,11 @@ async function create(req, res) {
             date_pub,
             time_pub,
             id_user_pub,
-            id_org, //update: Add organization field
-            image_pub
+            id_org,
+            image_pub,
+            publication_active
         } = req.body;
         
-        //update: Validate required fields
         if (!title_pub || !content_pub || !id_user_pub) {
             return res.status(400).json({
                 error: 'Campos obligatorios son requeridos',
@@ -129,8 +129,9 @@ async function create(req, res) {
             date_pub,
             time_pub,
             id_user_pub,
-            id_org: id_org || null, //update: Include organization
-            image_pub: image_pub || null
+            id_org: id_org || null,
+            image_pub: image_pub || null,
+            publication_active: publication_active !== undefined ? publication_active : true
         });
         
         if (error) {
@@ -156,9 +157,10 @@ async function update(req, res) {
             date_pub,
             time_pub,
             id_user_pub,
-            id_org, //update: Add organization field
+            id_org,
             image_pub,
-            pub_approved
+            pub_approved,
+            publication_active
         } = req.body;
         
         if (!id_publication) {
@@ -173,9 +175,10 @@ async function update(req, res) {
         if (date_pub !== undefined) updateData.date_pub = date_pub;
         if (time_pub !== undefined) updateData.time_pub = time_pub;
         if (id_user_pub !== undefined) updateData.id_user_pub = id_user_pub;
-        if (id_org !== undefined) updateData.id_org = id_org; //update: Include organization
+        if (id_org !== undefined) updateData.id_org = id_org;
         if (image_pub !== undefined) updateData.image_pub = image_pub;
         if (pub_approved !== undefined) updateData.pub_approved = pub_approved;
+        if (publication_active !== undefined) updateData.publication_active = publication_active;
         
         const { error, data } = await publicationController.update(id_publication, updateData);
         
@@ -235,7 +238,6 @@ async function uploadImage(req, res) {
             });
         }
         
-        // Construct the relative path for storing in the database
         const relativePath = path.join(
             'images', 
             'uploads', 
@@ -294,18 +296,53 @@ async function approvePublication(req, res) {
     }
 }
 
-// Export with new function included
+async function toggleActive(req, res) {
+    try {
+        const {
+            id_publication,
+            publication_active
+        } = req.body;
+        
+        if (!id_publication) {
+            return res.status(400).json({
+                error: 'El ID de la publicación es obligatorio'
+            });
+        }
+        
+        if (publication_active === undefined) {
+            return res.status(400).json({
+                error: 'El estado activo es obligatorio'
+            });
+        }
+        
+        const { error, data, message } = await publicationController.toggleActive(id_publication, publication_active);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ error, data, message });
+    } catch (err) {
+        console.error("-> publication_api_controller.js - toggleActive() - Error =", err);
+        res.status(500).json({
+            error: "Error al activar/desactivar la publicación",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
     getByUserId,
     getByDateRange,
-    getByOrganization, //update: Add new function
+    getByOrganization,
     create,
     update,
     removeById,
     uploadImage,
-     approvePublication 
+    approvePublication,
+    toggleActive
 };
 
 export default {
@@ -313,10 +350,11 @@ export default {
     getById,
     getByUserId,
     getByDateRange,
-    getByOrganization, //update: Add new function
+    getByOrganization,
     create,
     update,
     removeById,
     uploadImage,
-     approvePublication 
+    approvePublication,
+    toggleActive
 };

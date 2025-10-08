@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import { X, MessageCircleWarning } from 'lucide-react';
+import { X, MessageCircleWarning, ExternalLink } from 'lucide-react';
 import { useUI } from '../../app_context/UIContext.jsx';
 import styles from '../../../../public/css/ConfirmationModal.module.css';
 
 const ConfirmationModal = () => {
-  // 🚀 UPDATE: Using consistent props from useUI hook
   const { 
     isModalOpen, 
     setIsModalOpen,
@@ -15,7 +14,6 @@ const ConfirmationModal = () => {
     setIsDeclined
   } = useUI();
 
-  // 🚀 UPDATE: React Spring animations for modal
   const overlayAnimation = useSpring({
     opacity: isModalOpen ? 1 : 0,
     config: { tension: 280, friction: 20 }
@@ -27,12 +25,10 @@ const ConfirmationModal = () => {
     config: { mass: 0.6, tension: 280, friction: 26 }
   });
 
-  // 🚀 UPDATE: Updated handlers with explicit state management
   const handleAccept = () => {
     setIsAccepted(true);
     setIsDeclined(false);
     setIsModalOpen(false);
-    // Call the callback function if it exists
     if (modalConfirmCallback && typeof modalConfirmCallback === 'function') {
       modalConfirmCallback(true);
     }
@@ -42,20 +38,17 @@ const ConfirmationModal = () => {
     setIsDeclined(true);
     setIsAccepted(false);
     setIsModalOpen(false);
-    // Call the callback function with false if it exists
     if (modalConfirmCallback && typeof modalConfirmCallback === 'function') {
       modalConfirmCallback(false);
     }
   };
 
-  // Close modal if clicked outside
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       handleDecline();
     }
   };
 
-  // 🚀 UPDATE: Add keyboard support for ESC key
   useEffect(() => {
     const handleEscKey = (e) => {
       if (e.key === 'Escape' && isModalOpen) {
@@ -71,6 +64,9 @@ const ConfirmationModal = () => {
 
   if (!isModalOpen) return null;
 
+  //update: Detect if message is about external navigation
+  const isExternalLink = modalMessage && modalMessage.toLowerCase().includes('externo');
+
   return (
     <animated.div 
       className={styles.modalOverlay} 
@@ -81,24 +77,25 @@ const ConfirmationModal = () => {
         className={styles.modalContainer}
         style={modalAnimation}
       >
-        {/* <button
-          onClick={handleDecline}
-          className={styles.closeButton}
-          aria-label="Close modal"
-        >
-          <X size={20} />
-        </button> */}
-
         <div className={styles.modalContent}>
           <div className={styles.warningIconContainer}>
-            <MessageCircleWarning 
-              size={18}
-              className={styles.warningIcon}
-            />
+            {isExternalLink ? (
+              <ExternalLink 
+                size={18}
+                className={styles.warningIcon}
+              />
+            ) : (
+              <MessageCircleWarning 
+                size={18}
+                className={styles.warningIcon}
+              />
+            )}
           </div>
 
           <div className={styles.messageContainer}>
-            <h3 className={styles.title}>¿Estás seguro?</h3>
+            <h3 className={styles.title}>
+              {isExternalLink ? '¿Continuar a sitio externo?' : '¿Estás seguro?'}
+            </h3>
             <p className={styles.message}>
               {modalMessage || 'Esta acción no se puede deshacer.'}
             </p>
@@ -115,7 +112,7 @@ const ConfirmationModal = () => {
               onClick={handleAccept}
               className={styles.continueButton}
             >
-              Continuar
+              {isExternalLink ? 'Ir al sitio' : 'Continuar'}
             </button>
           </div>
         </div>

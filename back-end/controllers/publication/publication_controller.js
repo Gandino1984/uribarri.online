@@ -1,3 +1,4 @@
+//update: back-end/controllers/publication/publication_controller.js
 import publication_model from "../../models/publication_model.js";
 import user_model from "../../models/user_model.js";
 import organization_model from "../../models/organization_model.js";
@@ -10,7 +11,6 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-//update: Validation helper functions
 async function validateUser(id_user) {
     try {
         const user = await user_model.findOne({
@@ -70,7 +70,6 @@ async function getAll() {
             return { error: "No hay publicaciones registradas" };
         }
 
-        //update: Include publisher and organization information
         const pubsWithDetails = [];
         for (const pub of publications) {
             const publisher = await user_model.findByPk(pub.id_user_pub);
@@ -113,7 +112,6 @@ async function getById(id_publication) {
             return { error: "Publicación no encontrada" };
         }
 
-        //update: Include publisher and organization information
         const publisher = await user_model.findByPk(publication.id_user_pub);
         let organization = null;
         
@@ -163,7 +161,6 @@ async function getByUserId(id_user) {
             return { error: "No hay publicaciones de este usuario", data: [] };
         }
 
-        //update: Include organization information
         const pubsWithDetails = [];
         for (const pub of publications) {
             let organization = null;
@@ -214,7 +211,6 @@ async function getByDateRange(startDate, endDate) {
             return { error: "No hay publicaciones en este rango de fechas", data: [] };
         }
 
-        //update: Include publisher and organization information
         const pubsWithDetails = [];
         for (const pub of publications) {
             const publisher = await user_model.findByPk(pub.id_user_pub);
@@ -247,7 +243,6 @@ async function getByDateRange(startDate, endDate) {
     }
 }
 
-//update: Add getByOrganizationId function
 async function getByOrganizationId(id_org) {
     try {
         if (!id_org) {
@@ -263,7 +258,6 @@ async function getByOrganizationId(id_org) {
             return { data: [], message: "No hay publicaciones de esta organización" };
         }
 
-        //update: Include publisher and organization information
         const pubsWithDetails = [];
         const organization = await organization_model.findByPk(id_org);
         
@@ -295,7 +289,6 @@ async function getByOrganizationId(id_org) {
 
 async function create(pubData) {
     try {
-        //update: Validate publication data
         const validation = validatePublicationData(pubData);
         if (!validation.isValid) {
             return { 
@@ -304,13 +297,11 @@ async function create(pubData) {
             };
         }
 
-        //update: Validate publisher exists
         const userValidation = await validateUser(pubData.id_user_pub);
         if (!userValidation.isValid) {
             return { error: userValidation.error };
         }
 
-        //update: Validate organization if provided
         if (pubData.id_org) {
             const organization = await organization_model.findByPk(pubData.id_org);
             if (!organization) {
@@ -318,7 +309,6 @@ async function create(pubData) {
             }
         }
 
-        //update: Set current date and time if not provided
         if (!pubData.date_pub) {
             pubData.date_pub = new Date().toISOString().split('T')[0];
         }
@@ -326,8 +316,10 @@ async function create(pubData) {
             pubData.time_pub = new Date().toTimeString().split(' ')[0];
         }
 
-        //update: Create the publication
-        const publication = await publication_model.create(pubData);
+        const publication = await publication_model.create({
+            ...pubData,
+            publication_active: pubData.publication_active !== undefined ? pubData.publication_active : true
+        });
         
         let organization = null;
         if (publication.id_org) {
@@ -359,21 +351,20 @@ async function create(pubData) {
     }
 }
 
-async function update(id, pubData) {
+//update: Changed parameter name from 'id' to 'id_publication' for consistency
+async function update(id_publication, pubData) {
     try {
-        const publication = await publication_model.findByPk(id);
+        const publication = await publication_model.findByPk(id_publication);
         
         if (!publication) {
-            console.log("Publicación no encontrada con id:", id);
+            console.log("Publicación no encontrada con id:", id_publication);
             return { error: "Publicación no encontrada" };
         }
 
-        //update: Validate if title is being updated
         if (pubData.title_pub && pubData.title_pub.length > 150) {
             return { error: "El título no puede exceder 150 caracteres" };
         }
 
-        //update: If changing publisher, validate new publisher exists
         if (pubData.id_user_pub !== undefined && pubData.id_user_pub !== publication.id_user_pub) {
             const userValidation = await validateUser(pubData.id_user_pub);
             if (!userValidation.isValid) {
@@ -381,7 +372,6 @@ async function update(id, pubData) {
             }
         }
 
-        //update: If changing organization, validate it exists
         if (pubData.id_org !== undefined && pubData.id_org !== publication.id_org) {
             if (pubData.id_org) {
                 const organization = await organization_model.findByPk(pubData.id_org);
@@ -393,8 +383,7 @@ async function update(id, pubData) {
 
         await publication.update(pubData);
         
-        //update: Fetch updated publication with publisher and organization information
-        const updatedPub = await publication_model.findByPk(id);
+        const updatedPub = await publication_model.findByPk(id_publication);
         const publisher = await user_model.findByPk(updatedPub.id_user_pub);
         let organization = null;
         
@@ -438,7 +427,6 @@ async function removeById(id_publication) {
             };
         }
 
-        //update: Delete publication image if exists
         if (publication.image_pub) {
             const imagePath = path.join(__dirname, '..', '..', '..', 'public', publication.image_pub);
             
@@ -487,7 +475,6 @@ async function uploadImage(id_publication, imagePath) {
     }
 }
 
-//update: Add approvePublication function
 async function approvePublication(id_publication, pub_approved) {
     try {
         const publication = await publication_model.findByPk(id_publication);
@@ -497,13 +484,10 @@ async function approvePublication(id_publication, pub_approved) {
             return { error: "Publicación no encontrada" };
         }
 
-        // Update the approval status
         await publication.update({ 
-            pub_approved: pub_approved,
-            reviewed: true // Mark as reviewed
+            pub_approved: pub_approved
         });
         
-        // Fetch updated publication with details
         const updatedPub = await publication_model.findByPk(id_publication);
         const publisher = await user_model.findByPk(updatedPub.id_user_pub);
         let organization = null;
@@ -539,7 +523,54 @@ async function approvePublication(id_publication, pub_approved) {
     }
 }
 
-// Export all functions
+async function toggleActive(id_publication, publication_active) {
+    try {
+        const publication = await publication_model.findByPk(id_publication);
+        
+        if (!publication) {
+            console.log("Publicación no encontrada con id:", id_publication);
+            return { error: "Publicación no encontrada" };
+        }
+
+        await publication.update({ 
+            publication_active: publication_active
+        });
+        
+        const updatedPub = await publication_model.findByPk(id_publication);
+        const publisher = await user_model.findByPk(updatedPub.id_user_pub);
+        let organization = null;
+        
+        if (updatedPub.id_org) {
+            organization = await organization_model.findByPk(updatedPub.id_org);
+        }
+        
+        const pubWithDetails = {
+            ...updatedPub.toJSON(),
+            publisher: publisher ? {
+                id_user: publisher.id_user,
+                name_user: publisher.name_user,
+                email_user: publisher.email_user,
+                image_user: publisher.image_user
+            } : null,
+            organization: organization ? {
+                id_organization: organization.id_organization,
+                name_org: organization.name_org,
+                image_org: organization.image_org
+            } : null
+        };
+        
+        console.log(`-> publication_controller.js - toggleActive() - Publicación ${publication_active ? 'activada' : 'desactivada'} con id: ${id_publication}`);
+        
+        return { 
+            data: pubWithDetails,
+            message: publication_active ? "Publicación activada exitosamente" : "Publicación desactivada"
+        };
+    } catch (err) {
+        console.error("-> publication_controller.js - toggleActive() - Error =", err);
+        return { error: "Error al activar/desactivar la publicación" };
+    }
+}
+
 export { 
     getAll, 
     getById,
@@ -550,7 +581,8 @@ export {
     update, 
     removeById,
     uploadImage,
-    approvePublication //update: Add approvePublication to exports
+    approvePublication,
+    toggleActive
 };
 
 export default { 
@@ -563,5 +595,6 @@ export default {
     update, 
     removeById,
     uploadImage,
-    approvePublication //update: Add approvePublication to default export
+    approvePublication,
+    toggleActive
 };

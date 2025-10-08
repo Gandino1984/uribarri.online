@@ -4,7 +4,6 @@ import path from 'path';
 
 async function getAll(req, res) {
     try {
-        //update: Get requesting user ID from headers or query for admin check
         const requestingUserId = req.headers['x-user-id'] || req.query.user_id;
         const includeUnapproved = req.query.include_unapproved === 'true';
         
@@ -19,7 +18,6 @@ async function getAll(req, res) {
     }
 }
 
-//update: New endpoint to get only unapproved organizations
 async function getUnapproved(req, res) {
     try {
         const { error, data, message } = await organizationController.getUnapproved();
@@ -84,7 +82,6 @@ async function create(req, res) {
             image_org
         } = req.body;
         
-        //update: Validate required fields
         if (!id_user || !name_org) {
             return res.status(400).json({
                 error: 'Campos obligatorios son requeridos',
@@ -120,7 +117,7 @@ async function update(req, res) {
                 name_org,
                 scope_org,
                 image_org,
-                org_approved  //update: Added approval field
+                org_approved
         } = req.body;
         
         if (!id_organization) {
@@ -153,7 +150,6 @@ async function update(req, res) {
     }
 }
 
-//update: New endpoint to approve/reject organization
 async function approve(req, res) {
     try {
         const { 
@@ -226,6 +222,7 @@ async function removeById(req, res) {
     }
 }
 
+//update: Updated uploadImage function to work with the new middleware
 async function uploadImage(req, res) {
     try {
         const id_organization = req.headers['x-organization-id'];
@@ -242,11 +239,22 @@ async function uploadImage(req, res) {
             });
         }
         
+        // Get the organization to construct the proper path
+        const organization = await organizationController.getById(id_organization);
+        if (organization.error) {
+            return res.status(404).json({
+                error: 'Organization not found'
+            });
+        }
+        
+        const organizationName = organization.data.name_org;
+        
         // Construct the relative path for storing in the database
         const relativePath = path.join(
             'images', 
             'uploads', 
-            'organizations', 
+            'organizations',
+            organizationName,
             req.file.filename
         ).replace(/\\/g, '/');
         

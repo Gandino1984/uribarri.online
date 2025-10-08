@@ -11,13 +11,15 @@ import styles from '../../../../public/css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
 
 const ShopWindow = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, setIsLoggingIn } = useAuth();
   const { 
     setShowShopWindow, 
     setShowShopManagement,
     setShowShopStore,
     setSelectedShopForStore,
-    setShowLandingPage
+    setShowLandingPage,
+    //update: Add navigation intent
+    setNavigationIntent
   } = useUI();
   const { shops, setShops, shopTypesAndSubtypes, setSelectedShop } = useShop();
   
@@ -93,9 +95,23 @@ const ShopWindow = () => {
     }
   };
 
-  //update: Add handler for shop card order button
+  //update: Handle shop order - redirect to login if not logged in
   const handleShopOrder = (shop) => {
     console.log('ShopWindow - handleShopOrder called for shop:', shop);
+    
+    //update: Check if user is logged in
+    if (!currentUser) {
+      console.log('User not logged in, storing shop and redirecting to login');
+      setSelectedShop(shop);
+      setSelectedShopForStore(shop);
+      setNavigationIntent('shop');
+      setShowShopWindow(false);
+      setShowLandingPage(false);
+      setIsLoggingIn(true);
+      return;
+    }
+    
+    //update: User is logged in, proceed to shop store
     setSelectedShop(shop);
     setSelectedShopForStore(shop);
     setShowShopWindow(false);
@@ -106,6 +122,12 @@ const ShopWindow = () => {
     <div className={styles.container}>
       <div className={styles.headerSection}>
         <h1 className={styles.title}>Comercio de barrio</h1>
+        {/*update: Show browsing mode message for non-logged users */}
+        {!currentUser && (
+          <p className={styles.publicBrowsingNote}>
+            Estás navegando en modo público. Inicia sesión para realizar pedidos.
+          </p>
+        )}
       </div>
 
       <RecommendedFilters 

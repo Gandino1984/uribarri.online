@@ -1,5 +1,5 @@
 // front-end/src/app_context/PublicationContext.jsx
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import axiosInstance from '../utils/app/axiosConfig.js';
 import { useAuth } from './AuthContext.jsx';
 import { useUI } from './UIContext.jsx';
@@ -12,12 +12,64 @@ export const PublicationProvider = ({ children }) => {
   
   // Publication state
   const [publications, setPublications] = useState([]);
+  const [filteredPublications, setFilteredPublications] = useState([]);
   const [selectedPublication, setSelectedPublication] = useState(null);
   const [userPublications, setUserPublications] = useState([]);
   const [organizationPublications, setOrganizationPublications] = useState([]);
   const [publicationsLoading, setPublicationsLoading] = useState(false);
-  const [filterByOrganization, setFilterByOrganization] = useState(null);
-  const [sortOrder, setSortOrder] = useState('newest');
+  
+  //update: Unified filter state
+  const [filters, setFilters] = useState({
+    searchTerm: '',
+    filterByOrganization: null,
+    filterByUser: null,
+    sortOrder: 'newest'
+  });
+
+  //update: Apply filters function - similar to ProductContext pattern
+  const applyFilters = useCallback(() => {
+    if (!publications || publications.length === 0) {
+      setFilteredPublications([]);
+      return;
+    }
+
+    let filtered = [...publications];
+
+    // Apply search term filter
+    if (filters.searchTerm.trim() !== '') {
+      const searchLower = filters.searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(pub => {
+        return (
+          (pub.title_pub && pub.title_pub.toLowerCase().includes(searchLower)) ||
+          (pub.content_pub && pub.content_pub.toLowerCase().includes(searchLower)) ||
+          (pub.publisher?.name_user && pub.publisher.name_user.toLowerCase().includes(searchLower)) ||
+          (pub.organization?.name_org && pub.organization.name_org.toLowerCase().includes(searchLower))
+        );
+      });
+    }
+
+    // Apply organization filter
+    if (filters.filterByOrganization) {
+      filtered = filtered.filter(pub => pub.id_org === filters.filterByOrganization);
+    }
+
+    // Apply user filter
+    if (filters.filterByUser) {
+      filtered = filtered.filter(pub => pub.id_user_pub === filters.filterByUser);
+    }
+
+    // Apply sort order
+    if (filters.sortOrder === 'oldest') {
+      filtered.reverse();
+    }
+
+    setFilteredPublications(filtered);
+  }, [publications, filters]);
+
+  //update: Effect to apply filters whenever publications or filters change
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   // Fetch all publications
   const fetchAllPublications = useCallback(async () => {
@@ -28,15 +80,12 @@ export const PublicationProvider = ({ children }) => {
       if (response.data && !response.data.error) {
         let pubs = response.data.data || [];
         
-        // Apply organization filter if active
-        if (filterByOrganization) {
-          pubs = pubs.filter(pub => pub.id_org === filterByOrganization);
-        }
-        
-        // Apply sort order
-        if (sortOrder === 'oldest') {
-          pubs.reverse();
-        }
+        // Sort by newest first by default
+        pubs.sort((a, b) => {
+          const dateA = new Date(`${a.date_pub}T${a.time_pub || '00:00:00'}`);
+          const dateB = new Date(`${b.date_pub}T${b.time_pub || '00:00:00'}`);
+          return dateB - dateA;
+        });
         
         setPublications(pubs);
         return pubs;
@@ -57,7 +106,7 @@ export const PublicationProvider = ({ children }) => {
     } finally {
       setPublicationsLoading(false);
     }
-  }, [filterByOrganization, sortOrder, setError]);
+  }, [setError]);
 
   // Fetch publications by organization
   const fetchPublicationsByOrganization = useCallback(async (orgId) => {
@@ -72,11 +121,9 @@ export const PublicationProvider = ({ children }) => {
       if (response.data && !response.data.error) {
         const orgPubs = response.data.data || [];
         setOrganizationPublications(orgPubs);
-        setPublications(orgPubs); // Also set main publications array
         return orgPubs;
       } else {
         setOrganizationPublications([]);
-        setPublications([]);
         return [];
       }
     } catch (err) {
@@ -220,10 +267,30 @@ export const PublicationProvider = ({ children }) => {
     }
   }, [setError, setSuccess, fetchAllPublications]);
 
+  //update: Reset all filters to default
+  const resetFilters = useCallback(() => {
+    setFilters({
+      searchTerm: '',
+      filterByOrganization: null,
+      filterByUser: null,
+      sortOrder: 'newest'
+    });
+  }, []);
+
+  //update: Update individual filter
+  const updateFilter = useCallback((filterName, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  }, []);
+
   const value = {
     // State
     publications,
     setPublications,
+    filteredPublications,
+    setFilteredPublications,
     selectedPublication,
     setSelectedPublication,
     userPublications,
@@ -231,10 +298,9 @@ export const PublicationProvider = ({ children }) => {
     organizationPublications,
     setOrganizationPublications,
     publicationsLoading,
-    filterByOrganization,
-    setFilterByOrganization,
-    sortOrder,
-    setSortOrder,
+    //update: Expose filters state
+    filters,
+    setFilters,
     
     // Actions
     fetchAllPublications,
@@ -242,7 +308,11 @@ export const PublicationProvider = ({ children }) => {
     fetchPublicationsByUser,
     createPublication,
     updatePublication,
-    deletePublication
+    deletePublication,
+    //update: New filter actions
+    resetFilters,
+    updateFilter,
+    applyFilters
   };
 
   return (

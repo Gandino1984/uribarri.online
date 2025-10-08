@@ -1,5 +1,6 @@
 /* public/css/LandingPage.module.css */
-/* Mobile-first responsive design */
+/* Mobile-first responsive design - Enhanced for 360px to ultra-wide screens */
+
 .container {
   position: fixed;
   top: 0;
@@ -8,7 +9,7 @@
   bottom: 0;
   width: 100%;
   height: 100vh;
-  height: 100dvh; /* Dynamic viewport height for mobile */
+  height: 100dvh;
   background-color: #000;
   overflow-y: auto;
   overflow-x: hidden;
@@ -16,33 +17,31 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   will-change: opacity, transform, filter;
 }
 
-/* Portrait slideshow container */
 .portraitContainer {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 67vh;
+  height: 80vh;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   padding-bottom: 0;
 }
 
-/* Individual portrait image */
 .portraitImage {
   position: absolute;
   width: 100%;
-  height: 67vh;
-  min-height: 67vh !important;
-  max-width: 92vw;
+  height: 80vh;
+  min-height: 80vh !important;
+  max-width: 95vw;
   background-size: cover;
-  background-position: center bottom;
+  background-position: center 20%;
   background-repeat: no-repeat;
   border-radius: 0;
   box-shadow: none;
@@ -50,7 +49,6 @@
   bottom: 0;
 }
 
-/* Gradient overlay */
 .overlay {
   position: absolute;
   top: 0;
@@ -67,7 +65,6 @@
   will-change: opacity;
 }
 
-/* Hero section */
 .heroSection {
   position: relative;
   z-index: 10;
@@ -77,11 +74,10 @@
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  padding: 3rem 1.5rem;
+  padding: 2rem 1rem;
   pointer-events: none;
 }
 
-/* Hero content */
 .heroContent {
   display: flex;
   flex-direction: column;
@@ -89,30 +85,29 @@
   justify-content: center;
   flex: 1;
   text-align: center;
-  margin-top: -4rem;
+  margin-top: -2rem;
 }
 
 .heroContent h1 {
-  font-family: Montserrat;
+  font-family: Montserrat, sans-serif;
   color: white;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  letter-spacing: 0.4rem;
-  margin-bottom: 13rem;
-  line-height: 5rem;
+  letter-spacing: 0.3rem;
+  margin-bottom: 8rem;
+  line-height: 2.5rem;
   will-change: opacity, transform;
 }
 
 .heroContent p {
   color: rgb(151, 71, 255);
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  letter-spacing: .05rem;
+  letter-spacing: 0.05rem;
   text-transform: uppercase;
   will-change: opacity, letter-spacing;
 }
 
-/* Scroll hint */
 .scrollHint {
   position: absolute;
   bottom: 2rem;
@@ -126,14 +121,13 @@
 
 .scrollText {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 400;
   letter-spacing: 0.08rem;
   text-transform: uppercase;
   animation: textPulse 3s ease-in-out infinite;
 }
 
-/* Polished mobile scroll indicator */
 .mobileScrollIndicator {
   position: relative;
   display: flex;
@@ -193,7 +187,6 @@
   animation-delay: 0.4s;
 }
 
-/* Polished desktop scroll indicator */
 .desktopScrollIndicator {
   position: relative;
   display: flex;
@@ -229,51 +222,21 @@
   animation: wheelScroll 1.5s ease-in-out infinite;
 }
 
-.chevronWrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: -8px;
-}
-
-.chevron1,
-.chevron2,
-.chevron3 {
-  position: absolute;
-  animation: chevronFlow 2s ease-in-out infinite;
-}
-
-.chevron1 {
-  top: 0;
-  animation-delay: 0s;
-}
-
-.chevron2 {
-  top: 8px;
-  animation-delay: 0.3s;
-}
-
-.chevron3 {
-  top: 16px;
-  animation-delay: 0.6s;
-}
-
-/* update: Two buttons container */
 .buttonsContainer {
   position: absolute;
-  bottom: 6rem;
+  bottom: 5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
   align-items: center;
   width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
   pointer-events: auto;
   will-change: opacity, transform;
 }
 
-/* Button wrapper */
 .buttonWrapper {
   position: relative;
   display: flex;
@@ -283,14 +246,13 @@
   max-width: 280px;
 }
 
-/* update: Custom animated buttons */
 .enterButton {
   position: relative;
   width: 100%;
-  padding: 1rem 2rem;
-  font-size: 0.95rem;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.05rem;
   color: white;
   background: linear-gradient(135deg, rgba(151, 71, 255, 0.8) 0%, rgba(120, 50, 220, 0.8) 100%);
   border: none;
@@ -300,24 +262,31 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 
     0 0 15px rgba(151, 71, 255, 0.4),
-    0 0 30px rgba(151, 71, 255, 0.2);
+    0 0 15px rgba(151, 71, 255, 0.2);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   will-change: transform, box-shadow, background;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   text-transform: uppercase;
 }
 
-/* update: Info button specific styling */
 .enterButton.infoButton {
-  background: linear-gradient(135deg, rgba(209, 255, 31, 0.8) 0%, rgba(180, 220, 20, 0.8) 100%);
+  background: linear-gradient(135deg, #d1ff1fcc 0%, rgba(180, 220, 20, 0.8) 100%);
   box-shadow: 
     0 0 15px rgba(209, 255, 31, 0.4),
     0 0 30px rgba(209, 255, 31, 0.2);
   color: rgba(0, 0, 0, 0.9);
+}
+
+.enterButton.iaButton {
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.8) 0%, rgba(255, 120, 0, 0.8) 100%);
+  box-shadow: 
+    0 0 15px rgba(255, 149, 0, 0.4),
+    0 0 30px rgba(255, 149, 0, 0.2);
+  color: white;
 }
 
 .buttonIcon {
@@ -333,17 +302,17 @@
   transform: scale(0.95);
 }
 
-/* Button text animation */
 .buttonText {
   position: relative;
   z-index: 2;
   display: inline-block;
   transition: all 0.2s ease;
   will-change: transform, letter-spacing;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
 }
 
-/* Button shine effect */
 .buttonShine {
   position: absolute;
   top: -50%;
@@ -366,7 +335,6 @@
   transition: transform 0.8s ease;
 }
 
-/* Animations */
 @keyframes textPulse {
   0%, 100% {
     opacity: 0.8;
@@ -376,7 +344,6 @@
   }
 }
 
-/* Mobile scroll animations */
 @keyframes handFloat {
   0%, 100% {
     transform: translateY(0);
@@ -420,7 +387,6 @@
   }
 }
 
-/* Desktop scroll animations */
 @keyframes mouseGlow {
   0%, 100% {
     box-shadow: 
@@ -445,34 +411,122 @@
   }
 }
 
-@keyframes chevronFlow {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px);
+/* Very small screens (360px - 480px) */
+@media (min-width: 360px) and (max-width: 480px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
-  50% {
-    opacity: 1;
+  
+  .portraitImage {
+    height: 78vh;
+    min-height: 78vh !important;
+    max-width: 96vw;
+    background-position: center 15%;
   }
-  100% {
-    opacity: 0;
-    transform: translateY(8px);
+  
+  .heroContent h1 {
+    font-size: 2.1rem;
+    letter-spacing: 0.25rem;
+    margin-bottom: 7rem;
+    line-height: 2.3rem;
+  }
+  
+  .heroContent p {
+    font-size: 0.75rem;
+    letter-spacing: 0.04rem;
+  }
+  
+  .buttonsContainer {
+    bottom: 4rem;
+    gap: 0.6rem;
+    padding: 0 0.75rem;
+  }
+  
+  .buttonWrapper {
+    max-width: 260px;
+  }
+  
+  .enterButton {
+    padding: 0.75rem 1.1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04rem;
+    gap: 0.4rem;
+  }
+  
+  .buttonIcon {
+    width: 17px;
+    height: 17px;
+  }
+  
+  .scrollText {
+    font-size: 0.75rem;
+  }
+}
+
+/* Small mobile screens (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .portraitImage {
+    height: 78vh;
+    min-height: 78vh !important;
+    max-width: 94vw;
+    background-position: center 18%;
+  }
+  
+  .heroContent h1 {
+    font-size: 2.2rem;
+    letter-spacing: 0.32rem;
+    margin-bottom: 8.5rem;
+    line-height: 2.7rem;
+  }
+  
+  .heroContent p {
+    font-size: 0.9rem;
+  }
+  
+  .buttonsContainer {
+    bottom: 4.5rem;
+    gap: 0.65rem;
+  }
+  
+  .buttonWrapper {
+    max-width: 270px;
+  }
+  
+  .enterButton {
+    padding: 0.8rem 1.3rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04rem;
   }
 }
 
 /* Tablet styles (641px - 1024px) */
 @media (min-width: 641px) and (max-width: 1024px) {
   .portraitImage {
-    min-height: 67vh !important;
+    height: 75vh;
+    min-height: 75vh !important;
     max-width: 85vw;
+    background-position: center 25%;
+  }
+  
+  .heroContent {
+    margin-top: -3rem;
+  }
+  
+  .heroContent h1 {
+    font-size: 2.2rem;
+    letter-spacing: 0.4rem;
+    margin-bottom: 10rem;
+    line-height: 3rem;
   }
   
   .heroContent p {
-    font-size: 1.25rem;
-    letter-spacing: 0.4rem;
+    font-size: 1.15rem;
+    letter-spacing: 0.35rem;
   }
   
   .scrollText {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   
   .mouseWrapper {
@@ -489,41 +543,64 @@
     height: 32px;
   }
   
-  /* update: Buttons layout for tablets */
   .buttonsContainer {
     flex-direction: row;
-    gap: 1.5rem;
-    bottom: 7rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    bottom: 6rem;
+    max-width: 680px;
   }
   
   .buttonWrapper {
-    max-width: 240px;
+    max-width: 210px;
+    flex: 1 1 calc(33.333% - 0.6rem);
   }
   
   .enterButton {
-    padding: 1.2rem 2.5rem;
-    font-size: 1.05rem;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+    gap: 0.45rem;
+  }
+  
+  .buttonIcon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .buttonText {
+    white-space: normal;
+    line-height: 1.25;
   }
 }
 
 /* Desktop styles (1025px - 1439px) */
 @media (min-width: 1025px) and (max-width: 1439px) {
   .portraitImage {
-    min-height: 67vh !important;
+    height: 72vh;
+    min-height: 72vh !important;
     max-width: 70vw;
+    background-position: center 28%;
   }
   
   .heroContent {
-    margin-top: -6rem;
+    margin-top: -5rem;
+  }
+  
+  .heroContent h1 {
+    font-size: 2.5rem;
+    letter-spacing: 0.45rem;
+    margin-bottom: 11rem;
+    line-height: 3.5rem;
   }
   
   .heroContent p {
-    font-size: 1.5rem;
-    letter-spacing: 0.5rem;
+    font-size: 1.4rem;
+    letter-spacing: 0.45rem;
   }
   
   .scrollText {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     letter-spacing: 0.1rem;
   }
   
@@ -542,72 +619,146 @@
     top: 22px;
   }
   
-  /* update: Buttons for desktop */
   .buttonsContainer {
     flex-direction: row;
-    gap: 2rem;
-    bottom: 8rem;
+    gap: 1.2rem;
+    bottom: 7rem;
+    max-width: 800px;
   }
   
   .buttonWrapper {
-    max-width: 260px;
+    max-width: 240px;
+    flex: 1;
   }
   
   .enterButton {
-    padding: 1.3rem 3rem;
-    font-size: 1.1rem;
-    letter-spacing: 0.15rem;
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.06rem;
+    gap: 0.5rem;
+  }
+  
+  .buttonText {
+    white-space: normal;
   }
 }
 
-/* Large desktop styles (1440px+) */
-@media (min-width: 1440px) {
+/* Large desktop styles (1440px - 2559px) */
+@media (min-width: 1440px) and (max-width: 2559px) {
   .portraitImage {
-    min-height: 67vh !important;
+    height: 70vh;
+    min-height: 70vh !important;
     max-width: 60vw;
+    background-position: center 30%;
+  }
+  
+  .heroContent {
+    margin-top: -6rem;
+  }
+  
+  .heroContent h1 {
+    font-size: 2.8rem;
+    letter-spacing: 0.5rem;
+    margin-bottom: 12rem;
+    line-height: 4rem;
   }
   
   .heroContent p {
-    font-size: 1.75rem;
-    letter-spacing: 0.6rem;
+    font-size: 1.65rem;
+    letter-spacing: 0.55rem;
   }
   
-  /* update: Larger buttons for large screens */
+  .scrollText {
+    font-size: 1.1rem;
+  }
+  
   .buttonsContainer {
     flex-direction: row;
-    gap: 2.5rem;
+    gap: 1.5rem;
+    bottom: 7.5rem;
+    max-width: 920px;
   }
   
   .buttonWrapper {
     max-width: 280px;
+    flex: 1;
   }
   
   .enterButton {
-    padding: 1.4rem 3.5rem;
-    font-size: 1.2rem;
-    letter-spacing: 0.2rem;
+    padding: 1.1rem 1.6rem;
+    font-size: 0.88rem;
+    letter-spacing: 0.06rem;
+    gap: 0.55rem;
+  }
+  
+  .buttonText {
+    white-space: normal;
+    line-height: 1.3;
   }
 }
 
 /* Ultra-wide screens (2560px+) */
 @media (min-width: 2560px) {
   .portraitImage {
-    min-height: 67vh !important;
+    height: 68vh;
+    min-height: 68vh !important;
     max-width: 50vw;
+    background-position: center 32%;
+  }
+  
+  .heroContent h1 {
+    font-size: 3.2rem;
+    letter-spacing: 0.6rem;
+    margin-bottom: 14rem;
+    line-height: 4.5rem;
+  }
+  
+  .heroContent p {
+    font-size: 1.9rem;
+    letter-spacing: 0.65rem;
+  }
+  
+  .buttonsContainer {
+    gap: 2rem;
+    bottom: 8rem;
+    max-width: 1100px;
+  }
+  
+  .buttonWrapper {
+    max-width: 340px;
+    flex: 1;
+  }
+  
+  .enterButton {
+    padding: 1.25rem 1.9rem;
+    font-size: 0.98rem;
+    letter-spacing: 0.07rem;
+    gap: 0.65rem;
+  }
+  
+  .buttonText {
+    white-space: normal;
+    line-height: 1.3;
   }
 }
 
-/* Portrait orientation - phones and tablets */
+/* Portrait orientation */
 @media (orientation: portrait) {
+  .portraitContainer {
+    height: 80vh;
+  }
+  
   .portraitImage {
-    min-height: 67vh !important;
+    height: 80vh;
+    min-height: 80vh !important;
+    background-position: center 18%;
   }
 }
 
-/* Landscape orientation adjustments */
+/* Landscape orientation */
 @media (orientation: landscape) {
   .portraitImage {
-    min-height: 67vh !important;
+    background-position: center 30%;
   }
 }
 
@@ -617,47 +768,81 @@
     margin-top: 0;
   }
   
+  .heroContent h1 {
+    font-size: 1.4rem;
+    letter-spacing: 0.25rem;
+    margin-bottom: 5rem;
+    line-height: 2rem;
+  }
+  
   .heroContent p {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.05rem;
+  }
+  
+  .portraitContainer {
+    height: 75vh;
   }
   
   .portraitImage {
-    min-height: 67vh !important;
-    max-width: 40vw;
+    height: 75vh;
+    min-height: 75vh !important;
+    max-width: 45vw;
+    background-position: center 35%;
   }
   
   .scrollHint {
     bottom: 1rem;
   }
   
-  /* update: Smaller buttons for landscape phones */
   .buttonsContainer {
     flex-direction: row;
-    gap: 1rem;
-    bottom: 4rem;
+    gap: 0.5rem;
+    bottom: 2.5rem;
+    padding: 0 0.5rem;
   }
   
   .buttonWrapper {
-    max-width: 200px;
+    max-width: 160px;
+    flex: 1;
   }
   
   .enterButton {
-    padding: 0.7rem 1.5rem;
-    font-size: 0.85rem;
-    letter-spacing: 0.1rem;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.04rem;
+    gap: 0.3rem;
   }
   
   .buttonIcon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .buttonText {
+    line-height: 1.2;
+  }
+  
+  .scrollText {
+    font-size: 0.7rem;
   }
 }
 
 /* Tablets in landscape */
 @media (min-width: 768px) and (max-height: 800px) and (orientation: landscape) {
+  .portraitContainer {
+    height: 72vh;
+  }
+  
   .portraitImage {
-    min-height: 67vh !important;
+    height: 72vh;
+    min-height: 72vh !important;
     max-width: 50vw;
+    background-position: center 32%;
+  }
+  
+  .heroContent h1 {
+    margin-bottom: 8rem;
   }
 }
 
@@ -665,7 +850,7 @@
 @media (-webkit-min-device-pixel-ratio: 2) and (max-width: 640px),
        (min-resolution: 192dpi) and (max-width: 640px) {
   .portraitImage {
-    min-height: 67vh !important;
+    background-position: center 15%;
   }
 }
 
@@ -676,10 +861,7 @@
   .swipeArrow,
   .pulseDot,
   .mouseIcon,
-  .scrollWheel,
-  .chevron1,
-  .chevron2,
-  .chevron3 {
+  .scrollWheel {
     animation: none;
   }
   

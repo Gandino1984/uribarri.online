@@ -1,3 +1,4 @@
+// back-end/routers/api_router.js
 import { Router } from "express";
 
 import userApiRouter from "./user_api_router.js";
@@ -23,7 +24,9 @@ import participantApiRouter from "./participant_api_router.js";
 import publicationApiRouter from "./publication_api_router.js";
 import participantRequestApiRouter from "./participant_request_api_router.js";
 import socialEventApiRouter from "./social_event_api_router.js";
-
+import participantPublicationApiRouter from "./participant_publication_api_router.js";
+//update: Import organization transfer router
+import organizationTransferApiRouter from "./organization_transfer_api_router.js";
 
 const router = Router();
 
@@ -70,5 +73,10 @@ router.use("/publication", publicationApiRouter);
 router.use("/participant-request", participantRequestApiRouter);
 
 router.use("/social-event", socialEventApiRouter);
+
+router.use("/participant-publication", participantPublicationApiRouter);
+
+//update: Register organization transfer router
+router.use("/organization-transfer", organizationTransferApiRouter);
 
 export default router;
