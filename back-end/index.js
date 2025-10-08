@@ -23,7 +23,7 @@ app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//update: CORS configuration with X-Publication-ID header added
+//update: CORS configuration with X-Organization-ID header added
 app.use(cors({
     origin: [
       'http://localhost:5173', 
@@ -39,7 +39,8 @@ app.use(cors({
         'X-Shop-Name', 
         'X-Product-ID',
         'X-Package-ID',
-        'X-Publication-ID', //update: Added for publication image uploads
+        'X-Publication-ID',
+        'X-Organization-ID', //update: Added for organization image uploads
         'Content-Disposition'
     ],
     exposedHeaders: ['Content-Disposition']

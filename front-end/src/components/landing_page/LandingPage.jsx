@@ -4,7 +4,7 @@ import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../../public/css/LandingPage.module.css';
-import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper } from 'lucide-react';
+import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
 
 const LandingPage = () => {
   const { 
@@ -13,7 +13,9 @@ const LandingPage = () => {
     setShowShopWindow, 
     setShowShopsListBySeller,
     setShowInfoManagement,
-    setNavigationIntent
+    setNavigationIntent,
+    //update: Add modal control from UIContext
+    openModal
   } = useUI();
   const { currentUser, setIsLoggingIn } = useAuth();
   
@@ -29,6 +31,9 @@ const LandingPage = () => {
   const [isShopButtonPressed, setIsShopButtonPressed] = useState(false);
   const [isInfoButtonHovered, setIsInfoButtonHovered] = useState(false);
   const [isInfoButtonPressed, setIsInfoButtonPressed] = useState(false);
+  //update: Add state for new IA button
+  const [isIAButtonHovered, setIsIAButtonHovered] = useState(false);
+  const [isIAButtonPressed, setIsIAButtonPressed] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
   const portraits = [
@@ -146,6 +151,12 @@ const LandingPage = () => {
     config: config.gentle
   });
   
+  //update: Add animation spring for IA button
+  const iaButtonSpring = useSpring({
+    transform: `scale(${isIAButtonPressed ? 0.95 : isIAButtonHovered ? 1.05 : 1})`,
+    config: config.gentle
+  });
+  
   const shopButtonGlowSpring = useSpring({
     boxShadow: isShopButtonHovered 
       ? '0 0 30px rgba(151, 71, 255, 0.6), 0 0 60px rgba(151, 71, 255, 0.3), inset 0 0 20px rgba(151, 71, 255, 0.2)'
@@ -163,6 +174,17 @@ const LandingPage = () => {
     background: isInfoButtonHovered
       ? 'linear-gradient(135deg, rgba(209, 255, 31, 0.9) 0%, rgba(180, 220, 20, 0.9) 100%)'
       : 'linear-gradient(135deg, rgba(209, 255, 31, 0.8) 0%, rgba(180, 220, 20, 0.8) 100%)',
+    config: config.gentle
+  });
+  
+  //update: Add glow animation for IA button (orange/amber theme)
+  const iaButtonGlowSpring = useSpring({
+    boxShadow: isIAButtonHovered 
+      ? '0 0 30px rgba(255, 149, 0, 0.6), 0 0 60px rgba(255, 149, 0, 0.3), inset 0 0 20px rgba(255, 149, 0, 0.2)'
+      : '0 0 15px rgba(255, 149, 0, 0.4), 0 0 30px rgba(255, 149, 0, 0.2)',
+    background: isIAButtonHovered
+      ? 'linear-gradient(135deg, rgba(255, 149, 0, 0.9) 0%, rgba(255, 120, 0, 0.9) 100%)'
+      : 'linear-gradient(135deg, rgba(255, 149, 0, 0.8) 0%, rgba(255, 120, 0, 0.8) 100%)',
     config: config.gentle
   });
   
@@ -200,7 +222,6 @@ const LandingPage = () => {
     config: config.wobbly
   });
   
-  //update: Allow anonymous access to ShopWindow
   const handleShopButtonClick = () => {
     if (isExiting) return;
     
@@ -211,7 +232,6 @@ const LandingPage = () => {
       setShowTopBar(true);
       setShowLandingPage(false);
       
-      //update: Route based on user type if logged in, otherwise show ShopWindow
       if (currentUser) {
         if (currentUser.type_user === 'seller') {
           setShowShopsListBySeller(true);
@@ -222,13 +242,11 @@ const LandingPage = () => {
           setShowShopsListBySeller(false);
           setShowInfoManagement(false);
         } else {
-          // Regular user
           setShowShopWindow(true);
           setShowShopsListBySeller(false);
           setShowInfoManagement(false);
         }
       } else {
-        //update: Not logged in - show public ShopWindow
         console.log('Anonymous user accessing ShopWindow');
         setShowShopWindow(true);
         setShowShopsListBySeller(false);
@@ -237,7 +255,6 @@ const LandingPage = () => {
     }, 800);
   };
   
-  //update: Allow anonymous access to InfoManagement/InfoBoard
   const handleInfoButtonClick = () => {
     if (isExiting) return;
     
@@ -248,12 +265,28 @@ const LandingPage = () => {
       setShowTopBar(true);
       setShowLandingPage(false);
       
-      //update: Always show InfoManagement (read-only for non-logged users)
       console.log('User accessing InfoManagement (public access)');
       setShowInfoManagement(true);
       setShowShopWindow(false);
       setShowShopsListBySeller(false);
     }, 800);
+  };
+  
+  //update: Add handler for IA Antirumor button - opens modal before external navigation
+  const handleIAButtonClick = () => {
+    if (isExiting) return;
+    
+    // Open confirmation modal with custom message
+    openModal(
+      'Estás a punto de salir de uribarri.online y ser redirigido a zuriai.org, un sitio web externo.',
+      (confirmed) => {
+        if (confirmed) {
+          // User confirmed - navigate to external site
+          window.open('https://zuriai.org/', '_blank', 'noopener,noreferrer');
+        }
+        // If declined, modal just closes and user stays on landing page
+      }
+    );
   };
   
   return (
@@ -416,6 +449,37 @@ const LandingPage = () => {
               <Newspaper className={styles.buttonIcon} size={20} />
               <span className={styles.buttonText}>
                 Tablón informativo
+              </span>
+              <div className={styles.buttonShine} />
+            </animated.button>
+          </animated.div>
+          
+          <animated.div 
+            className={styles.buttonWrapper}
+            style={iaButtonSpring}
+          >
+            <animated.button
+              className={`${styles.enterButton} ${styles.iaButton}`}
+              style={iaButtonGlowSpring}
+              onClick={handleIAButtonClick}
+              onMouseEnter={() => setIsIAButtonHovered(true)}
+              onMouseLeave={() => {
+                setIsIAButtonHovered(false);
+                setIsIAButtonPressed(false);
+              }}
+              onMouseDown={() => setIsIAButtonPressed(true)}
+              onMouseUp={() => setIsIAButtonPressed(false)}
+              onTouchStart={() => setIsIAButtonPressed(true)}
+              onTouchEnd={() => {
+                setIsIAButtonPressed(false);
+                setIsIAButtonHovered(false);
+              }}
+              disabled={isExiting}
+              aria-label="Ir a IA Antirumor"
+            >
+              <Bot className={styles.buttonIcon} size={20} />
+              <span className={styles.buttonText}>
+                IA antirumor
               </span>
               <div className={styles.buttonShine} />
             </animated.button>

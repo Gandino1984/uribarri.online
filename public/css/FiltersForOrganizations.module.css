@@ -25,9 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* flex: 1; */
   position: relative;
-  /* width: 100%; */
 }
 
 .searchInput {
@@ -38,12 +36,20 @@
   font-size: 0.9rem;
   transition: all 0.2s ease;
   background: white;
+  color: var(--app-green-darker) !important;
   /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
 }
 
 .searchInput:focus {
   outline: none;
-  border-color: var(--app-purple);
+  background-color: var(--app-green-transparent) !important;
+  border-color: var(--app-green) !important;
+  /* box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1); */
+}
+
+.searchInput:hover {
+  outline: none;
+  border-color: var(--app-green) !important;
   /* box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1); */
 }
 
@@ -80,14 +86,13 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-/*update: Search button with gradient matching app design */
 .searchButton {
   padding: 0.75rem 1.25rem;
-  background: var(--app-purple);
-  color: white;
+  background-color: white;
+  color: black;
   border: 2px solid transparent;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -95,15 +100,12 @@
   align-items: center;
   gap: 0.5rem;
   white-space: nowrap;
-  /* box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3); */
   text-transform: uppercase;
   letter-spacing: 0.03rem;
 }
 
 .searchButton:hover:not(:disabled) {
-  background: var(--app-purple-darker);
-  /* transform: translateY(-2px); */
-  /* box-shadow: 0 4px 12px rgba(151, 71, 255, 0.4); */
+  background: lightgray;
 }
 
 .searchButton:active:not(:disabled) {
@@ -148,7 +150,7 @@
 }
 
 .searchInfo strong {
-  color: var(--app-purple);
+  color: var(--app-green);
   font-weight: 700;
 }
 

@@ -1,31 +1,46 @@
 // src/components/info_management/InfoManagement.jsx
+//update: Refactored to use InfoManagementUtils hook pattern (like TopBar)
+
 import React, { useState, useEffect } from 'react';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useOrganization } from '../../app_context/OrganizationContext.jsx';
-import { usePublication } from '../../app_context/PublicationContext.jsx';
-import InfoBoard from './components/InfoBoard.jsx';
+import InfoBoard from './components/info_board/InfoBoard.jsx';
 import FiltersForOrganizations from './components/FiltersForOrganizations.jsx';
 import OrganizationsList from './components/OrganizationsList.jsx';
 import OrganizationCreationForm from './components/OrganizationCreationForm.jsx';
 import PublicationCreationForm from './components/PublicationCreationForm.jsx';
 import PublicationManagement from './components/PublicationManagement.jsx';
-//update: Import PendingTransfersBadge
 import PendingTransfersBadge from './components/PendingTransfersBadge.jsx';
-import { Plus, X, FileText, Users, Settings, ArrowLeft, LogIn } from 'lucide-react';
+import { InfoManagementUtils } from './InfoManagementUtils.jsx';
+import { Plus, X, FileText, Users, ArrowLeft, LogIn } from 'lucide-react';
 import styles from '../../../../public/css/InfoManagement.module.css';
 
 const InfoManagement = () => {
-  const { 
-    setShowTopBar,
-    setShowInfoManagement,
-    setShowShopWindow,
-    setShowLandingPage,
-    setNavigationIntent
-  } = useUI();
-  const { currentUser, setIsLoggingIn } = useAuth();
-  const { fetchUserOrganizations, userOrganizations, fetchAllOrganizations } = useOrganization();
-  const { setFilterByOrganization } = usePublication();
+  const { setShowTopBar } = useUI();
+  const { currentUser } = useAuth();
+  const { fetchUserOrganizations, userOrganizations } = useOrganization();
+  
+  //update: Use InfoManagementUtils hook (following TopBar pattern)
+  const {
+    handleLoginRedirect,
+    handleTransferProcessed,
+    handleOrganizationCreated,
+    handleOrganizationUpdated,
+    handlePublicationCreated,
+    toggleCreationForm,
+    togglePublicationForm,
+    handleEditOrganization,
+    handleViewPublications,
+    handleCancelForm,
+    handleCancelPublicationForm,
+    getHeaderTitle,
+    getHeaderSubtitle,
+    checkManagementPermissions,
+    getManagedOrganizations,
+    handleViewChange,
+    handleBackToBoard
+  } = InfoManagementUtils();
   
   const [activeView, setActiveView] = useState('board');
   const [showCreationForm, setShowCreationForm] = useState(false);
@@ -58,163 +73,184 @@ const InfoManagement = () => {
     }
   }, [userOrganizations]);
   
-  const handleBackToShopWindow = () => {
-    console.log('Navigating from InfoManagement back to ShopWindow');
-    setShowInfoManagement(false);
-    setShowShopWindow(true);
-  };
-  
-  const handleLoginRedirect = (intent) => {
-    console.log('Redirecting to login with intent:', intent);
-    setNavigationIntent(intent);
-    setShowInfoManagement(false);
-    setShowLandingPage(false);
-    setIsLoggingIn(true);
-  };
-  
-  //update: Handler for when transfer is processed
-  const handleTransferProcessed = () => {
-    console.log('Transfer processed, refreshing organizations');
-    if (currentUser?.id_user) {
-      fetchUserOrganizations(currentUser.id_user);
-      fetchAllOrganizations();
-    }
-  };
-  
   const isLoggedIn = !!currentUser;
   const isManager = currentUser?.is_manager === true || currentUser?.is_manager === 1;
   const belongsToOrganization = userOrganizations && userOrganizations.length > 0;
-  const managesAnyOrganization = userOrganizations?.some(participation => participation.org_managed);
+  const managesAnyOrganization = checkManagementPermissions(userOrganizations);
+  const managedOrganizations = getManagedOrganizations(userOrganizations);
   
-  const handleOrganizationCreated = (newOrg) => {
-    setShowCreationForm(false);
-    setIsEditMode(false);
-    setEditingOrganization(null);
-    fetchAllOrganizations();
-    if (currentUser?.id_user) {
-      fetchUserOrganizations(currentUser.id_user);
-    }
-    setActiveView('organizations');
+  //update: Local handlers that use state setters
+  const onViewChange = (view) => {
+    handleViewChange(view, isLoggedIn, setActiveView, setSelectedOrgForManagement);
   };
-  
-  const handleOrganizationUpdated = (updatedOrg) => {
-    setShowCreationForm(false);
-    setIsEditMode(false);
-    setEditingOrganization(null);
-    fetchAllOrganizations();
-    if (currentUser?.id_user) {
-      fetchUserOrganizations(currentUser.id_user);
-    }
+
+  const onBackToBoard = () => {
+    handleBackToBoard(setActiveView, setSelectedOrgForManagement);
   };
-  
-  const handlePublicationCreated = (newPub) => {
-    setShowPublicationForm(false);
-    setEditingPublication(null);
-    setActiveView('board');
+
+  const onToggleCreationForm = () => {
+    toggleCreationForm(
+      isLoggedIn,
+      showCreationForm,
+      isEditMode,
+      setIsEditMode,
+      setEditingOrganization,
+      setShowCreationForm
+    );
   };
-  
-  const toggleCreationForm = () => {
-    if (!isLoggedIn) {
-      handleLoginRedirect('info');
-      return;
-    }
-    
-    if (showCreationForm && isEditMode) {
-      setIsEditMode(false);
-      setEditingOrganization(null);
-    }
-    setShowCreationForm(prev => !prev);
+
+  const onTogglePublicationForm = () => {
+    togglePublicationForm(
+      isLoggedIn,
+      setShowPublicationForm,
+      editingPublication,
+      setEditingPublication
+    );
   };
-  
-  const togglePublicationForm = () => {
-    if (!isLoggedIn) {
-      handleLoginRedirect('info');
-      return;
-    }
-    
-    setShowPublicationForm(prev => !prev);
-    if (editingPublication) {
-      setEditingPublication(null);
-    }
+
+  const onOrganizationCreated = (org) => {
+    handleOrganizationCreated(
+      org,
+      setShowCreationForm,
+      setIsEditMode,
+      setEditingOrganization,
+      currentUser,
+      setActiveView
+    );
   };
-  
-  const handleEditOrganization = (org) => {
-    if (!isLoggedIn) {
-      handleLoginRedirect('info');
-      return;
-    }
-    
-    console.log('Edit organization:', org);
-    setEditingOrganization(org);
-    setIsEditMode(true);
-    setShowCreationForm(true);
+
+  const onOrganizationUpdated = (org) => {
+    handleOrganizationUpdated(
+      org,
+      setShowCreationForm,
+      setIsEditMode,
+      setEditingOrganization,
+      currentUser
+    );
   };
-  
-  const handleViewPublications = (org) => {
-    console.log('View publications for organization:', org);
-    setFilterByOrganization(org.id_organization);
-    setSelectedOrgForManagement(org);
-    setActiveView('management');
+
+  const onPublicationCreated = (newPub) => {
+    handlePublicationCreated(
+      newPub,
+      setShowPublicationForm,
+      setEditingPublication,
+      setActiveView
+    );
   };
-  
-  const handleOpenManagement = () => {
-    setActiveView('management');
+
+  const onEditOrganization = (org) => {
+    handleEditOrganization(
+      org,
+      isLoggedIn,
+      setEditingOrganization,
+      setIsEditMode,
+      setShowCreationForm
+    );
   };
-  
-  const handleCancelForm = () => {
-    setShowCreationForm(false);
-    setIsEditMode(false);
-    setEditingOrganization(null);
+
+  const onViewPublications = (org) => {
+    handleViewPublications(
+      org,
+      setSelectedOrgForManagement,
+      setActiveView
+    );
   };
-  
-  const handleCancelPublicationForm = () => {
-    setShowPublicationForm(false);
-    setEditingPublication(null);
+
+  const onCancelForm = () => {
+    handleCancelForm(setShowCreationForm, setIsEditMode, setEditingOrganization);
+  };
+
+  const onCancelPublicationForm = () => {
+    handleCancelPublicationForm(setShowPublicationForm, setEditingPublication);
   };
   
   return (
     <div className={styles.container}>
       <div className={styles.backButtonContainer}>
-        <button 
-          onClick={handleBackToShopWindow}
-          className={styles.backButton}
-          title="Volver al escaparate"
-        >
-          <ArrowLeft size={20} />
-          <span>Al escaparate</span>
-        </button>
-        {!isLoggedIn && (
-          <button 
-            onClick={() => handleLoginRedirect('info')}
-            className={styles.loginButton}
-            title="Iniciar sesión para participar"
-          >
-            <LogIn size={18} />
-            <span>Iniciar sesión</span>
-          </button>
-        )}
-        {/*update: Add PendingTransfersBadge for logged in users */}
-        {isLoggedIn && (
-          <PendingTransfersBadge onTransferProcessed={handleTransferProcessed} />
-        )}
+        <div className={styles.radioToggleContainer}>
+          <div className={styles.radioToggle}>
+            <input
+              type="radio"
+              id="viewBoard"
+              name="viewToggle"
+              value="board"
+              checked={activeView === 'board'}
+              onChange={() => onViewChange('board')}
+              className={styles.radioInput}
+            />
+            <label htmlFor="viewBoard" 
+              className={styles.radioLabel}
+              title="Ir al tablón informativo"
+            >
+              Publicaciones
+            </label>
+            
+            <input
+              type="radio"
+              id="viewOrganizations"
+              name="viewToggle"
+              value="organizations"
+              checked={activeView === 'organizations'}
+              onChange={() => onViewChange('organizations')}
+              className={styles.radioInput}
+            />
+            <label htmlFor="viewOrganizations" 
+              className={styles.radioLabel}
+              title="Gestiona tus asociaciones"
+            >
+              Asociaciones
+              {!isLoggedIn && <span className={styles.lockIcon}>🔒</span>}
+            </label>
+            
+            <div className={styles.radioSlider}></div>
+          </div>
+
+          {!isLoggedIn && (
+            <button 
+              onClick={() => handleLoginRedirect('info')}
+              className={styles.loginButton}
+              title="Iniciar sesión para participar"
+            >
+              <LogIn size={18} />
+              <span>Iniciar sesión</span>
+            </button>
+          )}
+          {isLoggedIn && (
+            <PendingTransfersBadge onTransferProcessed={() => handleTransferProcessed(currentUser)} />
+          )}
+        </div>
       </div>
-      
+
       <div className={styles.header}>
-        <h1 className={styles.title}>
-          {activeView === 'board' ? 'Tablón Informativo de Uribarri' : 
-           activeView === 'organizations' ? 'Asociaciones de Uribarri' :
-           'Gestión de Publicaciones'}
-        </h1>
-        <p className={styles.subtitle}>
-          {activeView === 'board' 
-            ? 'Mantente al día con las últimas novedades de tu barrio'
-            : activeView === 'organizations' 
-            ? 'Busca y únete a las asociaciones de tu comunidad'
-            : selectedOrgForManagement 
-              ? `Gestionando: ${selectedOrgForManagement.name_org}`
-              : 'Gestiona las publicaciones de tu organización'
-          }
-        </p>
+        <div className={styles.headerContent}>
+          <h1 className={styles.title}>
+            {getHeaderTitle(activeView, selectedOrgForManagement)}
+          </h1>
+          <p className={styles.subtitle}>
+            {getHeaderSubtitle(activeView, selectedOrgForManagement)}
+          </p>
+          {isLoggedIn && isManager && activeView === 'organizations' && !isEditMode && (
+            <div className={styles.managerActions}>
+              <button
+                className={`${styles.createButton} ${showCreationForm ? styles.createButtonActive : ''}`}
+                onClick={onToggleCreationForm}
+                title={showCreationForm ? "Cerrar formulario" : "Crear nueva organización"}
+              >
+                {showCreationForm ? (
+                  <>
+                    <X size={18} />
+                    <span>Cerrar formulario</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus size={18} />
+                    <span>Crear Asociación</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
         {!isLoggedIn && activeView === 'board' && (
           <p className={styles.publicAccessNote}>
             Estás viendo el tablón en modo público. Inicia sesión para crear publicaciones y unirte a asociaciones.
@@ -222,46 +258,16 @@ const InfoManagement = () => {
         )}
       </div>
       
-      <div className={styles.tabNavigation}>
-        <button
-          className={`${styles.tabButton} ${activeView === 'board' ? styles.activeTab : ''}`}
-          onClick={() => {
-            setActiveView('board');
-            setFilterByOrganization(null);
-            setSelectedOrgForManagement(null);
-          }}
-        >
-          Publicaciones
-        </button>
-        <button
-          className={`${styles.tabButton} ${activeView === 'organizations' ? styles.activeTab : ''}`}
-          onClick={() => {
-            if (!isLoggedIn) {
-              handleLoginRedirect('info');
-              return;
-            }
-            setActiveView('organizations');
-            setSelectedOrgForManagement(null);
-          }}
-        >
-          Asociaciones
-          {!isLoggedIn && <span className={styles.loginRequiredBadge}>🔒</span>}
-        </button>
-      </div>
-      
       {activeView === 'management' && (
         <div className={styles.backButtonContainer}>
           <button
             className={styles.backButton}
-            onClick={() => {
-              setActiveView('board');
-              setSelectedOrgForManagement(null);
-            }}
+            onClick={onBackToBoard}
           >
             <ArrowLeft size={18} />
             <span>Volver al tablón</span>
           </button>
-          {managesAnyOrganization && userOrganizations.filter(p => p.org_managed).length > 1 && (
+          {managesAnyOrganization && managedOrganizations.length > 1 && (
             <div className={styles.orgSelector}>
               <label>Organización:</label>
               <select 
@@ -274,39 +280,14 @@ const InfoManagement = () => {
                 className={styles.orgSelect}
               >
                 <option value="">-- Selecciona --</option>
-                {userOrganizations
-                  .filter(p => p.org_managed && p.organization)
-                  .map(p => (
-                    <option key={p.organization.id_organization} value={p.organization.id_organization}>
-                      {p.organization.name_org}
-                    </option>
-                  ))
-                }
+                {managedOrganizations.map(p => (
+                  <option key={p.organization.id_organization} value={p.organization.id_organization}>
+                    {p.organization.name_org}
+                  </option>
+                ))}
               </select>
             </div>
           )}
-        </div>
-      )}
-      
-      {isLoggedIn && isManager && activeView === 'organizations' && !isEditMode && (
-        <div className={styles.managerActions}>
-          <button
-            className={`${styles.createButton} ${showCreationForm ? styles.createButtonActive : ''}`}
-            onClick={toggleCreationForm}
-            title={showCreationForm ? "Cerrar formulario" : "Crear nueva organización"}
-          >
-            {showCreationForm ? (
-              <>
-                <X size={18} />
-                <span>Cerrar formulario</span>
-              </>
-            ) : (
-              <>
-                <Plus size={18} />
-                <span>Crear Asociación</span>
-              </>
-            )}
-          </button>
         </div>
       )}
       
@@ -315,7 +296,7 @@ const InfoManagement = () => {
           {belongsToOrganization && (
             <button
               className={`${styles.createButton} ${showPublicationForm ? styles.createButtonActive : ''}`}
-              onClick={togglePublicationForm}
+              onClick={onTogglePublicationForm}
               title={showPublicationForm ? "Cerrar formulario" : "Crear nueva publicación"}
             >
               {showPublicationForm ? (
@@ -339,8 +320,8 @@ const InfoManagement = () => {
           <>
             {showPublicationForm && (
               <PublicationCreationForm 
-                onSuccess={handlePublicationCreated}
-                onCancel={handleCancelPublicationForm}
+                onSuccess={onPublicationCreated}
+                onCancel={onCancelPublicationForm}
                 editMode={!!editingPublication}
                 publicationData={editingPublication}
               />
@@ -352,16 +333,16 @@ const InfoManagement = () => {
             <>
               {showCreationForm && (
                 <OrganizationCreationForm 
-                  onSuccess={isEditMode ? handleOrganizationUpdated : handleOrganizationCreated}
-                  onCancel={handleCancelForm}
+                  onSuccess={isEditMode ? onOrganizationUpdated : onOrganizationCreated}
+                  onCancel={onCancelForm}
                   editMode={isEditMode}
                   organizationData={editingOrganization}
                 />
               )}
               <FiltersForOrganizations />
               <OrganizationsList 
-                onEditOrganization={handleEditOrganization}
-                onViewPublications={handleViewPublications}
+                onEditOrganization={onEditOrganization}
+                onViewPublications={onViewPublications}
               />
             </>
           ) : (

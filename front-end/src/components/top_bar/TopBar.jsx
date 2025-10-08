@@ -1,4 +1,4 @@
-//update: Enhanced to support public navigation for ShopWindow and InfoManagement
+//update: Enhanced to support public navigation for ShopWindow and InfoManagement with dynamic title colors
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../../public/css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
@@ -22,6 +22,7 @@ function TopBar() {
   const {
     showShopCreationForm, 
     selectedShop,
+    showShopManagement,
   } = useShop();
   
   const {
@@ -38,7 +39,6 @@ function TopBar() {
     showShopStore,
     showInfoManagement,
     setShowInfoManagement,
-    //update: Add setters for navigation
     setShowShopsListBySeller,
     setShowShopManagement
   } = useUI();
@@ -51,6 +51,17 @@ function TopBar() {
     handleBack,
     clearUserSession
   } = TopBarUtils();
+
+  //update: Determine title color based on current scenario
+  const getTitleColorClass = () => {
+    if (showInfoManagement) {
+      return styles.titleGreen;
+    }
+    if (showShopWindow || showShopStore || showShopManagement || showShopsListBySeller || showProductManagement) {
+      return styles.titlePurple;
+    }
+    return styles.titlePurple; // Default to purple
+  };
 
   useEffect(() => {
     const controlTopBar = () => {
@@ -187,7 +198,8 @@ function TopBar() {
       <div className={`${styles.container} ${isVisible ? styles.visible : styles.hidden}`}>
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
-              <span className={styles.title}>
+              {/*update: Dynamic title color based on scenario*/}
+              <span className={`${styles.title} ${getTitleColorClass()}`}>
                 uribarri.online
               </span>
           </div>
@@ -207,7 +219,7 @@ function TopBar() {
               
               <button 
                 type="button" 
-                className={`${styles.navButton} ${showInfoManagement ? styles.activeNav : ''}`}
+                className={`${styles.navButton} ${showInfoManagement ? styles.activeNavGreen : ''}`}
                 onClick={handleInfoManagementClick}
                 title="Ver tablón informativo"
               >
@@ -308,7 +320,7 @@ function TopBar() {
                 {shouldShowPublicNav() && (
                   <>
                     <button 
-                      className={`${styles.navMenuButton} ${showShopWindow ? styles.activeNav : ''}`}
+                      className={` ${styles.navMenuButton} ${showShopWindow ? styles.activeNav : ''}`}
                       onClick={handleShopWindowClick}
                     >
                       <ShoppingBag size={16} className={styles.buttonIcon} />
@@ -316,7 +328,7 @@ function TopBar() {
                     </button>
                     
                     <button 
-                      className={`${styles.navMenuButton} ${showInfoManagement ? styles.activeNav : ''}`}
+                      className={`${styles.navMenuButton} ${showInfoManagement ? styles.activeNavGreen : ''}`}
                       onClick={handleInfoManagementClick}
                     >
                       <Newspaper size={16} className={styles.buttonIcon} />

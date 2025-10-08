@@ -408,7 +408,7 @@
 
 .modalTextarea:focus {
   outline: none;
-  border-color: var(--app-purple);
+  border-color: var(--app-green);
   box-shadow: 0 0 0 3px rgba(151, 71, 255, 0.1);
 }
 

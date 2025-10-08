@@ -5,9 +5,7 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  /* background-color: var(--light-gray); */
-    
-  /* background-size: 200% 200%; */
+  /* margin-top: 3rem; */
   position: relative;
   z-index: 100;
 }
@@ -148,33 +146,35 @@ background-color: white;
   position: absolute;
   top: 20px;
   left: 20px;
+  margin-left: 1rem;
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 0.95);
-  border: 2px solid #e5e7eb;
+  border: 2px solid transparent;
   border-radius: 8px;
-  color: #374151;
+  color: black;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
   text-transform: none;
 }
 
 .backButton:hover {
-  background: white;
-  border-color: var(--app-purple);
-  color: var(--app-purple);
-  transform: translateX(-4px);
-  box-shadow: 0 4px 12px rgba(151, 71, 255, 0.25);
+  background-color: lightgray;
+  /* border-color: var(--app-purple);
+  color: var(--app-purple); */
+  /* transform: translateX(-4px); */
+  /* box-shadow: 0 4px 12px rgba(151, 71, 255, 0.25); */
 }
 
 .backButton:active {
-  transform: translateX(-2px);
+  
+  /* transform: translateX(-2px); */
 }
 
 .backButton svg {
@@ -183,7 +183,8 @@ background-color: white;
 }
 
 .backButton:hover svg {
-  transform: translateX(-2px);
+  /* color: var(--app-purple); */
+  /* transform: translateX(-2px); */
 }
 
 /* Mobile responsive */
