@@ -1,0 +1,20 @@
+services:
+  nginx:
+    image: nginx:latest
+    expose:
+      - "80"
+    environment:
+      - VIRTUAL_HOST=tu-dominio.com
+      - LETSENCRYPT_HOST=tu-dominio.com
+      - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro  # Solo si usas React Router
+    networks:
+      - proxy
+    restart: unless-stopped
+
+networks:
+  proxy:
+    name: nginx-proxy
+    external: true
