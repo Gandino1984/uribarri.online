@@ -15,7 +15,7 @@ const createTransporter = () => {
   console.log('EMAIL_USER:', process.env.EMAIL_USER);
   console.log('EMAIL_PASS exists:', !!process.env.EMAIL_PASS);
   console.log('EMAIL_PASS length:', process.env.EMAIL_PASS?.length);
-  console.log('FRONTEND_URL:', process.env.FRONTEND_URL || 'http://localhost:5173');
+  console.log('FRONTEND_URL:', process.env.FRONTEND_URL || 'http://app.uribarri.online');
   console.log('=================================');
   
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -63,7 +63,7 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
     }
     
     // Construct verification URL
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://app.uribarri.online'}/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
     
     console.log('Verification URL generated:', verificationUrl);
     
