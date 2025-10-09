@@ -157,7 +157,7 @@ const ParticipantRequests = ({ organizationId, organizationName, onClose }) => {
                   <div className={styles.userInfo}>
                     {request.user?.image_user ? (
                       <img 
-                        src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${request.user.image_user}`}
+                        src={`${import.meta.env.VITE_API_URL}/${request.user.image_user}`}
                         alt={request.user.name_user}
                         className={styles.userAvatar}
                       />

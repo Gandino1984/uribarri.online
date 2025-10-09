@@ -18,7 +18,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(
     editMode && organizationData?.image_org 
-      ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`
+      ? `${import.meta.env.VITE_API_URL}/${organizationData.image_org}`
       : null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +31,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         scope_org: organizationData.scope_org || ''
       });
       if (organizationData.image_org) {
-        setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`);
+        setImagePreview(`${import.meta.env.VITE_API_URL}/${organizationData.image_org}`);
       }
     }
   }, [editMode, organizationData]);
@@ -92,7 +92,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
   const handleRemoveImage = () => {
     setImageFile(null);
     if (editMode && organizationData?.image_org) {
-      setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${organizationData.image_org}`);
+      setImagePreview(`${import.meta.env.VITE_API_URL}/${organizationData.image_org}`);
     } else {
       setImagePreview(null);
     }
