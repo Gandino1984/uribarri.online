@@ -8,8 +8,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   //update: Get API URL from environment variable or use default
-  const apiUrl = env.VITE_API_URL;
-  
+  const apiUrl = 'https://api.uribarri.online'; // Default to production API
+
   console.log('Vite config - API URL:', apiUrl);
   console.log('Vite config - Mode:', mode);
 
