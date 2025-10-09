@@ -1,15 +1,17 @@
 services:
+
   nginx:
     image: nginx:latest
+    container_name: uribarri_frontend
     expose:
       - "80"
     environment:
-      - VIRTUAL_HOST=tu-dominio.com
-      - LETSENCRYPT_HOST=tu-dominio.com
+      - VIRTUAL_HOST=app.uribarri.online
+      - LETSENCRYPT_HOST=app.uribarri.online
       - LETSENCRYPT_EMAIL=andinogerman@gmail.com
     volumes:
-      - ./web:/usr/share/nginx/html:ro
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro  # Solo si usas React Router
+      - ./dist:/usr/share/nginx/html:ro
+      # - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro  # Solo si usas React Router
     networks:
       - proxy
     restart: unless-stopped
