@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   //update: Get API URL from environment variable or use default
   const apiUrl = env.VITE_API_URL;
   
-  console.log('Vite config - API URL:', apiUrl);
+  console.log('--------------- >>>>   Vite config - API URL:', apiUrl);
   console.log('Vite config - Mode:', mode);
 
   return {
