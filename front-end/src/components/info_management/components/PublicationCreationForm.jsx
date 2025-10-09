@@ -24,7 +24,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(
     editMode && publicationData?.image_pub 
-      ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publicationData.image_pub}`
+      ? `${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`
       : null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,7 +61,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         time_pub: publicationData.time_pub ? publicationData.time_pub.substring(0, 5) : new Date().toTimeString().split(' ')[0].substring(0, 5)
       });
       if (publicationData.image_pub) {
-        setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publicationData.image_pub}`);
+        setImagePreview(`${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`);
       }
     }
   }, [editMode, publicationData]);
@@ -123,7 +123,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     setImageFile(null);
     //update: In edit mode, keep the original image unless a new one is selected
     if (editMode && publicationData?.image_pub) {
-      setImagePreview(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${publicationData.image_pub}`);
+      setImagePreview(`${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`);
     } else {
       setImagePreview(null);
     }

@@ -258,7 +258,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
 
   const handleImageClick = (imagePath) => {
     if (imagePath) {
-      const fullImagePath = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${imagePath}`;
+      const fullImagePath = `${import.meta.env.VITE_API_URL}/${imagePath}`;
       openImageModal(fullImagePath);
     }
   };
@@ -332,7 +332,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
               <div className={styles.cardHeader}>
                 {org.image_org ? (
                   <img
-                    src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${org.image_org}`}
+                    src={`${import.meta.env.VITE_API_URL}/${org.image_org}`}
                     alt={org.name_org}
                     className={styles.orgImage}
                     onClick={() => handleImageClick(org.image_org)}

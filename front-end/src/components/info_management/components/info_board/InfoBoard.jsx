@@ -28,7 +28,7 @@ const InfoBoard = () => {
   const [showFilters, setShowFilters] = useState(false);
   
   //update: Get API base URL for image paths
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   
   const fetchPublications = useCallback(async () => {
     await fetchAllPublications();

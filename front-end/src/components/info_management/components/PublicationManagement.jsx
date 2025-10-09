@@ -336,7 +336,7 @@ const PublicationManagement = ({ organizationId }) => {
               {pub.image_pub && (
                 <div 
                   className={styles.publicationImage}
-                  onClick={() => openImageModal(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${pub.image_pub}`)}
+                  onClick={() => openImageModal(`${import.meta.env.VITE_API_URL}/${pub.image_pub}`)}
                 >
                   <ImageIcon size={16} />
                   <span>Ver imagen</span>
