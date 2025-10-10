@@ -1,10 +1,20 @@
-// src/components/landing_page/LandingPage.jsx
+//update: LandingPage.jsx - Updated image imports to use frontend assets
 import { useRef, useState, useEffect } from 'react';
 import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../../public/css/LandingPage.module.css';
 import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
+
+//update: Import portrait images from frontend assets
+import user1Portrait from '../../../assets/images/portraits/user1.png';
+import user2Portrait from '../../../assets/images/portraits/user2.png';
+import user3Portrait from '../../../assets/images/portraits/user3.png';
+import user4Portrait from '../../../assets/images/portraits/user4.png';
+import user5Portrait from '../../../assets/images/portraits/user5.png';
+// import user6Portrait from '../../../assets/images/portraits/user6.png';
+import user7Portrait from '../../../assets/images/portraits/user7.png';
+import user8Portrait from '../../../assets/images/portraits/user8.png';
 
 const LandingPage = () => {
   const { 
@@ -14,7 +24,6 @@ const LandingPage = () => {
     setShowShopsListBySeller,
     setShowInfoManagement,
     setNavigationIntent,
-    //update: Add modal control from UIContext
     openModal
   } = useUI();
   const { currentUser, setIsLoggingIn } = useAuth();
@@ -31,20 +40,20 @@ const LandingPage = () => {
   const [isShopButtonPressed, setIsShopButtonPressed] = useState(false);
   const [isInfoButtonHovered, setIsInfoButtonHovered] = useState(false);
   const [isInfoButtonPressed, setIsInfoButtonPressed] = useState(false);
-  //update: Add state for new IA button
   const [isIAButtonHovered, setIsIAButtonHovered] = useState(false);
   const [isIAButtonPressed, setIsIAButtonPressed] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
+  //update: Use imported images instead of path strings
   const portraits = [
-    '/images/portraits/user1.png',
-    '/images/portraits/user2.png', 
-    '/images/portraits/user3.png',
-    '/images/portraits/user4.png',
-    '/images/portraits/user5.png',
-    '/images/portraits/user6.png',
-    '/images/portraits/user7.png',
-    '/images/portraits/user8.png'
+    user1Portrait,
+    user2Portrait,
+    user3Portrait,
+    user4Portrait,
+    user5Portrait,
+    // user6Portrait,
+    user7Portrait,
+    user8Portrait
   ];
   
   useEffect(() => {
@@ -151,7 +160,6 @@ const LandingPage = () => {
     config: config.gentle
   });
   
-  //update: Add animation spring for IA button
   const iaButtonSpring = useSpring({
     transform: `scale(${isIAButtonPressed ? 0.95 : isIAButtonHovered ? 1.05 : 1})`,
     config: config.gentle
@@ -177,7 +185,6 @@ const LandingPage = () => {
     config: config.gentle
   });
   
-  //update: Add glow animation for IA button (orange/amber theme)
   const iaButtonGlowSpring = useSpring({
     boxShadow: isIAButtonHovered 
       ? '0 0 30px rgba(255, 149, 0, 0.6), 0 0 60px rgba(255, 149, 0, 0.3), inset 0 0 20px rgba(255, 149, 0, 0.2)'
@@ -272,19 +279,15 @@ const LandingPage = () => {
     }, 800);
   };
   
-  //update: Add handler for IA Antirumor button - opens modal before external navigation
   const handleIAButtonClick = () => {
     if (isExiting) return;
     
-    // Open confirmation modal with custom message
     openModal(
       'Estás a punto de salir de uribarri.online y ser redirigido a zuriai.org, un sitio web externo.',
       (confirmed) => {
         if (confirmed) {
-          // User confirmed - navigate to external site
           window.open('https://zuriai.org/', '_blank', 'noopener,noreferrer');
         }
-        // If declined, modal just closes and user stays on landing page
       }
     );
   };
