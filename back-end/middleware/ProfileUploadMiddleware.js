@@ -1,3 +1,4 @@
+//update: Changed destination to back-end/assets/images/users instead of public/images/uploads/users
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
@@ -41,14 +42,12 @@ const profileImageStorage = multer.diskStorage({
       
       console.log(`Processing profile image for user: ${userName}`);
       
-      // Create path for user-specific profile images - use forward slashes for Docker compatibility
+      //update: Changed to back-end/assets/images/users path
       const uploadsDir = path.join(
         __dirname, 
         '..',
-        '..',
-        'public', 
+        'assets',
         'images', 
-        'uploads', 
         'users', 
         userName
       );
@@ -96,7 +95,7 @@ const uploadProfileImage = multer({
   storage: profileImageStorage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 3 * 1024 * 1024 // 3MB limit (igual que los otros middleware)
+    fileSize: 3 * 1024 * 1024 // 3MB limit
   }
 }).single('profileImage'); // IMPORTANT: This must match the field name from the frontend
 

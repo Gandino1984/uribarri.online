@@ -1,3 +1,4 @@
+//update: Modified formatImageUrl to handle user images from backend API endpoint
 // utils/image/imageUploadService.js
 import axiosInstance from '../app/axiosConfig.js';
 import { optimizeImage } from './imageOptimizer.js';
@@ -20,6 +21,17 @@ export const formatImageUrl = (imagePath) => {
       return imagePath;
     }
 
+    //update: Check if this is a user image (just username)
+    // User images are now served through backend API: /api/user/image/:userName
+    if (!imagePath.includes('/') && !imagePath.includes('\\')) {
+      // This is likely a username for a user profile image
+      const apiBaseUrl = (axiosInstance.defaults.baseURL || '').replace(/\/+$/, '');
+      const imageUrl = `${apiBaseUrl}/user/image/${imagePath}`;
+      console.log('Generated backend user image URL:', imageUrl);
+      return imageUrl;
+    }
+
+    // For other images (shops, products, etc.) - keep old behavior
     // Use the baseURL from axios instance - strip any trailing slashes
     const apiBaseUrl = (axiosInstance.defaults.baseURL || '')
       .replace(/\/+$/, '');
@@ -59,7 +71,7 @@ export const uploadShopCover = async ({ file, shopId, onProgress, onError }) => 
     // First validate the image
     await validateImageFile(file);
     
-    // UPDATE: Always optimize and convert to WebP (unless already small and WebP)
+    // Always optimize and convert to WebP (unless already small and WebP)
     let optimizedFile = file;
     try {
       optimizedFile = await optimizeImage(file, {
@@ -147,7 +159,7 @@ export const uploadProductImage = async ({
     // First validate the image
     await validateImageFile(file);
     
-    // UPDATE: Always optimize and convert to WebP (unless already small and WebP)
+    // Always optimize and convert to WebP (unless already small and WebP)
     let optimizedFile = file;
     try {
       optimizedFile = await optimizeImage(file, {
@@ -237,7 +249,7 @@ export const uploadProfileImage = async ({
     // First validate the image
     await validateImageFile(file);
     
-    // UPDATE: Always optimize and convert to WebP for profile images
+    // Always optimize and convert to WebP for profile images
     let optimizedFile = file;
     try {
       optimizedFile = await optimizeImage(file, {
@@ -283,7 +295,8 @@ export const uploadProfileImage = async ({
     if (!response.data?.data?.image_user) {
       throw new Error('Invalid response from server: missing image_user path');
     }
-    
+
+    //update: Backend now returns just the userName, which will be used to construct /api/user/image/:userName
     return response.data.data.image_user;
   } catch (error) {
     console.error('Profile image upload error:', error);

@@ -1,12 +1,10 @@
+//update: Added route to serve user images from backend
 import { Router } from "express";
 import userApiController from "../controllers/user/user_api_controller.js";
 import IpRegistry from '../../back-end/models/ip_registry_model.js'; 
 import dotenv from 'dotenv';
-// import multer from 'multer';
 import path from 'path';
-// import fs from 'fs';
 import { handleProfileImageUpload } from '../middleware/ProfileUploadMiddleware.js';
-//update: Import user controller for verification functions
 import userController from "../controllers/user/user_controller.js";
 
 dotenv.config();
@@ -81,10 +79,8 @@ router.post("/login", userApiController.login);
 
 router.post("/create", userApiController.create);
 
-//update: Route for searching by email
 router.post("/by-email", userApiController.getByEmail);
 
-//update: Route for searching by name (partial match)
 router.post("/search-by-name", userApiController.searchByName);
 
 router.patch("/update", userApiController.update);
@@ -129,7 +125,6 @@ router.post('/register', async (req, res) => {
 
 router.post("/details", userApiController.getByUserName);
 
-//update: Add email verification route
 router.post('/verify-email', async (req, res) => {
     try {
         const { email, token } = req.body;
@@ -156,7 +151,6 @@ router.post('/verify-email', async (req, res) => {
     }
 });
 
-//update: Add resend verification email route
 router.post('/resend-verification', async (req, res) => {
     try {
         const { email } = req.body;
@@ -183,6 +177,7 @@ router.post('/resend-verification', async (req, res) => {
     }
 });
 
+//update: Modified to return backend-relative path
 router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) => {
     try {
         if (!req.file || !req.body.name_user) {
@@ -191,16 +186,10 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
             });
         }
 
-        // Construir la ruta relativa al directorio público
-        const relativePath = path.join(
-            'images', 
-            'uploads', 
-            'users', 
-            req.body.name_user, 
-            req.file.filename
-        ).split(path.sep).join('/'); // Asegura que las barras sean forward slashes
+        //update: Return the username as the path - frontend will construct /api/user/image/:userName
+        const userName = req.body.name_user;
         
-        const result = await userApiController.updateProfileImage(req.body.name_user, relativePath);
+        const result = await userApiController.updateProfileImage(userName, userName);
         
         if (result.error) {
             return res.status(400).json(result);
@@ -210,7 +199,7 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
             ...result,
             data: {
                 ...result.data,
-                image_user: relativePath // Devuelve la ruta relativa limpia
+                image_user: userName // Return just the username
             }
         });
     } catch (error) {
@@ -222,6 +211,8 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
     }
 });
 
+//update: New route to serve user images from backend
+router.get('/image/:userName', userApiController.getUserImage);
 
 // Add this test route temporarily
 router.post('/test-email-direct', async (req, res) => {
@@ -248,8 +239,5 @@ router.post('/test-email-direct', async (req, res) => {
         });
     }
 });
-
-
-
 
 export default router;

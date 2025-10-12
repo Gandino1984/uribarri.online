@@ -33,6 +33,7 @@ services:
       - /app/node_modules
       - ./public:/app/public
       - ./public/images/uploads:/app/public/images/uploads
+      - ./back-end/assets:/app/back-end/assets
 
 volumes:
   data:
