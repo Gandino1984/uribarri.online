@@ -1,20 +1,10 @@
-//update: LandingPage.jsx - Updated image imports to use frontend assets
+//update: LandingPage.jsx - Using public folder for portrait images
 import { useRef, useState, useEffect } from 'react';
 import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../../public/css/LandingPage.module.css';
 import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
-
-//update: Import portrait images from frontend assets
-import user1Portrait from '../../../assets/images/portraits/user1.png';
-import user2Portrait from '../../../assets/images/portraits/user2.png';
-import user3Portrait from '../../../assets/images/portraits/user3.png';
-import user4Portrait from '../../../assets/images/portraits/user4.png';
-import user5Portrait from '../../../assets/images/portraits/user5.png';
-// import user6Portrait from '../../../assets/images/portraits/user6.png';
-import user7Portrait from '../../../assets/images/portraits/user7.png';
-import user8Portrait from '../../../assets/images/portraits/user8.png';
 
 const LandingPage = () => {
   const { 
@@ -44,18 +34,20 @@ const LandingPage = () => {
   const [isIAButtonPressed, setIsIAButtonPressed] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
-  //update: Use imported images instead of path strings
+  //update: Use public folder URLs instead of imports
   const portraits = [
-    user1Portrait,
-    user2Portrait,
-    user3Portrait,
-    user4Portrait,
-    user5Portrait,
-    // user6Portrait,
-    user7Portrait,
-    user8Portrait
+    '/images/portraits/user1.png',
+    '/images/portraits/user2.png',
+    '/images/portraits/user3.png',
+    '/images/portraits/user4.png',
+    '/images/portraits/user5.png',
+    '/images/portraits/user6.png',
+    '/images/portraits/user7.png',
+    '/images/portraits/user8.png',
+    '/images/portraits/user9.png'
   ];
   
+  // Rest of component remains exactly the same...
   useEffect(() => {
     const checkDevice = () => {
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;

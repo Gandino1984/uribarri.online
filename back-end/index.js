@@ -1,4 +1,4 @@
-//update: back-end/index.js
+//update: back-end/index.js - Added route to serve backend assets
 import express from 'express'; 
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -18,7 +18,13 @@ const INTERNAL_PORT = 3000;
 const EXTERNAL_PORT = process.env.APP_PORT || 3007;
 
 // Middlewares
+//update: Serve images from both public (legacy) and backend assets folders
+// Keep the old route for backward compatibility with existing images
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
+
+//update: Add new route to serve images from backend assets folder
+// This will handle requests to /assets/images/*
+app.use('/assets/images', express.static(path.join(__dirname, 'assets', 'images')));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,7 +46,7 @@ app.use(cors({
         'X-Product-ID',
         'X-Package-ID',
         'X-Publication-ID',
-        'X-Organization-ID', //update: Added for organization image uploads
+        'X-Organization-ID',
         'Content-Disposition'
     ],
     exposedHeaders: ['Content-Disposition']
@@ -64,5 +70,8 @@ initializeDatabase().then(() => {
     app.listen(INTERNAL_PORT, '0.0.0.0', () => {
         console.log(`SERVIDOR INTERNO EN EL PUERTO = ${INTERNAL_PORT}`);
         console.log(`PUERTO EXTERNO MAPEADO A = ${EXTERNAL_PORT}`);
+        //update: Log the static file routes
+        console.log(`Serving legacy images from: /images`);
+        console.log(`Serving backend assets from: /assets/images`);
     });
 });
