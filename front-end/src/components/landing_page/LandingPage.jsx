@@ -41,10 +41,10 @@ const LandingPage = () => {
     '/images/portraits/user3.png',
     '/images/portraits/user4.png',
     '/images/portraits/user5.png',
-    '/images/portraits/user6.png',
+    // '/images/portraits/user6.png',
     '/images/portraits/user7.png',
     '/images/portraits/user8.png',
-    '/images/portraits/user9.png'
+    '/images/portraits/user9.png',
   ];
   
   // Rest of component remains exactly the same...
@@ -117,23 +117,12 @@ const LandingPage = () => {
     };
   }, [hasScrolled]);
   
-  const transitions = useTransition(currentImageIndex, {
-    from: { 
-      opacity: 0,
-      transform: 'scale(1.02) translateZ(0)',
-    },
-    enter: { 
-      opacity: 1,
-      transform: 'scale(1) translateZ(0)',
-    },
-    leave: { 
-      opacity: 0,
-      transform: 'scale(0.98) translateZ(0)',
-    },
-    config: {
-      duration: 1500
-    },
-    exitBeforeEnter: false
+  const transitions = useTransition(portraits[currentImageIndex], {
+    key: currentImageIndex,
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+    config: { duration: 1500 }
   });
   
   const buttonsContainerSpring = useSpring({
@@ -292,12 +281,12 @@ const LandingPage = () => {
     >
       <div className={styles.portraitContainer}>
         {transitions((style, item) => (
-          item !== null && (
+          item && (
             <animated.div
               className={styles.portraitImage}
               style={{
                 ...style,
-                backgroundImage: `url(${portraits[item]})`,
+                backgroundImage: `url(${item})`,
               }}
             />
           )
