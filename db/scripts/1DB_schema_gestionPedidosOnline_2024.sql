@@ -361,7 +361,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
   `id_user_pub` INT UNSIGNED NOT NULL,
   `image_pub` VARCHAR(255) NULL,
   `pub_approved` TINYINT(1) NOT NULL DEFAULT 0,
-  --update: Add publication_active field for manager control
   `publication_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indicates if the publication is active or deactivated by manager',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -369,12 +368,11 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
   UNIQUE INDEX `id_publication_UNIQUE` (`id_publication` ASC) VISIBLE,
   INDEX `idx_user_pub` (`id_user_pub` ASC) VISIBLE,
   INDEX `idx_date_pub` (`date_pub` DESC) VISIBLE,
-  --update: Add index for active publications
   INDEX `idx_publication_active` (`publication_active` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
---update: New Table `DB_gestionPedidosOnline_2024`.`participant_publication`
+-- update: New Table `DB_gestionPedidosOnline_2024`.`participant_publication`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant_publication` (
   `id_participant_publication` INT UNSIGNED NOT NULL AUTO_INCREMENT,
