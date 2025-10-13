@@ -6,6 +6,7 @@ import axiosInstance from '../app/axiosConfig.js';
  * @param {string} imagePath - Relative path from database
  * @returns {string} - Full URL for image
  */
+//update: Enhanced to properly handle assets/images/shops paths for product images
 export const formatImageUrl = (imagePath) => {
   if (!imagePath) {
     console.log('No image path provided to format');
@@ -18,20 +19,38 @@ export const formatImageUrl = (imagePath) => {
   }
   
   try {
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('blob:') || imagePath.startsWith('data:')) {
+      return imagePath;
+    }
+    
     const cleanPath = imagePath.replace(/^\/+/, '');
     const baseURL = axiosInstance.defaults.baseURL || 'http://localhost:3000';
     
     let finalPath;
-    if (cleanPath.startsWith('assets/')) {
+    
+    //update: Handle product images stored in assets/images/shops
+    if (cleanPath.startsWith('assets/images/shops/')) {
+      // Product images are in back-end/assets/images/shops/<shop_name>/product_images/
       finalPath = cleanPath;
-    } else if (cleanPath.startsWith('images/')) {
+    } 
+    // Handle other assets paths
+    else if (cleanPath.startsWith('assets/')) {
       finalPath = cleanPath;
-    } else if (cleanPath.startsWith('public/images/')) {
+    } 
+    // Handle public/images paths (user profiles, etc)
+    else if (cleanPath.startsWith('images/')) {
+      finalPath = cleanPath;
+    } 
+    else if (cleanPath.startsWith('public/images/')) {
       finalPath = cleanPath.replace('public/', '');
-    } else {
+    } 
+    // Default case - assume it's a relative path
+    else {
       finalPath = cleanPath;
     }
     
+    // Encode each path segment to handle special characters and spaces
     const pathSegments = finalPath.split('/');
     const encodedSegments = pathSegments.map(segment => {
       return encodeURIComponent(segment);
@@ -152,7 +171,6 @@ export const uploadProductImage = async ({
  * @param {Function} options.onError - Error callback
  * @returns {Promise<string>} - Uploaded image path
  */
-//update: Send userName in headers instead of FormData (multer timing issue fix)
 export const uploadUserImage = async ({ file, userName, onProgress, onError }) => {
   try {
     if (!file || !userName) {
@@ -169,11 +187,9 @@ export const uploadUserImage = async ({ file, userName, onProgress, onError }) =
       userName
     });
 
-    //update: Only send the file in FormData, userName goes in headers
     const formData = new FormData();
     formData.append('profileImage', file);
 
-    //update: Debug logging for headers
     console.log('Sending request with headers:', {
       'Content-Type': 'multipart/form-data',
       'x-user-name': userName

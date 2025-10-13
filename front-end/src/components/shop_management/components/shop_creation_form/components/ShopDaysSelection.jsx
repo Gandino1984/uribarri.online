@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 import { Calendar } from 'lucide-react';
 
 // Component for selecting which days of the week the shop is open

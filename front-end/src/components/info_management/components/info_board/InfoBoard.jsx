@@ -7,7 +7,7 @@ import { usePublication } from '../../../../app_context/PublicationContext.jsx';
 import ActionButtonsPublication from '../../components/ActionButtonsPublication.jsx';
 import PublicationCreationForm from '../../components/PublicationCreationForm.jsx';
 import FiltersForPublications from './components/FiltersForPublications.jsx';
-import styles from '../../../../../../public/css/InfoBoard.module.css';
+import styles from '../../../../../public/css/InfoBoard.module.css';
 import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff, Filter } from 'lucide-react';
 
 const InfoBoard = () => {

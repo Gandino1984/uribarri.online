@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useRecommendedFilters, { filterOptions } from './RecommendedFiltersUtils.jsx';
-import styles from './../../../../../../public/css/RecommendedFilters.module.css';
+import styles from './../../../../../public/css/RecommendedFilters.module.css';
 
 const RecommendedFilters = ({ onFilterSelect, currentFilter }) => {
   const {

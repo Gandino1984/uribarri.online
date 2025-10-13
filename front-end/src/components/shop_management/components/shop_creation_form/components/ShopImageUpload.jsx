@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Camera, ImagePlus, Trash2, Loader } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../../public/css/ShopCreationForm.module.css';
 
 const ShopImageUpload = ({ 
   imagePreview, 

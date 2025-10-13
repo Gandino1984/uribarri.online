@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, X, Package, Tag, Clock, Pause, Play } from 'lucide-react';
 //update: Import the formatImageUrl utility that works in ShopPackagesList
 import { formatImageUrl } from '../../../../../../../../../../utils/image/packageImageUploadService.js';
-import styles from '../../../../../../../../../../../../public/css/OffersBoard.module.css';
+import styles from '../../../../../../../../../../../public/css/OffersBoard.module.css';
 
 const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);

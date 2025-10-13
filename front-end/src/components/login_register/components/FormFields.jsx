@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx';
-import styles from '../../../../../public/css/LoginRegisterForm.module.css'; 
+import styles from '../../../../public/css/LoginRegisterForm.module.css'; 
 
 export const FormFields = () => {
   const {

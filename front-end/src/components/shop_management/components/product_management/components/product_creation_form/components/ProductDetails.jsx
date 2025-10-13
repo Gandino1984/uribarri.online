@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../../../public/css/ProductCreationForm.module.css';
+import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
 import { countries } from '../../../../../../../utils/app/countries.js';
 
 import CustomToggleSwitch from '../../../../../../navigation_components/CustomToggleSwitch.jsx';

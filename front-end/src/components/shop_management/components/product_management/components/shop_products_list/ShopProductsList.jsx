@@ -11,7 +11,7 @@ import ShopProductsListUtils from './ShopProductsListUtils.jsx';
 import FiltersForProducts from '../../../../../filters_for_products/FiltersForProducts.jsx';
 import ProductCategoryManagementForm from './components/ProductCategoryManagementForm.jsx';
 
-import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../public/css/ShopProductsList.module.css';
 import ImageModal from '../../../../../image_modal/ImageModal.jsx';
 import ProductCard from '../product_card/ProductCard.jsx';
 import ShopCard from '../../../shop_card/ShopCard.jsx';

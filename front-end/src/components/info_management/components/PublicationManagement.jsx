@@ -8,7 +8,7 @@ import axiosInstance from '../../../utils/app/axiosConfig.js';
 import ActionButtonsPublication from './ActionButtonsPublication.jsx';
 import PublicationCreationForm from './PublicationCreationForm.jsx';
 import { CheckCircle, XCircle, Clock, FileText, User, Calendar, Image as ImageIcon, AlertCircle, EyeOff } from 'lucide-react';
-import styles from '../../../../../public/css/PublicationManagement.module.css';
+import styles from '../../../../public/css/PublicationManagement.module.css';
 
 const PublicationManagement = ({ organizationId }) => {
   const { currentUser } = useAuth();

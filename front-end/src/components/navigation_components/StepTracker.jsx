@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../public/css/StepTracker.module.css';
+import styles from '../../../public/css/StepTracker.module.css';
 
 // 📱 UPDATE: Enhanced StepTracker with improved responsive design and accessibility
 const StepTracker = ({ currentStep, totalSteps }) => {

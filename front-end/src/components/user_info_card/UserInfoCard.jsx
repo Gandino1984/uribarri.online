@@ -6,7 +6,7 @@ import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useOrganization } from '../../app_context/OrganizationContext.jsx';
 import { useSpring, animated } from '@react-spring/web';
-import styles from '../../../../public/css/UserInfoCard.module.css';
+import styles from '../../../public/css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 

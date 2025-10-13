@@ -11,7 +11,7 @@ import TransferOrganization from '../components/TransferOrganization.jsx';
 //update: Import ArrowRightLeft icon for transfer button
 import { Users, MapPin, User, AlertCircle, Shield, Clock, CheckCircle, XCircle, Edit, FileText, UserPlus, ArrowRightLeft } from 'lucide-react';
 import axiosInstance from '../../../../src/utils/app/axiosConfig.js';
-import styles from '../../../../../public/css/OrganizationsList.module.css';
+import styles from '../../../../public/css/OrganizationsList.module.css';
 
 const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
   const {

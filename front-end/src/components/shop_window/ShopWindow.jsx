@@ -7,7 +7,7 @@ import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
 import FiltersForShops from './components/filters_for_shops/FiltersForShops.jsx';
 import RecommendedFilters from './components/recommendedFilters/RecommendedFilters.jsx';
 import useShopWindow from './ShopWindowUtils.jsx';
-import styles from '../../../../public/css/ShopWindow.module.css';
+import styles from '../../../public/css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
 
 const ShopWindow = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
-import styles from '../../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
 
 const SearchBar = ({ searchTerm, handleSearchChange, placeholder = 'Buscar paquetes...' }) => {
   // 📱 Add state to track screen size for responsiveness

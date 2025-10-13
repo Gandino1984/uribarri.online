@@ -3,7 +3,7 @@ import {
   Package, 
   PackagePlus
 } from 'lucide-react';
-import styles from '../../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
 
 const PackageActionButtons = ({ 
   handleAddPackage,

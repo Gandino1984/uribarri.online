@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Minimize2, Edit, Map, Star, AlertTriangle, User } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopCard.module.css';
+import styles from '../../../../../../public/css/ShopCard.module.css';
 
 const ShopHeader = memo(({ 
   minimized, 

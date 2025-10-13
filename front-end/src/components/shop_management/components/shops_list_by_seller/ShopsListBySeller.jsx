@@ -6,7 +6,7 @@ import { useProduct } from '../../../../app_context/ProductContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useOrder } from '../../../../app_context/OrderContext.jsx';
 import { useTransition, useSpring, animated } from '@react-spring/web';
-import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
+import styles from '../../../../../public/css/ShopsListBySeller.module.css';
 import ShopsListBySellerUtils from './ShopsListBySellerUtils.jsx';
 import { 
   Plus, 

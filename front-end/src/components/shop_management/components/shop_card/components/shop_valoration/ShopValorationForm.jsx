@@ -4,7 +4,7 @@ import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import useShopValorationForm from './ShopValorationFormUtils.jsx';
 import UsersValorations from './users_valorations/UsersValorations.jsx';
-import styles from '../../../../../../../../public/css/ShopValorationForm.module.css';
+import styles from '../../../../../../../public/css/ShopValorationForm.module.css';
 
 const ShopValorationForm = ({ shop, onClose, onSubmitSuccess }) => {
   const { currentUser } = useAuth();

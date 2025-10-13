@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { Upload, User, MapPin, Phone, Mail, Star, Package } from 'lucide-react';
-import styles from '../../../../../../public/css/RiderCard.module.css';
+import styles from '../../../../../public/css/RiderCard.module.css';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 import { validateImageFile } from '../../../../utils/image/imageValidation.js';
 

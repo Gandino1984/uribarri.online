@@ -1,6 +1,6 @@
 // front-end/src/components/shop_management/components/product_management/components/product_creation_form/components/ProductBasicInfo.jsx
 import React, { useEffect } from 'react';
-import styles from '../../../../../../../../../public/css/ProductCreationForm.module.css';
+import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
 import { useProduct } from '../../../../../../../app_context/ProductContext.jsx';
 import { useShop } from '../../../../../../../app_context/ShopContext.jsx';
 

@@ -1,5 +1,5 @@
 import React, { useCallback, memo, useState, useEffect } from 'react';
-import styles from '../../../../../../public/css/ShopCard.module.css';
+import styles from '../../../../../public/css/ShopCard.module.css';
 import ShopCoverImage from './components/shop_cover_image/ShopCoverImage.jsx';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';

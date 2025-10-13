@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
 import { X, Star, ShoppingCart, Tag, Calendar, Package, MapPin, Globe } from 'lucide-react';
-import styles from '../../../../../../../../public/css/ProductCard.module.css';
+import styles from '../../../../../../../public/css/ProductCard.module.css';
 import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
 import axiosInstance from '../../../../../../utils/app/axiosConfig';
 

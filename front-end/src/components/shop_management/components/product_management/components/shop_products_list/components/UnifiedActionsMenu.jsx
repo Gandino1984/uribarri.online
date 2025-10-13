@@ -14,7 +14,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { animated, useSpring } from '@react-spring/web';
-import styles from '../../../../../../../../../public/css/UnifiedActionsMenu.module.css';
+import styles from '../../../../../../../../public/css/UnifiedActionsMenu.module.css';
 
 const UnifiedActionsMenu = ({ 
   handleAddProduct, 

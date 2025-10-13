@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import styles from '../../../../../../public/css/FiltersForShops.module.css';
+import styles from '../../../../../public/css/FiltersForShops.module.css';
 import { 
   Store, 
   Truck, 

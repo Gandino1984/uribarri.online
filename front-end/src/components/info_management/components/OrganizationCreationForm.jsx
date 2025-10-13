@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { Building2, MapPin, Image, X, Save, AlertCircle, Edit } from 'lucide-react';
-import styles from '../../../../../public/css/OrganizationCreationForm.module.css';
+import styles from '../../../../public/css/OrganizationCreationForm.module.css';
 
 const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organizationData = null }) => {
   const { currentUser } = useAuth();

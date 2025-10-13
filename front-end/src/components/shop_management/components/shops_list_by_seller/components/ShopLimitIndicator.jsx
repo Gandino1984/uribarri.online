@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopsListBySeller.module.css';
+import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
 
 /**
  * Component to display information about the shop creation limit

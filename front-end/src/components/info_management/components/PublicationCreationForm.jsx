@@ -5,7 +5,7 @@ import { useUI } from '../../../app_context/UIContext.jsx';
 import { useOrganization } from '../../../app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { FileText, Calendar, Clock, Image, X, Save, AlertCircle, Edit, Building2 } from 'lucide-react';
-import styles from '../../../../../public/css/PublicationCreationForm.module.css';
+import styles from '../../../../public/css/PublicationCreationForm.module.css';
 
 const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, publicationData = null }) => {
   const { currentUser } = useAuth();

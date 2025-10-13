@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUI } from '../../../../app_context/UIContext.jsx';
-import styles from '../../../../../../public/css/ErrorCard.module.css';
+import styles from '../../../../../public/css/ErrorCard.module.css';
 import OButton from '../../../Obutton/Obutton.jsx';
 import { MessageCircleX } from 'lucide-react'; 
 

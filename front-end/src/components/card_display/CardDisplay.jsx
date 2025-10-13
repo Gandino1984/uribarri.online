@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSpring, animated } from '@react-spring/web';
-import styles from '../../../../public/css/CardDisplay.module.css';
+import styles from '../../../public/css/CardDisplay.module.css';
 import ErrorCard from '../card_display/components/error_card/ErrorCard.jsx';
 import SuccessCard from '../card_display/components/success_card/SuccessCard.jsx';
 import InfoCard from '../card_display/components/info_card/InfoCard.jsx';

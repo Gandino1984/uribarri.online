@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../public/css/CustomToggleSwitch.module.css';
+import styles from '../../../public/css/CustomToggleSwitch.module.css';
 
 const CustomToggleSwitch = ({ checked, onChange, leftLabel, rightLabel }) => {
   // Fixed handler that properly extracts checked state before calling parent handler

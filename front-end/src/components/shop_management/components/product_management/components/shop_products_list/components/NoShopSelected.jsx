@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
 
 const NoShopSelected = ({ setShowProductManagement }) => {
   return (

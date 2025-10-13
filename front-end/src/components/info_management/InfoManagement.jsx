@@ -14,7 +14,7 @@ import PublicationManagement from './components/PublicationManagement.jsx';
 import PendingTransfersBadge from './components/PendingTransfersBadge.jsx';
 import { InfoManagementUtils } from './InfoManagementUtils.jsx';
 import { Plus, X, FileText, Users, ArrowLeft, LogIn } from 'lucide-react';
-import styles from '../../../../public/css/InfoManagement.module.css';
+import styles from '../../../public/css/InfoManagement.module.css';
 
 const InfoManagement = () => {
   const { setShowTopBar } = useUI();

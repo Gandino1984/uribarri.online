@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../../../utils/app/axiosConfig.js';
 import { X, Plus, Search, ChevronDown, ChevronUp, Tag, Tags, AlertCircle } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopTypeManagementForm.module.css';
+import styles from '../../../../../../public/css/ShopTypeManagementForm.module.css';
 
 const ShopTypeManagementForm = ({ onClose }) => {
   //update: State for types and subtypes

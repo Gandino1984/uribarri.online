@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { X, Search, UserPlus, AlertCircle, Send } from 'lucide-react';
-import styles from '../../../../../public/css/TransferOrganization.module.css';
+import styles from '../../../../public/css/TransferOrganization.module.css';
 
 const TransferOrganization = ({ organization, onClose, onSuccess }) => {
   const { currentUser } = useAuth();

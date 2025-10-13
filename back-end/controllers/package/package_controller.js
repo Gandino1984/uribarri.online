@@ -1,3 +1,4 @@
+// back-end/controllers/package/package_controller.js
 import package_model from "../../models/package_model.js";
 import product_model from "../../models/product_model.js";
 import shop_model from "../../models/shop_model.js";
@@ -38,7 +39,7 @@ async function create(packageData) {
             id_product5, 
             name_package,
             discount_package,
-            image_package //update: Added image_package
+            image_package
         } = packageData;
 
         // Validate required field
@@ -52,7 +53,6 @@ async function create(packageData) {
             return { error: "El comercio especificado no existe" };
         }
 
-        //update: Validate discount_package if provided
         if (discount_package !== undefined && discount_package !== null) {
             const discount = parseInt(discount_package);
             if (isNaN(discount) || discount < 0 || discount > 100) {
@@ -86,9 +86,8 @@ async function create(packageData) {
             id_product5: id_product5 || null,
             name_package: name_package || null,
             discount_package: discount_package || 0,
-            image_package: image_package || null, //update: Include image_package
+            image_package: image_package || null,
             active_package: true,
-            // creation_package will be set automatically by the model default
         });
         
         return { 
@@ -114,7 +113,6 @@ async function update(id_package, packageData) {
             return { error: "Se requiere al menos un producto para el paquete" };
         }
 
-        //update: Validate discount_package if provided
         if (packageData.hasOwnProperty('discount_package') && packageData.discount_package !== null) {
             const discount = parseInt(packageData.discount_package);
             if (isNaN(discount) || discount < 0 || discount > 100) {
@@ -154,7 +152,7 @@ async function update(id_package, packageData) {
         if (packageData.hasOwnProperty('name_package')) updateData.name_package = packageData.name_package;
         if (packageData.hasOwnProperty('active_package')) updateData.active_package = packageData.active_package;
         if (packageData.hasOwnProperty('discount_package')) updateData.discount_package = packageData.discount_package;
-        if (packageData.hasOwnProperty('image_package')) updateData.image_package = packageData.image_package; //update: Include image_package
+        if (packageData.hasOwnProperty('image_package')) updateData.image_package = packageData.image_package;
 
         // Update the package
         await packageToUpdate.update(updateData);
@@ -209,7 +207,6 @@ async function getById(id_package) {
             if (packageData.id_product4) packageData.product4 = productsMap[packageData.id_product4];
             if (packageData.id_product5) packageData.product5 = productsMap[packageData.id_product5];
 
-            //update: Calculate total price and discounted price for the package
             let totalPrice = 0;
             products.forEach(product => {
                 totalPrice += parseFloat(product.price_product) || 0;
@@ -285,7 +282,6 @@ async function getByShopId(id_shop, activeStatus = null) {
                 if (pkg.id_product4 && productsMap[pkg.id_product4]) pkgData.product4 = productsMap[pkg.id_product4];
                 if (pkg.id_product5 && productsMap[pkg.id_product5]) pkgData.product5 = productsMap[pkg.id_product5];
 
-                //update: Calculate total price and discounted price for each package
                 let totalPrice = 0;
                 products.forEach(product => {
                     totalPrice += parseFloat(product.price_product) || 0;
@@ -352,19 +348,21 @@ async function removeById(id_package) {
             return { error: "Paquete no encontrado" };
         }
 
-        //update: If package has an image, try to delete it
+        //update: If package has an image, try to delete it from assets/images
         if (package_found.image_package) {
             try {
-                // Get shop to find the correct directory
                 const shop = await shop_model.findByPk(package_found.id_shop);
                 if (shop) {
                     const imagePath = path.join(
                         __dirname,
                         '..',
                         '..',
-                        '..',
-                        'public',
-                        package_found.image_package
+                        'assets',
+                        'images',
+                        'shops',
+                        shop.name_shop,
+                        'package_images',
+                        path.basename(package_found.image_package)
                     );
                     
                     await fs.unlink(imagePath);
@@ -400,7 +398,7 @@ async function removeByShopId(id_shop, transaction) {
             return { count: 0 };
         }
 
-        //update: Delete package images
+        //update: Delete package images from assets/images
         const shop = await shop_model.findByPk(id_shop);
         if (shop) {
             for (const pkg of packages) {
@@ -410,9 +408,12 @@ async function removeByShopId(id_shop, transaction) {
                             __dirname,
                             '..',
                             '..',
-                            '..',
-                            'public',
-                            pkg.image_package
+                            'assets',
+                            'images',
+                            'shops',
+                            shop.name_shop,
+                            'package_images',
+                            path.basename(pkg.image_package)
                         );
                         
                         await fs.unlink(imagePath);
