@@ -121,7 +121,7 @@ const ShopWindow = () => {
   return (
     <div className={styles.container}>
       <div className={styles.headerSection}>
-        <h1 className={styles.title}>Comercio de barrio</h1>
+        <h1 className={styles.title}>Comercios de Uribarri</h1>
         {/*update: Show browsing mode message for non-logged users */}
         {!currentUser && (
           <p className={styles.publicBrowsingNote}>

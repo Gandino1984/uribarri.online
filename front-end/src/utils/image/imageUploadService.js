@@ -1,260 +1,576 @@
-//update: front-end/src/utils/image/imageUploadService.js - Updated to handle backend assets paths
-import axiosInstance from '../app/axiosConfig';
+// front-end/src/utils/image/imageUploadService.js
+import axiosInstance from '../app/axiosConfig.js';
 
-// Upload profile image
-export const uploadProfileImage = async ({ file, userName, onProgress, onError }) => {
+/**
+ * Format image URL for display
+ * @param {string} imagePath - Relative path from database
+ * @returns {string} - Full URL for image
+ */
+export const formatImageUrl = (imagePath) => {
+  if (!imagePath) {
+    console.log('No image path provided to format');
+    return null;
+  }
+  
+  if (typeof imagePath === 'string' && imagePath.trim() === '') {
+    console.log('Empty image path provided to format');
+    return null;
+  }
+  
   try {
-    if (!file || !userName) {
-      throw new Error('Missing required parameters');
+    const cleanPath = imagePath.replace(/^\/+/, '');
+    const baseURL = axiosInstance.defaults.baseURL || 'http://localhost:3000';
+    
+    let finalPath;
+    if (cleanPath.startsWith('assets/')) {
+      finalPath = cleanPath;
+    } else if (cleanPath.startsWith('images/')) {
+      finalPath = cleanPath;
+    } else if (cleanPath.startsWith('public/images/')) {
+      finalPath = cleanPath.replace('public/', '');
+    } else {
+      finalPath = cleanPath;
     }
-
-    console.log('Uploading profile image for user:', userName);
-
-    const formData = new FormData();
-    formData.append('profileImage', file);
-    formData.append('name_user', userName);
-
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-      onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (onProgress) onProgress(percentCompleted);
-      }
-    };
-
-    const response = await axiosInstance.post('/user/upload-profile-image', formData, config);
-
-    if (!response.data || response.data.error) {
-      throw new Error(response.data?.error || 'Failed to upload profile image');
-    }
-
-    return response.data.data.image_user;
+    
+    const pathSegments = finalPath.split('/');
+    const encodedSegments = pathSegments.map(segment => {
+      return encodeURIComponent(segment);
+    });
+    const encodedPath = encodedSegments.join('/');
+    
+    const fullUrl = `${baseURL}/${encodedPath}`;
+    
+    console.log('Formatted image URL:', {
+      original: imagePath,
+      clean: cleanPath,
+      final: finalPath,
+      encoded: encodedPath,
+      fullUrl: fullUrl
+    });
+    
+    return fullUrl;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    if (onError) onError(errorMessage);
-    throw error;
+    console.error('Error formatting image URL:', error);
+    console.error('Problem image path:', imagePath);
+    return null;
   }
 };
 
-// Upload product image
-export const uploadProductImage = async ({ file, productId, shopId, onProgress, onError }) => {
+/**
+ * Upload product image
+ * @param {Object} options - Upload options
+ * @param {File} options.file - Image file to upload
+ * @param {number} options.shopId - Shop ID
+ * @param {string} options.shopName - Shop name
+ * @param {number} options.productId - Product ID
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
+export const uploadProductImage = async ({
+  file,
+  shopId,
+  shopName,
+  productId,
+  onProgress,
+  onError
+}) => {
   try {
-    if (!file || !productId || !shopId) {
-      throw new Error('Missing required parameters');
+    if (!file || !shopId || !productId) {
+      const errorMsg = 'Missing required parameters for image upload';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    console.log('Uploading product image for product:', productId);
+    console.log('Uploading product image:', {
+      fileName: file.name,
+      fileSize: Math.round(file.size / 1024) + 'KB',
+      fileType: file.type,
+      shopId,
+      shopName,
+      productId
+    });
 
     const formData = new FormData();
     formData.append('productImage', file);
 
-    const config = {
+    const response = await axiosInstance.post('/product/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'X-Product-ID': productId,
-        'X-Shop-ID': shopId
+        'x-shop-id': shopId,
+        'x-product-id': productId
       },
       onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (onProgress) onProgress(percentCompleted);
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log(`Upload progress: ${percentCompleted}%`);
+          if (onProgress) onProgress(percentCompleted);
+        }
       }
-    };
+    });
 
-    const response = await axiosInstance.post('/product/upload-image', formData, config);
+    console.log('Upload response:', response.data);
 
-    if (!response.data || response.data.error) {
-      throw new Error(response.data?.error || 'Failed to upload image');
+    if (response.data.error) {
+      const errorMsg = response.data.error;
+      console.error('Server returned error:', errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    return response.data.data.image_product;
+    if (!response.data.data || !response.data.data.image_product) {
+      const errorMsg = 'No image path returned from server';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const imagePath = response.data.data.image_product;
+    console.log('Image uploaded successfully:', imagePath);
+
+    return imagePath;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    if (onError) onError(errorMessage);
+    console.error('Error uploading product image:', error);
+    
+    const errorMsg = error.response?.data?.error 
+      || error.response?.data?.details 
+      || error.message 
+      || 'Error uploading image';
+    
+    if (onError) onError(errorMsg);
+    throw new Error(errorMsg);
+  }
+};
+
+/**
+ * Upload user profile image
+ * @param {Object} options - Upload options
+ * @param {File} options.file - Image file to upload
+ * @param {string} options.userName - User name (not ID!)
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
+//update: Send userName in headers instead of FormData (multer timing issue fix)
+export const uploadUserImage = async ({ file, userName, onProgress, onError }) => {
+  try {
+    if (!file || !userName) {
+      const errorMsg = 'Missing required parameters for user image upload';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    console.log('Uploading user image:', {
+      fileName: file.name,
+      fileSize: Math.round(file.size / 1024) + 'KB',
+      fileType: file.type,
+      userName
+    });
+
+    //update: Only send the file in FormData, userName goes in headers
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    //update: Debug logging for headers
+    console.log('Sending request with headers:', {
+      'Content-Type': 'multipart/form-data',
+      'x-user-name': userName
+    });
+
+    const response = await axiosInstance.post('/user/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'x-user-name': userName
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total && onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log(`Upload progress: ${percentCompleted}%`);
+          onProgress(percentCompleted);
+        }
+      }
+    });
+
+    console.log('User image upload response:', response.data);
+
+    if (response.data.error) {
+      const errorMsg = response.data.error;
+      console.error('Server returned error:', errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    if (!response.data.data || !response.data.data.image_user) {
+      const errorMsg = 'No image path returned from server';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const imagePath = response.data.data.image_user;
+    console.log('User image uploaded successfully:', imagePath);
+
+    return imagePath;
+  } catch (error) {
+    console.error('Error uploading user image:', error);
+    
+    const errorMsg = error.response?.data?.error 
+      || error.response?.data?.details 
+      || error.message 
+      || 'Error uploading user image';
+    
+    if (onError) onError(errorMsg);
+    throw new Error(errorMsg);
+  }
+};
+
+export const uploadProfileImage = uploadUserImage;
+
+/**
+ * Upload shop image
+ * @param {File} file - Image file
+ * @param {number} shopId - Shop ID
+ * @param {Function} onProgress - Progress callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
+export const uploadShopImage = async (file, shopId, onProgress) => {
+  try {
+    const formData = new FormData();
+    formData.append('shopImage', file);
+
+    const response = await axiosInstance.post('/shop/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'x-shop-id': shopId
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total && onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
+      }
+    });
+
+    return response.data.data.image_shop;
+  } catch (error) {
+    console.error('Error uploading shop image:', error);
     throw error;
   }
 };
 
-// Upload shop cover image
+/**
+ * Upload shop cover image
+ * @param {Object} options - Upload options
+ * @param {File} options.file - Image file
+ * @param {number} options.shopId - Shop ID
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
 export const uploadShopCover = async ({ file, shopId, onProgress, onError }) => {
   try {
     if (!file || !shopId) {
-      throw new Error('Missing required parameters');
+      const errorMsg = 'Missing required parameters for shop cover upload';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
-
-    console.log('Uploading shop cover for shop:', shopId);
 
     const formData = new FormData();
     formData.append('shopCover', file);
 
-    const config = {
+    const response = await axiosInstance.post('/shop/upload-cover-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'X-Shop-ID': shopId
       },
       onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (onProgress) onProgress(percentCompleted);
+        if (progressEvent.total && onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
       }
-    };
+    });
 
-    const response = await axiosInstance.post('/shop/upload-cover-image', formData, config);
-
-    if (!response.data || response.data.error) {
-      throw new Error(response.data?.error || 'Failed to upload shop cover');
+    if (!response.data?.data?.image_shop) {
+      const errorMsg = 'No image path returned from server';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
     return response.data.data.image_shop;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    if (onError) onError(errorMessage);
-    throw error;
+    console.error('Error uploading shop cover image:', error);
+    
+    const errorMsg = error.response?.data?.error 
+      || error.response?.data?.details 
+      || error.message 
+      || 'Error uploading shop cover image';
+    
+    if (onError) onError(errorMsg);
+    throw new Error(errorMsg);
   }
 };
 
-// Upload package image
-export const uploadPackageImage = async ({ file, packageId, shopId, onProgress, onError }) => {
+/**
+ * Upload package image
+ * @param {Object} options - Upload options
+ * @param {File} options.file - Image file to upload
+ * @param {number} options.shopId - Shop ID
+ * @param {number} options.packageId - Package ID
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
+export const uploadPackageImage = async ({
+  file,
+  shopId,
+  packageId,
+  onProgress,
+  onError
+}) => {
   try {
-    if (!file || !packageId || !shopId) {
-      throw new Error('Missing required parameters');
+    if (!file || !shopId || !packageId) {
+      const errorMsg = 'Missing required parameters for package image upload';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    console.log('Uploading package image for package:', packageId);
+    console.log('Uploading package image:', {
+      fileName: file.name,
+      fileSize: Math.round(file.size / 1024) + 'KB',
+      fileType: file.type,
+      shopId,
+      packageId
+    });
 
     const formData = new FormData();
     formData.append('packageImage', file);
 
-    const config = {
+    const response = await axiosInstance.post('/package/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'X-Package-ID': packageId,
-        'X-Shop-ID': shopId
+        'x-shop-id': shopId,
+        'x-package-id': packageId
       },
       onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (onProgress) onProgress(percentCompleted);
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log(`Upload progress: ${percentCompleted}%`);
+          if (onProgress) onProgress(percentCompleted);
+        }
       }
-    };
+    });
 
-    const response = await axiosInstance.post('/package/upload-image', formData, config);
+    console.log('Upload response:', response.data);
 
-    if (!response.data || response.data.error) {
-      throw new Error(response.data?.error || 'Failed to upload package image');
+    if (response.data.error) {
+      const errorMsg = response.data.error;
+      console.error('Server returned error:', errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    return response.data.data.image_package;
+    if (!response.data.data || !response.data.data.image_package) {
+      const errorMsg = 'No image path returned from server';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const imagePath = response.data.data.image_package;
+    console.log('Package image uploaded successfully:', imagePath);
+
+    return imagePath;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    if (onError) onError(errorMessage);
-    throw error;
+    console.error('Error uploading package image:', error);
+    
+    const errorMsg = error.response?.data?.error 
+      || error.response?.data?.details 
+      || error.message 
+      || 'Error uploading package image';
+    
+    if (onError) onError(errorMsg);
+    throw new Error(errorMsg);
   }
 };
 
-// Upload publication image
-export const uploadPublicationImage = async ({ file, publicationId, onProgress, onError }) => {
+/**
+ * Upload publication image
+ * @param {Object} options - Upload options
+ * @param {File} options.file - Image file to upload
+ * @param {number} options.publicationId - Publication ID
+ * @param {number} options.organizationId - Organization ID
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
+export const uploadPublicationImage = async ({
+  file,
+  publicationId,
+  organizationId,
+  onProgress,
+  onError
+}) => {
   try {
-    if (!file || !publicationId) {
-      throw new Error('Missing required parameters');
+    if (!file || !publicationId || !organizationId) {
+      const errorMsg = 'Missing required parameters for publication image upload';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    console.log('Uploading publication image for publication:', publicationId);
+    console.log('Uploading publication image:', {
+      fileName: file.name,
+      fileSize: Math.round(file.size / 1024) + 'KB',
+      fileType: file.type,
+      publicationId,
+      organizationId
+    });
 
     const formData = new FormData();
     formData.append('publicationImage', file);
 
-    const config = {
+    const response = await axiosInstance.post('/publication/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'X-Publication-ID': publicationId
+        'x-publication-id': publicationId,
+        'x-organization-id': organizationId
       },
       onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (onProgress) onProgress(percentCompleted);
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log(`Upload progress: ${percentCompleted}%`);
+          if (onProgress) onProgress(percentCompleted);
+        }
       }
-    };
+    });
 
-    const response = await axiosInstance.post('/publication/upload-image', formData, config);
+    console.log('Upload response:', response.data);
 
-    if (!response.data || response.data.error) {
-      throw new Error(response.data?.error || 'Failed to upload publication image');
+    if (response.data.error) {
+      const errorMsg = response.data.error;
+      console.error('Server returned error:', errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    return response.data.data.image_publication;
+    if (!response.data.data || !response.data.data.image_pub) {
+      const errorMsg = 'No image path returned from server';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const imagePath = response.data.data.image_pub;
+    console.log('Publication image uploaded successfully:', imagePath);
+
+    return imagePath;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    if (onError) onError(errorMessage);
-    throw error;
+    console.error('Error uploading publication image:', error);
+    
+    const errorMsg = error.response?.data?.error 
+      || error.response?.data?.details 
+      || error.message 
+      || 'Error uploading publication image';
+    
+    if (onError) onError(errorMsg);
+    throw new Error(errorMsg);
   }
 };
 
-// Upload organization image
-export const uploadOrganizationImage = async ({ file, organizationId, onProgress, onError }) => {
+/**
+ * Upload organization image
+ * @param {Object} options - Upload options
+ * @param {File} options.file - Image file to upload
+ * @param {number} options.organizationId - Organization ID
+ * @param {Function} options.onProgress - Progress callback
+ * @param {Function} options.onError - Error callback
+ * @returns {Promise<string>} - Uploaded image path
+ */
+export const uploadOrganizationImage = async ({
+  file,
+  organizationId,
+  onProgress,
+  onError
+}) => {
   try {
     if (!file || !organizationId) {
-      throw new Error('Missing required parameters');
+      const errorMsg = 'Missing required parameters for organization image upload';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    console.log('Uploading organization image for organization:', organizationId);
+    console.log('Uploading organization image:', {
+      fileName: file.name,
+      fileSize: Math.round(file.size / 1024) + 'KB',
+      fileType: file.type,
+      organizationId
+    });
 
     const formData = new FormData();
     formData.append('organizationImage', file);
 
-    const config = {
+    const response = await axiosInstance.post('/organization/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'X-Organization-ID': organizationId
+        'x-organization-id': organizationId
       },
       onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        if (onProgress) onProgress(percentCompleted);
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log(`Upload progress: ${percentCompleted}%`);
+          if (onProgress) onProgress(percentCompleted);
+        }
       }
-    };
+    });
 
-    const response = await axiosInstance.post('/organization/upload-image', formData, config);
+    console.log('Upload response:', response.data);
 
-    if (!response.data || response.data.error) {
-      throw new Error(response.data?.error || 'Failed to upload organization image');
+    if (response.data.error) {
+      const errorMsg = response.data.error;
+      console.error('Server returned error:', errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
     }
 
-    return response.data.data.image_organization;
+    if (!response.data.data || !response.data.data.image_org) {
+      const errorMsg = 'No image path returned from server';
+      console.error(errorMsg);
+      if (onError) onError(errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    const imagePath = response.data.data.image_org;
+    console.log('Organization image uploaded successfully:', imagePath);
+
+    return imagePath;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message;
-    if (onError) onError(errorMessage);
-    throw error;
+    console.error('Error uploading organization image:', error);
+    
+    const errorMsg = error.response?.data?.error 
+      || error.response?.data?.details 
+      || error.message 
+      || 'Error uploading organization image';
+    
+    if (onError) onError(errorMsg);
+    throw new Error(errorMsg);
   }
 };
 
-//update: Enhanced function to format image URLs for both legacy and backend assets
-export const formatImageUrl = (imagePath) => {
-  if (!imagePath) {
-    return null;
-  }
-
-  // Remove any leading slashes
-  const cleanPath = imagePath.replace(/^\/+/, '');
-  
-  // Get the base URL from axios instance
-  const baseUrl = axiosInstance.defaults.baseURL || '';
-  
-  // Check if this is a backend assets path or legacy public path
-  let imageUrl;
-  
-  if (cleanPath.startsWith('assets/images/')) {
-    // This is a backend assets path, serve it directly
-    imageUrl = `${baseUrl}/${cleanPath}`;
-  } else if (cleanPath.startsWith('images/')) {
-    // This is a legacy public path, serve it as is
-    imageUrl = `${baseUrl}/${cleanPath}`;
-  } else {
-    // Assume it's a legacy path that needs the /images prefix
-    imageUrl = `${baseUrl}/images/${cleanPath}`;
-  }
-  
-  // Clean up any double slashes (except after http://)
-  imageUrl = imageUrl.replace(/([^:]\/)(\/)+/g, "$1");
-  
-  console.log('Formatted image URL:', imageUrl, 'from path:', imagePath);
-  
-  return imageUrl;
+export default {
+  formatImageUrl,
+  uploadProductImage,
+  uploadUserImage,
+  uploadProfileImage,
+  uploadShopImage,
+  uploadShopCover,
+  uploadPackageImage,
+  uploadPublicationImage,
+  uploadOrganizationImage
 };

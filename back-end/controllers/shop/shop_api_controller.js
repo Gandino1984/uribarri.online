@@ -399,9 +399,8 @@ async function uploadCoverImage(req, res) {
       });
     }
 
-    //update: Construct the correct relative path that matches the actual file location
-    // Files are stored in: back-end/assets/images/shops/{shop_name}/cover_image/cover.webp
-    // Server serves /assets/images → back-end/assets/images
+    //update: Construct the relative path WITHOUT encoding - the path is stored as-is in the database
+    // The frontend will handle URL encoding when constructing the request URL
     const relativePath = path.join(
       'assets',
       'images', 
@@ -412,7 +411,7 @@ async function uploadCoverImage(req, res) {
     ).replace(/\\/g, '/');
 
     console.log(`Saving cover image path to database: ${relativePath}`);
-    console.log(`File will be accessible at: ${process.env.APP_URL || 'http://localhost:3000'}/${relativePath}`);
+    console.log(`File location on disk: ${req.file.path}`);
 
     const { error, data } = await shopController.update(id_shop, {
       image_shop: relativePath
@@ -433,6 +432,7 @@ async function uploadCoverImage(req, res) {
     }
 
     console.log('Shop updated successfully with new cover image');
+    console.log('Image path stored in database:', relativePath);
 
     res.json({
       error: null,

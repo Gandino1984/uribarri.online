@@ -1,4 +1,3 @@
-//update: Added route to serve user images from backend
 import { Router } from "express";
 import userApiController from "../controllers/user/user_api_controller.js";
 import IpRegistry from '../../back-end/models/ip_registry_model.js'; 
@@ -34,7 +33,6 @@ router.get('/ip/check', async (req, res) => {
             
             const hoursSinceLastAttempt = (Date.now() - new Date(ipRecord.last_attempt).getTime()) / (1000 * 60 * 60); 
             
-            // Reset counter if RESET_HOURS have passed
             if (hoursSinceLastAttempt >= RESET_HOURS) {
                 await ipRecord.update({
                     registration_count: 0,
@@ -42,7 +40,6 @@ router.get('/ip/check', async (req, res) => {
                 });
                 return res.json({ canRegister: true, hoursUntilReset: 0 });
             }
-            // Check if limit exceeded
             if (ipRecord.registration_count >= MAX_REGISTRATIONS) {
                 const hoursUntilReset = RESET_HOURS - hoursSinceLastAttempt;
                 return res.json({ canRegister: false, hoursUntilReset });
@@ -109,7 +106,6 @@ router.post('/register', async (req, res) => {
             });
         }
         
-        // Update registration count
         await ipRecord.update({
             registration_count: hoursSinceLastAttempt >= RESET_HOURS ? 1 : ipRecord.registration_count + 1,
             last_attempt: new Date()
@@ -177,31 +173,52 @@ router.post('/resend-verification', async (req, res) => {
     }
 });
 
-//update: Modified to return backend-relative path
-router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) => {
+//update: Get userName from headers since multer can't access req.body in time
+const handleUpload = async (req, res) => {
     try {
-        if (!req.file || !req.body.name_user) {
+        console.log('=== HANDLE UPLOAD START ===');
+        console.log('req.file:', req.file);
+        console.log('req.headers:', req.headers);
+        
+        //update: Get userName from headers instead of req.body
+        const userName = req.headers['x-user-name'];
+        
+        console.log('userName from headers:', userName);
+        console.log('req.file exists:', !!req.file);
+        
+        if (!req.file || !userName) {
+            console.error('Missing required fields:', {
+                hasFile: !!req.file,
+                hasUserName: !!userName
+            });
             return res.status(400).json({ 
-                error: 'Faltan campos requeridos' 
+                error: 'Faltan campos requeridos',
+                details: !req.file ? 'No file uploaded' : 'Missing x-user-name header'
             });
         }
 
-        //update: Return the username as the path - frontend will construct /api/user/image/:userName
-        const userName = req.body.name_user;
-        
+        console.log('Calling updateProfileImage with userName:', userName);
         const result = await userApiController.updateProfileImage(userName, userName);
         
+        console.log('updateProfileImage result:', result);
+        
         if (result.error) {
+            console.error('updateProfileImage returned error:', result.error);
             return res.status(400).json(result);
         }
 
-        return res.json({
+        const response = {
             ...result,
             data: {
                 ...result.data,
-                image_user: userName // Return just the username
+                image_user: userName
             }
-        });
+        };
+        
+        console.log('Sending success response:', response);
+        console.log('=== HANDLE UPLOAD END ===');
+        
+        return res.json(response);
     } catch (error) {
         console.error('Error handling upload:', error);
         return res.status(500).json({ 
@@ -209,12 +226,13 @@ router.post('/upload-profile-image', handleProfileImageUpload, async (req, res) 
             details: error.message 
         });
     }
-});
+};
 
-//update: New route to serve user images from backend
+router.post('/upload-image', handleProfileImageUpload, handleUpload);
+router.post('/upload-profile-image', handleProfileImageUpload, handleUpload);
+
 router.get('/image/:userName', userApiController.getUserImage);
 
-// Add this test route temporarily
 router.post('/test-email-direct', async (req, res) => {
     try {
         console.log('Direct email test starting...');

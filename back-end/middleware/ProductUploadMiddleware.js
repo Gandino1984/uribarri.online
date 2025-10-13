@@ -21,7 +21,6 @@ const ensureDirectoryExists = async (dirPath) => {
   }
 };
 
-//update: Added function to clean existing product images before saving new ones
 const cleanExistingProductImages = async (dirPath, productId) => {
   try {
     // Check if directory exists first
@@ -85,14 +84,12 @@ const productImageStorage = multer.diskStorage({
       const shopName = shop.name_shop;
       console.log(`Found shop name: ${shopName} for ID: ${shopId}, product ID: ${productId}`);
       
-      // Create path for shop-specific product images - use forward slashes for Docker compatibility
+      //update: Changed to store in back-end/assets/images instead of public/images/uploads
       const uploadsDir = path.join(
         __dirname, 
         '..',
-        '..',
-        'public', 
+        'assets',
         'images', 
-        'uploads', 
         'shops', 
         shopName, 
         'product_images'
@@ -145,7 +142,7 @@ const uploadProductImage = multer({
   storage: productImageStorage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 //update: Increased to 10MB limit for initial upload (we'll compress it later)
+    fileSize: 10 * 1024 * 1024 // 10MB limit for initial upload (we'll compress it later)
   }
 }).single('productImage'); // IMPORTANT: This must match the field name from the frontend
 

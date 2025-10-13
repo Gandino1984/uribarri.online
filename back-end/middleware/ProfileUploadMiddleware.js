@@ -1,4 +1,4 @@
-//update: Changed destination to back-end/assets/images/users instead of public/images/uploads/users
+//update: Changed to get userName from headers instead of req.body
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
@@ -8,7 +8,6 @@ import user_model from '../models/user_model.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Helper function to ensure directory exists with proper permissions
 const ensureDirectoryExists = async (dirPath) => {
   try {
     await fs.mkdir(dirPath, { recursive: true, mode: 0o755 });
@@ -24,9 +23,11 @@ const profileImageStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     console.log('Multer processing profile image:', file.fieldname, file.originalname);
     
-    const userName = req.body.name_user;
+    //update: Get userName from headers instead of req.body (multer timing issue)
+    const userName = req.headers['x-user-name'];
 
     if (!userName) {
+      console.error('Username not found in headers. Headers:', req.headers);
       return cb(new Error('Usuario no especificado'));
     }
 
@@ -37,12 +38,12 @@ const profileImageStorage = multer.diskStorage({
       });
       
       if (!user) {
+        console.error(`User not found: ${userName}`);
         return cb(new Error('Usuario no encontrado'));
       }
       
       console.log(`Processing profile image for user: ${userName}`);
       
-      //update: Changed to back-end/assets/images/users path
       const uploadsDir = path.join(
         __dirname, 
         '..',
@@ -54,12 +55,10 @@ const profileImageStorage = multer.diskStorage({
 
       console.log(`Attempting to create directory: ${uploadsDir}`);
       
-      // Ensure the directory exists
       await ensureDirectoryExists(uploadsDir);
       
       console.log(`Profile image will be stored in: ${uploadsDir}`);
       
-      // Make sure permissions are set correctly (important for Docker)
       try {
         await fs.chmod(uploadsDir, 0o755);
       } catch (chmodError) {
@@ -73,7 +72,6 @@ const profileImageStorage = multer.diskStorage({
     }
   },
   filename: function (req, file, cb) {
-    // Use a consistent naming pattern for profile images
     const fileName = `profile${path.extname(file.originalname).toLowerCase()}`;
     console.log(`Generated filename: ${fileName}`);
     cb(null, fileName);
@@ -97,7 +95,7 @@ const uploadProfileImage = multer({
   limits: {
     fileSize: 3 * 1024 * 1024 // 3MB limit
   }
-}).single('profileImage'); // IMPORTANT: This must match the field name from the frontend
+}).single('profileImage');
 
 const handleProfileImageUpload = async (req, res, next) => {
   console.log('Starting profile image upload handler');

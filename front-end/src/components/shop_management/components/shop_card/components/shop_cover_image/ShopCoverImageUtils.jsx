@@ -1,14 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
-import { 
-  uploadShopCover, 
-  formatImageUrl 
-} from '../../../../../../utils/image/imageUploadService.js';
+import { formatImageUrl } from '../../../../../../utils/image/imageUploadService.js';
+import axiosInstance from '../../../../../../utils/app/axiosConfig.js';
 
 export const ShopCoverImageUtils = () => {
   const { setError, setUploading, uploading } = useUI();
-  //update: Added setSelectedShop to update selected shop when image changes
   const { selectedShop, setShops, shops, setSelectedShop } = useShop();
 
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -44,6 +41,7 @@ export const ShopCoverImageUtils = () => {
     }
 
     console.log('Starting cover image upload for shop:', selectedShop);
+    console.log('Shop ID from parameter:', id_shop);
     
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!validTypes.includes(file.type)) {
@@ -62,6 +60,7 @@ export const ShopCoverImageUtils = () => {
       return;
     }
     
+    //update: Create local preview URL
     const localUrl = URL.createObjectURL(file);
     setLocalImageUrl(localUrl);
     
@@ -76,81 +75,128 @@ export const ShopCoverImageUtils = () => {
     uploadInProgress.current = true;
 
     try {
-      const imagePath = await uploadShopCover({
-        file,
-        shopId: selectedShop.id_shop,
-        onProgress: (progress) => {
-          console.log('Upload progress:', progress);
-          setUploadProgress(progress);
+      const formData = new FormData();
+      formData.append('shopCover', file);
+      
+      //update: Use the id_shop parameter instead of selectedShop.id_shop for more reliability
+      const shopId = id_shop || selectedShop?.id_shop;
+      
+      if (!shopId) {
+        throw new Error('No shop ID available for upload');
+      }
+      
+      console.log('Uploading to shop ID:', shopId);
+      
+      const response = await axiosInstance.post('/shop/upload-cover-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'X-Shop-ID': shopId
         },
-        onError: (errorMessage) => {
-          console.error('Upload error:', errorMessage);
-          setError(prevError => ({
-            ...prevError,
-            imageError: errorMessage
-          }));
-          setLocalImageUrl(null);
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log('Upload progress:', progress);
+            setUploadProgress(progress);
+          }
         }
       });
 
+      console.log('Upload response:', response.data);
+
+      if (!response.data?.data?.image_shop) {
+        throw new Error('No image path returned from server');
+      }
+
+      const imagePath = response.data.data.image_shop;
       console.log('Upload successful, received path:', imagePath);
 
       //update: Update both selectedShop and shops array
-      const updatedSelectedShop = {
-        ...selectedShop,
+      // This ensures the image displays immediately for both new and existing shops
+      const updatedShopData = {
         image_shop: imagePath
       };
       
+      //update: Update the shops array
       const updatedShops = shops.map(shop =>
-        shop.id_shop === selectedShop.id_shop
-          ? { ...shop, image_shop: imagePath }
+        shop.id_shop === shopId
+          ? { ...shop, ...updatedShopData }
           : shop
       );
       
-      console.log('Updating shop states with new image path:', imagePath);
-      console.log('Updated selected shop:', updatedSelectedShop);
-      
-      //update: Update both shops array AND selectedShop to keep them in sync
+      console.log('Updated shops array with new image path');
       setShops(updatedShops);
-      setSelectedShop(updatedSelectedShop);
+      
+      //update: Update selectedShop if it matches the uploaded shop
+      if (selectedShop?.id_shop === shopId) {
+        const updatedSelectedShop = {
+          ...selectedShop,
+          ...updatedShopData
+        };
+        console.log('Updated selected shop with new image path:', updatedSelectedShop);
+        setSelectedShop(updatedSelectedShop);
+      }
+      
+      //update: Force a re-render by updating the timestamp
       setLastUpdated(Date.now());
       
-      //update: Clear local URL immediately and rely on server path
+      //update: Clear local preview after a short delay to allow state updates to propagate
       setTimeout(() => {
         setLocalImageUrl(null);
-      }, 500);
+        URL.revokeObjectURL(localUrl);
+      }, 1000);
+      
     } catch (error) {
       console.error('Error in handleImageUpload:', error);
       setError(prevError => ({
         ...prevError,
-        imageError: error.message || "Error uploading cover image"
+        imageError: error.response?.data?.error || error.message || "Error uploading cover image"
       }));
-      setLocalImageUrl(null);
+      
+      //update: Clean up local preview on error
+      if (localUrl) {
+        setLocalImageUrl(null);
+        URL.revokeObjectURL(localUrl);
+      }
     } finally {
       setUploading(false);
       setUploadProgress(0);
       uploadInProgress.current = false;
+      
+      event.target.value = '';
     }
   }, [selectedShop, shops, setShops, setSelectedShop, setError, setUploading]);
 
+  //update: Use the centralized formatImageUrl function for consistent URL construction
   const getShopCoverUrl = useCallback((imagePath) => {
     if (localImageUrl) {
+      console.log('Using local preview URL:', localImageUrl);
       return localImageUrl;
     }
     
     if (!imagePath) {
+      console.log('No image path provided to getShopCoverUrl');
       return null;
     }
     
-    let result = formatImageUrl(imagePath);
+    // Use the centralized formatImageUrl function from imageUploadService
+    const formattedUrl = formatImageUrl(imagePath);
     
-    if (result) {
-      result = result.includes('?') 
-        ? `${result}&t=${lastUpdated}` 
-        : `${result}?t=${lastUpdated}`;
+    if (!formattedUrl) {
+      console.error('Failed to format image URL for path:', imagePath);
+      return null;
     }
     
-    return result;
+    // Add cache busting timestamp
+    const urlWithTimestamp = formattedUrl.includes('?') 
+      ? `${formattedUrl}&t=${lastUpdated}` 
+      : `${formattedUrl}?t=${lastUpdated}`;
+    
+    console.log('Shop cover URL constructed:', {
+      original: imagePath,
+      formatted: urlWithTimestamp
+    });
+    
+    return urlWithTimestamp;
   }, [localImageUrl, lastUpdated]);
 
   useEffect(() => {
