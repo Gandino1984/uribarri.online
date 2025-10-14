@@ -6,7 +6,7 @@ import axiosInstance from '../app/axiosConfig.js';
  * @param {string} imagePath - Relative path from database
  * @returns {string} - Full URL for image
  */
-//update: Enhanced to properly handle assets/images/shops paths for product images
+//update: Enhanced to properly handle assets/images paths for all image types
 export const formatImageUrl = (imagePath) => {
   if (!imagePath) {
     console.log('No image path provided to format');
@@ -29,16 +29,15 @@ export const formatImageUrl = (imagePath) => {
     
     let finalPath;
     
-    //update: Handle product images stored in assets/images/shops
-    if (cleanPath.startsWith('assets/images/shops/')) {
-      // Product images are in back-end/assets/images/shops/<shop_name>/product_images/
+    //update: Handle all assets/images paths (products, packages, shops, users, etc.)
+    if (cleanPath.startsWith('assets/images/')) {
       finalPath = cleanPath;
     } 
-    // Handle other assets paths
+    // Handle assets paths without images subdirectory
     else if (cleanPath.startsWith('assets/')) {
       finalPath = cleanPath;
     } 
-    // Handle public/images paths (user profiles, etc)
+    // Handle public/images paths (legacy user profiles, etc)
     else if (cleanPath.startsWith('images/')) {
       finalPath = cleanPath;
     } 
@@ -336,11 +335,12 @@ export const uploadShopCover = async ({ file, shopId, onProgress, onError }) => 
  * @param {Object} options - Upload options
  * @param {File} options.file - Image file to upload
  * @param {number} options.shopId - Shop ID
- * @param {number} options.packageId - Package ID
+ * @param {number} options.packageId - Package ID (can be null for new packages)
  * @param {Function} options.onProgress - Progress callback
  * @param {Function} options.onError - Error callback
  * @returns {Promise<string>} - Uploaded image path
  */
+//update: Added package image upload function
 export const uploadPackageImage = async ({
   file,
   shopId,
@@ -349,7 +349,7 @@ export const uploadPackageImage = async ({
   onError
 }) => {
   try {
-    if (!file || !shopId || !packageId) {
+    if (!file || !shopId) {
       const errorMsg = 'Missing required parameters for package image upload';
       console.error(errorMsg);
       if (onError) onError(errorMsg);
@@ -367,12 +367,18 @@ export const uploadPackageImage = async ({
     const formData = new FormData();
     formData.append('packageImage', file);
 
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+      'x-shop-id': shopId
+    };
+
+    // Only add package ID header if it exists (for updates, not new packages)
+    if (packageId) {
+      headers['x-package-id'] = packageId;
+    }
+
     const response = await axiosInstance.post('/package/upload-image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'x-shop-id': shopId,
-        'x-package-id': packageId
-      },
+      headers: headers,
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);

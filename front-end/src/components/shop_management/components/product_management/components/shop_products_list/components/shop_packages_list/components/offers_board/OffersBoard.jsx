@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, X, Package, Tag, Clock, Pause, Play } from 'lucide-react';
-//update: Import the formatImageUrl utility that works in ShopPackagesList
-import { formatImageUrl } from '../../../../../../../../../../utils/image/packageImageUploadService.js';
+//update: Fixed import path - use the main imageUploadService
+import { formatImageUrl } from '../../../../../../../../../../utils/image/imageUploadService.js';
 import styles from '../../../../../../../../../../../public/css/OffersBoard.module.css';
 
 const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
@@ -110,7 +110,6 @@ const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
     currentPackage.product5
   ].filter(p => p);
 
-  //update: Use the formatImageUrl utility 
   const packageImage = currentPackage.image_package ? formatImageUrl(currentPackage.image_package) : null;
 
   return (
@@ -144,15 +143,12 @@ const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
 
       {/* Main content */}
       <div className={styles.content}>
-        {/*update: Card with conditional class for image background */}
         <div 
           className={`${styles.offerCard} ${packageImage ? styles.offerCardWithImage : styles.offerCardGradient}`}
           style={packageImage ? { backgroundImage: `url("${packageImage}")` } : undefined}
         >
-          {/*update: Dark overlay layer for readability when image is present */}
           {packageImage && <div className={styles.imageOverlay} />}
 
-          {/*update: Content with conditional opacity class */}
           <div className={`${styles.offerContent} ${packageImage ? styles.offerContentWithImage : ''}`}>
             {/* Discount badge */}
             {currentPackage.discount_package > 0 && (
@@ -167,12 +163,10 @@ const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
 
             {/* Products list */}
             <div className={styles.productsList}>
-              {/* <h3 className={styles.includesTitle}>Incluye:</h3> */}
               {products.map((product, index) => (
                 <div key={index} className={styles.productItem}>
                   <span className={styles.productBullet}>•</span>
                   <span className={styles.productName}>{product.name_product}</span>
-                  {/* <span className={styles.productPrice}>€{parseFloat(product.price_product).toFixed(2)}</span> */}
                 </div>
               ))}
             </div>
@@ -208,17 +202,6 @@ const OffersBoard = ({ packages = [], shopName = '', onClose }) => {
           <button onClick={handleNext} className={styles.navButtonRight}>
             <ChevronRight size={40} />
           </button>
-
-      
-          {/* <div className={styles.dotsContainer}>
-            {activePackages.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => handleDotClick(index)}
-                className={`${styles.dot} ${index === currentIndex ? styles.dotActive : ''}`}
-              />
-            ))}
-          </div> */}
         </>
       )}
 

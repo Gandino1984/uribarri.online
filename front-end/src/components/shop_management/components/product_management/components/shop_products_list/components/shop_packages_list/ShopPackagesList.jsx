@@ -1,3 +1,4 @@
+// front-end/src/components/shop_management/components/product_management/components/shops_products_list/components/shops_packages_list/ShopPackagesList.jsx
 import React, { useState, useEffect } from 'react';
 import { usePackage } from '../../../../../../../../app_context/PackageContext.jsx';
 import { useShop } from '../../../../../../../../app_context/ShopContext.jsx';
@@ -18,7 +19,8 @@ import {
   ArrowLeft,
   Monitor
 } from 'lucide-react';
-import { formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
+//update: Import from unified imageUploadService
+import { formatImageUrl } from '../../../../../../../../utils/image/imageUploadService.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
 import OffersBoard from './components/offers_board/OffersBoard.jsx';
@@ -130,7 +132,7 @@ const ShopPackagesList = ({ onBack }) => {
   // Animation for package list
   const packagesTransition = useTransition(packages, {
     ...shopsListAnimations.shopCardAnimation,
-    keys: item => `${item.id_package}-${item.active_package}` // Include active status in key to force re-render
+    keys: item => `${item.id_package}-${item.active_package}`
   });
   
   // Toggle expanded state for a package
@@ -150,7 +152,7 @@ const ShopPackagesList = ({ onBack }) => {
     console.log('Editing package:', pkg);
     setSelectedPackage(pkg);
     setIsAddingPackage(true);
-    setShowPackageCreationForm(true); // This is important to show the form
+    setShowPackageCreationForm(true);
   };
   
   // Handle delete package
@@ -167,7 +169,6 @@ const ShopPackagesList = ({ onBack }) => {
       setIsDeleting(true);
       console.log('Attempting to delete package with ID:', packageToDelete.id_package);
       
-      //update: Use the correct endpoint path
       const response = await axiosInstance.delete(`/api/package/remove/${packageToDelete.id_package}`);
       
       console.log('Delete response:', response.data);
@@ -179,17 +180,14 @@ const ShopPackagesList = ({ onBack }) => {
         }));
         setShowSuccessCard(true);
         
-        //update: Remove the package from the local state immediately
         setPackages(prevPackages => 
           prevPackages.filter(pkg => pkg.id_package !== packageToDelete.id_package)
         );
         
-        // Also refresh the package list to ensure sync with backend
         setTimeout(() => {
           fetchPackages();
         }, 500);
         
-        // Close modal
         setShowDeleteModal(false);
         setPackageToDelete(null);
       } else {
@@ -199,16 +197,13 @@ const ShopPackagesList = ({ onBack }) => {
         }));
         setShowErrorCard(true);
         
-        // Refresh packages on error to stay in sync
         await fetchPackages();
       }
     } catch (error) {
       console.error('Error deleting package:', error);
       console.error('Error response:', error.response);
       
-      // Check if it's a 404 or successful deletion despite error
       if (error.response && error.response.status === 404) {
-        // Package might already be deleted, refresh the list
         console.log('Package not found, refreshing list...');
         await fetchPackages();
         setShowDeleteModal(false);
@@ -232,24 +227,20 @@ const ShopPackagesList = ({ onBack }) => {
       console.log('BEFORE TOGGLE - Package:', pkg.id_package, 'Current status:', pkg.active_package);
       console.log('BEFORE TOGGLE - All packages:', packages);
       
-      // Call the API endpoint
       const response = await axiosInstance.patch(`/package/toggle-status/${pkg.id_package}`);
       
       console.log('API RESPONSE:', response.data);
       
       if (response.data && response.data.success) {
-        // Use the correct setSuccess function
         setSuccess(prev => ({
           ...prev,
           productSuccess: response.data.success
         }));
         setShowSuccessCard(true);
         
-        // Get the new status from the response
         const newStatus = response.data.data?.active_package;
         console.log('NEW STATUS FROM API:', newStatus);
         
-        // Update the packages array
         const updatedPackages = packages.map(p => {
           if (p.id_package === pkg.id_package) {
             const updatedPackage = {
@@ -264,13 +255,10 @@ const ShopPackagesList = ({ onBack }) => {
         
         console.log('AFTER TOGGLE - Updated packages:', updatedPackages);
         
-        // Set the new packages array
         setPackages(updatedPackages);
         
-        // Force a re-render by updating the key
         setUpdateKey(prev => prev + 1);
         
-        // Double-check by fetching fresh data after a short delay
         setTimeout(async () => {
           console.log('Fetching fresh data from server...');
           await fetchPackages();
@@ -283,7 +271,6 @@ const ShopPackagesList = ({ onBack }) => {
           productError: response.data.error || 'Error al cambiar el estado del paquete'
         }));
         setShowErrorCard(true);
-        // Refresh to sync with backend on error
         await fetchPackages();
       }
     } catch (error) {
@@ -293,7 +280,6 @@ const ShopPackagesList = ({ onBack }) => {
         productError: error.response?.data?.error || 'Error al cambiar el estado del paquete'
       }));
       setShowErrorCard(true);
-      // Refresh packages to ensure UI is in sync with backend even on error
       await fetchPackages();
     } finally {
       setIsTogglingStatus(null);

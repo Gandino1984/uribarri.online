@@ -1,3 +1,4 @@
+// front-end/src/app_context/UIContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const UIContext = createContext();
@@ -280,6 +281,22 @@ export const UIProvider = ({ children }) => {
     setSuccess({});
   };
 
+  //update: Helper functions to set single error/success messages with auto-display
+  const setSingleError = (key, message) => {
+    setError({ [key]: message });
+    setShowErrorCard(true);
+  };
+
+  const setSingleSuccess = (key, message) => {
+    setSuccess({ [key]: message });
+    setShowSuccessCard(true);
+  };
+
+  const setSingleInfo = (key, message) => {
+    setInfo({ [key]: message });
+    setShowInfoCard(true);
+  };
+
   // Open image modal with a specific image
   const openImageModal = (imageSrc) => {
     setModalImageSrc(imageSrc);
@@ -303,6 +320,10 @@ export const UIProvider = ({ children }) => {
         clearError,
         clearInfo, 
         clearSuccess,
+        //update: Added helper functions
+        setSingleError,
+        setSingleSuccess,
+        setSingleInfo,
         
         // Modal handlers
         showConfirmationModal, setShowConfirmationModal,

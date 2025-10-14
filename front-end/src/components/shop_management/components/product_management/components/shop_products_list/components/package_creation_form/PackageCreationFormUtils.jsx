@@ -1,6 +1,6 @@
-import { useCallback, useEffect } from 'react';
+// front-end/src/components/shop_management/components/product_management/components/shops_products_list/components/shops_packages_list/components/package_creation_form/PackageCreationFormUtils.jsx
+import { useCallback } from 'react';
 import { useShop } from '../../../../../../../../app_context/ShopContext.jsx';
-// import { useAuth } from '../../../../../../../../app_context/AuthContext.jsx';
 import { useProduct } from '../../../../../../../../app_context/ProductContext.jsx';
 import { usePackage } from '../../../../../../../../app_context/PackageContext.jsx';
 import { useUI } from '../../../../../../../../app_context/UIContext.jsx';
@@ -13,7 +13,7 @@ const PackageCreationFormUtils = () => {
   const { setPackages, refreshPackageList } = usePackage();
   const { setError, setShowErrorCard, setSuccess, setShowSuccessCard } = useUI();
 
-  // ✨ UPDATE: Validate package form inputs
+  // Validate package form inputs
   const validatePackageForm = useCallback((packageData) => {
     const errors = {};
 
@@ -34,7 +34,6 @@ const PackageCreationFormUtils = () => {
       errors.id_shop = "Se requiere un comercio para crear un paquete";
     }
 
-    //update: Validate discount_package if provided
     if (packageData.discount_package !== undefined && packageData.discount_package !== '') {
       const discount = parseInt(packageData.discount_package);
       if (isNaN(discount) || discount < 0 || discount > 100) {
@@ -45,14 +44,12 @@ const PackageCreationFormUtils = () => {
     return errors;
   }, []);
 
-  //update: Fixed getProductDetails to properly handle null values and always return valid products
   const getProductDetails = useCallback(async (productIds) => {
     try {
       if (!productIds || productIds.length === 0) {
         return [];
       }
 
-      // Filter out null/undefined/empty string IDs first
       const validIds = productIds.filter(id => id !== null && id !== undefined && id !== '');
       
       if (validIds.length === 0) {
@@ -63,7 +60,7 @@ const PackageCreationFormUtils = () => {
       if (products && products.length > 0) {
         const details = validIds
           .map(id => products.find(p => p.id_product === id))
-          .filter(p => p !== undefined && p !== null); // Filter out not found products
+          .filter(p => p !== undefined && p !== null);
 
         if (details.length === validIds.length) {
           console.log('Found all product details in local state:', details);
@@ -76,7 +73,6 @@ const PackageCreationFormUtils = () => {
       const promises = validIds.map(id => 
         axiosInstance.get(`/product/by-id/${id}`)
           .then(response => {
-            // Make sure we have valid data
             if (response.data && response.data.data) {
               return response.data.data;
             }
@@ -91,10 +87,8 @@ const PackageCreationFormUtils = () => {
 
       const results = await Promise.all(promises);
       
-      // Filter out null results and ensure we have valid product objects
       const validResults = results.filter(p => {
         if (!p) return false;
-        // Check that the product has at least the required fields
         if (!p.id_product || !p.name_product) {
           console.warn('Product missing required fields:', p);
           return false;
@@ -104,7 +98,6 @@ const PackageCreationFormUtils = () => {
       
       console.log('Fetched product details:', validResults);
       
-      // If we couldn't fetch all products, show a warning
       if (validResults.length < validIds.length) {
         console.warn(`Could only fetch ${validResults.length} of ${validIds.length} products`);
         setError(prevError => ({
@@ -125,36 +118,55 @@ const PackageCreationFormUtils = () => {
     }
   }, [products, setError, setShowErrorCard]);
 
-  // ✨ UPDATE: Create a new package - updated to match your backend implementation
+  // Create a new package
   const handleCreatePackage = useCallback(async (packageData) => {
     try {
-      console.log('Creating package with data:', packageData);
+      console.log('=== STARTING PACKAGE CREATION ===');
+      console.log('Package data received:', packageData);
       
-      // Ensure there's a product1
       if (!packageData.id_product1) {
+        console.error('Missing required product 1');
         return {
           success: false,
           message: "Se requiere al menos un producto para crear un paquete"
         };
       }
 
-      // Make API call to create package
-      const response = await axiosInstance.post('/package/create', {
+      //update: Prepare request payload with all fields properly structured
+      const requestPayload = {
         id_shop: packageData.id_shop,
         id_product1: packageData.id_product1,
-        id_product2: packageData.id_product2,
-        id_product3: packageData.id_product3,
-        id_product4: packageData.id_product4,
-        id_product5: packageData.id_product5,
+        id_product2: packageData.id_product2 || null,
+        id_product3: packageData.id_product3 || null,
+        id_product4: packageData.id_product4 || null,
+        id_product5: packageData.id_product5 || null,
         name_package: packageData.name_package,
-        discount_package: packageData.discount_package || 0, //update: Include discount_package
-        active_package: packageData.active_package
-      });
+        discount_package: packageData.discount_package || 0,
+        image_package: packageData.image_package || null,
+        active_package: packageData.active_package !== undefined ? packageData.active_package : true
+      };
+
+      console.log('Sending request to /package/create with payload:', requestPayload);
       
-      console.log('Package creation response:', response.data);
+      //update: Enhanced error handling and logging
+      const response = await axiosInstance.post('/package/create', requestPayload)
+        .catch(error => {
+          console.error('=== AXIOS ERROR CAUGHT ===');
+          console.error('Error status:', error.response?.status);
+          console.error('Error data:', error.response?.data);
+          console.error('Error message:', error.message);
+          console.error('Full error:', error);
+          throw error;
+        });
+      
+      console.log('=== PACKAGE CREATION RESPONSE ===');
+      console.log('Response status:', response.status);
+      console.log('Response data:', response.data);
       
       if (response.data && response.data.success) {
-        // Set success message
+        console.log('✓ Package created successfully!');
+        console.log('Created package ID:', response.data.data?.id_package);
+        
         setSuccess(prev => ({
           ...prev,
           productSuccess: response.data.success || "Paquete creado exitosamente"
@@ -163,7 +175,7 @@ const PackageCreationFormUtils = () => {
         
         // Fetch updated packages list
         try {
-          const packagesResponse = await axiosInstance.get(`/package/by-shop-id/${selectedShop.id_shop}`);
+          const packagesResponse = await axiosInstance.get(`/package/by-shop-id/${packageData.id_shop}`);
           if (packagesResponse.data && packagesResponse.data.data) {
             setPackages(packagesResponse.data.data || []);
           }
@@ -177,7 +189,8 @@ const PackageCreationFormUtils = () => {
           message: response.data.success
         };
       } else {
-        // Handle API error
+        console.error('✗ Backend returned error:', response.data.error);
+        
         setError(prevError => ({
           ...prevError,
           productError: response.data.error || "Error al crear el paquete"
@@ -190,9 +203,21 @@ const PackageCreationFormUtils = () => {
         };
       }
     } catch (error) {
-      console.error('Error creating package:', error);
+      console.error('=== EXCEPTION IN handleCreatePackage ===');
+      console.error('Error type:', error.constructor.name);
+      console.error('Error message:', error.message);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
+      console.error('Error response headers:', error.response?.headers);
+      console.error('Full error object:', error);
       
-      const errorMessage = error.response?.data?.error || "Error al crear el paquete";
+      const errorMessage = error.response?.data?.error 
+        || error.response?.data?.details 
+        || error.message 
+        || "Error al crear el paquete";
+      
+      console.error('Final error message to user:', errorMessage);
       
       setError(prevError => ({
         ...prevError,
@@ -205,14 +230,14 @@ const PackageCreationFormUtils = () => {
         message: errorMessage
       };
     }
-  }, [selectedShop, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setPackages]);
+  }, [setError, setShowErrorCard, setSuccess, setShowSuccessCard, setPackages]);
 
-  // ✨ UPDATE: Update an existing package
+  // Update an existing package
   const handleUpdatePackage = useCallback(async (packageData) => {
     try {
+      console.log('=== STARTING PACKAGE UPDATE ===');
       console.log('Updating package with data:', packageData);
       
-      // Ensure there's a product1
       if (!packageData.id_product1) {
         return {
           success: false,
@@ -220,7 +245,6 @@ const PackageCreationFormUtils = () => {
         };
       }
 
-      // Ensure we have the package ID
       if (!packageData.id_package) {
         return {
           success: false,
@@ -228,23 +252,22 @@ const PackageCreationFormUtils = () => {
         };
       }
 
-      // Make API call to update package
       const response = await axiosInstance.patch('/package/update', {
         id_package: packageData.id_package,
         id_product1: packageData.id_product1,
-        id_product2: packageData.id_product2,
-        id_product3: packageData.id_product3,
-        id_product4: packageData.id_product4,
-        id_product5: packageData.id_product5,
+        id_product2: packageData.id_product2 || null,
+        id_product3: packageData.id_product3 || null,
+        id_product4: packageData.id_product4 || null,
+        id_product5: packageData.id_product5 || null,
         name_package: packageData.name_package,
         discount_package: packageData.discount_package || 0,
-        active_package: packageData.active_package
+        image_package: packageData.image_package || null,
+        active_package: packageData.active_package !== undefined ? packageData.active_package : true
       });
       
       console.log('Package update response:', response.data);
       
       if (response.data && response.data.success) {
-        // Set success message
         setSuccess(prev => ({
           ...prev,
           productSuccess: response.data.success || "Paquete actualizado exitosamente"
@@ -253,7 +276,7 @@ const PackageCreationFormUtils = () => {
         
         // Fetch updated packages list
         try {
-          const packagesResponse = await axiosInstance.get(`/package/by-shop-id/${selectedShop.id_shop}`);
+          const packagesResponse = await axiosInstance.get(`/package/by-shop-id/${packageData.id_shop}`);
           if (packagesResponse.data && packagesResponse.data.data) {
             setPackages(packagesResponse.data.data || []);
           }
@@ -267,7 +290,6 @@ const PackageCreationFormUtils = () => {
           message: response.data.success
         };
       } else {
-        // Handle API error
         setError(prevError => ({
           ...prevError,
           productError: response.data.error || "Error al actualizar el paquete"
@@ -281,8 +303,9 @@ const PackageCreationFormUtils = () => {
       }
     } catch (error) {
       console.error('Error updating package:', error);
+      console.error('Error response data:', error.response?.data);
       
-      const errorMessage = error.response?.data?.error || "Error al actualizar el paquete";
+      const errorMessage = error.response?.data?.error || error.response?.data?.details || "Error al actualizar el paquete";
       
       setError(prevError => ({
         ...prevError,
@@ -295,9 +318,9 @@ const PackageCreationFormUtils = () => {
         message: errorMessage
       };
     }
-  }, [selectedShop, setError, setShowErrorCard, setSuccess, setShowSuccessCard, setPackages]);
+  }, [setError, setShowErrorCard, setSuccess, setShowSuccessCard, setPackages]);
 
-  // ✨ UPDATE: Fetch packages by shop
+  // Fetch packages by shop
   const fetchPackagesByShop = useCallback(async () => {
     try {
       if (!selectedShop?.id_shop) {
