@@ -6,12 +6,10 @@ import { useAuth } from '../../../../src/app_context/AuthContext.jsx';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
 import { useParticipant } from '../../../../src/app_context/ParticipantContext.jsx';
 import ParticipantRequests from './ParticipantRequests.jsx';
-//update: Import TransferOrganization component
 import TransferOrganization from '../components/TransferOrganization.jsx';
-//update: Import ArrowRightLeft icon for transfer button
 import { Users, MapPin, User, AlertCircle, Shield, Clock, CheckCircle, XCircle, Edit, FileText, UserPlus, ArrowRightLeft } from 'lucide-react';
 import axiosInstance from '../../../../src/utils/app/axiosConfig.js';
-import styles from '../../../../../public/css/OrganizationsList.module.css';
+import styles from '../../../../css/OrganizationsList.module.css';
 
 const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
   const {
@@ -42,7 +40,6 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
   const [showRequestsModal, setShowRequestsModal] = useState(false);
   const [selectedOrgForRequests, setSelectedOrgForRequests] = useState(null);
   const [pendingRequestsCounts, setPendingRequestsCounts] = useState({});
-  //update: Add state for transfer modal
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [selectedOrgForTransfer, setSelectedOrgForTransfer] = useState(null);
 
@@ -118,19 +115,16 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     setShowRequestsModal(true);
   };
 
-  //update: Handle opening transfer modal
   const handleOpenTransferModal = (org) => {
     console.log('Opening transfer modal for organization:', org);
     setSelectedOrgForTransfer(org);
     setShowTransferModal(true);
   };
 
-  //update: Handle successful transfer request creation
   const handleTransferSuccess = () => {
     console.log('Transfer request created successfully');
     setShowTransferModal(false);
     setSelectedOrgForTransfer(null);
-    // Refresh organizations to update UI
     fetchAllOrganizations();
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user);
@@ -141,7 +135,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     if (!currentUser) {
       setError(prev => ({ 
         ...prev, 
-        authError: 'Debes iniciar sesión para solicitar unirte a una organización' 
+        authError: 'Debes iniciar sesión para solicitar unirte a una asociación' 
       }));
       return;
     }
@@ -154,7 +148,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
         await fetchUserRequests(currentUser.id_user);
         setSuccess(prev => ({ 
           ...prev, 
-          requestSuccess: '¡Solicitud enviada! El gestor de la organización revisará tu solicitud.' 
+          requestSuccess: '¡Solicitud enviada! El gestor de la asociación revisará tu solicitud.' 
         }));
       }
     } catch (error) {
@@ -177,7 +171,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
         });
         setSuccess(prev => ({ 
           ...prev, 
-          leaveSuccess: 'Has salido de la organización' 
+          leaveSuccess: 'Has salido de la asociación' 
         }));
         if (currentUser?.id_user) {
           await fetchUserOrganizations(currentUser.id_user);
@@ -203,7 +197,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
       if (!response.data.error) {
         setSuccess(prev => ({ 
           ...prev, 
-          approveSuccess: 'Organización aprobada exitosamente' 
+          approveSuccess: 'Asociación aprobada exitosamente' 
         }));
         await fetchAllOrganizations();
       } else {
@@ -216,7 +210,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
       console.error('Error approving organization:', error);
       setError(prev => ({ 
         ...prev, 
-        approveError: 'Error al aprobar la organización' 
+        approveError: 'Error al aprobar la asociación' 
       }));
     } finally {
       setApprovingOrg(null);
@@ -236,7 +230,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
       if (!response.data.error) {
         setSuccess(prev => ({ 
           ...prev, 
-          rejectSuccess: 'Organización rechazada' 
+          rejectSuccess: 'Asociación rechazada' 
         }));
         await fetchAllOrganizations();
       } else {
@@ -249,16 +243,39 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
       console.error('Error rejecting organization:', error);
       setError(prev => ({ 
         ...prev, 
-        rejectError: 'Error al rechazar la organización' 
+        rejectError: 'Error al rechazar la asociación' 
       }));
     } finally {
       setRejectingOrg(null);
     }
   };
 
+  //update: Enhanced image URL handling with proper encoding and error handling
+  const getOrganizationImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    
+    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
+    
+    // The imagePath is already relative: assets/images/organizations/...
+    // We need to properly encode each segment of the path
+    const pathSegments = imagePath.split('/');
+    const encodedSegments = pathSegments.map(segment => encodeURIComponent(segment));
+    const encodedPath = encodedSegments.join('/');
+    
+    const fullUrl = `${baseURL}/${encodedPath}`;
+    
+    console.log('Organization Image URL:', {
+      original: imagePath,
+      encoded: encodedPath,
+      fullUrl: fullUrl
+    });
+    
+    return fullUrl;
+  };
+
   const handleImageClick = (imagePath) => {
     if (imagePath) {
-      const fullImagePath = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${imagePath}`;
+      const fullImagePath = getOrganizationImageUrl(imagePath);
       openImageModal(fullImagePath);
     }
   };
@@ -332,16 +349,31 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
               <div className={styles.cardHeader}>
                 {org.image_org ? (
                   <img
-                    src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${org.image_org}`}
+                    src={getOrganizationImageUrl(org.image_org)}
                     alt={org.name_org}
                     className={styles.orgImage}
                     onClick={() => handleImageClick(org.image_org)}
+                    onLoad={() => {
+                      console.log('✓ Organization image loaded successfully:', org.image_org);
+                    }}
+                    onError={(e) => {
+                      console.error('✗ Failed to load organization image:', org.image_org);
+                      console.error('Attempted URL:', getOrganizationImageUrl(org.image_org));
+                      //update: Fixed optional chaining assignment - split into two operations
+                      e.target.style.display = 'none';
+                      const placeholder = e.target.parentElement.querySelector(`.${styles.orgImagePlaceholder}`);
+                      if (placeholder) {
+                        placeholder.style.display = 'flex';
+                      }
+                    }}
                   />
-                ) : (
-                  <div className={styles.orgImagePlaceholder}>
-                    <Users size={32} />
-                  </div>
-                )}
+                ) : null}
+                <div 
+                  className={styles.orgImagePlaceholder}
+                  style={{ display: org.image_org ? 'none' : 'flex' }}
+                >
+                  <Users size={32} />
+                </div>
                 
                 <div className={styles.orgInfo}>
                   <h3 className={styles.orgName}>{org.name_org}</h3>
@@ -368,7 +400,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                     <button
                       className={`${styles.actionButton} ${styles.editButton}`}
                       onClick={() => handleEditOrganization(org)}
-                      title="Editar organización"
+                      title="Editar asociación"
                     >
                       <Edit size={16} />
                       <span>Editar</span>
@@ -392,7 +424,6 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                       <FileText size={16} />
                       <span>Publicaciones</span>
                     </button>
-                    {/*update: Add transfer button for managers */}
                     <button
                       className={`${styles.actionButton} ${styles.transferButton}`}
                       onClick={() => handleOpenTransferModal(org)}
@@ -410,7 +441,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                       className={`${styles.actionButton} ${styles.approveButton}`}
                       onClick={() => handleApproveOrganization(org.id_organization)}
                       disabled={isApproving || isRejecting}
-                      title="Aprobar organización"
+                      title="Aprobar asociación"
                     >
                       {isApproving ? (
                         <>
@@ -428,7 +459,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                       className={`${styles.actionButton} ${styles.rejectButton}`}
                       onClick={() => handleRejectOrganization(org.id_organization)}
                       disabled={isApproving || isRejecting}
-                      title="Rechazar organización"
+                      title="Rechazar asociación"
                     >
                       {isRejecting ? (
                         <>
@@ -496,7 +527,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
       
       <div className={styles.resultsCount}>
         <p>
-          Mostrando {filteredOrganizations.length} {filteredOrganizations.length === 1 ? 'organización' : 'organizaciones'}
+          Mostrando {filteredOrganizations.length} {filteredOrganizations.length === 1 ? 'asociación' : 'organizaciones'}
           {isAdmin && organizations.some(org => !org.org_approved) && (
             <span className={styles.pendingCount}>
               {' '}({organizations.filter(org => !org.org_approved).length} pendientes de aprobación)
@@ -517,7 +548,6 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
         />
       )}
       
-      {/*update: Add TransferOrganization modal */}
       {showTransferModal && selectedOrgForTransfer && (
         <TransferOrganization
           organization={selectedOrgForTransfer}

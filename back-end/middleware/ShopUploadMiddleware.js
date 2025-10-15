@@ -1,8 +1,9 @@
+//update: Updated to store shop images in back-end/assets/images/shops instead of public folder
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
-import shop_model from '../models/shop_model.js'; // Import shop model to get shop name
+import shop_model from '../models/shop_model.js';
 import { validateImageMiddleware } from '../utils/imageValidationUtilities.js';
 import { processUploadedImage } from '../utils/imageConversionUtils.js';
 
@@ -22,7 +23,6 @@ const ensureDirectoryExists = async (dirPath) => {
 };
 
 // Helper function to remove existing cover image files
-//update: Added function to clean existing cover images before saving new ones
 const cleanExistingCoverImages = async (dirPath) => {
     try {
         // Check if directory exists first
@@ -76,14 +76,12 @@ const shopCoverStorage = multer.diskStorage({
             const shopName = shop.name_shop;
             console.log(`Found shop name: ${shopName} for ID: ${id_shop}`);
             
-            // Create path for shop-specific cover images - use forward slashes for Docker compatibility
+            //update: Create path for shop-specific cover images in backend assets folder
             const uploadsDir = path.join(
                 __dirname, 
                 '..',
-                '..',
-                'public', 
+                'assets',
                 'images', 
-                'uploads', 
                 'shops', 
                 shopName, 
                 'cover_image'
@@ -94,7 +92,7 @@ const shopCoverStorage = multer.diskStorage({
             // Ensure the directory exists
             await ensureDirectoryExists(uploadsDir);
             
-            //update: Clean existing cover images before saving new one
+            // Clean existing cover images before saving new one
             await cleanExistingCoverImages(uploadsDir);
             
             console.log(`Shop cover will be stored in: ${uploadsDir}`);
@@ -113,7 +111,7 @@ const shopCoverStorage = multer.diskStorage({
         }
     },
     filename: function (req, file, cb) {
-        //update: Use temporary filename since we'll rename after WebP conversion
+        // Use temporary filename since we'll rename after WebP conversion
         const tempFileName = `temp_${Date.now()}${path.extname(file.originalname)}`;
         console.log(`Generated temporary filename: ${tempFileName}`);
         cb(null, tempFileName);
@@ -135,7 +133,7 @@ const uploadShopCover = multer({
     storage: shopCoverStorage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 10 * 1024 * 1024 //update: Increased to 10MB limit for initial upload (we'll compress it later)
+        fileSize: 10 * 1024 * 1024 // 10MB limit for initial upload (we'll compress it later)
     }
 }).single('shopCover'); // IMPORTANT: This must match the field name from the frontend
 
@@ -188,11 +186,11 @@ const handleShopCoverUpload = async (req, res, next) => {
             // Validate the image
             await validateImageMiddleware(req, res, async () => {
                 try {
-                    //update: Process the image (convert to WebP and compress to 1MB)
+                    // Process the image (convert to WebP and compress to 1MB)
                     console.log('Processing uploaded image for WebP conversion and compression...');
                     const processedFile = await processUploadedImage(req.file);
                     
-                    //update: Rename the processed file to 'cover.webp' only if it's not already named that
+                    // Rename the processed file to 'cover.webp' only if it's not already named that
                     const finalPath = path.join(path.dirname(processedFile.path), 'cover.webp');
                     
                     // If the processed file is not already named 'cover.webp', rename it

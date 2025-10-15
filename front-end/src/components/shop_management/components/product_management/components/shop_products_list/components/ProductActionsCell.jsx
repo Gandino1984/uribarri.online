@@ -9,7 +9,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../css/ShopProductsList.module.css';
 
 const ProductActionsCell = ({ 
   product, 

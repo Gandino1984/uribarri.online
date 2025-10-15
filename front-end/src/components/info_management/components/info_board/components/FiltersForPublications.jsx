@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { usePublication } from '../../../../../app_context/PublicationContext.jsx';
 import { useOrganization } from '../../../../../app_context/OrganizationContext.jsx';
 import { Search, X, Calendar, Building2, User } from 'lucide-react';
-import styles from '../../../../../../../public/css/FiltersForPublications.module.css';
+import styles from '../../../../../../css/FiltersForPublications.module.css';
 
 const FiltersForPublications = ({ onClose = null }) => {
   const { 

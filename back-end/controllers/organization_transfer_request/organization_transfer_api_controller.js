@@ -22,7 +22,7 @@ async function getByOrganizationId(req, res) {
         
         if (!id_org) {
             return res.status(400).json({ 
-                error: 'El ID de la organización es obligatorio' 
+                error: 'El ID de la asociación es obligatorio' 
             });
         }
         
@@ -31,7 +31,7 @@ async function getByOrganizationId(req, res) {
     } catch (err) {
         console.error("-> organization_transfer_api_controller.js - getByOrganizationId() - Error =", err);
         res.status(500).json({ 
-            error: "Error al obtener solicitudes de la organización",
+            error: "Error al obtener solicitudes de la asociación",
             details: err.message
         });
     }

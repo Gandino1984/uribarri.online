@@ -1,8 +1,14 @@
+//update: Added getUserImage function to serve images from backend
 // back-end/controllers/user/user_api_controller.js
 import userController from "./user_controller.js";
 import bcrypt from 'bcrypt';
 import user_model from "../../models/user_model.js";
+import path from 'path';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function getAll(req, res) {
     const {error, data} = await userController.getAll();
@@ -10,7 +16,6 @@ async function getAll(req, res) {
 }
 
 async function create(req, res) {
-    //update: Added email_user and is_manager to destructured fields
     const {name_user, pass_user, email_user, location_user, type_user, image_user, age_user, is_manager } = req.body;
     const {error, data} = await userController.create({name_user, pass_user, email_user, location_user, type_user, image_user, age_user, is_manager });
     res.json({error, data});
@@ -41,7 +46,6 @@ async function login(req, res) {
         
         const {error, data, message} = await userController.login({ name_user, pass_user});
 
-        //update: Log what we're about to send to frontend
         console.log('=== user_api_controller LOGIN RESPONSE ===');
         console.log('Response error:', error);
         console.log('Response data:', data);
@@ -58,10 +62,8 @@ async function login(req, res) {
 }
 
 async function register(req, res) {
-    //update: Added email_user and is_manager to destructured fields
     let {name_user, pass_user, email_user, location_user, type_user, image_user, calification_user, age_user, is_manager  } = req.body;
     try{
-        //update: Added email_user to required fields check
         if(!name_user || !pass_user || !email_user || !location_user || !type_user){
             res.status(400).json({ 
                 error: 'Los parámetros name_user, pass_user, email_user, location_user y type_user son obligatorios', 
@@ -83,7 +85,6 @@ async function register(req, res) {
         const {error, data, message, verificationEmailSent} = await userController.register({
             name_user, 
             pass_user,
-            //update: Added email_user and is_manager to register call
             email_user,
             location_user, 
             type_user, 
@@ -104,7 +105,6 @@ async function update(req, res) {
     const {
         id_user, 
         name_user,
-        //update: Added email_user and is_manager
         email_user,
         pass_user, 
         location_user, 
@@ -124,7 +124,6 @@ async function update(req, res) {
     
     const {error, data, message} = await userController.update(id_user, { 
         name_user,
-        //update: Added email_user and is_manager to update call
         email_user,
         pass_user, 
         location_user, 
@@ -187,7 +186,84 @@ async function updateProfileImage(userName, imagePath) {
     }
 }
 
-//update: Search user by email
+//update: New function to serve user images from backend
+async function getUserImage(req, res) {
+    try {
+        const { userName } = req.params;
+        
+        if (!userName) {
+            return res.status(400).json({ error: 'Nombre de usuario requerido' });
+        }
+        
+        console.log('Serving image for user:', userName);
+        
+        // Verify user exists
+        const user = await user_model.findOne({
+            where: { name_user: userName }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        // Construct path to user's image directory
+        const userImageDir = path.join(
+            __dirname,
+            '..',
+            '..',
+            'assets',
+            'images',
+            'users',
+            userName
+        );
+        
+        console.log('Looking for image in:', userImageDir);
+        
+        // Check if directory exists
+        try {
+            await fs.access(userImageDir);
+        } catch {
+            return res.status(404).json({ error: 'No se encontró imagen de perfil' });
+        }
+        
+        // Look for profile image file (profile.jpg, profile.png, profile.webp, etc.)
+        const files = await fs.readdir(userImageDir);
+        const profileImage = files.find(file => file.startsWith('profile.'));
+        
+        if (!profileImage) {
+            return res.status(404).json({ error: 'No se encontró imagen de perfil' });
+        }
+        
+        const imagePath = path.join(userImageDir, profileImage);
+        console.log('Serving image from:', imagePath);
+        
+        // Determine content type based on file extension
+        const ext = path.extname(profileImage).toLowerCase();
+        const contentTypeMap = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.webp': 'image/webp'
+        };
+        
+        const contentType = contentTypeMap[ext] || 'image/jpeg';
+        
+        // Set appropriate headers
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+        
+        // Send the file
+        res.sendFile(imagePath);
+        
+    } catch (error) {
+        console.error('Error serving user image:', error);
+        res.status(500).json({ 
+            error: 'Error al servir la imagen',
+            details: error.message 
+        });
+    }
+}
+
 async function getByEmail(req, res) {
     try {
         const { email_user } = req.body;
@@ -209,7 +285,6 @@ async function getByEmail(req, res) {
     }
 }
 
-//update: Search users by name (partial match)
 async function searchByName(req, res) {
     try {
         const { name_user } = req.body;
@@ -242,7 +317,8 @@ export {
     getByUserName,
     updateProfileImage,
     getByEmail, 
-    searchByName
+    searchByName,
+    getUserImage
 }
 
 export default {
@@ -256,5 +332,6 @@ export default {
     getByUserName,
     updateProfileImage,
     getByEmail,  
-    searchByName
+    searchByName,
+    getUserImage
 }

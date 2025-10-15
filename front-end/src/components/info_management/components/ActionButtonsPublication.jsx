@@ -5,7 +5,7 @@ import { useUI } from '../../../app_context/UIContext.jsx';
 import { useOrganization } from '../../../app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { Edit, Trash2, Eye, EyeOff, MoreVertical, X } from 'lucide-react';
-import styles from '../../../../../public/css/ActionButtonsPublication.module.css';
+import styles from '../../../../css/ActionButtonsPublication.module.css';
 
 const ActionButtonsPublication = ({ 
   publication, 

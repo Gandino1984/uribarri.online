@@ -3,7 +3,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx';
 import NumericKeyboard from "./numeric_keyboard/NumericKeyboard.jsx";
-import styles from '../../../../../public/css/LoginRegisterForm.module.css';
+import styles from '../../../../css/LoginRegisterForm.module.css';
 
 export const KeyboardSection = () => {
   // UPDATE: Using useAuth and useUI hooks instead of AppContext

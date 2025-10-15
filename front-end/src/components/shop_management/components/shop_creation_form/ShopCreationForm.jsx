@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTransition, animated } from '@react-spring/web';
-import styles from '../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
 import { Plus, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Mail, Loader, RefreshCw } from 'lucide-react';
 import axiosInstance from '../../utils/app/axiosConfig.js';
-import styles from '../../../../public/css/EmailVerification.module.css';
+import styles from '../../../css/EmailVerification.module.css';
 
 const EmailVerification = () => {
   const [verificationStatus, setVerificationStatus] = useState('verifying'); // 'verifying', 'success', 'error', 'expired'

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUI } from '../../app_context/UIContext.jsx';
-import styles from '../../../../public/css/ImageModal.module.css'; 
+import styles from '../../../css/ImageModal.module.css'; 
 import { Loader } from 'lucide-react';
 
 const ImageModal = () => {

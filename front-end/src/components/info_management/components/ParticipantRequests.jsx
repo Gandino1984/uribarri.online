@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { useParticipant } from '../../../app_context/ParticipantContext.jsx';
 import { User, Calendar, MapPin, CheckCircle, XCircle, Clock, MessageSquare, X } from 'lucide-react';
-import styles from '../../../../../public/css/ParticipantRequests.module.css';
+import styles from '../../../../css/ParticipantRequests.module.css';
 
 const ParticipantRequests = ({ organizationId, organizationName, onClose }) => {
   const { currentUser } = useAuth();
@@ -157,7 +157,7 @@ const ParticipantRequests = ({ organizationId, organizationName, onClose }) => {
                   <div className={styles.userInfo}>
                     {request.user?.image_user ? (
                       <img 
-                        src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${request.user.image_user}`}
+                        src={`${import.meta.env.VITE_API_URL}/${request.user.image_user}`}
                         alt={request.user.name_user}
                         className={styles.userAvatar}
                       />
@@ -266,7 +266,7 @@ const ParticipantRequests = ({ organizationId, organizationName, onClose }) => {
                   value={responseMessage}
                   onChange={(e) => setResponseMessage(e.target.value)}
                   placeholder={responseAction === 'approve' 
-                    ? "¡Bienvenido/a a la organización!..." 
+                    ? "¡Bienvenido/a a la asociación!..." 
                     : "Lamentamos informarte que..."}
                   rows={4}
                 />

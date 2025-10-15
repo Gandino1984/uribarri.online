@@ -9,13 +9,12 @@ import PackageCreationFormUtils from './PackageCreationFormUtils.jsx';
 import { useTransition, animated } from '@react-spring/web';
 import { formAnimation } from '../../../../../../../../utils/animation/transitions.js';
 import { ArrowLeft, PackagePlus, X, Save, AlertTriangle, Upload, Image as ImageIcon } from 'lucide-react';
-//update: Import from the new packageImageUploadService file
-import { uploadPackageImage, formatImageUrl } from '../../../../../../../../utils/image/packageImageUploadService.js';
+import { uploadPackageImage, formatImageUrl } from '../../../../../../../../utils/image/imageUploadService.js';
 import { validateImageFile } from '../../../../../../../../utils/image/imageValidation.js';
 import { optimizeImage } from '../../../../../../../../utils/image/imageOptimizer.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 
-import styles from '../../../../../../../../../../public/css/PackageCreationForm.module.css';
+import styles from '../../../../../../../../../css/PackageCreationForm.module.css';
 
 const PackageCreationForm = () => {
   const { currentUser } = useAuth();
@@ -55,17 +54,14 @@ const PackageCreationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
-  //update: State for calculated prices
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
   
-  //update: Image upload states
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   
-  //update: Check if we're in edit mode
   const isEditMode = selectedPackage !== null;
 
   // Get utilities
@@ -90,9 +86,7 @@ const PackageCreationForm = () => {
   useEffect(() => {
     const initForm = async () => {
       try {
-        //update: If in edit mode, populate form with existing package data
         if (isEditMode && selectedPackage) {
-          // Set the package data
           const packageData = {
             id_shop: selectedPackage.id_shop,
             id_product1: selectedPackage.id_product1 || '',
@@ -108,13 +102,11 @@ const PackageCreationForm = () => {
           
           setNewPackageData(packageData);
           
-          //update: Set image preview if package has an image
           if (selectedPackage.image_package) {
             const imageUrl = formatImageUrl(selectedPackage.image_package);
             setImagePreview(imageUrl);
           }
           
-          // Get product IDs from the package
           const productIds = [
             selectedPackage.id_product1,
             selectedPackage.id_product2,
@@ -123,12 +115,10 @@ const PackageCreationForm = () => {
             selectedPackage.id_product5
           ].filter(id => id !== null && id !== undefined && id !== '');
           
-          // Fetch details for these products
           if (productIds.length > 0) {
             const details = await getProductDetails(productIds);
             setSelectedProductDetails(details);
             
-            // Calculate prices
             const total = details.reduce((sum, product) => {
               if (product && product.price_product) {
                 return sum + (parseFloat(product.price_product) || 0);
@@ -142,7 +132,6 @@ const PackageCreationForm = () => {
             setDiscountedPrice(discounted);
           }
         } else {
-          // For new packages, get products from selected products
           const productIds = [
             newPackageData.id_product1,
             newPackageData.id_product2,
@@ -155,7 +144,6 @@ const PackageCreationForm = () => {
             const details = await getProductDetails(productIds);
             setSelectedProductDetails(details);
             
-            // Calculate total price
             const total = details.reduce((sum, product) => {
               if (product && product.price_product) {
                 return sum + (parseFloat(product.price_product) || 0);
@@ -164,14 +152,12 @@ const PackageCreationForm = () => {
             }, 0);
             setTotalPrice(total);
             
-            // Calculate discounted price
             const discount = parseInt(newPackageData.discount_package) || 0;
             const discounted = total * (1 - discount / 100);
             setDiscountedPrice(discounted);
           }
         }
         
-        // Set visibility for animation
         setIsVisible(true);
         
       } catch (error) {
@@ -185,17 +171,14 @@ const PackageCreationForm = () => {
     };
     
     initForm();
-  }, [isEditMode, selectedPackage]); // Removed dependencies that could cause loops
+  }, [isEditMode, selectedPackage]);
   
-  // Update product details when newPackageData changes (but not on initial load)
   useEffect(() => {
-    // Skip if we're in edit mode and this is the initial load
     if (isEditMode && selectedProductDetails.length === 0) {
       return;
     }
     
     const updateProductDetails = async () => {
-      // Get array of selected product IDs
       const productIds = [
         newPackageData.id_product1,
         newPackageData.id_product2,
@@ -205,14 +188,11 @@ const PackageCreationForm = () => {
       ].filter(id => id !== null && id !== undefined && id !== '');
       
       if (productIds.length > 0) {
-        // Fetch details for selected products
         const details = await getProductDetails(productIds);
         
-        // Only update if we got valid details
         if (details && details.length > 0) {
           setSelectedProductDetails(details);
           
-          // Calculate total price
           const total = details.reduce((sum, product) => {
             if (product && product.price_product) {
               return sum + (parseFloat(product.price_product) || 0);
@@ -221,13 +201,11 @@ const PackageCreationForm = () => {
           }, 0);
           setTotalPrice(total);
           
-          // Calculate discounted price
           const discount = parseInt(newPackageData.discount_package) || 0;
           const discounted = total * (1 - discount / 100);
           setDiscountedPrice(discounted);
         }
       } else {
-        // No products selected, clear details
         setSelectedProductDetails([]);
         setTotalPrice(0);
         setDiscountedPrice(0);
@@ -239,16 +217,13 @@ const PackageCreationForm = () => {
       newPackageData.id_product4, newPackageData.id_product5, newPackageData.discount_package,
       getProductDetails]);
   
-  //update: Enhanced image file selection with optimization
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
     try {
-      // Validate the image
       await validateImageFile(file);
       
-      // Optimize the image client-side first (similar to product image handling)
       let optimizedFile = file;
       try {
         optimizedFile = await optimizeImage(file, {
@@ -256,7 +231,7 @@ const PackageCreationForm = () => {
           maxHeight: 1200,
           quality: 0.85,
           format: 'image/webp',
-          maxSizeKB: 1024 // 1MB limit
+          maxSizeKB: 1024
         });
         console.log('Package image optimized client-side:', {
           originalSize: Math.round(file.size / 1024) + 'KB',
@@ -266,17 +241,14 @@ const PackageCreationForm = () => {
         console.warn('Client-side optimization failed, will use original:', optimizeError);
       }
       
-      // Set the optimized file
       setImageFile(optimizedFile);
       
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(optimizedFile);
       
-      // Clear any previous errors
       if (formErrors.image_package) {
         setFormErrors(prev => ({
           ...prev,
@@ -292,23 +264,20 @@ const PackageCreationForm = () => {
     }
   };
   
-  //update: Remove selected image
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreview(null);
     setUploadProgress(0);
   };
   
-  // Handle back button click
   const handleBackClick = async () => {
-    // Reset form and navigate back
     try {
       await closePackageFormWithAnimation();
       setTimeout(() => {
         setIsAddingPackage(false);
         resetPackageData();
         setSelectedProducts(new Set());
-        setSelectedPackage(null); //update: Clear selected package
+        setSelectedPackage(null);
         setImageFile(null);
         setImagePreview(null);
       }, 500);
@@ -317,7 +286,6 @@ const PackageCreationForm = () => {
     }
   };
   
-  // Form input change handler
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === 'checkbox' ? checked : value;
@@ -327,14 +295,12 @@ const PackageCreationForm = () => {
       [name]: inputValue
     }));
     
-    //update: Recalculate discounted price when discount changes
     if (name === 'discount_package') {
       const discount = parseInt(value) || 0;
       const discounted = totalPrice * (1 - discount / 100);
       setDiscountedPrice(discounted);
     }
     
-    // Clear error for this field if present
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,
@@ -343,128 +309,146 @@ const PackageCreationForm = () => {
     }
   };
   
-  //update: Enhanced submit handler with proper image upload flow
+  //update: Completely rewritten submit handler with proper error handling
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
       setIsSubmitting(true);
       
+      console.log('=== PACKAGE FORM SUBMISSION STARTED ===');
+      console.log('Current package data:', newPackageData);
+      console.log('Selected shop:', selectedShop);
+      console.log('Is edit mode:', isEditMode);
+      console.log('Image file selected:', !!imageFile);
+      
       // Validate form
       const validationErrors = validatePackageForm(newPackageData);
       if (Object.keys(validationErrors).length > 0) {
+        console.error('Validation errors:', validationErrors);
         setFormErrors(validationErrors);
         setIsSubmitting(false);
         return;
       }
       
-      let tempImageData = null;
-      
-      // Step 1: Upload image first (if selected) without package ID for new packages
-      if (imageFile && !isEditMode) {
-        try {
-          setIsUploadingImage(true);
-          console.log('Uploading image first for new package...');
-          
-          // Upload image without package ID (will get temp filename)
-          const imagePath = await uploadPackageImage({
-            file: imageFile,
-            shopId: selectedShop.id_shop,
-            packageId: null, // No package ID yet for new packages
-            onProgress: (progress) => setUploadProgress(progress),
-            onError: (error) => {
-              console.error('Image upload error:', error);
-              setSingleError('productError', 'Error al subir la imagen del paquete');
-            }
-          });
-          
-          console.log('Temporary image uploaded:', imagePath);
-          tempImageData = {
-            path: imagePath,
-            filename: imagePath.split('/').pop() // Get just the filename
-          };
-        } catch (imageError) {
-          console.error('Failed to upload package image:', imageError);
-          setSingleError('productError', 'Error al subir la imagen del paquete');
-          setIsSubmitting(false);
-          setIsUploadingImage(false);
-          return; // Stop if image upload fails
-        } finally {
-          setIsUploadingImage(false);
-        }
-      }
-      
-      // Step 2: Create or update package
       let result;
       let packageId;
+      let uploadedImagePath = null;
       
+      // EDIT MODE: Handle updates differently
       if (isEditMode) {
-        // For edit mode, upload image with package ID
+        console.log('--- EDIT MODE: Updating existing package ---');
+        
+        // If there's a new image, upload it with the existing package ID
         if (imageFile) {
           try {
             setIsUploadingImage(true);
-            const imagePath = await uploadPackageImage({
+            console.log('Uploading new image for existing package:', selectedPackage.id_package);
+            
+            uploadedImagePath = await uploadPackageImage({
               file: imageFile,
               shopId: selectedShop.id_shop,
-              packageId: selectedPackage.id_package, // We have the package ID in edit mode
+              packageId: selectedPackage.id_package,
               onProgress: (progress) => setUploadProgress(progress),
               onError: (error) => {
                 console.error('Image upload error:', error);
                 setSingleError('productError', 'Error al subir la imagen del paquete');
               }
             });
-            console.log('Package image updated:', imagePath);
-          } catch (imageError) {
-            console.error('Failed to upload package image:', imageError);
-            // Don't fail the entire operation if just the image upload fails in edit mode
-          } finally {
+            
+            console.log('✓ Image uploaded successfully:', uploadedImagePath);
             setIsUploadingImage(false);
+          } catch (imageError) {
+            console.error('✗ Failed to upload package image:', imageError);
+            setIsUploadingImage(false);
+            // Continue with update even if image upload fails
           }
         }
         
+        // Update the package
         result = await handleUpdatePackage({
           ...newPackageData,
-          id_package: selectedPackage.id_package
+          id_package: selectedPackage.id_package,
+          image_package: uploadedImagePath || newPackageData.image_package
         });
+        
         packageId = selectedPackage.id_package;
+        
       } else {
-        // Create new package (with the temp image path if uploaded)
+        // CREATE MODE: New package creation
+        console.log('--- CREATE MODE: Creating new package ---');
+        
+        // Step 1: Create package WITHOUT image first
         const createData = {
-          ...newPackageData,
-          image_package: tempImageData ? tempImageData.path : null
+          id_shop: selectedShop.id_shop,
+          id_product1: newPackageData.id_product1,
+          id_product2: newPackageData.id_product2 || null,
+          id_product3: newPackageData.id_product3 || null,
+          id_product4: newPackageData.id_product4 || null,
+          id_product5: newPackageData.id_product5 || null,
+          name_package: newPackageData.name_package,
+          discount_package: newPackageData.discount_package || 0,
+          image_package: null, // Will be updated after upload
+          active_package: newPackageData.active_package !== undefined ? newPackageData.active_package : true
         };
+        
+        console.log('Creating package with data:', createData);
         result = await handleCreatePackage(createData);
-        packageId = result.data?.id_package;
-      }
-      
-      if (result.success) {
-        // Step 3: If we uploaded a temp image for a new package, rename it with the package ID
-        if (tempImageData && packageId && !isEditMode) {
-          try {
-            console.log('Renaming temp image with package ID:', packageId);
-            
-            const renameResponse = await axiosInstance.post('/package/rename-image', {
-              packageId: packageId,
-              tempFilename: tempImageData.filename,
-              shopName: selectedShop.name_shop
-            });
-            
-            if (renameResponse.data && renameResponse.data.success) {
-              console.log('Image renamed successfully:', renameResponse.data);
-            }
-          } catch (renameError) {
-            console.error('Failed to rename package image:', renameError);
-            // Don't fail the entire operation if just the rename fails
-          }
+        
+        if (!result.success) {
+          console.error('✗ Package creation failed:', result.message);
+          setSingleError('productError', result.message || "Error al crear el paquete");
+          setIsSubmitting(false);
+          return;
         }
         
-        // Show success message
+        packageId = result.data?.id_package;
+        console.log('✓ Package created successfully with ID:', packageId);
+        
+        // Step 2: If there's an image and we have the package ID, upload it
+        if (imageFile && packageId) {
+          try {
+            setIsUploadingImage(true);
+            console.log('Uploading image for new package ID:', packageId);
+            
+            uploadedImagePath = await uploadPackageImage({
+              file: imageFile,
+              shopId: selectedShop.id_shop,
+              packageId: packageId,
+              onProgress: (progress) => setUploadProgress(progress),
+              onError: (error) => {
+                console.error('Image upload error:', error);
+              }
+            });
+            
+            console.log('✓ Image uploaded successfully:', uploadedImagePath);
+            setIsUploadingImage(false);
+            
+            // Step 3: Update the package with the image path
+            console.log('Updating package with image path...');
+            await axiosInstance.patch('/package/update', {
+              id_package: packageId,
+              image_package: uploadedImagePath
+            });
+            console.log('✓ Package updated with image path');
+            
+          } catch (imageError) {
+            console.error('✗ Failed to upload/update package image:', imageError);
+            setIsUploadingImage(false);
+            console.warn('Package created but without image');
+            // Don't fail the whole operation if image upload fails
+          }
+        }
+      }
+      
+      // Show success message
+      if (result.success) {
+        console.log('✓ Package operation successful!');
+        
         setSingleSuccess('productSuccess', isEditMode ? "Paquete actualizado exitosamente" : "Paquete creado exitosamente");
         
-        // Refresh lists
         refreshPackageList();
         
-        // Reset and go back
         setTimeout(async () => {
           await closePackageFormWithAnimation();
           setIsAddingPackage(false);
@@ -475,31 +459,22 @@ const PackageCreationForm = () => {
           setImagePreview(null);
         }, 1500);
       } else {
-        // Show error message
+        console.error('✗ Package operation failed:', result.message);
         setSingleError('productError', result.message || (isEditMode ? "Error al actualizar el paquete" : "Error al crear el paquete"));
-        
-        // If package creation failed but we uploaded an image, try to clean it up
-        if (tempImageData && !isEditMode) {
-          try {
-            // Optionally: Add an API endpoint to delete orphaned temp images
-            console.log('Package creation failed, orphaned temp image:', tempImageData.filename);
-          } catch (cleanupError) {
-            console.error('Error cleaning up temp image:', cleanupError);
-          }
-        }
       }
+      
     } catch (error) {
-      console.error('Error submitting package form:', error);
+      console.error('=== EXCEPTION IN handleSubmit ===');
+      console.error('Error:', error);
       setSingleError('productError', isEditMode ? "Error al actualizar el paquete" : "Error al crear el paquete");
     } finally {
       setIsSubmitting(false);
       setIsUploadingImage(false);
+      console.log('=== PACKAGE FORM SUBMISSION ENDED ===');
     }
   };
   
-  //update: Fixed renderSelectedProducts to handle undefined/null products
   const renderSelectedProducts = () => {
-    // Filter out any null/undefined products before rendering
     const validProducts = selectedProductDetails.filter(product => 
       product && product.id_product && product.name_product
     );
@@ -536,7 +511,6 @@ const PackageCreationForm = () => {
             <ArrowLeft size={20} />
           </button>
           <p className={styles.formTitle}>
-            {/* <PackagePlus size={24} className={styles.formTitleIcon} /> */}
             {isEditMode ? 'Editar Paquete' : 'Crear Paquete'}
           </p>
         </div>
@@ -709,7 +683,6 @@ const PackageCreationForm = () => {
             <button
               type="button"
               onClick={handleBackClick}
-              // className={`${styles.button} ${styles.cancelButton}`}
               disabled={isSubmitting || isUploadingImage}
             >
               <X size={18} />
@@ -718,7 +691,6 @@ const PackageCreationForm = () => {
             
             <button
               type="submit"
-              // className={`${styles.button} ${styles.submitButton}`}
               disabled={isSubmitting || isUploadingImage || selectedProductDetails.filter(p => p && p.id_product).length === 0}
             >
               <Save size={18} />

@@ -7,7 +7,7 @@ import { usePublication } from '../../../../app_context/PublicationContext.jsx';
 import ActionButtonsPublication from '../../components/ActionButtonsPublication.jsx';
 import PublicationCreationForm from '../../components/PublicationCreationForm.jsx';
 import FiltersForPublications from './components/FiltersForPublications.jsx';
-import styles from '../../../../../../public/css/InfoBoard.module.css';
+import styles from '../../../../../css/InfoBoard.module.css';
 import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff, Filter } from 'lucide-react';
 
 const InfoBoard = () => {
@@ -24,7 +24,6 @@ const InfoBoard = () => {
   
   const [editingPublication, setEditingPublication] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
-  //update: Add state for showing/hiding filters
   const [showFilters, setShowFilters] = useState(false);
   
   //update: Get API base URL for image paths
@@ -78,20 +77,51 @@ const InfoBoard = () => {
     return `${hours}:${minutes}`;
   };
   
+  //update: Enhanced image URL construction with proper encoding and logging
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      console.log('No image path provided');
+      return null;
+    }
+    
+    console.log('Getting image URL for path:', imagePath);
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      console.log('Path is already a full URL:', imagePath);
+      return imagePath;
+    }
+    
+    // Clean the path - remove leading slashes
+    let cleanPath = imagePath.replace(/^\/+/, '');
+    
+    // The path from database should be like: assets/images/organizations/<org_name>/publications/publication_<id>.webp
+    // We need to properly encode each segment
+    const pathSegments = cleanPath.split('/');
+    const encodedSegments = pathSegments.map(segment => encodeURIComponent(segment));
+    const encodedPath = encodedSegments.join('/');
+    
+    const fullUrl = `${API_BASE_URL}/${encodedPath}`;
+    
+    console.log('Constructed publication image URL:', {
+      original: imagePath,
+      clean: cleanPath,
+      encoded: encodedPath,
+      fullUrl: fullUrl
+    });
+    
+    return fullUrl;
+  };
+  
+  //update: Handle image click to open modal
   const handleImageClick = (imagePath) => {
     if (imagePath) {
-      const fullImagePath = `${API_BASE_URL}/${imagePath}`;
+      const fullImagePath = getImageUrl(imagePath);
       console.log('Opening image modal with path:', fullImagePath);
       openImageModal(fullImagePath);
     }
   };
   
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null;
-    return `${API_BASE_URL}/${imagePath}`;
-  };
-  
-  //update: Count active filters for badge
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.searchTerm) count++;
@@ -101,7 +131,6 @@ const InfoBoard = () => {
     return count;
   };
   
-  //update: Toggle filters visibility
   const handleToggleFilters = () => {
     setShowFilters(prev => !prev);
   };
@@ -119,7 +148,6 @@ const InfoBoard = () => {
       
       {!showEditForm && (
         <>
-          {/*update: Filters button with active filter count badge */}
           <div className={styles.filtersButtonContainer}>
             <button
               className={`${styles.filtersButton} ${showFilters ? styles.filtersButtonActive : ''}`}
@@ -142,7 +170,6 @@ const InfoBoard = () => {
             </div>
           </div>
 
-          {/*update: Conditionally render FiltersForPublications with onClose prop */}
           {showFilters && (
             <FiltersForPublications onClose={() => setShowFilters(false)} />
           )}
@@ -178,106 +205,128 @@ const InfoBoard = () => {
           
           {!publicationsLoading && filteredPublications.length > 0 && (
             <div className={styles.publicationsGrid}>
-              {filteredPublications.map(publication => (
-                <article 
-                  key={publication.id_publication} 
-                  className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
-                >
-                  <div className={styles.cardHeaderWrapper}>
-                    <div className={styles.cardHeader}>
-                      <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
-                      {publication.publisher && (
-                        <div className={styles.publisherInfo}>
-                          {publication.publisher.image_user ? (
-                            <img 
-                              src={getImageUrl(publication.publisher.image_user)}
-                              alt={publication.publisher.name_user}
-                              className={styles.publisherAvatar}
-                              onError={(e) => {
-                                console.error('Failed to load publisher image:', publication.publisher.image_user);
-                                e.target.style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <div className={styles.publisherAvatarPlaceholder}>
-                              <User size={16} />
-                            </div>
-                          )}
-                          <span className={styles.publisherName}>
-                            {publication.publisher.name_user}
-                          </span>
-                        </div>
-                      )}
+              {filteredPublications.map(publication => {
+                //update: Log publication data for debugging
+                console.log('Rendering publication:', {
+                  id: publication.id_publication,
+                  title: publication.title_pub,
+                  image_pub: publication.image_pub,
+                  organization: publication.organization?.name_org
+                });
+                
+                return (
+                  <article 
+                    key={publication.id_publication} 
+                    className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
+                  >
+                    <div className={styles.cardHeaderWrapper}>
+                      <div className={styles.cardHeader}>
+                        <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
+                        {publication.publisher && (
+                          <div className={styles.publisherInfo}>
+                            {publication.publisher.image_user ? (
+                              <img 
+                                src={getImageUrl(publication.publisher.image_user)}
+                                alt={publication.publisher.name_user}
+                                className={styles.publisherAvatar}
+                                onError={(e) => {
+                                  console.error('Failed to load publisher image:', publication.publisher.image_user);
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className={styles.publisherAvatarPlaceholder}>
+                                <User size={16} />
+                              </div>
+                            )}
+                            <span className={styles.publisherName}>
+                              {publication.publisher.name_user}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <ActionButtonsPublication
+                        publication={publication}
+                        onEdit={handleEditPublication}
+                        onDelete={handleDeletePublication}
+                        onToggleActive={handleToggleActive}
+                        onRefresh={fetchPublications}
+                      />
                     </div>
                     
-                    <ActionButtonsPublication
-                      publication={publication}
-                      onEdit={handleEditPublication}
-                      onDelete={handleDeletePublication}
-                      onToggleActive={handleToggleActive}
-                      onRefresh={fetchPublications}
-                    />
-                  </div>
-                  
-                  {publication.publication_active === false && (
-                    <div className={styles.inactiveBadge}>
-                      <EyeOff size={14} />
-                      <span>Publicación desactivada</span>
-                    </div>
-                  )}
-                  
-                  {publication.organization && (
-                    <div className={styles.organizationBadge}>
-                      <CheckCircle size={14} />
-                      <span>{publication.organization.name_org}</span>
-                    </div>
-                  )}
-                  
-                  {publication.image_pub && (
-                    <div 
-                      className={styles.publicationImageWrapper}
-                      onClick={() => handleImageClick(publication.image_pub)}
-                    >
-                      <img 
-                        src={getImageUrl(publication.image_pub)}
-                        alt={publication.title_pub}
-                        className={styles.publicationImage}
-                        onLoad={() => {
-                          console.log('Publication image loaded successfully:', publication.image_pub);
-                        }}
-                        onError={(e) => {
-                          console.error('Failed to load publication image:', publication.image_pub);
-                          console.error('Attempted URL:', getImageUrl(publication.image_pub));
-                          e.target.parentElement.style.display = 'none';
-                        }}
-                      />
-                      <div className={styles.imageOverlay}>
-                        <ImageIcon size={24} />
-                        <span>Ver imagen</span>
+                    {publication.publication_active === false && (
+                      <div className={styles.inactiveBadge}>
+                        <EyeOff size={14} />
+                        <span>Publicación desactivada</span>
                       </div>
-                    </div>
-                  )}
-                  
-                  <div className={styles.cardContent}>
-                    <p className={styles.publicationContent}>{publication.content_pub}</p>
-                  </div>
-                  
-                  <div className={styles.cardFooter}>
-                    <div className={styles.dateTime}>
-                      <div className={styles.dateTimeItem}>
-                        <Calendar size={14} />
-                        <span>{formatDate(publication.date_pub)}</span>
+                    )}
+                    
+                    {publication.organization && (
+                      <div className={styles.organizationBadge}>
+                        <CheckCircle size={14} />
+                        <span>{publication.organization.name_org}</span>
                       </div>
-                      {publication.time_pub && (
-                        <div className={styles.dateTimeItem}>
-                          <Clock size={14} />
-                          <span>{formatTime(publication.time_pub)}</span>
+                    )}
+                    
+                    {/*update: Enhanced image display with better error handling */}
+                    {publication.image_pub && (
+                      <div 
+                        className={styles.publicationImageWrapper}
+                        onClick={() => handleImageClick(publication.image_pub)}
+                      >
+                        <img 
+                          src={getImageUrl(publication.image_pub)}
+                          alt={publication.title_pub}
+                          className={styles.publicationImage}
+                          onLoad={(e) => {
+                            console.log('✅ Publication image loaded successfully:', {
+                              publicationId: publication.id_publication,
+                              imagePath: publication.image_pub,
+                              url: e.target.src
+                            });
+                          }}
+                          onError={(e) => {
+                            console.error('❌ Failed to load publication image:', {
+                              publicationId: publication.id_publication,
+                              imagePath: publication.image_pub,
+                              attemptedUrl: e.target.src,
+                              naturalWidth: e.target.naturalWidth,
+                              naturalHeight: e.target.naturalHeight
+                            });
+                            
+                            // Hide the image wrapper entirely if image fails to load
+                            e.target.parentElement.style.display = 'none';
+                          }}
+                        />
+                        <div className={styles.imageOverlay}>
+                          <ImageIcon size={24} />
+                          <span>Ver imagen</span>
                         </div>
-                      )}
+                      </div>
+                    )}
+                    
+                    <div className={styles.cardContent}>
+                      <p className={styles.publicationContent}>{publication.content_pub}</p>
                     </div>
-                  </div>
-                </article>
-              ))}
+                    
+                    <div className={styles.cardFooter}>
+                      <div className={styles.dateTime}>
+                        <div className={styles.dateTimeItem}>
+                          <Calendar size={14} />
+                          <span>{formatDate(publication.date_pub)}</span>
+                        </div>
+                        {publication.time_pub && (
+                          <div className={styles.dateTimeItem}>
+                            <Clock size={14} />
+                            <span>{formatTime(publication.time_pub)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
           

@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from 'react';
 import AppContext from '../../../../app_context/AppContext.js';
-import styles from '../../../../../../public/css/ShopsByType.module.css';
+import styles from '../../../../../../css/ShopsByType.module.css';
 import UserProductsList from '../user_products_list/UserProductsList.jsx'; 
 import {ShopsByTypeUtils} from './ShopsByTypeUtils.jsx';
 

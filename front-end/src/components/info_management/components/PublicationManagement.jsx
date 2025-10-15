@@ -8,7 +8,7 @@ import axiosInstance from '../../../utils/app/axiosConfig.js';
 import ActionButtonsPublication from './ActionButtonsPublication.jsx';
 import PublicationCreationForm from './PublicationCreationForm.jsx';
 import { CheckCircle, XCircle, Clock, FileText, User, Calendar, Image as ImageIcon, AlertCircle, EyeOff } from 'lucide-react';
-import styles from '../../../../../public/css/PublicationManagement.module.css';
+import styles from '../../../../css/PublicationManagement.module.css';
 
 const PublicationManagement = ({ organizationId }) => {
   const { currentUser } = useAuth();
@@ -203,7 +203,7 @@ const PublicationManagement = ({ organizationId }) => {
     return (
       <div className={styles.noAccessContainer}>
         <AlertCircle size={48} />
-        <p>No tienes permisos para gestionar publicaciones de esta organización.</p>
+        <p>No tienes permisos para gestionar publicaciones de esta asociación.</p>
       </div>
     );
   }
@@ -234,7 +234,7 @@ const PublicationManagement = ({ organizationId }) => {
       <div className={styles.header}>
         {/* <h3 className={styles.title}>Gestión de Publicaciones</h3> */}
         <p className={styles.subtitle}>
-          Administra las publicaciones de tu organización
+          Administra las publicaciones de tu asociación
         </p>
       </div>
       
@@ -336,7 +336,7 @@ const PublicationManagement = ({ organizationId }) => {
               {pub.image_pub && (
                 <div 
                   className={styles.publicationImage}
-                  onClick={() => openImageModal(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${pub.image_pub}`)}
+                  onClick={() => openImageModal(`${import.meta.env.VITE_API_URL}/${pub.image_pub}`)}
                 >
                   <ImageIcon size={16} />
                   <span>Ver imagen</span>

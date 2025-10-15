@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../../css/ShopCreationForm.module.css';
 import axiosInstance from '../../../../../utils/app/axiosConfig.js';
 
 const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
-  //update: Add state to store types with their IDs
+  //update: Initialize with empty arrays to prevent undefined errors
   const [typesWithIds, setTypesWithIds] = useState([]);
-  //update: Add state for subtypes of selected type
   const [availableSubtypes, setAvailableSubtypes] = useState([]);
+  const [loadingTypes, setLoadingTypes] = useState(false);
   const [loadingSubtypes, setLoadingSubtypes] = useState(false);
   
   //update: Fetch types with IDs when component mounts
@@ -26,12 +26,20 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
   //update: Function to fetch types with their IDs
   const fetchTypesWithIds = async () => {
     try {
+      setLoadingTypes(true);
       const response = await axiosInstance.get('/type/verified');
-      if (response.data && !response.data.error) {
+      //update: Add validation to ensure we have data before setting state
+      if (response.data && !response.data.error && Array.isArray(response.data.data)) {
         setTypesWithIds(response.data.data);
+      } else {
+        console.warn('Invalid types response:', response.data);
+        setTypesWithIds([]);
       }
     } catch (error) {
       console.error('Error fetching types:', error);
+      setTypesWithIds([]);
+    } finally {
+      setLoadingTypes(false);
     }
   };
 
@@ -40,9 +48,11 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
     try {
       setLoadingSubtypes(true);
       const response = await axiosInstance.get(`/type/${typeId}/subtypes`);
-      if (response.data && !response.data.error) {
+      //update: Add validation to ensure we have data before setting state
+      if (response.data && !response.data.error && Array.isArray(response.data.data)) {
         setAvailableSubtypes(response.data.data);
       } else {
+        console.warn('Invalid subtypes response:', response.data);
         setAvailableSubtypes([]);
       }
     } catch (error) {
@@ -97,17 +107,25 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
             onChange={handleTypeChange}
             className={`${styles.input} ${newShop.id_type ? 'has-value' : ''}`}
             required
+            disabled={loadingTypes}
           >
-            <option value="" disabled>Tipo de comercio</option>
-            {typesWithIds.map(type => (
-              <option key={type.id_type} value={type.id_type}>
-                {type.name_type}
-              </option>
-            ))}
+            <option value="" disabled>
+              {loadingTypes ? 'Cargando tipos...' : 'Tipo de comercio'}
+            </option>
+            {/* update: Add safety check before mapping */}
+            {Array.isArray(typesWithIds) && typesWithIds.length > 0 ? (
+              typesWithIds.map(type => (
+                <option key={type.id_type} value={type.id_type}>
+                  {type.name_type}
+                </option>
+              ))
+            ) : (
+              !loadingTypes && <option value="" disabled>No hay tipos disponibles</option>
+            )}
           </select>
         </div>
         
-        {/* Show subtype select only when a type is selected and subtypes are available */}
+        {/* Show subtype select only when a type is selected */}
         {newShop.id_type && (
           <div className={styles.formField}>
             <select
@@ -125,11 +143,14 @@ const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {
                     : "Selecciona un subtipo"
                 }
               </option>
-              {availableSubtypes.map(subtype => (
-                <option key={subtype.id_subtype} value={subtype.id_subtype}>
-                  {subtype.name_subtype}
-                </option>
-              ))}
+              {/* update: Add safety check before mapping */}
+              {Array.isArray(availableSubtypes) && availableSubtypes.length > 0 && 
+                availableSubtypes.map(subtype => (
+                  <option key={subtype.id_subtype} value={subtype.id_subtype}>
+                    {subtype.name_subtype}
+                  </option>
+                ))
+              }
             </select>
           </div>
         )}

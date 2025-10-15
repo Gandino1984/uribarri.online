@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import ShopTypeButton from './components/ShopTypeButton.jsx';
 import ShopsByType from './components/shops_by_type/ShopsByType.jsx'; 
-import styles from '../../../../public/css/UserManagement.module.css';
+import styles from '../../../../css/UserManagement.module.css';
 import { UserManagementUtils } from './UserManagementUtils.jsx';
 
 const UserManagement = () => {

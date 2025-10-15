@@ -39,7 +39,7 @@ async function validateOrganization(id_org) {
         if (!organization) {
             return {
                 isValid: false,
-                error: "La organización no existe"
+                error: "La asociación no existe"
             };
         }
         
@@ -51,7 +51,7 @@ async function validateOrganization(id_org) {
         console.error("Error validating organization:", err);
         return {
             isValid: false,
-            error: "Error al validar la organización"
+            error: "Error al validar la asociación"
         };
     }
 }
@@ -98,7 +98,7 @@ async function getAll() {
 async function getByOrganizationId(id_org) {
     try {
         if (!id_org) {
-            return { error: "El ID de la organización es obligatorio" };
+            return { error: "El ID de la asociación es obligatorio" };
         }
 
         const orgValidation = await validateOrganization(id_org);
@@ -111,7 +111,7 @@ async function getByOrganizationId(id_org) {
         });
 
         if (!participants || participants.length === 0) {
-            return { error: "No hay participantes en esta organización", data: [] };
+            return { error: "No hay participantes en esta asociación", data: [] };
         }
 
         //update: Include user information for each participant with org_managed field
@@ -133,7 +133,7 @@ async function getByOrganizationId(id_org) {
         return { data: participantsWithUsers };
     } catch (err) {
         console.error("-> participant_controller.js - getByOrganizationId() - Error = ", err);
-        return { error: "Error al obtener participantes por organización" };
+        return { error: "Error al obtener participantes por asociación" };
     }
 }
 
@@ -153,7 +153,7 @@ async function getByUserId(id_user) {
         });
 
         if (!participations || participations.length === 0) {
-            return { error: "El usuario no participa en ninguna organización", data: [] };
+            return { error: "El usuario no participa en ninguna asociación", data: [] };
         }
 
         //update: Include organization information and org_managed field
@@ -202,7 +202,7 @@ async function create(participantData) {
 
         if (existingParticipant) {
             return { 
-                error: "El usuario ya es participante de esta organización"
+                error: "El usuario ya es participante de esta asociación"
             };
         }
 
@@ -226,7 +226,7 @@ async function create(participantData) {
         };
         
         return { 
-            success: "¡Participante agregado a la organización!",
+            success: "¡Participante agregado a la asociación!",
             data: participantWithDetails
         };
     } catch (err) {
@@ -310,7 +310,7 @@ async function removeById(id_participant) {
         //update: Check if participant is a manager
         if (participant.org_managed) {
             return {
-                error: "No se puede eliminar a un gestor de la organización. Primero debe removerse su estatus de gestor."
+                error: "No se puede eliminar a un gestor de la asociación. Primero debe removerse su estatus de gestor."
             };
         }
 
@@ -318,7 +318,7 @@ async function removeById(id_participant) {
 
         return { 
             data: id_participant,
-            message: "El participante se ha eliminado de la organización." 
+            message: "El participante se ha eliminado de la asociación." 
         };
     } catch (err) {
         console.error("-> participant_controller.js - removeById() - Error = ", err);
@@ -329,7 +329,7 @@ async function removeById(id_participant) {
 async function removeByUserAndOrg(id_user, id_org) {
     try {
         if (!id_user || !id_org) {
-            return { error: "ID de usuario y organización son obligatorios" };
+            return { error: "ID de usuario y asociación son obligatorios" };
         }
 
         const participant = await participant_model.findOne({
@@ -341,14 +341,14 @@ async function removeByUserAndOrg(id_user, id_org) {
         
         if (!participant) {
             return { 
-                error: "El usuario no es participante de esta organización"
+                error: "El usuario no es participante de esta asociación"
             };
         }
 
         //update: Check if trying to remove a manager
         if (participant.org_managed) {
             return {
-                error: "No se puede eliminar a un gestor de la organización. Primero debe removerse su estatus de gestor."
+                error: "No se puede eliminar a un gestor de la asociación. Primero debe removerse su estatus de gestor."
             };
         }
 
@@ -359,7 +359,7 @@ async function removeByUserAndOrg(id_user, id_org) {
                 id_user: id_user,
                 id_org: id_org
             },
-            message: "El participante se ha eliminado de la organización." 
+            message: "El participante se ha eliminado de la asociación." 
         };
     } catch (err) {
         console.error("-> participant_controller.js - removeByUserAndOrg() - Error = ", err);

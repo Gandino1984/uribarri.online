@@ -46,7 +46,6 @@ const package_model = sequelize.define("package", {
         },
         comment: 'Percentage discount applied to the total package price (0-100)'
     },
-    //update: Added image_package field
     image_package: {
         type: DataTypes.STRING(255),
         allowNull: true,

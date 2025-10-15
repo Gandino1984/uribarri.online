@@ -1,6 +1,6 @@
 //update: Enhanced to support public navigation for ShopWindow and InfoManagement with dynamic title colors
 import { useState, useRef, useEffect } from 'react';
-import styles from '../../../../public/css/TopBar.module.css';
+import styles from '../../../css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
 import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';

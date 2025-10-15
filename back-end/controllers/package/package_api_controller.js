@@ -296,7 +296,6 @@ async function removeById(req, res) {
     }
 }
 
-//update: Enhanced function to handle package image upload with WebP conversion
 async function uploadPackageImage(req, res) {
     try {
         console.log('Package image upload endpoint called');
@@ -340,16 +339,15 @@ async function uploadPackageImage(req, res) {
             });
         }
 
-        // Build relative path to the image
-        // The file has already been processed to WebP by the middleware
+        //update: Build relative path using assets/images structure
         const relativePath = path.join(
+            'assets',
             'images',
-            'uploads',
             'shops',
             shop.name_shop,
             'package_images',
             req.file.filename
-        ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
+        ).replace(/\\/g, '/');
         
         console.log('Package image uploaded and processed successfully:', {
             filename: req.file.filename,
@@ -363,13 +361,10 @@ async function uploadPackageImage(req, res) {
             const updateResult = await packageController.updatePackageImage(packageId, relativePath);
             
             if (updateResult.error) {
-                // Don't delete the file, it might be used later
                 console.error('Failed to update package with image:', updateResult.error);
             }
         }
         
-        // Always return success with the image path
-        // The frontend will handle associating it with the package
         res.json({
             error: null,
             data: {
@@ -409,14 +404,13 @@ async function renamePackageImage(req, res) {
             });
         }
         
+        //update: Use back-end/assets/images path
         const oldPath = path.join(
             __dirname,
             '..',
             '..',
-            '..',
-            'public',
+            'assets',
             'images',
-            'uploads',
             'shops',
             shopName,
             'package_images',
@@ -428,10 +422,8 @@ async function renamePackageImage(req, res) {
             __dirname,
             '..',
             '..',
-            '..',
-            'public',
+            'assets',
             'images',
-            'uploads',
             'shops',
             shopName,
             'package_images',
@@ -457,15 +449,15 @@ async function renamePackageImage(req, res) {
         // Rename the file
         await fs.rename(oldPath, newPath);
         
-        // Build new relative path
+        //update: Build new relative path using assets/images
         const relativePath = path.join(
+            'assets',
             'images',
-            'uploads',
             'shops',
             shopName,
             'package_images',
             newFilename
-        ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
+        ).replace(/\\/g, '/');
         
         // Update package with new image path
         const updateResult = await packageController.updatePackageImage(packageId, relativePath);

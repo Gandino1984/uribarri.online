@@ -20,7 +20,7 @@ async function getByOrganizationId(req, res) {
         
         if (!id_org) {
             return res.status(400).json({ 
-                error: 'El ID de la organización es obligatorio' 
+                error: 'El ID de la asociación es obligatorio' 
             });
         }
         
@@ -29,7 +29,7 @@ async function getByOrganizationId(req, res) {
     } catch (err) {
         console.error("-> participant_api_controller.js - getByOrganizationId() - Error =", err);
         res.status(500).json({ 
-            error: "Error al obtener participantes de la organización",
+            error: "Error al obtener participantes de la asociación",
             details: err.message
         });
     }
@@ -181,7 +181,7 @@ async function removeByUserAndOrg(req, res) {
         
         if (!id_user || !id_org) {
             return res.status(400).json({ 
-                error: 'El ID del usuario y organización son obligatorios' 
+                error: 'El ID del usuario y asociación son obligatorios' 
             });
         }
         

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../css/ShopPackagesList.module.css';
 
 const PackageTableHeader = ({ isSmallScreen }) => {
   // 📱 Added responsive column labels based on screen size

@@ -246,7 +246,7 @@ async function getByDateRange(startDate, endDate) {
 async function getByOrganizationId(id_org) {
     try {
         if (!id_org) {
-            return { error: "El ID de la organización es obligatorio" };
+            return { error: "El ID de la asociación es obligatorio" };
         }
 
         const publications = await publication_model.findAll({
@@ -255,7 +255,7 @@ async function getByOrganizationId(id_org) {
         });
 
         if (!publications || publications.length === 0) {
-            return { data: [], message: "No hay publicaciones de esta organización" };
+            return { data: [], message: "No hay publicaciones de esta asociación" };
         }
 
         const pubsWithDetails = [];
@@ -283,7 +283,7 @@ async function getByOrganizationId(id_org) {
         return { data: pubsWithDetails };
     } catch (err) {
         console.error("-> publication_controller.js - getByOrganizationId() - Error = ", err);
-        return { error: "Error al obtener publicaciones por organización" };
+        return { error: "Error al obtener publicaciones por asociación" };
     }
 }
 
@@ -305,7 +305,7 @@ async function create(pubData) {
         if (pubData.id_org) {
             const organization = await organization_model.findByPk(pubData.id_org);
             if (!organization) {
-                return { error: "La organización especificada no existe" };
+                return { error: "La asociación especificada no existe" };
             }
         }
 
@@ -351,7 +351,6 @@ async function create(pubData) {
     }
 }
 
-//update: Changed parameter name from 'id' to 'id_publication' for consistency
 async function update(id_publication, pubData) {
     try {
         const publication = await publication_model.findByPk(id_publication);
@@ -376,7 +375,7 @@ async function update(id_publication, pubData) {
             if (pubData.id_org) {
                 const organization = await organization_model.findByPk(pubData.id_org);
                 if (!organization) {
-                    return { error: "La organización especificada no existe" };
+                    return { error: "La asociación especificada no existe" };
                 }
             }
         }
@@ -413,6 +412,7 @@ async function update(id_publication, pubData) {
     }
 }
 
+//update: Updated to handle new assets/images path structure
 async function removeById(id_publication) {
     try {
         if (!id_publication) {
@@ -427,16 +427,22 @@ async function removeById(id_publication) {
             };
         }
 
+        //update: Handle image deletion from new location
         if (publication.image_pub) {
-            const imagePath = path.join(__dirname, '..', '..', '..', 'public', publication.image_pub);
+            const backendDir = path.resolve(__dirname, '..', '..');
+            const imagePath = path.join(backendDir, publication.image_pub);
+            
+            console.log('Attempting to delete publication image:', imagePath);
             
             if (fs.existsSync(imagePath)) {
                 try {
                     fs.unlinkSync(imagePath);
-                    console.log(`Imagen de la publicación eliminada: ${publication.image_pub}`);
+                    console.log(`✓ Imagen de la publicación eliminada: ${publication.image_pub}`);
                 } catch (err) {
                     console.error("Error al eliminar la imagen de la publicación:", err);
                 }
+            } else {
+                console.log('Image file not found at:', imagePath);
             }
         }
 
@@ -459,6 +465,11 @@ async function uploadImage(id_publication, imagePath) {
         if (!publication) {
             return { error: "Publicación no encontrada" };
         }
+
+        console.log('Updating publication image path:', {
+            id_publication,
+            imagePath
+        });
 
         await publication.update({ image_pub: imagePath });
         

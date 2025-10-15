@@ -1,7 +1,7 @@
 import React from 'react';
 import ProductActionsCell from './ProductActionsCell';
 import ProductImage from '../../product_image/ProductImage';
-import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../css/ShopProductsList.module.css';
 
 const ProductTableRow = ({ 
   product, 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PackageTableHeader from './PackageTableHeader';
 import PackageTableRow from './PackageTableRow';
-import styles from '../../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../css/ShopPackagesList.module.css';
 
 const PackagesTable = ({ 
   displayedPackages,

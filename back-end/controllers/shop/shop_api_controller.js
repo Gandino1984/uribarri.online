@@ -1,5 +1,4 @@
 import shopController from "./shop_controller.js";
-// import productController from "../product/product_controller.js";
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -83,15 +82,12 @@ async function create(req, res) {
             open_friday,
             open_saturday,
             open_sunday,
-            //update: Add verified_shop field (defaults to false if not provided)
             verified_shop
         } = req.body;
     
-        // Provide default values for optional fields
         const calification_shop = req.body.calification_shop || 5;
         const image_shop = req.body.image_shop || '';
     
-        // Validate required fields (removed id_subtype from required)
         if (!name_shop || !location_shop || !id_type || !id_user) {
             console.error('-> shop_api_controller.js - create() - Error = Campos obligatorios faltantes');
             console.log(req.body);
@@ -164,7 +160,6 @@ async function update(req, res) {
             open_friday,
             open_saturday,
             open_sunday,
-            //update: Add verified_shop field
             verified_shop
         } = req.body;
 
@@ -249,7 +244,6 @@ async function updateWithFolder(req, res) {
             open_friday,
             open_saturday,
             open_sunday,
-            //update: Add verified_shop field
             verified_shop
         } = req.body;
 
@@ -398,7 +392,6 @@ async function uploadCoverImage(req, res) {
     console.log('Processing uploaded cover image for shop ID:', id_shop);
     console.log('Uploaded file:', req.file);
 
-    // Get the shop to get its name
     const shop = await shop_model.findByPk(id_shop);
     if (!shop) {
       return res.status(404).json({
@@ -406,26 +399,26 @@ async function uploadCoverImage(req, res) {
       });
     }
 
-    // Construct the relative path for storing in the database
+    //update: Construct the relative path WITHOUT encoding - the path is stored as-is in the database
+    // The frontend will handle URL encoding when constructing the request URL
     const relativePath = path.join(
+      'assets',
       'images', 
-      'uploads', 
       'shops', 
       shop.name_shop, 
       'cover_image', 
       req.file.filename
-    ).replace(/\\/g, '/'); // Convert Windows-style paths to URL-style paths
+    ).replace(/\\/g, '/');
 
     console.log(`Saving cover image path to database: ${relativePath}`);
+    console.log(`File location on disk: ${req.file.path}`);
 
-    // Update the shop's image_shop field in the database using the controller
     const { error, data } = await shopController.update(id_shop, {
       image_shop: relativePath
     });
 
     if (error) {
-      // If there was an error updating the database, delete the uploaded file
-      const filePath = path.join(__dirname, '..', '..', 'public', relativePath);
+      const filePath = path.join(__dirname, '..', '..', relativePath);
       try {
         await fs.unlink(filePath);
       } catch (unlinkError) {
@@ -439,8 +432,8 @@ async function uploadCoverImage(req, res) {
     }
 
     console.log('Shop updated successfully with new cover image');
+    console.log('Image path stored in database:', relativePath);
 
-    // Return the updated image path
     res.json({
       error: null,
       data: {
@@ -483,14 +476,10 @@ async function getSubtypesForType(req, res) {
     }
 }
 
-//update: New function to verify/unverify a shop
 async function verifyShop(req, res) {
     try {
         const { id_shop } = req.params;
         const { verified_shop } = req.body;
-        
-        // TODO: Add authentication middleware to check if user is admin or authorized
-        // For now, we'll assume the request is authorized
         
         if (!id_shop) {
             return res.status(400).json({

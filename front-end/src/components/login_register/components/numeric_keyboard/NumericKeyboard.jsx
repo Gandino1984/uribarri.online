@@ -4,7 +4,7 @@ import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useNumericKeyboardUtils } from './useNumericKeyboardUtils.jsx';
 import { Delete, Eraser } from 'lucide-react';
-import styles from '../../../../../../public/css/NumericKeyboard.module.css';
+import styles from '../../../../../css/NumericKeyboard.module.css';
 import { Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich } from 'lucide-react';
 
 // Move the icons array outside the component to prevent recreation on each render

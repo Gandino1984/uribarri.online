@@ -10,7 +10,7 @@ async function createRequest(requestData) {
         // Check if organization exists
         const organization = await organization_model.findByPk(requestData.id_org);
         if (!organization) {
-            return { error: "La organización no existe" };
+            return { error: "La asociación no existe" };
         }
         
         // Check if user exists
@@ -28,7 +28,7 @@ async function createRequest(requestData) {
         });
         
         if (existingParticipant) {
-            return { error: "Ya eres miembro de esta organización" };
+            return { error: "Ya eres miembro de esta asociación" };
         }
         
         // Check if there's already a pending request
@@ -41,7 +41,7 @@ async function createRequest(requestData) {
         });
         
         if (existingRequest) {
-            return { error: "Ya tienes una solicitud pendiente para esta organización" };
+            return { error: "Ya tienes una solicitud pendiente para esta asociación" };
         }
         
         // Create the request
@@ -52,7 +52,7 @@ async function createRequest(requestData) {
         });
         
         return { 
-            success: "Solicitud enviada. El gestor de la organización revisará tu solicitud.",
+            success: "Solicitud enviada. El gestor de la asociación revisará tu solicitud.",
             data: request
         };
     } catch (err) {
@@ -145,7 +145,7 @@ async function approveRequest(id_request, response_message = null) {
         });
         
         return { 
-            success: "Solicitud aprobada. El usuario ahora es miembro de la organización.",
+            success: "Solicitud aprobada. El usuario ahora es miembro de la asociación.",
             data: request
         };
     } catch (err) {
