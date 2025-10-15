@@ -514,6 +514,7 @@ export const uploadPublicationImage = async ({
  * @param {Function} options.onError - Error callback
  * @returns {Promise<string>} - Uploaded image path
  */
+//update: Fixed field name and header to match backend requirements
 export const uploadOrganizationImage = async ({
   file,
   organizationId,
@@ -536,11 +537,13 @@ export const uploadOrganizationImage = async ({
     });
 
     const formData = new FormData();
-    formData.append('organizationImage', file);
+    //update: Changed from 'organizationImage' to 'image' to match backend middleware
+    formData.append('image', file);
 
     const response = await axiosInstance.post('/organization/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        //update: Changed to lowercase to match backend (backend uses req.headers['x-organization-id'])
         'x-organization-id': organizationId
       },
       onUploadProgress: (progressEvent) => {

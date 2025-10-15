@@ -307,12 +307,14 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`organization` (
   `name_org` VARCHAR(100) NOT NULL,
   `scope_org` VARCHAR(255) NULL,
   `image_org` VARCHAR(255) NULL,
+  `org_approved` TINYINT(1) NOT NULL DEFAULT 0,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_organization`),
   UNIQUE INDEX `id_organization_UNIQUE` (`id_organization` ASC) VISIBLE,
   UNIQUE INDEX `name_org_UNIQUE` (`name_org` ASC) VISIBLE,
-  INDEX `idx_manager` (`id_user` ASC) VISIBLE
+  INDEX `idx_manager` (`id_user` ASC) VISIBLE,
+  INDEX `idx_org_approved` (`org_approved` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------

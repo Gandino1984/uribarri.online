@@ -73,7 +73,7 @@ const cleanExistingOrganizationImages = async (dirPath, organizationId) => {
   }
 };
 
-//update: Multer storage configuration for organization images
+//update: Multer storage configuration for organization images - now stores in back-end/assets/images
 const organizationImageStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     console.log('=== Organization Image Upload - Setting Destination ===');
@@ -97,24 +97,26 @@ const organizationImageStorage = multer.diskStorage({
       const organizationName = organization.name_org;
       console.log(`Found organization: ${organizationName} (ID: ${organizationId})`);
       
-      const projectRoot = path.resolve(__dirname, '..', '..');
+      //update: Changed to back-end/assets/images path structure (matching other images)
       const uploadsDir = path.join(
-        projectRoot,
-        'public', 
+        __dirname, 
+        '..',
+        'assets', 
         'images', 
-        'uploads', 
         'organizations',
         organizationName
       );
 
       console.log(`Target directory path: ${uploadsDir}`);
       
-      const organizationsBaseDir = path.join(projectRoot, 'public', 'images', 'uploads', 'organizations');
+      //update: Create directory structure step by step
+      const assetsDir = path.join(__dirname, '..', 'assets');
+      const imagesDir = path.join(assetsDir, 'images');
+      const organizationsDir = path.join(imagesDir, 'organizations');
       
-      await ensureDirectoryExists(path.join(projectRoot, 'public'));
-      await ensureDirectoryExists(path.join(projectRoot, 'public', 'images'));
-      await ensureDirectoryExists(path.join(projectRoot, 'public', 'images', 'uploads'));
-      await ensureDirectoryExists(organizationsBaseDir);
+      await ensureDirectoryExists(assetsDir);
+      await ensureDirectoryExists(imagesDir);
+      await ensureDirectoryExists(organizationsDir);
       await ensureDirectoryExists(uploadsDir);
       
       await cleanExistingOrganizationImages(uploadsDir, organizationId);

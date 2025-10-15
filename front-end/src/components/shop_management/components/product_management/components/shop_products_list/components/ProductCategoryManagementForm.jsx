@@ -4,7 +4,7 @@ import axiosInstance from '../../../../../../../utils/app/axiosConfig.js';
 import { useAuth } from '../../../../../../../app_context/AuthContext.jsx';
 import { useShop } from '../../../../../../../app_context/ShopContext.jsx';
 import { X, Plus, Layers2, Search, ChevronDown, ChevronUp, Tag, Tags, AlertCircle, Layers } from 'lucide-react';
-import styles from '../../../../../../../../public/css/ProductCategoryManagementForm.module.css';
+import styles from '../../../../../../../../css/ProductCategoryManagementForm.module.css';
 
 const ProductCategoryManagementForm = ({ onClose }) => {
   const { currentUser } = useAuth();

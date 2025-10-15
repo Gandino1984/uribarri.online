@@ -21,7 +21,7 @@ import {
   Mail,
   Calendar
 } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopOrdersList.module.css';
+import styles from '../../../../../../../css/ShopOrdersList.module.css';
 import axiosInstance from '../../../../../../utils/app/axiosConfig.js';
 
 const ShopOrdersList = ({ onClose }) => {

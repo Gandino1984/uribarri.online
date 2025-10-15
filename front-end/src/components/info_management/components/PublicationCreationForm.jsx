@@ -5,7 +5,7 @@ import { useUI } from '../../../app_context/UIContext.jsx';
 import { useOrganization } from '../../../app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { FileText, Calendar, Clock, Image, X, Save, AlertCircle, Edit, Building2 } from 'lucide-react';
-import styles from '../../../../public/css/PublicationCreationForm.module.css';
+import styles from '../../../../css/PublicationCreationForm.module.css';
 
 const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, publicationData = null }) => {
   const { currentUser } = useAuth();
@@ -153,7 +153,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
     
     if (!formData.id_org) {
-      errors.id_org = 'Debes seleccionar una organización';
+      errors.id_org = 'Debes seleccionar una asociación';
     }
     
     setFormErrors(errors);
@@ -269,7 +269,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         setSuccess(prev => ({
           ...prev,
-          createSuccess: '¡Publicación creada! Pendiente de aprobación del gestor de la organización.'
+          createSuccess: '¡Publicación creada! Pendiente de aprobación del gestor de la asociación.'
         }));
         
         // Reset form
@@ -328,7 +328,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       <div className={styles.noAccessContainer}>
         <AlertCircle size={48} />
         <h3>No puedes crear publicaciones</h3>
-        <p>Debes ser miembro de al menos una organización para crear publicaciones.</p>
+        <p>Debes ser miembro de al menos una asociación para crear publicaciones.</p>
       </div>
     );
   }
@@ -343,7 +343,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         <p className={styles.formSubtitle}>
           {editMode 
             ? 'Actualiza la información de tu publicación'
-            : 'Crea una publicación para tu organización. Será revisada por el gestor antes de ser publicada.'
+            : 'Crea una publicación para tu asociación. Será revisada por el gestor antes de ser publicada.'
           }
         </p>
       </div>
@@ -353,7 +353,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         <div className={styles.formGroup}>
           <label htmlFor="id_org" className={styles.label}>
             <Building2 size={16} />
-            <span>Organización *</span>
+            <span>asociación *</span>
           </label>
           <select
             id="id_org"
@@ -363,7 +363,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
             className={`${styles.select} ${formErrors.id_org ? styles.inputError : ''}`}
             disabled={isSubmitting || userManagedOrgs.length === 1}
           >
-            <option value="">Selecciona una organización</option>
+            <option value="">Selecciona una asociación</option>
             {userOrganizations && userOrganizations.map(participation => {
               if (participation.organization) {
                 return (
@@ -557,7 +557,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         <div className={styles.infoNote}>
           <AlertCircle size={16} />
           <p>
-            Tu publicación será revisada por el gestor de la organización antes de ser visible en el tablón informativo.
+            Tu publicación será revisada por el gestor de la asociación antes de ser visible en el tablón informativo.
             Recibirás una notificación cuando tu publicación sea aprobada.
           </p>
         </div>

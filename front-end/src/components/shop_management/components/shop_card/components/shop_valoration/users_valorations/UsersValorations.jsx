@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, X, User, Calendar, MessageSquare } from 'lucide-react';
 import axiosInstance from '../../../../../../../utils/app/axiosConfig.js';
-import styles from '../../../../../../../../public/css/UsersValorations.module.css';
+import styles from '../../../../../../../../css/UsersValorations.module.css';
 
 const UsersValorations = ({ shop, onClose }) => {
   const [valorations, setValorations] = useState([]);

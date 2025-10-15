@@ -7,7 +7,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../css/ShopPackagesList.module.css';
 
 const PackageActionsCell = ({ 
   package: packageItem, 

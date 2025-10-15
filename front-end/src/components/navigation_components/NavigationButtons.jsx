@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Box } from 'lucide-react';
-import styles from '../../../public/css/NavigationButtons.module.css';
+import styles from '../../../css/NavigationButtons.module.css';
 
 const NavigationButtons = ({ 
   currentStep, 

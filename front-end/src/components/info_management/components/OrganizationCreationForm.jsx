@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { Building2, MapPin, Image, X, Save, AlertCircle, Edit } from 'lucide-react';
-import styles from '../../../../public/css/OrganizationCreationForm.module.css';
+import styles from '../../../../css/OrganizationCreationForm.module.css';
 
 const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organizationData = null }) => {
   const { currentUser } = useAuth();
@@ -108,7 +108,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
     const errors = {};
     
     if (!formData.name_org.trim()) {
-      errors.name_org = 'El nombre de la organización es obligatorio';
+      errors.name_org = 'El nombre de la asociación es obligatorio';
     } else if (formData.name_org.trim().length < 3) {
       errors.name_org = 'El nombre debe tener al menos 3 caracteres';
     } else if (formData.name_org.trim().length > 100) {
@@ -156,16 +156,17 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         // Upload new image if selected
         if (imageFile && updatedOrganization) {
           const formDataImage = new FormData();
+          //update: Field name 'image' matches backend middleware expectation
           formDataImage.append('image', imageFile);
           
           try {
-            //update: Use correct endpoint and headers for organization image upload
+            //update: Use correct lowercase header 'x-organization-id' to match backend
             console.log('Uploading organization image for ID:', updatedOrganization.id_organization);
             
             const uploadResponse = await axiosInstance.post('/organization/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                'X-Organization-ID': updatedOrganization.id_organization.toString()
+                'x-organization-id': updatedOrganization.id_organization.toString()
               }
             });
             
@@ -175,21 +176,21 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
               console.error('Error in upload response:', uploadResponse.data.error);
               setError(prev => ({
                 ...prev,
-                imageUploadError: 'La organización fue actualizada pero hubo un error al subir la imagen'
+                imageUploadError: 'La asociación fue actualizada pero hubo un error al subir la imagen'
               }));
             }
           } catch (imgError) {
             console.error('Error uploading image:', imgError);
             setError(prev => ({
               ...prev,
-              imageUploadError: 'La organización fue actualizada pero hubo un error al subir la imagen'
+              imageUploadError: 'La asociación fue actualizada pero hubo un error al subir la imagen'
             }));
           }
         }
         
         setSuccess(prev => ({
           ...prev,
-          updateSuccess: '¡Organización actualizada exitosamente!'
+          updateSuccess: '¡asociación actualizada exitosamente!'
         }));
         
         // Call success callback with updated data
@@ -228,16 +229,17 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         // Upload image if selected
         if (imageFile && newOrganization) {
           const formDataImage = new FormData();
+          //update: Field name 'image' matches backend middleware expectation
           formDataImage.append('image', imageFile);
           
           try {
-            //update: Use correct endpoint and headers for organization image upload
+            //update: Use correct lowercase header 'x-organization-id' to match backend
             console.log('Uploading organization image for ID:', newOrganization.id_organization);
             
             const uploadResponse = await axiosInstance.post('/organization/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                'X-Organization-ID': newOrganization.id_organization.toString()
+                'x-organization-id': newOrganization.id_organization.toString()
               }
             });
             
@@ -247,21 +249,21 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
               console.error('Error in upload response:', uploadResponse.data.error);
               setError(prev => ({
                 ...prev,
-                imageUploadError: 'La organización fue creada pero hubo un error al subir la imagen'
+                imageUploadError: 'La asociación fue creada pero hubo un error al subir la imagen'
               }));
             }
           } catch (imgError) {
             console.error('Error uploading image:', imgError);
             setError(prev => ({
               ...prev,
-              imageUploadError: 'La organización fue creada pero hubo un error al subir la imagen'
+              imageUploadError: 'La asociación fue creada pero hubo un error al subir la imagen'
             }));
           }
         }
         
         setSuccess(prev => ({
           ...prev,
-          createSuccess: '¡Organización creada exitosamente! Pendiente de aprobación del administrador.'
+          createSuccess: '¡asociación creada exitosamente! Pendiente de aprobación del administrador.'
         }));
         
         // Reset form
@@ -281,7 +283,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
       console.error(`Error ${editMode ? 'updating' : 'creating'} organization:`, err);
       setError(prev => ({
         ...prev,
-        submitError: `Error al ${editMode ? 'actualizar' : 'crear'} la organización. Por favor intenta de nuevo.`
+        submitError: `Error al ${editMode ? 'actualizar' : 'crear'} la asociación. Por favor intenta de nuevo.`
       }));
     } finally {
       setIsSubmitting(false);
@@ -311,12 +313,12 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
       <div className={styles.formHeader}>
         <h2 className={styles.formTitle}>
           {editMode ? <Edit size={24} /> : <Building2 size={24} />}
-          <span>{editMode ? 'Editar Organización' : 'Crear Nueva Organización'}</span>
+          <span>{editMode ? 'Editar asociación' : 'Crear Nueva asociación'}</span>
         </h2>
         <p className={styles.formSubtitle}>
           {editMode 
-            ? 'Actualiza la información de tu organización'
-            : 'Como gestor, puedes crear una nueva organización para tu comunidad'
+            ? 'Actualiza la información de tu asociación'
+            : 'Como gestor, puedes crear una nueva asociación para tu comunidad'
           }
         </p>
       </div>
@@ -326,7 +328,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         <div className={styles.formGroup}>
           <label htmlFor="name_org" className={styles.label}>
             <Building2 size={16} />
-            <span>Nombre de la Organización *</span>
+            <span>Nombre de la asociación *</span>
           </label>
           <input
             type="text"
@@ -361,7 +363,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
             name="scope_org"
             value={formData.scope_org}
             onChange={handleInputChange}
-            placeholder="Describe el ámbito o área de actuación de la organización (opcional)"
+            placeholder="Describe el ámbito o área de actuación de la asociación (opcional)"
             className={`${styles.textarea} ${formErrors.scope_org ? styles.inputError : ''}`}
             maxLength={255}
             rows={3}
@@ -382,7 +384,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         <div className={styles.formGroup}>
           <label className={styles.label}>
             <Image size={16} />
-            <span>Imagen de la Organización</span>
+            <span>Imagen de la asociación</span>
           </label>
           
           {!imagePreview ? (
@@ -448,7 +450,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
             ) : (
               <>
                 <Save size={18} />
-                <span>{editMode ? 'Actualizar Organización' : 'Crear Organización'}</span>
+                <span>{editMode ? 'Actualizar asociación' : 'Crear asociación'}</span>
               </>
             )}
           </button>
@@ -460,9 +462,9 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         <div className={styles.infoNote}>
           <AlertCircle size={16} />
           <p>
-            Al crear una organización, automáticamente serás asignado como su gestor. 
-            Podrás gestionar los participantes y las publicaciones de la organización.
-            La organización deberá ser aprobada por un administrador antes de ser visible públicamente.
+            Al crear una asociación, automáticamente serás asignado como su gestor. 
+            Podrás gestionar los participantes y las publicaciones de la asociación.
+            La asociación deberá ser aprobada por un administrador antes de ser visible públicamente.
           </p>
         </div>
       )}

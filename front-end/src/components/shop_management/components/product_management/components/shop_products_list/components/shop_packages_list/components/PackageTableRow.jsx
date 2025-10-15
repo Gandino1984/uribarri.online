@@ -1,6 +1,6 @@
 import React from 'react';
 import PackageActionsCell from './PackageActionsCell';
-import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../css/ShopPackagesList.module.css';
 
 const PackageTableRow = ({ 
   package: packageItem, 

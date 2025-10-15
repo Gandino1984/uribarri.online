@@ -5,7 +5,7 @@ import { useAuth } from '../../../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
-import styles from '../../../../../../../public/css/ProductCreationForm.module.css';
+import styles from '../../../../../../../css/ProductCreationForm.module.css';
 //update: Add X icon for close button
 import { AlertCircle, PackagePlus, Save, RefreshCw, Loader, X } from 'lucide-react';
 

@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
-import styles from '../../../public/css/LandingPage.module.css';
+import styles from '../../../css/LandingPage.module.css';
 import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
 
 const LandingPage = () => {

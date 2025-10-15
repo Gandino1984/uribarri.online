@@ -129,7 +129,7 @@ async function getById(id_organization) {
         const organization = await organization_model.findByPk(id_organization);
 
         if (!organization) {
-            return { error: "Organización no encontrada" };
+            return { error: "asociación no encontrada" };
         }
 
         //update: Include manager information
@@ -153,7 +153,7 @@ async function getById(id_organization) {
         return { data: orgWithDetails };
     } catch (err) {
         console.error("-> organization_controller.js - getById() - Error = ", err);
-        return { error: "Error al obtener la organización" };
+        return { error: "Error al obtener la asociación" };
     }
 }
 
@@ -216,9 +216,9 @@ async function create(orgData) {
 
         if (existingOrg) {
             await t.rollback();
-            console.error("Ya existe una organización con ese nombre");
+            console.error("Ya existe una asociación con ese nombre");
             return { 
-                error: "Ya existe una organización con ese nombre"
+                error: "Ya existe una asociación con ese nombre"
             };
         }
 
@@ -257,7 +257,7 @@ async function create(orgData) {
         
         if (!savedOrg) {
             console.error("Organization was not properly saved to database");
-            return { error: "Error al guardar la organización en la base de datos" };
+            return { error: "Error al guardar la asociación en la base de datos" };
         }
         
         const orgWithManager = {
@@ -272,14 +272,14 @@ async function create(orgData) {
         console.log(`-> organization_controller.js - Successfully created and verified organization: ${savedOrg.name_org}`);
         
         return { 
-            success: "¡Organización creada! Pendiente de aprobación por el administrador.",
+            success: "¡asociación creada! Pendiente de aprobación por el administrador.",
             data: orgWithManager
         };
     } catch (err) {
         // Rollback the transaction in case of error
         await t.rollback();
-        console.error("-> organization_controller.js - create() - Error al crear la organización =", err);
-        return { error: "Error al crear la organización: " + err.message };
+        console.error("-> organization_controller.js - create() - Error al crear la asociación =", err);
+        return { error: "Error al crear la asociación: " + err.message };
     }
 }
 
@@ -291,8 +291,8 @@ async function update(id, orgData) {
         
         if (!organization) {
             await t.rollback();
-            console.log("Organización no encontrada con id:", id);
-            return { error: "Organización no encontrada" };
+            console.log("asociación no encontrada con id:", id);
+            return { error: "asociación no encontrada" };
         }
 
         //update: If changing manager, validate new manager exists
@@ -346,7 +346,7 @@ async function update(id, orgData) {
             
             if (existingOrg) {
                 await t.rollback();
-                return { error: "Ya existe otra organización con ese nombre" };
+                return { error: "Ya existe otra asociación con ese nombre" };
             }
         }
 
@@ -371,8 +371,8 @@ async function update(id, orgData) {
         return { data: orgWithManager };
     } catch (err) {
         await t.rollback();
-        console.error("Error al actualizar la organización =", err);
-        return { error: "Error al actualizar la organización" };
+        console.error("Error al actualizar la asociación =", err);
+        return { error: "Error al actualizar la asociación" };
     }
 }
 
@@ -388,7 +388,7 @@ async function setApprovalStatus(id_organization, approved, adminUserId) {
         const organization = await organization_model.findByPk(id_organization);
         
         if (!organization) {
-            return { error: "Organización no encontrada" };
+            return { error: "asociación no encontrada" };
         }
 
         await organization.update({ org_approved: approved });
@@ -408,8 +408,8 @@ async function setApprovalStatus(id_organization, approved, adminUserId) {
         return { 
             data: orgWithManager,
             message: approved 
-                ? "Organización aprobada exitosamente" 
-                : "Organización rechazada"
+                ? "asociación aprobada exitosamente" 
+                : "asociación rechazada"
         };
     } catch (err) {
         console.error("-> organization_controller.js - setApprovalStatus() - Error = ", err);
@@ -423,7 +423,7 @@ async function removeById(id_organization) {
     try {
         if (!id_organization) {
             await t.rollback();
-            return { error: "Organización no encontrada" };
+            return { error: "asociación no encontrada" };
         }
 
         const organization = await organization_model.findByPk(id_organization, { transaction: t });
@@ -431,7 +431,7 @@ async function removeById(id_organization) {
         if (!organization) {
             await t.rollback();
             return { 
-                error: "Organización no encontrada"
+                error: "asociación no encontrada"
             };
         }
 
@@ -444,7 +444,7 @@ async function removeById(id_organization) {
         if (participantsCount > 1) { // More than just the manager
             await t.rollback();
             return { 
-                error: `No se puede eliminar la organización porque tiene ${participantsCount} participante(s)`
+                error: `No se puede eliminar la asociación porque tiene ${participantsCount} participante(s)`
             };
         }
 
@@ -454,15 +454,15 @@ async function removeById(id_organization) {
             transaction: t
         });
 
-        //update: Delete organization folder if exists
-        const orgPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'organizations', organization.name_org);
+        //update: Delete organization folder if exists - NOW using backend assets path
+        const orgPath = path.join(__dirname, '..', '..', 'assets', 'images', 'organizations', organization.name_org);
         
         if (fs.existsSync(orgPath)) {
             try {
                 fs.rmSync(orgPath, { recursive: true, force: true });
-                console.log(`Carpeta de la organización ${organization.name_org} eliminada`);
+                console.log(`Carpeta de la asociación ${organization.name_org} eliminada`);
             } catch (err) {
-                console.error("Error al eliminar la carpeta de la organización:", err);
+                console.error("Error al eliminar la carpeta de la asociación:", err);
             }
         }
 
@@ -473,12 +473,12 @@ async function removeById(id_organization) {
 
         return { 
             data: id_organization,
-            message: "La organización se ha eliminado." 
+            message: "La asociación se ha eliminado." 
         };
     } catch (err) {
         await t.rollback();
         console.error("-> organization_controller.js - removeById() - Error = ", err);
-        return { error: "Error al eliminar la organización" };
+        return { error: "Error al eliminar la asociación" };
     }
 }
 
@@ -487,7 +487,7 @@ async function uploadImage(id_organization, imagePath) {
         const organization = await organization_model.findByPk(id_organization);
         
         if (!organization) {
-            return { error: "Organización no encontrada" };
+            return { error: "asociación no encontrada" };
         }
 
         await organization.update({ image_org: imagePath });
@@ -500,7 +500,7 @@ async function uploadImage(id_organization, imagePath) {
             message: "Imagen actualizada correctamente" 
         };
     } catch (err) {
-        console.error("Error al actualizar imagen de la organización =", err);
+        console.error("Error al actualizar imagen de la asociación =", err);
         return { error: "Error al actualizar la imagen" };
     }
 }

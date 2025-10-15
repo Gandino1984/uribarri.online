@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { X, MessageCircleWarning, ExternalLink } from 'lucide-react';
 import { useUI } from '../../app_context/UIContext.jsx';
-import styles from '../../../public/css/ConfirmationModal.module.css';
+import styles from '../../../css/ConfirmationModal.module.css';
 
 const ConfirmationModal = () => {
   const { 

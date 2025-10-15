@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Maximize2 } from 'lucide-react';
-import styles from '../../../../../../public/css/ShopCard.module.css';
+import styles from '../../../../../../css/ShopCard.module.css';
 
 const MinimizedCard = memo(({ toggleMinimized }) => {
   return (

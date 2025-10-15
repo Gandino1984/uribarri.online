@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
-import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../css/ShopProductsList.module.css';
 
 const SearchBar = ({ searchTerm, handleSearchChange }) => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 480);

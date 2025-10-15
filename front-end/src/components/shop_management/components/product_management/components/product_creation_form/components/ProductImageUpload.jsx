@@ -1,6 +1,6 @@
 import React from 'react';
 import { Camera, ImagePlus, Trash2, Loader } from 'lucide-react';
-import styles from '../../../../../../../../public/css/ProductCreationForm.module.css';
+import styles from '../../../../../../../../css/ProductCreationForm.module.css';
 
 const ProductImageUpload = ({ 
   imagePreview, 

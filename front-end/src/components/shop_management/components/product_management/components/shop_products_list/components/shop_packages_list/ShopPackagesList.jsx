@@ -25,7 +25,7 @@ import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 import ConfirmationModal from '../../../../../../../confirmation_modal/ConfirmationModal.jsx';
 import OffersBoard from './components/offers_board/OffersBoard.jsx';
 
-import styles from '../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../css/ShopPackagesList.module.css';
 
 const ShopPackagesList = ({ onBack }) => {
   const { 

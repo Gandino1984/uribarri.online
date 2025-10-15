@@ -14,7 +14,7 @@ import PublicationManagement from './components/PublicationManagement.jsx';
 import PendingTransfersBadge from './components/PendingTransfersBadge.jsx';
 import { InfoManagementUtils } from './InfoManagementUtils.jsx';
 import { Plus, X, FileText, Users, ArrowLeft, LogIn } from 'lucide-react';
-import styles from '../../../public/css/InfoManagement.module.css';
+import styles from '../../../css/InfoManagement.module.css';
 
 const InfoManagement = () => {
   const { setShowTopBar } = useUI();
@@ -234,7 +234,7 @@ const InfoManagement = () => {
               <button
                 className={`${styles.createButton} ${showCreationForm ? styles.createButtonActive : ''}`}
                 onClick={onToggleCreationForm}
-                title={showCreationForm ? "Cerrar formulario" : "Crear nueva organización"}
+                title={showCreationForm ? "Cerrar formulario" : "Crear nueva asociación"}
               >
                 {showCreationForm ? (
                   <>
@@ -269,7 +269,7 @@ const InfoManagement = () => {
           </button>
           {managesAnyOrganization && managedOrganizations.length > 1 && (
             <div className={styles.orgSelector}>
-              <label>Organización:</label>
+              <label>asociación:</label>
               <select 
                 value={selectedOrgForManagement?.id_organization || ''}
                 onChange={(e) => {
@@ -361,7 +361,7 @@ const InfoManagement = () => {
             ) : (
               <div className={styles.noOrgSelected}>
                 <Users size={48} />
-                <p>Por favor, selecciona una organización para gestionar sus publicaciones</p>
+                <p>Por favor, selecciona una asociación para gestionar sus publicaciones</p>
               </div>
             )}
           </>

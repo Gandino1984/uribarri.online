@@ -4,7 +4,7 @@ import { useOrder } from '../../app_context/OrderContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useSpring, animated } from '@react-spring/web';
 import { Package, Clock, CheckCircle, Truck, MapPin, DollarSign, Store, AlertCircle, XCircle } from 'lucide-react';
-import styles from '../../../public/css/RiderOrdersManagement.module.css';
+import styles from '../../../css/RiderOrdersManagement.module.css';
 import RiderCard from './components/rider_card/RiderCard.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 

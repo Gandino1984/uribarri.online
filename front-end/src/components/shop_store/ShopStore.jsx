@@ -24,7 +24,7 @@ import {
   getPackageOriginalPrice
 } from './ShopStoreUtils';
 
-import styles from '../../../public/css/ShopStore.module.css';
+import styles from '../../../css/ShopStore.module.css';
 
 const ShopStore = () => {
   const { currentUser } = useAuth();

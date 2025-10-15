@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trash2, Edit } from 'lucide-react';
-import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
+import styles from '../../../../../../css/ShopsListBySeller.module.css';
 
 
 const ShopRow = ({ 

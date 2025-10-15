@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ShopRow from './ShopRow';
-import styles from '../../../../../../public/css/ShopsListBySeller.module.css';
+import styles from '../../../../../../css/ShopsListBySeller.module.css';
 
 /**
  * Component for displaying shops in a responsive table

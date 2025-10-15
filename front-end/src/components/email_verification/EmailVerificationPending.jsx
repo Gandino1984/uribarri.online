@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle, AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
 import axiosInstance from '../../utils/app/axiosConfig.js';
-import styles from '../../../public/css/EmailVerificationPending.module.css';
+import styles from '../../../css/EmailVerificationPending.module.css';
 
 const EmailVerificationPending = ({ email, onBackToLogin }) => {
   const [isResending, setIsResending] = useState(false);

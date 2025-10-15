@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect, useRef } from 'react';
 import { Camera, Loader } from 'lucide-react';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { ShopCoverImageUtils } from './ShopCoverImageUtils.jsx';
-import styles from '../../../../../../../public/css/ShopCoverImage.module.css';
+import styles from '../../../../../../../css/ShopCoverImage.module.css';
 
 const ShopCoverImage = ({ id_shop }) => {
   const { selectedShop, shops } = useShop();

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, X, Percent, Star, Package, Clock, ChevronDown } from 'lucide-react';
-import styles from '../../../../public/css/ShopStoreFilters.module.css';
+import styles from '../../../../css/ShopStoreFilters.module.css';
 
 const ShopStoreFilters = ({ 
   products, 

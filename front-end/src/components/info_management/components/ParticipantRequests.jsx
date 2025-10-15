@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { useParticipant } from '../../../app_context/ParticipantContext.jsx';
 import { User, Calendar, MapPin, CheckCircle, XCircle, Clock, MessageSquare, X } from 'lucide-react';
-import styles from '../../../../public/css/ParticipantRequests.module.css';
+import styles from '../../../../css/ParticipantRequests.module.css';
 
 const ParticipantRequests = ({ organizationId, organizationName, onClose }) => {
   const { currentUser } = useAuth();
@@ -266,7 +266,7 @@ const ParticipantRequests = ({ organizationId, organizationName, onClose }) => {
                   value={responseMessage}
                   onChange={(e) => setResponseMessage(e.target.value)}
                   placeholder={responseAction === 'approve' 
-                    ? "¡Bienvenido/a a la organización!..." 
+                    ? "¡Bienvenido/a a la asociación!..." 
                     : "Lamentamos informarte que..."}
                   rows={4}
                 />

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../css/ShopProductsList.module.css';
 
 const ProductsCount = ({ displayedProducts, selectedProducts }) => {
   return (

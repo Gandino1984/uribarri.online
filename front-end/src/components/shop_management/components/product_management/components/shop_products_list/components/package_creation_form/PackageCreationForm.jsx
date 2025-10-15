@@ -14,7 +14,7 @@ import { validateImageFile } from '../../../../../../../../utils/image/imageVali
 import { optimizeImage } from '../../../../../../../../utils/image/imageOptimizer.js';
 import axiosInstance from '../../../../../../../../utils/app/axiosConfig.js';
 
-import styles from '../../../../../../../../../public/css/PackageCreationForm.module.css';
+import styles from '../../../../../../../../../css/PackageCreationForm.module.css';
 
 const PackageCreationForm = () => {
   const { currentUser } = useAuth();

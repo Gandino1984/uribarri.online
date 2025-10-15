@@ -1,6 +1,6 @@
 import React from 'react';
 import { useUI } from '../../../../../../../../../../src/app_context/UIContext.jsx';
-import styles from '../../../../../../../../../../public/css/ShopPackagesList.module.css';
+import styles from '../../../../../../../../../../css/ShopPackagesList.module.css';
 
 const NoShopSelected = () => {
   const { setShowProductManagement } = useUI();

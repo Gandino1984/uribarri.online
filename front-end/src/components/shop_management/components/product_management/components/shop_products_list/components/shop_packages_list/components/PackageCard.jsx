@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Package, Calendar, Tag, Layers, Info, Check, XCircle, Percent, DollarSign} from 'lucide-react';
 import { useSpring, animated } from '@react-spring/web';
 //update: Import dedicated PackageCard styles
-import styles from '../../../../../../../../../../public/css/PackageCard.module.css';
+import styles from '../../../../../../../../../../css/PackageCard.module.css';
 import ProductImage from '../../../../product_image/ProductImage.jsx';
 
 const PackageCard = ({ package: packageItem, productDetails, onClose }) => {

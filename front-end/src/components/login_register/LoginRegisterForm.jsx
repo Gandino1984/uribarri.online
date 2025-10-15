@@ -10,7 +10,7 @@ import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
 //update: Import ArrowLeft icon for back button
 import { ArrowLeft } from 'lucide-react';
-import styles from '../../../public/css/LoginRegisterForm.module.css';
+import styles from '../../../css/LoginRegisterForm.module.css';
 
 // Memoize form content
 const FormContent = React.memo(() => {

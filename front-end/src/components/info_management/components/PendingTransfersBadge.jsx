@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { ArrowRightLeft, CheckCircle, XCircle, Clock } from 'lucide-react';
-import styles from '../../../../public/css/PendingTransfersBadge.module.css';
+import styles from '../../../../css/PendingTransfersBadge.module.css';
 
 const PendingTransfersBadge = ({ onTransferProcessed }) => {
   const { currentUser } = useAuth();
@@ -74,7 +74,7 @@ const PendingTransfersBadge = ({ onTransferProcessed }) => {
         if (response.data && !response.data.error) {
           setSuccess(prev => ({
             ...prev,
-            transferSuccess: '¡Traspaso aceptado! Ahora eres el gestor de la organización.'
+            transferSuccess: '¡Traspaso aceptado! Ahora eres el gestor de la asociación.'
           }));
           await fetchPendingTransfers();
           if (onTransferProcessed) {

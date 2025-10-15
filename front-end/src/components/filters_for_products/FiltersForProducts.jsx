@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useProduct } from '../../app_context/ProductContext.jsx';
-import styles from '../../../public/css/FiltersForProducts.module.css';
+import styles from '../../../css/FiltersForProducts.module.css';
 import { Calendar, Package, Percent, RefreshCw, EyeOff, X } from 'lucide-react';
 import useFiltersForProducts from './FiltersForProductsUtils';
 import CustomToggleSwitch from '../navigation_components/CustomToggleSwitch.jsx';
