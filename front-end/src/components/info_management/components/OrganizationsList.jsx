@@ -1,4 +1,6 @@
 // src/components/info_management/components/organizations_list/OrganizationsList.jsx
+//update: Fixed setFilterByOrganization error - use updateFilter instead
+
 import React, { useEffect, useState } from 'react';
 import { useOrganization } from '../../../../src/app_context/OrganizationContext.jsx';
 import { usePublication } from '../../../../src/app_context/PublicationContext.jsx';
@@ -21,7 +23,8 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     fetchAllOrganizations
   } = useOrganization();
   
-  const { setFilterByOrganization } = usePublication();
+  //update: Use updateFilter from PublicationContext instead of setFilterByOrganization
+  const { updateFilter } = usePublication();
   const { currentUser } = useAuth();
   const { setError, setSuccess, openImageModal } = useUI();
   
@@ -45,7 +48,6 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
 
   const isAdmin = currentUser?.type_user === 'admin';
 
-  // Load user's organizations on mount
   useEffect(() => {
     if (currentUser?.id_user) {
       fetchUserOrganizations(currentUser.id_user).then(participations => {
@@ -103,8 +105,12 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     }
   };
 
+  //update: Fixed to use updateFilter instead of setFilterByOrganization
   const handleViewPublications = (org) => {
-    setFilterByOrganization(org.id_organization);
+    console.log('📋 handleViewPublications called for org:', org);
+    // Set the filter for this organization in PublicationContext
+    updateFilter('filterByOrganization', org.id_organization);
+    // Call the parent handler to change view
     if (onViewPublications) {
       onViewPublications(org);
     }
@@ -250,14 +256,11 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
     }
   };
 
-  //update: Enhanced image URL handling with proper encoding and error handling
   const getOrganizationImageUrl = (imagePath) => {
     if (!imagePath) return null;
     
     const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
     
-    // The imagePath is already relative: assets/images/organizations/...
-    // We need to properly encode each segment of the path
     const pathSegments = imagePath.split('/');
     const encodedSegments = pathSegments.map(segment => encodeURIComponent(segment));
     const encodedPath = encodedSegments.join('/');
@@ -354,12 +357,11 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
                     className={styles.orgImage}
                     onClick={() => handleImageClick(org.image_org)}
                     onLoad={() => {
-                      console.log('✓ Organization image loaded successfully:', org.image_org);
+                      console.log('✔ Organization image loaded successfully:', org.image_org);
                     }}
                     onError={(e) => {
                       console.error('✗ Failed to load organization image:', org.image_org);
                       console.error('Attempted URL:', getOrganizationImageUrl(org.image_org));
-                      //update: Fixed optional chaining assignment - split into two operations
                       e.target.style.display = 'none';
                       const placeholder = e.target.parentElement.querySelector(`.${styles.orgImagePlaceholder}`);
                       if (placeholder) {

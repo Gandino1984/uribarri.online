@@ -146,6 +146,12 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     return Object.keys(errors).length === 0;
   };
   
+  //update: Check if user is manager of selected organization
+  const isManagerOfSelectedOrg = () => {
+    if (!formData.id_org) return false;
+    return userManagedOrgs.some(org => org.id_organization === formData.id_org);
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -177,7 +183,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         const updatedPublication = updateResponse.data.data;
         
-        //update: Upload new image with BOTH required headers
         if (imageFile && updatedPublication) {
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
@@ -192,7 +197,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
               headers: {
                 'Content-Type': 'multipart/form-data',
                 'x-publication-id': updatedPublication.id_publication.toString(),
-                //update: CRITICAL FIX - Include organization ID header
                 'x-organization-id': updatedPublication.id_org.toString()
               }
             });
@@ -257,7 +261,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         const newPublication = createResponse.data.data;
         console.log('New publication created:', newPublication);
         
-        //update: Upload image with BOTH required headers
         if (imageFile && newPublication) {
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
@@ -272,7 +275,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
               headers: {
                 'Content-Type': 'multipart/form-data',
                 'x-publication-id': newPublication.id_publication.toString(),
-                //update: CRITICAL FIX - Include organization ID header
                 'x-organization-id': newPublication.id_org.toString()
               }
             });
@@ -295,9 +297,13 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           }
         }
         
+        //update: Different success message depending on whether user is manager
+        const isManager = isManagerOfSelectedOrg();
         setSuccess(prev => ({
           ...prev,
-          createSuccess: '¡Publicación creada! Pendiente de aprobación del gestor de la asociación.'
+          createSuccess: isManager 
+            ? '¡Publicación creada exitosamente! Como gestor, tu publicación está lista para ser aprobada.'
+            : '¡Publicación creada! Pendiente de aprobación del gestor de la asociación.'
         }));
         
         setFormData({
@@ -571,8 +577,10 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         <div className={styles.infoNote}>
           <AlertCircle size={16} />
           <p>
-            Tu publicación será revisada por el gestor de la asociación antes de ser visible en el tablón informativo.
-            Recibirás una notificación cuando tu publicación sea aprobada.
+            {isManagerOfSelectedOrg() 
+              ? 'Como gestor de esta asociación, tu publicación necesitará ser aprobada antes de ser visible en el tablón informativo.'
+              : 'Tu publicación será revisada por el gestor de la asociación antes de ser visible en el tablón informativo. Recibirás una notificación cuando tu publicación sea aprobada.'
+            }
           </p>
         </div>
       )}

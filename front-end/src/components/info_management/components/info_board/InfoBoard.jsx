@@ -26,7 +26,6 @@ const InfoBoard = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   
-  //update: Get API base URL for image paths
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
   
   const fetchPublications = useCallback(async () => {
@@ -77,7 +76,6 @@ const InfoBoard = () => {
     return `${hours}:${minutes}`;
   };
   
-  //update: Enhanced image URL construction with proper encoding and logging
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
       console.log('No image path provided');
@@ -86,17 +84,12 @@ const InfoBoard = () => {
     
     console.log('Getting image URL for path:', imagePath);
     
-    // If it's already a full URL, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       console.log('Path is already a full URL:', imagePath);
       return imagePath;
     }
     
-    // Clean the path - remove leading slashes
     let cleanPath = imagePath.replace(/^\/+/, '');
-    
-    // The path from database should be like: assets/images/organizations/<org_name>/publications/publication_<id>.webp
-    // We need to properly encode each segment
     const pathSegments = cleanPath.split('/');
     const encodedSegments = pathSegments.map(segment => encodeURIComponent(segment));
     const encodedPath = encodedSegments.join('/');
@@ -113,7 +106,6 @@ const InfoBoard = () => {
     return fullUrl;
   };
   
-  //update: Handle image click to open modal
   const handleImageClick = (imagePath) => {
     if (imagePath) {
       const fullImagePath = getImageUrl(imagePath);
@@ -134,6 +126,19 @@ const InfoBoard = () => {
   const handleToggleFilters = () => {
     setShowFilters(prev => !prev);
   };
+  
+  //update: Filter publications to only show approved AND active ones for public InfoBoard
+  const getVisiblePublications = () => {
+    return filteredPublications.filter(pub => {
+      // Only show publications that are both approved AND active
+      const isApproved = pub.pub_approved === true || pub.pub_approved === 1;
+      const isActive = pub.publication_active !== false && pub.publication_active !== 0;
+      
+      return isApproved && isActive;
+    });
+  };
+  
+  const visiblePublications = getVisiblePublications();
   
   return (
     <div className={styles.container}>
@@ -162,9 +167,9 @@ const InfoBoard = () => {
               )}
             </button>
             <div className={styles.resultsCount}>
-              {filteredPublications.length !== publications.length && (
+              {visiblePublications.length !== publications.length && (
                 <span className={styles.filteredCount}>
-                  {filteredPublications.length} de {publications.length} publicaciones
+                  {visiblePublications.length} de {publications.length} publicaciones
                 </span>
               )}
             </div>
@@ -181,7 +186,7 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!publicationsLoading && filteredPublications.length === 0 && (
+          {!publicationsLoading && visiblePublications.length === 0 && (
             <div className={styles.emptyContainer}>
               <AlertCircle size={48} className={styles.emptyIcon} />
               <p className={styles.emptyText}>
@@ -203,21 +208,23 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!publicationsLoading && filteredPublications.length > 0 && (
+          {!publicationsLoading && visiblePublications.length > 0 && (
             <div className={styles.publicationsGrid}>
-              {filteredPublications.map(publication => {
-                //update: Log publication data for debugging
+              {visiblePublications.map(publication => {
                 console.log('Rendering publication:', {
                   id: publication.id_publication,
                   title: publication.title_pub,
                   image_pub: publication.image_pub,
-                  organization: publication.organization?.name_org
+                  organization: publication.organization?.name_org,
+                  //update: Log approval and active status
+                  pub_approved: publication.pub_approved,
+                  publication_active: publication.publication_active
                 });
                 
                 return (
                   <article 
                     key={publication.id_publication} 
-                    className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
+                    className={styles.publicationCard}
                   >
                     <div className={styles.cardHeaderWrapper}>
                       <div className={styles.cardHeader}>
@@ -255,13 +262,6 @@ const InfoBoard = () => {
                       />
                     </div>
                     
-                    {publication.publication_active === false && (
-                      <div className={styles.inactiveBadge}>
-                        <EyeOff size={14} />
-                        <span>Publicación desactivada</span>
-                      </div>
-                    )}
-                    
                     {publication.organization && (
                       <div className={styles.organizationBadge}>
                         <CheckCircle size={14} />
@@ -269,7 +269,6 @@ const InfoBoard = () => {
                       </div>
                     )}
                     
-                    {/*update: Enhanced image display with better error handling */}
                     {publication.image_pub && (
                       <div 
                         className={styles.publicationImageWrapper}
@@ -295,7 +294,6 @@ const InfoBoard = () => {
                               naturalHeight: e.target.naturalHeight
                             });
                             
-                            // Hide the image wrapper entirely if image fails to load
                             e.target.parentElement.style.display = 'none';
                           }}
                         />
@@ -330,10 +328,10 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!publicationsLoading && filteredPublications.length > 0 && (
+          {!publicationsLoading && visiblePublications.length > 0 && (
             <div className={styles.publicationsCount}>
               <p>
-                Mostrando {filteredPublications.length} {filteredPublications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
+                Mostrando {visiblePublications.length} {visiblePublications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
                 {filters.searchTerm && ` para "${filters.searchTerm}"`}
               </p>
             </div>

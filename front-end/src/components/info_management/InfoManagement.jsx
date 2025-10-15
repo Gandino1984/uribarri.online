@@ -1,5 +1,5 @@
 // src/components/info_management/InfoManagement.jsx
-//update: Refactored to use InfoManagementUtils hook pattern (like TopBar)
+//update: Fixed management view not displaying when clicking Publications button
 
 import React, { useState, useEffect } from 'react';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -21,7 +21,6 @@ const InfoManagement = () => {
   const { currentUser } = useAuth();
   const { fetchUserOrganizations, userOrganizations } = useOrganization();
   
-  //update: Use InfoManagementUtils hook (following TopBar pattern)
   const {
     handleLoginRedirect,
     handleTransferProcessed,
@@ -79,13 +78,18 @@ const InfoManagement = () => {
   const managesAnyOrganization = checkManagementPermissions(userOrganizations);
   const managedOrganizations = getManagedOrganizations(userOrganizations);
   
-  //update: Local handlers that use state setters
   const onViewChange = (view) => {
     handleViewChange(view, isLoggedIn, setActiveView, setSelectedOrgForManagement);
   };
 
   const onBackToBoard = () => {
     handleBackToBoard(setActiveView, setSelectedOrgForManagement);
+  };
+
+  //update: Fixed handler to properly set activeView to 'management'
+  const onBackToOrganizations = () => {
+    setActiveView('organizations');
+    setSelectedOrgForManagement(null);
   };
 
   const onToggleCreationForm = () => {
@@ -148,12 +152,12 @@ const InfoManagement = () => {
     );
   };
 
+  //update: Fixed to properly update state for management view
   const onViewPublications = (org) => {
-    handleViewPublications(
-      org,
-      setSelectedOrgForManagement,
-      setActiveView
-    );
+    console.log('🔵 onViewPublications called with org:', org);
+    setSelectedOrgForManagement(org);
+    setActiveView('management');
+    console.log('🔵 State should be updated to management view');
   };
 
   const onCancelForm = () => {
@@ -164,63 +168,107 @@ const InfoManagement = () => {
     handleCancelPublicationForm(setShowPublicationForm, setEditingPublication);
   };
   
+  //update: Debug logging for activeView
+  useEffect(() => {
+    console.log('🟢 InfoManagement - activeView changed to:', activeView);
+    console.log('🟢 InfoManagement - selectedOrgForManagement:', selectedOrgForManagement);
+  }, [activeView, selectedOrgForManagement]);
+  
   return (
     <div className={styles.container}>
-      <div className={styles.backButtonContainer}>
-        <div className={styles.radioToggleContainer}>
-          <div className={styles.radioToggle}>
-            <input
-              type="radio"
-              id="viewBoard"
-              name="viewToggle"
-              value="board"
-              checked={activeView === 'board'}
-              onChange={() => onViewChange('board')}
-              className={styles.radioInput}
-            />
-            <label htmlFor="viewBoard" 
-              className={styles.radioLabel}
-              title="Ir al tablón informativo"
-            >
-              Publicaciones
-            </label>
-            
-            <input
-              type="radio"
-              id="viewOrganizations"
-              name="viewToggle"
-              value="organizations"
-              checked={activeView === 'organizations'}
-              onChange={() => onViewChange('organizations')}
-              className={styles.radioInput}
-            />
-            <label htmlFor="viewOrganizations" 
-              className={styles.radioLabel}
-              title="Gestiona tus asociaciones"
-            >
-              Asociaciones
-              {!isLoggedIn && <span className={styles.lockIcon}>🔒</span>}
-            </label>
-            
-            <div className={styles.radioSlider}></div>
-          </div>
+      {/* Top navigation - only show when NOT in management view */}
+      {activeView !== 'management' && (
+        <div className={styles.backButtonContainer}>
+          <div className={styles.radioToggleContainer}>
+            <div className={styles.radioToggle}>
+              <input
+                type="radio"
+                id="viewBoard"
+                name="viewToggle"
+                value="board"
+                checked={activeView === 'board'}
+                onChange={() => onViewChange('board')}
+                className={styles.radioInput}
+              />
+              <label htmlFor="viewBoard" 
+                className={styles.radioLabel}
+                title="Ir al tablón informativo"
+              >
+                Publicaciones
+              </label>
+              
+              <input
+                type="radio"
+                id="viewOrganizations"
+                name="viewToggle"
+                value="organizations"
+                checked={activeView === 'organizations'}
+                onChange={() => onViewChange('organizations')}
+                className={styles.radioInput}
+              />
+              <label htmlFor="viewOrganizations" 
+                className={styles.radioLabel}
+                title="Gestiona tus asociaciones"
+              >
+                Asociaciones
+                {!isLoggedIn && <span className={styles.lockIcon}>🔒</span>}
+              </label>
+              
+              <div className={styles.radioSlider}></div>
+            </div>
 
-          {!isLoggedIn && (
-            <button 
-              onClick={() => handleLoginRedirect('info')}
-              className={styles.loginButton}
-              title="Iniciar sesión para participar"
-            >
-              <LogIn size={18} />
-              <span>Iniciar sesión</span>
-            </button>
-          )}
-          {isLoggedIn && (
-            <PendingTransfersBadge onTransferProcessed={() => handleTransferProcessed(currentUser)} />
+            {!isLoggedIn && (
+              <button 
+                onClick={() => handleLoginRedirect('info')}
+                className={styles.loginButton}
+                title="Iniciar sesión para participar"
+              >
+                <LogIn size={18} />
+                <span>Iniciar sesión</span>
+              </button>
+            )}
+            {isLoggedIn && (
+              <PendingTransfersBadge onTransferProcessed={() => handleTransferProcessed(currentUser)} />
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Management view back button */}
+      {activeView === 'management' && (
+        <div className={styles.backButtonContainer}>
+          <button
+            className={styles.backButton}
+            onClick={onBackToOrganizations}
+          >
+            <ArrowLeft size={18} />
+            <span>Volver a asociaciones</span>
+          </button>
+          {managesAnyOrganization && managedOrganizations.length > 1 && (
+            <div className={styles.orgSelector}>
+              <label>Asociación:</label>
+              <select 
+                value={selectedOrgForManagement?.id_organization || ''}
+                onChange={(e) => {
+                  const orgId = parseInt(e.target.value);
+                  const org = userOrganizations.find(p => p.organization?.id_organization === orgId)?.organization;
+                  setSelectedOrgForManagement(org);
+                }}
+                className={styles.orgSelect}
+              >
+                <option value="">-- Selecciona --</option>
+                {managedOrganizations.map(p => (
+                  <option key={p.organization.id_organization} value={p.organization.id_organization}>
+                    {p.organization.name_org}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
-      </div>
+      )}
 
+      {/* Header - show for all views */}
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.title}>
@@ -258,39 +306,7 @@ const InfoManagement = () => {
         )}
       </div>
       
-      {activeView === 'management' && (
-        <div className={styles.backButtonContainer}>
-          <button
-            className={styles.backButton}
-            onClick={onBackToBoard}
-          >
-            <ArrowLeft size={18} />
-            <span>Volver al tablón</span>
-          </button>
-          {managesAnyOrganization && managedOrganizations.length > 1 && (
-            <div className={styles.orgSelector}>
-              <label>asociación:</label>
-              <select 
-                value={selectedOrgForManagement?.id_organization || ''}
-                onChange={(e) => {
-                  const orgId = parseInt(e.target.value);
-                  const org = userOrganizations.find(p => p.organization?.id_organization === orgId)?.organization;
-                  setSelectedOrgForManagement(org);
-                }}
-                className={styles.orgSelect}
-              >
-                <option value="">-- Selecciona --</option>
-                {managedOrganizations.map(p => (
-                  <option key={p.organization.id_organization} value={p.organization.id_organization}>
-                    {p.organization.name_org}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-      )}
-      
+      {/* Board actions */}
       {isLoggedIn && activeView === 'board' && (
         <div className={styles.boardActions}>
           {belongsToOrganization && (
@@ -315,6 +331,7 @@ const InfoManagement = () => {
         </div>
       )}
       
+      {/* Main content area */}
       <div className={styles.content}>
         {activeView === 'board' ? (
           <>
@@ -356,8 +373,12 @@ const InfoManagement = () => {
           )
         ) : activeView === 'management' ? (
           <>
+            {console.log('🟡 Rendering management view with org:', selectedOrgForManagement)}
             {selectedOrgForManagement ? (
-              <PublicationManagement organizationId={selectedOrgForManagement.id_organization} />
+              <>
+                {console.log('🟢 Rendering PublicationManagement for org ID:', selectedOrgForManagement.id_organization)}
+                <PublicationManagement organizationId={selectedOrgForManagement.id_organization} />
+              </>
             ) : (
               <div className={styles.noOrgSelected}>
                 <Users size={48} />
