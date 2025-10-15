@@ -9,16 +9,14 @@ RUN npm install
 
 COPY . .
 
-#update: Create both public uploads (legacy) and backend assets directories
+#update: Create both public uploads (legacy) and backend assets directories, including publications folder
 RUN mkdir -p /app/public/images/uploads/users \
             /app/public/images/uploads/shops \
-            /app/public/images/uploads/publications \
-            /app/public/images/uploads/organizations \
             /app/public/images/uploads/temp \
             /app/back-end/assets/images/users \
             /app/back-end/assets/images/shops \
             /app/back-end/assets/images/products \
-            /app/back-end/assets/images/publications \
+            /app/back-end/assets/images/publications/standalone \
             /app/back-end/assets/images/organizations && \
     find /app/public/images/uploads -type d -exec chmod 755 {} + && \
     find /app/public/images/uploads -type f -exec chmod 755 {} + && \

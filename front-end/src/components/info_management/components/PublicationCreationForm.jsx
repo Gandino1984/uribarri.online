@@ -12,7 +12,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   const { setError, setSuccess } = useUI();
   const { userOrganizations } = useOrganization();
   
-  //update: Initialize form with existing data if in edit mode
   const [formData, setFormData] = useState({
     title_pub: editMode && publicationData ? publicationData.title_pub : '',
     content_pub: editMode && publicationData ? publicationData.content_pub : '',
@@ -31,7 +30,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   const [formErrors, setFormErrors] = useState({});
   const [userManagedOrgs, setUserManagedOrgs] = useState([]);
   
-  //update: Get organizations where user is a manager
   useEffect(() => {
     if (userOrganizations && userOrganizations.length > 0) {
       const managedOrgs = userOrganizations
@@ -40,7 +38,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       
       setUserManagedOrgs(managedOrgs);
       
-      // Auto-select if user manages only one organization
       if (managedOrgs.length === 1 && !editMode) {
         setFormData(prev => ({
           ...prev,
@@ -50,7 +47,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   }, [userOrganizations, editMode]);
   
-  //update: Update form when publication data changes in edit mode
   useEffect(() => {
     if (editMode && publicationData) {
       setFormData({
@@ -66,7 +62,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   }, [editMode, publicationData]);
   
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -74,7 +69,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       [name]: value
     }));
     
-    // Clear error for this field when user starts typing
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,
@@ -83,12 +77,10 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   };
   
-  // Handle image selection
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     
     if (file) {
-      // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!validTypes.includes(file.type)) {
         setError(prev => ({
@@ -98,18 +90,16 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         return;
       }
       
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 10 * 1024 * 1024) {
         setError(prev => ({
           ...prev,
-          imageError: 'La imagen no debe superar los 5MB'
+          imageError: 'La imagen no debe superar los 10MB'
         }));
         return;
       }
       
       setImageFile(file);
       
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -118,23 +108,19 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   };
   
-  // Remove selected image
   const handleRemoveImage = () => {
     setImageFile(null);
-    //update: In edit mode, keep the original image unless a new one is selected
     if (editMode && publicationData?.image_pub) {
       setImagePreview(`${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`);
     } else {
       setImagePreview(null);
     }
-    // Reset file input
     const fileInput = document.getElementById('pub-image-input');
     if (fileInput) {
       fileInput.value = '';
     }
   };
   
-  // Validate form
   const validateForm = () => {
     const errors = {};
     
@@ -160,7 +146,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     return Object.keys(errors).length === 0;
   };
   
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -172,7 +157,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     
     try {
       if (editMode) {
-        //update: Update existing publication
         const updateResponse = await axiosInstance.patch('/publication/update', {
           id_publication: publicationData.id_publication,
           title_pub: formData.title_pub.trim(),
@@ -193,18 +177,35 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         const updatedPublication = updateResponse.data.data;
         
-        //update: Upload new image if selected
+        //update: Upload new image with BOTH required headers
         if (imageFile && updatedPublication) {
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
           
           try {
-            await axiosInstance.post('/publication/upload-image', formDataImage, {
+            console.log('Uploading publication image with headers:', {
+              'x-publication-id': updatedPublication.id_publication,
+              'x-organization-id': updatedPublication.id_org
+            });
+            
+            const uploadResponse = await axiosInstance.post('/publication/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                'x-publication-id': updatedPublication.id_publication
+                'x-publication-id': updatedPublication.id_publication.toString(),
+                //update: CRITICAL FIX - Include organization ID header
+                'x-organization-id': updatedPublication.id_org.toString()
               }
             });
+            
+            console.log('Image upload response:', uploadResponse.data);
+            
+            if (uploadResponse.data.error) {
+              console.error('Error in upload response:', uploadResponse.data.error);
+              setError(prev => ({
+                ...prev,
+                imageUploadError: 'La publicación fue actualizada pero hubo un error al subir la imagen'
+              }));
+            }
           } catch (imgError) {
             console.error('Error uploading image:', imgError);
             setError(prev => ({
@@ -219,13 +220,20 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           updateSuccess: '¡Publicación actualizada exitosamente!'
         }));
         
-        // Call success callback with updated data
         if (onSuccess) {
           onSuccess(updatedPublication);
         }
         
       } else {
-        //update: Create new publication
+        console.log('Creating new publication with data:', {
+          title_pub: formData.title_pub.trim(),
+          content_pub: formData.content_pub.trim(),
+          date_pub: formData.date_pub,
+          time_pub: formData.time_pub,
+          id_user_pub: currentUser.id_user,
+          id_org: formData.id_org
+        });
+        
         const createResponse = await axiosInstance.post('/publication/create', {
           title_pub: formData.title_pub.trim(),
           content_pub: formData.content_pub.trim(),
@@ -234,6 +242,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           id_user_pub: currentUser.id_user,
           id_org: formData.id_org
         });
+        
+        console.log('Create response:', createResponse.data);
         
         if (createResponse.data.error) {
           setError(prev => ({
@@ -245,19 +255,37 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         }
         
         const newPublication = createResponse.data.data;
+        console.log('New publication created:', newPublication);
         
-        // Upload image if selected
+        //update: Upload image with BOTH required headers
         if (imageFile && newPublication) {
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
           
           try {
-            await axiosInstance.post('/publication/upload-image', formDataImage, {
+            console.log('Uploading publication image with headers:', {
+              'x-publication-id': newPublication.id_publication,
+              'x-organization-id': newPublication.id_org
+            });
+            
+            const uploadResponse = await axiosInstance.post('/publication/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
-                'x-publication-id': newPublication.id_publication
+                'x-publication-id': newPublication.id_publication.toString(),
+                //update: CRITICAL FIX - Include organization ID header
+                'x-organization-id': newPublication.id_org.toString()
               }
             });
+            
+            console.log('Image upload response:', uploadResponse.data);
+            
+            if (uploadResponse.data.error) {
+              console.error('Error in upload response:', uploadResponse.data.error);
+              setError(prev => ({
+                ...prev,
+                imageUploadError: 'La publicación fue creada pero hubo un error al subir la imagen'
+              }));
+            }
           } catch (imgError) {
             console.error('Error uploading image:', imgError);
             setError(prev => ({
@@ -272,7 +300,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           createSuccess: '¡Publicación creada! Pendiente de aprobación del gestor de la asociación.'
         }));
         
-        // Reset form
         setFormData({
           title_pub: '',
           content_pub: '',
@@ -282,7 +309,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         });
         handleRemoveImage();
         
-        // Call success callback if provided
         if (onSuccess) {
           onSuccess(newPublication);
         }
@@ -299,9 +325,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   };
   
-  // Handle cancel
   const handleCancel = () => {
-    // Reset form
     if (!editMode) {
       setFormData({
         title_pub: '',
@@ -314,13 +338,11 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
     setFormErrors({});
     
-    // Call cancel callback if provided
     if (onCancel) {
       onCancel();
     }
   };
   
-  // Check if user can create publications
   const canCreatePublications = userManagedOrgs.length > 0 || (userOrganizations && userOrganizations.length > 0);
   
   if (!canCreatePublications) {
@@ -349,11 +371,10 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       </div>
       
       <form onSubmit={handleSubmit} className={styles.form}>
-        {/* Organization Selection Field */}
         <div className={styles.formGroup}>
           <label htmlFor="id_org" className={styles.label}>
             <Building2 size={16} />
-            <span>asociación *</span>
+            <span>Asociación *</span>
           </label>
           <select
             id="id_org"
@@ -387,8 +408,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           )}
         </div>
         
-        {/* Rest of the form remains the same... */}
-        {/* Publication Title Field */}
         <div className={styles.formGroup}>
           <label htmlFor="title_pub" className={styles.label}>
             <FileText size={16} />
@@ -416,7 +435,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           </span>
         </div>
         
-        {/* Publication Content Field */}
         <div className={styles.formGroup}>
           <label htmlFor="content_pub" className={styles.label}>
             <FileText size={16} />
@@ -440,7 +458,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           )}
         </div>
         
-        {/* Date and Time Fields */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="date_pub" className={styles.label}>
@@ -475,7 +492,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           </div>
         </div>
         
-        {/* Image Upload Field */}
         <div className={styles.formGroup}>
           <label className={styles.label}>
             <Image size={16} />
@@ -496,7 +512,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
                 <Image size={32} />
                 <span>Haz clic para seleccionar una imagen</span>
                 <span className={styles.fileInputHint}>
-                  JPG, PNG o WEBP (máx. 5MB)
+                  JPG, PNG o WEBP (máx. 10MB)
                 </span>
               </label>
             </div>
@@ -520,7 +536,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
           )}
         </div>
         
-        {/* Form Actions */}
         <div className={styles.formActions}>
           <button
             type="button"
@@ -552,7 +567,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         </div>
       </form>
       
-      {/* Information Note */}
       {!editMode && (
         <div className={styles.infoNote}>
           <AlertCircle size={16} />

@@ -222,11 +222,13 @@ async function removeById(req, res) {
     }
 }
 
+//update: Updated to construct proper path for assets/images location
 async function uploadImage(req, res) {
     try {
-        const id_publication = req.headers['x-publication-id'];
+        const publicationId = req.headers['x-publication-id'];
+        const idOrg = req.headers['x-organization-id'];
         
-        if (!id_publication) {
+        if (!publicationId) {
             return res.status(400).json({
                 error: 'Publication ID is required'
             });
@@ -238,14 +240,35 @@ async function uploadImage(req, res) {
             });
         }
         
-        const relativePath = path.join(
-            'images', 
-            'uploads', 
-            'publications', 
-            req.file.filename
-        ).replace(/\\/g, '/');
+        //update: Extract the relative path from the full file path
+        const filePath = req.file.path;
+        const backendIndex = filePath.indexOf('back-end');
         
-        const { error, data } = await publicationController.uploadImage(id_publication, relativePath);
+        if (backendIndex === -1) {
+            console.error('Could not find back-end in path:', filePath);
+            return res.status(500).json({
+                error: 'Invalid file path structure'
+            });
+        }
+        
+        //update: Get path starting from 'assets'
+        const assetsIndex = filePath.indexOf('assets', backendIndex);
+        if (assetsIndex === -1) {
+            console.error('Could not find assets in path:', filePath);
+            return res.status(500).json({
+                error: 'Invalid file path structure'
+            });
+        }
+        
+        const relativePath = filePath.substring(assetsIndex).replace(/\\/g, '/');
+        
+        console.log('Upload Image - Path construction:', {
+            fullPath: filePath,
+            relativePath: relativePath,
+            filename: req.file.filename
+        });
+        
+        const { error, data } = await publicationController.uploadImage(publicationId, relativePath);
         
         if (error) {
             return res.status(500).json({ error });
