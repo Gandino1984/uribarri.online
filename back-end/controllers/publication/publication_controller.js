@@ -287,6 +287,7 @@ async function getByOrganizationId(id_org) {
     }
 }
 
+//update: Set pub_approved to false by default for new publications
 async function create(pubData) {
     try {
         const validation = validatePublicationData(pubData);
@@ -316,9 +317,11 @@ async function create(pubData) {
             pubData.time_pub = new Date().toTimeString().split(' ')[0];
         }
 
+        //update: CRITICAL FIX - Set pub_approved to false by default so publications need manager approval
         const publication = await publication_model.create({
             ...pubData,
-            publication_active: pubData.publication_active !== undefined ? pubData.publication_active : true
+            publication_active: pubData.publication_active !== undefined ? pubData.publication_active : true,
+            pub_approved: pubData.pub_approved !== undefined ? pubData.pub_approved : false
         });
         
         let organization = null;
@@ -341,8 +344,10 @@ async function create(pubData) {
             } : null
         };
         
+        console.log('-> publication_controller.js - create() - Publication created with pub_approved:', publication.pub_approved);
+        
         return { 
-            success: "¡Publicación creada!",
+            success: "¡Publicación creada! Pendiente de aprobación del gestor de la asociación.",
             data: pubWithDetails
         };
     } catch (err) {
@@ -437,7 +442,7 @@ async function removeById(id_publication) {
             if (fs.existsSync(imagePath)) {
                 try {
                     fs.unlinkSync(imagePath);
-                    console.log(`✓ Imagen de la publicación eliminada: ${publication.image_pub}`);
+                    console.log(`✔ Imagen de la publicación eliminada: ${publication.image_pub}`);
                 } catch (err) {
                     console.error("Error al eliminar la imagen de la publicación:", err);
                 }
