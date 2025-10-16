@@ -1,17 +1,41 @@
 # docker-compose.yml
 services:
-  db:
-    image: mysql:8.0
-    container_name: ${MYSQL_HOST}
+
+  backend:
+    container_name: backend_uribarri
+    build: .
     restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./public:/app/public
+      - ./public/images/uploads:/app/public/images/uploads
+    environment:
+      - MYSQL_PORT=3306
+      - MYSQL_HOST=${MYSQL_HOST}
+      - VIRTUAL_HOST=api.uribarri.online
+      - LETSENCRYPT_HOST=api.uribarri.online
+      - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+    depends_on:
+      - db
+    networks:
+      - proxy
+      - uribarri_internal 
+    # ports:
+    #   - ${APP_PORT}:3000
+  db:
+    container_name: ${MYSQL_HOST}
+    image: mysql:8.0
+    restart: unless-stopped
+    # ports:
+    #   - ${MYSQL_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}      
-    ports:
-      - ${MYSQL_PORT}:3306
     volumes:
+      - mysql-data:/var/lib/mysql
       - data:/var/lib/mysql
       - ./db/scripts:/docker-entrypoint-initdb.d
 
@@ -37,3 +61,10 @@ services:
 
 volumes:
   data:
+  node_modules:
+
+networks:
+  proxy:
+    name: nginx-proxy
+    external: true
+  uribarri_internal:

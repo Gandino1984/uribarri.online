@@ -135,9 +135,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
     origin: [
-      'http://localhost:5173', 
-      'http://127.0.0.1:5173',
-      `http://localhost:${EXTERNAL_PORT}`
+    'https://uribarri.online',
+    'https://app.uribarri.online',
+    'https://api.uribarri.online'
+    // Local development origins (uncomment if needed)
+    // 'http://localhost:5173',
+    //   'http://localhost:5173', 
+    //   'http://127.0.0.1:5173',
+    //   `http://localhost:${EXTERNAL_PORT}`
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -165,6 +170,14 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500).json({
         error: err.message || 'Internal server error',
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+initializeDatabase().then(() => {
+    app.use("/", router);
+
+    app.listen(INTERNAL_PORT, '0.0.0.0', () => {
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.log(`SERVIDOR INTERNO EN EL PUERTO = ${INTERNAL_PORT}`);
+        console.log(`PUERTO EXTERNO MAPEADO A = ${EXTERNAL_PORT}`);
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     });
 });
 
