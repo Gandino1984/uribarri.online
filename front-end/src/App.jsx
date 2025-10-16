@@ -20,7 +20,7 @@ import TopBar from './components/top_bar/TopBar.jsx';
 //update: Import EmailVerification component
 import EmailVerification from './components/email_verification/EmailVerification.jsx';
 
-import './App.css';
+import '../css/App.css';
 
 //update: Create a main component that handles the state-based navigation
 const MainApp = () => {
