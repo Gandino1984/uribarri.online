@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../../css/ShopCreationForm.module.css';
 import { Truck } from 'lucide-react';
 import CustomToggleSwitch from '../../../../navigation_components/CustomToggleSwitch';
 

@@ -42,7 +42,7 @@ async function validateOrganization(id_org) {
         if (!organization) {
             return {
                 isValid: false,
-                error: "La organización no existe"
+                error: "La asociación no existe"
             };
         }
         
@@ -54,7 +54,7 @@ async function validateOrganization(id_org) {
         console.error("Error validating organization:", err);
         return {
             isValid: false,
-            error: "Error al validar la organización"
+            error: "Error al validar la asociación"
         };
     }
 }
@@ -109,7 +109,7 @@ async function getAll() {
 async function getByOrganizationId(id_org) {
     try {
         if (!id_org) {
-            return { error: "El ID de la organización es obligatorio" };
+            return { error: "El ID de la asociación es obligatorio" };
         }
 
         const orgValidation = await validateOrganization(id_org);
@@ -123,7 +123,7 @@ async function getByOrganizationId(id_org) {
         });
 
         if (!requests || requests.length === 0) {
-            return { error: "No hay solicitudes de traspaso para esta organización", data: [] };
+            return { error: "No hay solicitudes de traspaso para esta asociación", data: [] };
         }
 
         //update: Include user details
@@ -150,7 +150,7 @@ async function getByOrganizationId(id_org) {
         return { data: requestsWithUsers };
     } catch (err) {
         console.error("-> organization_transfer_controller.js - getByOrganizationId() - Error = ", err);
-        return { error: "Error al obtener solicitudes por organización" };
+        return { error: "Error al obtener solicitudes por asociación" };
     }
 }
 
@@ -293,14 +293,14 @@ async function create(transferData) {
 
         if (!fromUserParticipation) {
             return { 
-                error: "Solo los gestores de la organización pueden crear solicitudes de traspaso"
+                error: "Solo los gestores de la asociación pueden crear solicitudes de traspaso"
             };
         }
 
         //update: Check if trying to transfer to self
         if (transferData.id_from_user === transferData.id_to_user) {
             return { 
-                error: "No puedes transferir una organización a ti mismo"
+                error: "No puedes transferir una asociación a ti mismo"
             };
         }
 
@@ -314,7 +314,7 @@ async function create(transferData) {
 
         if (existingPendingTransfer) {
             return { 
-                error: "Ya existe una solicitud de traspaso pendiente para esta organización"
+                error: "Ya existe una solicitud de traspaso pendiente para esta asociación"
             };
         }
 
@@ -421,7 +421,7 @@ async function acceptTransfer(id_transfer_request, response_message = null) {
         }
 
         return { 
-            success: "Traspaso de organización aceptado exitosamente",
+            success: "Traspaso de asociación aceptado exitosamente",
             data: transferRequest
         };
     } catch (err) {

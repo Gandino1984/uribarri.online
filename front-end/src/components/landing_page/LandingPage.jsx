@@ -1,9 +1,9 @@
-// src/components/landing_page/LandingPage.jsx
+//update: LandingPage.jsx - Using public folder for portrait images
 import { useRef, useState, useEffect } from 'react';
 import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
-import styles from '../../../../public/css/LandingPage.module.css';
+import styles from '../../../css/LandingPage.module.css';
 import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
 
 const LandingPage = () => {
@@ -14,7 +14,6 @@ const LandingPage = () => {
     setShowShopsListBySeller,
     setShowInfoManagement,
     setNavigationIntent,
-    //update: Add modal control from UIContext
     openModal
   } = useUI();
   const { currentUser, setIsLoggingIn } = useAuth();
@@ -31,22 +30,24 @@ const LandingPage = () => {
   const [isShopButtonPressed, setIsShopButtonPressed] = useState(false);
   const [isInfoButtonHovered, setIsInfoButtonHovered] = useState(false);
   const [isInfoButtonPressed, setIsInfoButtonPressed] = useState(false);
-  //update: Add state for new IA button
   const [isIAButtonHovered, setIsIAButtonHovered] = useState(false);
   const [isIAButtonPressed, setIsIAButtonPressed] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
+  //update: Use public folder URLs instead of imports
   const portraits = [
     '/images/portraits/user1.png',
-    '/images/portraits/user2.png', 
+    '/images/portraits/user2.png',
     '/images/portraits/user3.png',
     '/images/portraits/user4.png',
     '/images/portraits/user5.png',
-    '/images/portraits/user6.png',
+    // '/images/portraits/user6.png',
     '/images/portraits/user7.png',
-    '/images/portraits/user8.png'
+    '/images/portraits/user8.png',
+    '/images/portraits/user9.png',
   ];
   
+  // Rest of component remains exactly the same...
   useEffect(() => {
     const checkDevice = () => {
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -116,23 +117,12 @@ const LandingPage = () => {
     };
   }, [hasScrolled]);
   
-  const transitions = useTransition(currentImageIndex, {
-    from: { 
-      opacity: 0,
-      transform: 'scale(1.02) translateZ(0)',
-    },
-    enter: { 
-      opacity: 1,
-      transform: 'scale(1) translateZ(0)',
-    },
-    leave: { 
-      opacity: 0,
-      transform: 'scale(0.98) translateZ(0)',
-    },
-    config: {
-      duration: 1500
-    },
-    exitBeforeEnter: false
+  const transitions = useTransition(portraits[currentImageIndex], {
+    key: currentImageIndex,
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+    config: { duration: 1500 }
   });
   
   const buttonsContainerSpring = useSpring({
@@ -151,7 +141,6 @@ const LandingPage = () => {
     config: config.gentle
   });
   
-  //update: Add animation spring for IA button
   const iaButtonSpring = useSpring({
     transform: `scale(${isIAButtonPressed ? 0.95 : isIAButtonHovered ? 1.05 : 1})`,
     config: config.gentle
@@ -177,7 +166,6 @@ const LandingPage = () => {
     config: config.gentle
   });
   
-  //update: Add glow animation for IA button (orange/amber theme)
   const iaButtonGlowSpring = useSpring({
     boxShadow: isIAButtonHovered 
       ? '0 0 30px rgba(255, 149, 0, 0.6), 0 0 60px rgba(255, 149, 0, 0.3), inset 0 0 20px rgba(255, 149, 0, 0.2)'
@@ -272,19 +260,15 @@ const LandingPage = () => {
     }, 800);
   };
   
-  //update: Add handler for IA Antirumor button - opens modal before external navigation
   const handleIAButtonClick = () => {
     if (isExiting) return;
     
-    // Open confirmation modal with custom message
     openModal(
       'Estás a punto de salir de uribarri.online y ser redirigido a zuriai.org, un sitio web externo.',
       (confirmed) => {
         if (confirmed) {
-          // User confirmed - navigate to external site
           window.open('https://zuriai.org/', '_blank', 'noopener,noreferrer');
         }
-        // If declined, modal just closes and user stays on landing page
       }
     );
   };
@@ -297,12 +281,12 @@ const LandingPage = () => {
     >
       <div className={styles.portraitContainer}>
         {transitions((style, item) => (
-          item !== null && (
+          item && (
             <animated.div
               className={styles.portraitImage}
               style={{
                 ...style,
-                backgroundImage: `url(${portraits[item]})`,
+                backgroundImage: `url(${item})`,
               }}
             />
           )

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../../css/ShopCreationForm.module.css';
 import CustomToggleSwitch from '../../../../navigation_components/CustomToggleSwitch';
 import ShopDaysSelection from './ShopDaysSelection';
 import ShopDeliveryToggle from './ShopDeliveryToggle';

@@ -119,7 +119,7 @@ export const OrganizationProvider = ({ children }) => {
     if (!currentUser?.id_user) {
       setError(prev => ({ 
         ...prev, 
-        createError: 'Debes iniciar sesión para crear una organización' 
+        createError: 'Debes iniciar sesión para crear una asociación' 
       }));
       return null;
     }
@@ -133,7 +133,7 @@ export const OrganizationProvider = ({ children }) => {
       if (response.data && !response.data.error) {
         setSuccess(prev => ({ 
           ...prev, 
-          createSuccess: response.data.success || '¡Organización creada exitosamente!' 
+          createSuccess: response.data.success || '¡asociación creada exitosamente!' 
         }));
         
         // Refresh organizations list
@@ -146,7 +146,7 @@ export const OrganizationProvider = ({ children }) => {
       } else {
         setError(prev => ({ 
           ...prev, 
-          createError: response.data.error || 'Error al crear la organización' 
+          createError: response.data.error || 'Error al crear la asociación' 
         }));
         return null;
       }
@@ -154,7 +154,7 @@ export const OrganizationProvider = ({ children }) => {
       console.error('Error creating organization:', err);
       setError(prev => ({ 
         ...prev, 
-        createError: 'Error al crear la organización' 
+        createError: 'Error al crear la asociación' 
       }));
       return null;
     }
@@ -165,7 +165,7 @@ export const OrganizationProvider = ({ children }) => {
     if (!currentUser?.id_user) {
       setError(prev => ({ 
         ...prev, 
-        joinError: 'Debes iniciar sesión para unirte a una organización' 
+        joinError: 'Debes iniciar sesión para unirte a una asociación' 
       }));
       return false;
     }
@@ -179,7 +179,7 @@ export const OrganizationProvider = ({ children }) => {
       if (response.data && !response.data.error) {
         setSuccess(prev => ({ 
           ...prev, 
-          joinSuccess: response.data.success || '¡Te has unido a la organización!' 
+          joinSuccess: response.data.success || '¡Te has unido a la asociación!' 
         }));
         
         // Refresh user's organizations
@@ -189,7 +189,7 @@ export const OrganizationProvider = ({ children }) => {
       } else {
         setError(prev => ({ 
           ...prev, 
-          joinError: response.data.error || 'Error al unirse a la organización' 
+          joinError: response.data.error || 'Error al unirse a la asociación' 
         }));
         return false;
       }
@@ -197,7 +197,7 @@ export const OrganizationProvider = ({ children }) => {
       console.error('Error joining organization:', err);
       setError(prev => ({ 
         ...prev, 
-        joinError: 'Error al unirse a la organización' 
+        joinError: 'Error al unirse a la asociación' 
       }));
       return false;
     }
@@ -222,7 +222,7 @@ export const OrganizationProvider = ({ children }) => {
       if (response.data && !response.data.error) {
         setSuccess(prev => ({ 
           ...prev, 
-          leaveSuccess: response.data.message || 'Has salido de la organización' 
+          leaveSuccess: response.data.message || 'Has salido de la asociación' 
         }));
         
         // Refresh user's organizations
@@ -232,7 +232,7 @@ export const OrganizationProvider = ({ children }) => {
       } else {
         setError(prev => ({ 
           ...prev, 
-          leaveError: response.data.error || 'Error al salir de la organización' 
+          leaveError: response.data.error || 'Error al salir de la asociación' 
         }));
         return false;
       }
@@ -240,7 +240,7 @@ export const OrganizationProvider = ({ children }) => {
       console.error('Error leaving organization:', err);
       setError(prev => ({ 
         ...prev, 
-        leaveError: 'Error al salir de la organización' 
+        leaveError: 'Error al salir de la asociación' 
       }));
       return false;
     }

@@ -7,7 +7,7 @@ import ShopCard from '../shop_management/components/shop_card/ShopCard.jsx';
 import FiltersForShops from './components/filters_for_shops/FiltersForShops.jsx';
 import RecommendedFilters from './components/recommendedFilters/RecommendedFilters.jsx';
 import useShopWindow from './ShopWindowUtils.jsx';
-import styles from '../../../../public/css/ShopWindow.module.css';
+import styles from '../../../css/ShopWindow.module.css';
 import { Filter, ChevronDown } from 'lucide-react';
 
 const ShopWindow = () => {
@@ -121,7 +121,7 @@ const ShopWindow = () => {
   return (
     <div className={styles.container}>
       <div className={styles.headerSection}>
-        <h1 className={styles.title}>Comercio de barrio</h1>
+        <h1 className={styles.title}>Comercios de Uribarri</h1>
         {/*update: Show browsing mode message for non-logged users */}
         {!currentUser && (
           <p className={styles.publicBrowsingNote}>

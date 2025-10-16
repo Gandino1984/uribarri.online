@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../css/ShopProductsList.module.css';
 
 const ProductTableHeader = ({ showExtendedInfo, showMediumInfo, isSmallScreen }) => {
   // 📱 UPDATE: Added responsive column labels based on screen size

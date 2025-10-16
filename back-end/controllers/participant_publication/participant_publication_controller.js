@@ -221,7 +221,7 @@ async function getByPublicationId(id_publication) {
 async function getByOrganizationId(id_org) {
     try {
         if (!id_org) {
-            return { error: "El ID de la organización es obligatorio" };
+            return { error: "El ID de la asociación es obligatorio" };
         }
 
         //update: First get all participants of the organization
@@ -230,7 +230,7 @@ async function getByOrganizationId(id_org) {
         });
 
         if (!participants || participants.length === 0) {
-            return { error: "No hay participantes en esta organización", data: [] };
+            return { error: "No hay participantes en esta asociación", data: [] };
         }
 
         const participantIds = participants.map(p => p.id_participant);
@@ -243,7 +243,7 @@ async function getByOrganizationId(id_org) {
         });
 
         if (!participantPublications || participantPublications.length === 0) {
-            return { error: "No hay publicaciones de participantes en esta organización", data: [] };
+            return { error: "No hay publicaciones de participantes en esta asociación", data: [] };
         }
 
         //update: Include full details
@@ -279,7 +279,7 @@ async function getByOrganizationId(id_org) {
         return { data: ppWithDetails };
     } catch (err) {
         console.error("-> participant_publication_controller.js - getByOrganizationId() - Error = ", err);
-        return { error: "Error al obtener publicaciones por organización" };
+        return { error: "Error al obtener publicaciones por asociación" };
     }
 }
 

@@ -8,10 +8,10 @@ import path from 'path';
 
 import { fileURLToPath } from 'url';
 
-// Get the project root directory (one level up from back-end)
+//update: Get the backend directory (not project root, since images are now in back-end/assets)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PROJECT_ROOT = path.resolve(__dirname, '../../..'); 
+const BACKEND_ROOT = path.resolve(__dirname, '../..'); 
 
 async function getAll() {
     try {
@@ -38,7 +38,6 @@ async function create(productData) {
             discount_product, 
             season_product, 
             calification_product, 
-            //update: Accept both old and new field names
             type_product,
             subtype_product,
             id_category,
@@ -54,7 +53,6 @@ async function create(productData) {
             active_product
         } = productData;
 
-        //update: Handle backward compatibility - if id_category/id_subcategory not provided, try to find them
         let finalCategoryId = id_category;
         let finalSubcategoryId = id_subcategory;
         
@@ -88,7 +86,6 @@ async function create(productData) {
             discount_product,
             season_product,
             calification_product,
-            //update: Store both for backward compatibility
             type_product: type_product || '',
             subtype_product: subtype_product || '',
             id_category: finalCategoryId,
@@ -122,7 +119,6 @@ async function update(id, productData) {
             discount_product, 
             season_product, 
             calification_product, 
-            //update: Accept both old and new field names
             type_product,
             subtype_product,
             id_category,
@@ -144,7 +140,6 @@ async function update(id, productData) {
             return { error: "Producto no encontrado" };
         }
 
-        //update: Handle backward compatibility
         let finalCategoryId = id_category || product.id_category;
         let finalSubcategoryId = id_subcategory || product.id_subcategory;
         
@@ -201,7 +196,6 @@ async function update(id, productData) {
     }
 }
 
-// Keep all other functions as they are...
 async function getById(id) {
     try {
         const product = await product_model.findByPk(id);
@@ -319,7 +313,6 @@ async function toggleActiveStatus(id_product) {
     }
 }
 
-//update: Modified to search by category name (type_product) or id_category
 async function getByType(type_product) {
     try {
         // First try to find by type_product field (backward compatibility)
@@ -368,7 +361,6 @@ async function getOnSale() {
     }
 }
 
-// Nueva función para buscar productos por país de origen
 async function getByCountry(country_product) {
     try {
         const products = await product_model.findAll({
@@ -389,7 +381,6 @@ async function getByCountry(country_product) {
     }
 }
 
-// Nueva función para buscar productos por localidad de origen
 async function getByLocality(locality_product) {
     try {
         const products = await product_model.findAll({
@@ -437,16 +428,14 @@ async function deleteImage(id_product, imagePath, folderPath) {
         const cleanImagePath = imagePath.replace(/^https?:\/\/[^/]+\//, '');
         const cleanFolderPath = folderPath.replace(/^https?:\/\/[^/]+\//, '');
 
-        // Construct the full paths using PROJECT_ROOT
-        const publicDir = path.join(PROJECT_ROOT, 'public');
-        const fullImagePath = path.join(publicDir, cleanImagePath);
-        const fullFolderPath = path.join(publicDir, cleanFolderPath);
+        //update: Construct the full paths using BACKEND_ROOT (since images are now in back-end/assets)
+        const fullImagePath = path.join(BACKEND_ROOT, cleanImagePath);
+        const fullFolderPath = path.join(BACKEND_ROOT, cleanFolderPath);
 
         console.log('Starting image deletion process');
         
         console.log('Paths to process:', {
-            projectRoot: PROJECT_ROOT,
-            publicDir,
+            backendRoot: BACKEND_ROOT,
             fullImagePath,
             fullFolderPath,
             originalImagePath: imagePath,
@@ -535,7 +524,6 @@ async function removeById(id_product) {
     }
 }
 
-// New function to check if a product with the same name exists in a specific shop
 async function verifyProductName(name_product, id_shop) {
     try {
         const existingProduct = await product_model.findOne({

@@ -37,7 +37,7 @@ async function getById(req, res) {
         
         if (!id_organization) {
             return res.status(400).json({ 
-                error: 'El ID de la organización es obligatorio' 
+                error: 'El ID de la asociación es obligatorio' 
             });
         }
         
@@ -46,7 +46,7 @@ async function getById(req, res) {
     } catch (err) {
         console.error("-> organization_api_controller.js - getById() - Error =", err);
         res.status(500).json({ 
-            error: "Error al obtener la organización",
+            error: "Error al obtener la asociación",
             details: err.message
         });
     }
@@ -103,7 +103,7 @@ async function create(req, res) {
     } catch (err) {
         console.error("-> organization_api_controller.js - create() - Error =", err);
         res.status(500).json({
-            error: "Error al crear la organización",
+            error: "Error al crear la asociación",
             details: err.message
         });
     }
@@ -122,7 +122,7 @@ async function update(req, res) {
         
         if (!id_organization) {
             return res.status(400).json({
-                error: 'El ID de la organización es obligatorio'
+                error: 'El ID de la asociación es obligatorio'
             });
         }
         
@@ -144,7 +144,7 @@ async function update(req, res) {
     } catch (err) {
         console.error("-> organization_api_controller.js - update() - Error =", err);
         res.status(500).json({
-            error: "Error al actualizar la organización",
+            error: "Error al actualizar la asociación",
             details: err.message
         });
     }
@@ -160,7 +160,7 @@ async function approve(req, res) {
         
         if (!id_organization) {
             return res.status(400).json({
-                error: 'El ID de la organización es obligatorio'
+                error: 'El ID de la asociación es obligatorio'
             });
         }
         
@@ -202,7 +202,7 @@ async function removeById(req, res) {
         
         if (!id_organization) {
             return res.status(400).json({ 
-                error: 'El ID de la organización es obligatorio'
+                error: 'El ID de la asociación es obligatorio'
             });
         }
         
@@ -216,13 +216,13 @@ async function removeById(req, res) {
     } catch (err) {
         console.error("-> organization_api_controller.js - removeById() - Error =", err);
         res.status(500).json({ 
-            error: "Error al eliminar la organización",
+            error: "Error al eliminar la asociación",
             details: err.message 
         });
     }
 }
 
-//update: Updated uploadImage function to work with the new middleware
+//update: Updated uploadImage function to use correct backend assets path
 async function uploadImage(req, res) {
     try {
         const id_organization = req.headers['x-organization-id'];
@@ -249,10 +249,10 @@ async function uploadImage(req, res) {
         
         const organizationName = organization.data.name_org;
         
-        // Construct the relative path for storing in the database
+        //update: Construct the relative path for storing in the database (backend assets path)
         const relativePath = path.join(
+            'assets', 
             'images', 
-            'uploads', 
             'organizations',
             organizationName,
             req.file.filename

@@ -108,14 +108,13 @@ const packageImageStorage = multer.diskStorage({
       const shopName = shop.name_shop;
       console.log(`Found shop: ${shopName} (ID: ${shopId})`);
       
-      // Create path for shop-specific package images
-      // Use absolute path to ensure correct location
+      //update: Use back-end/assets/images path structure (matching user/shop/product images)
       const projectRoot = path.resolve(__dirname, '..', '..');
       const uploadsDir = path.join(
         projectRoot,
-        'public', 
+        'back-end',
+        'assets', 
         'images', 
-        'uploads', 
         'shops', 
         shopName, 
         'package_images'
@@ -124,13 +123,13 @@ const packageImageStorage = multer.diskStorage({
       console.log(`Target directory path: ${uploadsDir}`);
       
       // Ensure all parent directories exist
-      const shopsDir = path.join(projectRoot, 'public', 'images', 'uploads', 'shops');
+      const assetsImagesDir = path.join(projectRoot, 'back-end', 'assets', 'images');
+      const shopsDir = path.join(assetsImagesDir, 'shops');
       const shopDir = path.join(shopsDir, shopName);
       
       // Create directories step by step
-      await ensureDirectoryExists(path.join(projectRoot, 'public'));
-      await ensureDirectoryExists(path.join(projectRoot, 'public', 'images'));
-      await ensureDirectoryExists(path.join(projectRoot, 'public', 'images', 'uploads'));
+      await ensureDirectoryExists(path.join(projectRoot, 'back-end', 'assets'));
+      await ensureDirectoryExists(path.join(projectRoot, 'back-end', 'assets', 'images'));
       await ensureDirectoryExists(shopsDir);
       await ensureDirectoryExists(shopDir);
       await ensureDirectoryExists(uploadsDir);

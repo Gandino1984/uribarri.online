@@ -1,3 +1,4 @@
+//update: Updated to handle shop images in back-end/assets/images/shops
 import shop_model from "../../models/shop_model.js";
 import user_model from "../../models/user_model.js";
 import shop_type_model from "../../models/shop_type_model.js";
@@ -442,10 +443,11 @@ async function updateWithFolder(id, shopData, oldName) {
             }
         }
 
-        // Handle folder renaming if shop name is changing
+        //update: Handle folder renaming for backend assets storage
         if (shopData.name_shop && shopData.name_shop !== oldName) {
-            const oldPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'shops', oldName);
-            const newPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'shops', shopData.name_shop);
+            // Update path for backend assets folder
+            const oldPath = path.join(__dirname, '..', '..', 'assets', 'images', 'shops', oldName);
+            const newPath = path.join(__dirname, '..', '..', 'assets', 'images', 'shops', shopData.name_shop);
             
             console.log('Attempting to rename folder from:', oldPath, 'to:', newPath);
             
@@ -521,13 +523,13 @@ async function removeById(id_shop) {
            };
        }
 
-       // Delete shop folder if exists
-       const shopPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'shops', shop.name_shop);
+       //update: Delete shop folder from backend assets if exists
+       const shopPath = path.join(__dirname, '..', '..', 'assets', 'images', 'shops', shop.name_shop);
        
        if (fs.existsSync(shopPath)) {
            try {
                fs.rmSync(shopPath, { recursive: true, force: true });
-               console.log(`Carpeta del comercio ${shop.name_shop} eliminada`);
+               console.log(`Carpeta del comercio ${shop.name_shop} eliminada de assets`);
            } catch (err) {
                console.error("Error al eliminar la carpeta del comercio:", err);
                // Continue with shop deletion even if folder deletion fails
@@ -567,13 +569,13 @@ async function removeByIdWithProducts(id_shop) {
        
        console.log(`${deletedProducts} productos eliminados del comercio ${shop.name_shop}`);
 
-       // Delete shop folder if exists
-       const shopPath = path.join(__dirname, '..', '..', '..', 'public', 'images', 'uploads', 'shops', shop.name_shop);
+       //update: Delete shop folder from backend assets if exists
+       const shopPath = path.join(__dirname, '..', '..', 'assets', 'images', 'shops', shop.name_shop);
        
        if (fs.existsSync(shopPath)) {
            try {
                fs.rmSync(shopPath, { recursive: true, force: true });
-               console.log(`Carpeta del comercio ${shop.name_shop} eliminada`);
+               console.log(`Carpeta del comercio ${shop.name_shop} eliminada de assets`);
            } catch (err) {
                console.error("Error al eliminar la carpeta del comercio:", err);
            }
@@ -681,7 +683,6 @@ async function getSubtypesForType(id_type) {
    }
 }
 
-//update: New function to verify/unverify a shop
 async function verifyShop(id_shop, verified_shop, requesting_user) {
    try {
        // Check if shop exists

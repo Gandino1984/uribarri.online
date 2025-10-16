@@ -232,7 +232,7 @@ export const InfoManagementUtils = () => {
     }
     return selectedOrgForManagement 
       ? `Gestionando: ${selectedOrgForManagement.name_org}`
-      : 'Gestiona las publicaciones de tu organización';
+      : 'Gestiona las publicaciones de tu asociación';
   };
 
   /**

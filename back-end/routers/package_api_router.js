@@ -2,7 +2,6 @@
 import express from 'express';
 import * as packageApiController from '../controllers/package/package_api_controller.js';
 import { handlePackageImageUpload } from '../middleware/PackageUploadMiddleware.js';
-//update: Import necessary modules for image handling
 import shop_model from '../models/shop_model.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -25,11 +24,10 @@ router.get('/by-shop-id/:id_shop', packageApiController.getByShopId);
 router.get('/active-by-shop-id/:id_shop', packageApiController.getActiveByShopId);
 router.get('/inactive-by-shop-id/:id_shop', packageApiController.getInactiveByShopId);
 
-//update: Status operations - Fixed route path
+// Status operations
 router.patch('/toggle-status/:id_package', packageApiController.toggleActiveStatus);
 
 // Image upload operations with enhanced processing
-//update: Use the middleware and then handle the response
 router.post('/upload-image', handlePackageImageUpload, async (req, res) => {
     try {
         if (!req.file) {
@@ -56,10 +54,10 @@ router.post('/upload-image', handlePackageImageUpload, async (req, res) => {
             });
         }
 
-        // Construct the relative path for storing in the database
+        //update: Construct the relative path for storing in the database (using assets/images path)
         const relativePath = path.join(
+            'assets',
             'images', 
-            'uploads', 
             'shops', 
             shop.name_shop, 
             'package_images', 
@@ -75,7 +73,7 @@ router.post('/upload-image', handlePackageImageUpload, async (req, res) => {
 
             if (result.error) {
                 // Clean up the uploaded file if database update fails
-                const filePath = path.join(__dirname, '..', '..', 'public', relativePath);
+                const filePath = path.join(__dirname, '..', 'assets', 'images', 'shops', shop.name_shop, 'package_images', req.file.filename);
                 try {
                     await fs.unlink(filePath);
                 } catch (unlinkError) {

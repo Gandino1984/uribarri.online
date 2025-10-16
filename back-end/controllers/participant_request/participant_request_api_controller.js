@@ -7,7 +7,7 @@ async function createRequest(req, res) {
         
         if (!id_user || !id_org) {
             return res.status(400).json({ 
-                error: 'Usuario y organización son obligatorios' 
+                error: 'Usuario y asociación son obligatorios' 
             });
         }
         
@@ -33,7 +33,7 @@ async function getOrganizationRequests(req, res) {
         
         if (!id_org) {
             return res.status(400).json({ 
-                error: 'El ID de la organización es obligatorio' 
+                error: 'El ID de la asociación es obligatorio' 
             });
         }
         
@@ -125,7 +125,7 @@ async function cancelRequest(req, res) {
         
         if (!id_user || !id_org) {
             return res.status(400).json({ 
-                error: 'Usuario y organización son obligatorios' 
+                error: 'Usuario y asociación son obligatorios' 
             });
         }
         

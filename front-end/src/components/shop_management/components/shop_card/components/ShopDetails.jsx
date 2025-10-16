@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Store, MapPinned, Clock, Calendar, Bike, Star } from 'lucide-react';
-import styles from '../../../../../../../public/css/ShopCard.module.css';
+import styles from '../../../../../../css/ShopCard.module.css';
 
 
 const RatingStars = ({ rating }) => {

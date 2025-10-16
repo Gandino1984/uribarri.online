@@ -2,13 +2,12 @@ import React, { memo, useState, useEffect, useRef } from 'react';
 import { Camera, Loader } from 'lucide-react';
 import { useShop } from '../../../../../../app_context/ShopContext.jsx';
 import { ShopCoverImageUtils } from './ShopCoverImageUtils.jsx';
-import styles from '../../../../../../../../public/css/ShopCoverImage.module.css';
+import styles from '../../../../../../../css/ShopCoverImage.module.css';
 
 const ShopCoverImage = ({ id_shop }) => {
-  // Using useShop hook instead of AppContext
   const { selectedShop, shops } = useShop();
-  const [imageKey, setImageKey] = useState(Date.now()); // Force re-render when needed
-  const fileInputRef = useRef(null); // 🖱️ UPDATE: Added ref for direct file input access
+  const [imageKey, setImageKey] = useState(Date.now());
+  const fileInputRef = useRef(null);
   
   const {
     handleContainerClick,
@@ -21,66 +20,114 @@ const ShopCoverImage = ({ id_shop }) => {
     lastUpdated
   } = ShopCoverImageUtils();
 
+  //update: Find the shop from shops array using id_shop
   const shop = shops.find(s => s.id_shop === id_shop);
   const isSelected = selectedShop?.id_shop === id_shop;
   
-  // Solo actualizar la clave de imagen cuando realmente sea necesario
+  //update: Detailed logging to debug the issue
   useEffect(() => {
+    console.group(`🔍 ShopCoverImage Debug - Shop ID: ${id_shop}`);
+    console.log('Shop from array:', shop);
+    console.log('Shop image_shop:', shop?.image_shop);
+    console.log('Selected shop:', selectedShop);
+    console.log('Selected shop image_shop:', selectedShop?.image_shop);
+    console.log('Is selected:', isSelected);
+    console.log('Local image URL:', localImageUrl);
+    console.log('Last updated:', lastUpdated);
+    console.log('Shops array:', shops);
+    console.groupEnd();
+    
     const newKey = Date.now();
     setImageKey(newKey);
-  }, [shop?.image_shop, localImageUrl, lastUpdated]);
+  }, [shop?.image_shop, selectedShop?.image_shop, localImageUrl, lastUpdated, id_shop, shops, shop, selectedShop, isSelected]);
   
-  // Reducir registro de logs innecesarios
-  useEffect(() => {
-    if (isSelected && shop?.image_shop) {
-      console.log(`Selected shop ${id_shop} image path:`, getShopCoverUrl(shop.image_shop));
-    }
-  }, [isSelected, shop?.image_shop, getShopCoverUrl, id_shop]);
-
-  // 🖱️ UPDATE: New direct click handler for one-click upload
   const handleDirectClick = (e) => {
     if (isSelected && !uploading && fileInputRef.current) {
       e.stopPropagation();
+      console.log('📸 File input clicked for shop:', id_shop);
       fileInputRef.current.click();
     }
   };
 
-  // Get the appropriate image URL with fallbacks
+  //update: Improved image source selection with extensive logging
   const getImageSource = () => {
-    // First check if there's a local image URL from a recent upload
+    console.group(`🖼️ Getting Image Source for Shop ${id_shop}`);
+    
+    // Priority 1: Local preview during upload
     if (localImageUrl) {
+      console.log('✓ Using local preview URL');
+      console.groupEnd();
       return localImageUrl;
     }
     
-    // Then try to get the formatted URL from the server path
-    if (shop?.image_shop) {
-      return getShopCoverUrl(shop.image_shop);
-    }
-    
-    // If the selected shop has a different image path, use that as a fallback
+    // Priority 2: Selected shop data (most current)
     if (isSelected && selectedShop?.image_shop) {
-      return getShopCoverUrl(selectedShop.image_shop);
+      const url = getShopCoverUrl(selectedShop.image_shop);
+      console.log('✓ Using selectedShop image_shop:', selectedShop.image_shop);
+      console.log('✓ Formatted URL:', url);
+      console.groupEnd();
+      return url;
     }
     
+    // Priority 3: Shop from shops array
+    if (shop?.image_shop) {
+      const url = getShopCoverUrl(shop.image_shop);
+      console.log('✓ Using shop array image_shop:', shop.image_shop);
+      console.log('✓ Formatted URL:', url);
+      console.groupEnd();
+      return url;
+    }
+    
+    console.log('✗ No image available');
+    console.log('Checked paths:');
+    console.log('  - localImageUrl:', localImageUrl);
+    console.log('  - selectedShop?.image_shop:', selectedShop?.image_shop);
+    console.log('  - shop?.image_shop:', shop?.image_shop);
+    console.groupEnd();
     return null;
   };
 
   const imageSource = getImageSource();
 
+  //update: Log final render state
+  console.log(`🎨 Rendering ShopCoverImage for shop ${id_shop}:`, {
+    hasImageSource: !!imageSource,
+    imageSource,
+    isSelected,
+    uploading
+  });
+
   return (
-    // Added aspect-ratio container to maintain consistent 800x300 (2.67:1) ratio
     <div className={styles.container}>
       <div 
         className={`${styles.imageWrapper} ${isSelected ? styles.selectedShop : ''}`}
-        onClick={handleDirectClick} // 🖱️ UPDATE: Changed to direct click handler
+        onClick={handleDirectClick}
       >
         {imageSource ? (
-          <img
-            key={`shop-cover-${id_shop}-${imageKey}`} // Force image reload when key changes
-            src={imageSource}
-            alt={`${shop?.name_shop || 'Shop'} cover`}
-            className={styles.image}
-          />
+          <>
+            <img
+              key={`shop-cover-${id_shop}-${imageKey}`}
+              src={imageSource}
+              alt={`${shop?.name_shop || 'Shop'} cover`}
+              className={styles.image}
+              onError={(e) => {
+                console.group(`❌ Image Load Error - Shop ${id_shop}`);
+                console.error('Failed to load image');
+                console.error('Image URL:', imageSource);
+                console.error('Shop data:', shop);
+                console.error('Selected shop data:', selectedShop);
+                console.error('Image element:', e.target);
+                console.error('Error event:', e);
+                console.groupEnd();
+                
+                //update: Try to display the broken image info
+                e.target.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log(`✅ Image loaded successfully for shop ${id_shop}:`, imageSource);
+              }}
+            />
+          </>
         ) : (
           <div className={styles.noImage}>
             <span className={styles.noImageText}>
@@ -89,12 +136,14 @@ const ShopCoverImage = ({ id_shop }) => {
           </div>
         )}
 
-        {/* 🖱️ UPDATE: Hidden file input that's directly triggered on container click */}
         <input
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/jpg,image/webp"
-          onChange={(e) => handleImageUpload(e, id_shop)}
+          onChange={(e) => {
+            console.log('📁 File input changed for shop:', id_shop);
+            handleImageUpload(e, id_shop);
+          }}
           className={styles.fileInput}
           id={`shop-cover-input-${id_shop}`}
           disabled={uploading}
@@ -118,7 +167,9 @@ const ShopCoverImage = ({ id_shop }) => {
         {isSelected && !uploading && (
           <div className={styles.editOverlay}>
             <Camera size={20} className={styles.editIcon} />
-            <span className={styles.editText}>{shop?.image_shop ? 'Cambiar imagen' : 'Subir imagen'}</span>
+            <span className={styles.editText}>
+              {(shop?.image_shop || selectedShop?.image_shop) ? 'Cambiar imagen' : 'Subir imagen'}
+            </span>
           </div>
         )}
       </div>
@@ -126,8 +177,5 @@ const ShopCoverImage = ({ id_shop }) => {
   );
 };
 
-// Mejorar la función de comparación de memoización para evitar rerenderizados innecesarios
-export default memo(ShopCoverImage, (prevProps, nextProps) => {
-  // Solo re-renderizar cuando cambia el ID de la tienda
-  return prevProps.id_shop === nextProps.id_shop;
-});
+//update: Remove memo to ensure component always re-renders with fresh data
+export default ShopCoverImage;

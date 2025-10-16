@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { validateImageMiddleware } from '../utils/imageValidationUtilities.js';
 import { processUploadedImage } from '../utils/imageConversionUtils.js';
+import organization_model from '../models/organization_model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,19 @@ const ensureDirectoryExists = async (dirPath) => {
     console.error('Error ensuring directory exists:', error);
     throw error;
   }
+};
+
+//update: FIXED - Function to sanitize organization name - should match how organization folders are created
+const sanitizeOrgName = (orgName) => {
+  if (!orgName) throw new Error('Organization name is required');
+  
+  // DO NOT replace spaces with underscores
+  // Only remove truly problematic characters for file systems
+  // Keep spaces, dashes, and most characters as-is
+  return orgName
+    .replace(/[<>:"/\\|?*]/g, '_') // Only replace filesystem-illegal characters
+    .trim()
+    .substring(0, 100);
 };
 
 //update: Function to clean existing publication images before saving new ones
@@ -72,54 +86,81 @@ const cleanExistingPublicationImages = async (dirPath, publicationId) => {
   }
 };
 
-//update: Multer storage configuration for publication images
+//update: Multer storage configuration for publication images - stores in organization's folder
 const publicationImageStorage = multer.diskStorage({
   destination: async function (req, file, cb) {
     console.log('=== Publication Image Upload - Setting Destination ===');
     console.log('Processing file:', file.fieldname, file.originalname);
     
     const publicationId = req.headers['x-publication-id'];
+    const idOrg = req.headers['x-organization-id'];
     
     console.log('Publication ID:', publicationId);
+    console.log('Organization ID:', idOrg);
 
     if (!publicationId) {
       return cb(new Error('Publication ID is required'));
     }
 
-    try {
-      const projectRoot = path.resolve(__dirname, '..', '..');
-      const uploadsDir = path.join(
-        projectRoot,
-        'public', 
-        'images', 
-        'uploads', 
-        'publications'
-      );
+    //update: Organization ID is REQUIRED - no standalone publications
+    if (!idOrg || idOrg === 'null' || idOrg === 'undefined') {
+      return cb(new Error('Organization ID is required. Publications must belong to an organization.'));
+    }
 
-      console.log(`Target directory path: ${uploadsDir}`);
+    try {
+      //update: Fetch organization details to get the name
+      const organization = await organization_model.findByPk(idOrg);
       
-      const publicDir = path.join(projectRoot, 'public');
-      const imagesDir = path.join(publicDir, 'images');
-      const uploadsBaseDir = path.join(imagesDir, 'uploads');
+      if (!organization) {
+        return cb(new Error('Organization not found. Cannot upload publication image.'));
+      }
+
+      //update: Use the EXACT same sanitization as when the organization folder was created
+      const sanitizedOrgName = sanitizeOrgName(organization.name_org);
       
-      await ensureDirectoryExists(publicDir);
+      console.log('Organization name sanitization:', {
+        original: organization.name_org,
+        sanitized: sanitizedOrgName
+      });
+      
+      const backendDir = path.resolve(__dirname, '..');
+      
+      //update: Build path to organization folder
+      const organizationsDir = path.join(backendDir, 'assets', 'images', 'organizations');
+      const orgDir = path.join(organizationsDir, sanitizedOrgName);
+      const publicationsDir = path.join(orgDir, 'publications');
+
+      console.log('Directory structure:', {
+        organizationsDir,
+        orgDir,
+        publicationsDir
+      });
+      
+      //update: Ensure all directories exist
+      const assetsDir = path.join(backendDir, 'assets');
+      const imagesDir = path.join(assetsDir, 'images');
+      
+      await ensureDirectoryExists(assetsDir);
       await ensureDirectoryExists(imagesDir);
-      await ensureDirectoryExists(uploadsBaseDir);
-      await ensureDirectoryExists(uploadsDir);
+      await ensureDirectoryExists(organizationsDir);
+      await ensureDirectoryExists(orgDir);
+      await ensureDirectoryExists(publicationsDir);
       
-      await cleanExistingPublicationImages(uploadsDir, publicationId);
+      //update: Clean existing publication images
+      await cleanExistingPublicationImages(publicationsDir, publicationId);
       
-      console.log(`Publication image will be stored in: ${uploadsDir}`);
+      console.log(`✓ Publication image will be stored in: ${publicationsDir}`);
       
+      //update: Verify directory is accessible
       try {
-        await fs.access(uploadsDir);
+        await fs.access(publicationsDir);
         console.log('✓ Directory verified and accessible');
       } catch (err) {
         console.error('✗ Directory not accessible after creation:', err);
         throw err;
       }
       
-      cb(null, uploadsDir);
+      cb(null, publicationsDir);
     } catch (error) {
       console.error('Error setting up upload directory:', error);
       cb(error);
@@ -161,7 +202,8 @@ const handlePublicationImageUpload = async (req, res, next) => {
   console.log('=== Starting Publication Image Upload Handler ===');
   console.log('Request content type:', req.headers['content-type']);
   console.log('Request headers:', {
-    'x-publication-id': req.headers['x-publication-id']
+    'x-publication-id': req.headers['x-publication-id'],
+    'x-organization-id': req.headers['x-organization-id']
   });
   
   uploadPublicationImage(req, res, async function (err) {

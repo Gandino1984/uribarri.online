@@ -1,3 +1,4 @@
+//update: Updated vite.config.js to proxy backend assets
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -10,7 +11,7 @@ export default defineConfig(({ mode }) => {
   //update: Get API URL from environment variable or use default
   const apiUrl = 'api.uribarri.online';
   
-  console.log('Vite config - API URL:', apiUrl);
+  console.log('--------------- >>>>   Vite config - API URL:', apiUrl);
   console.log('Vite config - Mode:', mode);
 
   return {
@@ -80,7 +81,15 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
-        '/images': {
+        //update: Keep legacy images route for backward compatibility
+        // But exclude portraits which are static frontend assets
+        '/images/uploads': {
+          target: apiUrl,
+          changeOrigin: true,
+          secure: false,
+        },
+        //update: Add new proxy for backend assets
+        '/assets': {
           target: apiUrl,
           changeOrigin: true,
           secure: false,

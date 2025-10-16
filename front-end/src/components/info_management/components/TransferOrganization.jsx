@@ -4,7 +4,7 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
 import { X, Search, UserPlus, AlertCircle, Send } from 'lucide-react';
-import styles from '../../../../../public/css/TransferOrganization.module.css';
+import styles from '../../../../css/TransferOrganization.module.css';
 
 const TransferOrganization = ({ organization, onClose, onSuccess }) => {
   const { currentUser } = useAuth();
@@ -104,7 +104,7 @@ const TransferOrganization = ({ organization, onClose, onSuccess }) => {
     console.log('Setting up confirmation modal...');
     
     //update: Set the modal message
-    setModalMessage(`¿Estás seguro de que deseas transferir la organización "${organization.name_org}" a ${selectedUser.name_user}?`);
+    setModalMessage(`¿Estás seguro de que deseas transferir la asociación "${organization.name_org}" a ${selectedUser.name_user}?`);
     
     //update: Set the callback function that will execute when user confirms
     setModalConfirmCallback(() => async (confirmed) => {
@@ -174,14 +174,14 @@ const TransferOrganization = ({ organization, onClose, onSuccess }) => {
     <div className={styles.overlay}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Traspasar Organización</h2>
+          <h2 className={styles.title}>Traspasar asociación</h2>
           <button onClick={onClose} className={styles.closeButton} title="Cerrar">
             <X size={20} />
           </button>
         </div>
         
         <div className={styles.organizationInfo}>
-          <p>Vas a traspasar la organización:</p>
+          <p>Vas a traspasar la asociación:</p>
           <h3>{organization.name_org}</h3>
         </div>
         
@@ -268,7 +268,7 @@ const TransferOrganization = ({ organization, onClose, onSuccess }) => {
               id="transfer-message"
               value={transferMessage}
               onChange={(e) => setTransferMessage(e.target.value)}
-              placeholder="Explica por qué deseas traspasar la organización..."
+              placeholder="Explica por qué deseas traspasar la asociación..."
               rows={3}
               className={styles.messageInput}
             />
@@ -278,7 +278,7 @@ const TransferOrganization = ({ organization, onClose, onSuccess }) => {
         <div className={styles.warning}>
           <AlertCircle size={18} />
           <p>
-            Al traspasar la organización, perderás todos los permisos de gestión sobre ella.
+            Al traspasar la asociación, perderás todos los permisos de gestión sobre ella.
             El nuevo propietario deberá aceptar el traspaso para que se complete.
           </p>
         </div>

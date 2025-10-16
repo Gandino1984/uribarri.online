@@ -236,6 +236,7 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`package` (
   `id_product5` INT UNSIGNED NULL,
   `name_package` VARCHAR(100) NULL,
   `discount_package` INT NULL DEFAULT 0 COMMENT 'Percentage discount applied to the total package price (0-100)',
+  `image_package` VARCHAR(255) NULL COMMENT 'Path to the package image',
   `creation_package` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `active_package` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_package`),
@@ -306,12 +307,14 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`organization` (
   `name_org` VARCHAR(100) NOT NULL,
   `scope_org` VARCHAR(255) NULL,
   `image_org` VARCHAR(255) NULL,
+  `org_approved` TINYINT(1) NOT NULL DEFAULT 0,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_organization`),
   UNIQUE INDEX `id_organization_UNIQUE` (`id_organization` ASC) VISIBLE,
   UNIQUE INDEX `name_org_UNIQUE` (`name_org` ASC) VISIBLE,
-  INDEX `idx_manager` (`id_user` ASC) VISIBLE
+  INDEX `idx_manager` (`id_user` ASC) VISIBLE,
+  INDEX `idx_org_approved` (`org_approved` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -361,7 +364,6 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
   `id_user_pub` INT UNSIGNED NOT NULL,
   `image_pub` VARCHAR(255) NULL,
   `pub_approved` TINYINT(1) NOT NULL DEFAULT 0,
-  --update: Add publication_active field for manager control
   `publication_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Indicates if the publication is active or deactivated by manager',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -369,12 +371,11 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`publication` (
   UNIQUE INDEX `id_publication_UNIQUE` (`id_publication` ASC) VISIBLE,
   INDEX `idx_user_pub` (`id_user_pub` ASC) VISIBLE,
   INDEX `idx_date_pub` (`date_pub` DESC) VISIBLE,
-  --update: Add index for active publications
   INDEX `idx_publication_active` (`publication_active` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
---update: New Table `DB_gestionPedidosOnline_2024`.`participant_publication`
+-- update: New Table `DB_gestionPedidosOnline_2024`.`participant_publication`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`participant_publication` (
   `id_participant_publication` INT UNSIGNED NOT NULL AUTO_INCREMENT,

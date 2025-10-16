@@ -7,7 +7,7 @@ import { usePublication } from '../../../../app_context/PublicationContext.jsx';
 import ActionButtonsPublication from '../../components/ActionButtonsPublication.jsx';
 import PublicationCreationForm from '../../components/PublicationCreationForm.jsx';
 import FiltersForPublications from './components/FiltersForPublications.jsx';
-import styles from '../../../../../../public/css/InfoBoard.module.css';
+import styles from '../../../../../css/InfoBoard.module.css';
 import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff, Filter } from 'lucide-react';
 
 const InfoBoard = () => {
@@ -24,11 +24,9 @@ const InfoBoard = () => {
   
   const [editingPublication, setEditingPublication] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
-  //update: Add state for showing/hiding filters
   const [showFilters, setShowFilters] = useState(false);
   
-  //update: Get API base URL for image paths
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
   
   const fetchPublications = useCallback(async () => {
     await fetchAllPublications();
@@ -78,20 +76,44 @@ const InfoBoard = () => {
     return `${hours}:${minutes}`;
   };
   
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      console.log('No image path provided');
+      return null;
+    }
+    
+    console.log('Getting image URL for path:', imagePath);
+    
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      console.log('Path is already a full URL:', imagePath);
+      return imagePath;
+    }
+    
+    let cleanPath = imagePath.replace(/^\/+/, '');
+    const pathSegments = cleanPath.split('/');
+    const encodedSegments = pathSegments.map(segment => encodeURIComponent(segment));
+    const encodedPath = encodedSegments.join('/');
+    
+    const fullUrl = `${API_BASE_URL}/${encodedPath}`;
+    
+    console.log('Constructed publication image URL:', {
+      original: imagePath,
+      clean: cleanPath,
+      encoded: encodedPath,
+      fullUrl: fullUrl
+    });
+    
+    return fullUrl;
+  };
+  
   const handleImageClick = (imagePath) => {
     if (imagePath) {
-      const fullImagePath = `${API_BASE_URL}/${imagePath}`;
+      const fullImagePath = getImageUrl(imagePath);
       console.log('Opening image modal with path:', fullImagePath);
       openImageModal(fullImagePath);
     }
   };
   
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null;
-    return `${API_BASE_URL}/${imagePath}`;
-  };
-  
-  //update: Count active filters for badge
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.searchTerm) count++;
@@ -101,10 +123,22 @@ const InfoBoard = () => {
     return count;
   };
   
-  //update: Toggle filters visibility
   const handleToggleFilters = () => {
     setShowFilters(prev => !prev);
   };
+  
+  //update: Filter publications to only show approved AND active ones for public InfoBoard
+  const getVisiblePublications = () => {
+    return filteredPublications.filter(pub => {
+      // Only show publications that are both approved AND active
+      const isApproved = pub.pub_approved === true || pub.pub_approved === 1;
+      const isActive = pub.publication_active !== false && pub.publication_active !== 0;
+      
+      return isApproved && isActive;
+    });
+  };
+  
+  const visiblePublications = getVisiblePublications();
   
   return (
     <div className={styles.container}>
@@ -119,7 +153,6 @@ const InfoBoard = () => {
       
       {!showEditForm && (
         <>
-          {/*update: Filters button with active filter count badge */}
           <div className={styles.filtersButtonContainer}>
             <button
               className={`${styles.filtersButton} ${showFilters ? styles.filtersButtonActive : ''}`}
@@ -134,15 +167,14 @@ const InfoBoard = () => {
               )}
             </button>
             <div className={styles.resultsCount}>
-              {filteredPublications.length !== publications.length && (
+              {visiblePublications.length !== publications.length && (
                 <span className={styles.filteredCount}>
-                  {filteredPublications.length} de {publications.length} publicaciones
+                  {visiblePublications.length} de {publications.length} publicaciones
                 </span>
               )}
             </div>
           </div>
 
-          {/*update: Conditionally render FiltersForPublications with onClose prop */}
           {showFilters && (
             <FiltersForPublications onClose={() => setShowFilters(false)} />
           )}
@@ -154,7 +186,7 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!publicationsLoading && filteredPublications.length === 0 && (
+          {!publicationsLoading && visiblePublications.length === 0 && (
             <div className={styles.emptyContainer}>
               <AlertCircle size={48} className={styles.emptyIcon} />
               <p className={styles.emptyText}>
@@ -176,115 +208,130 @@ const InfoBoard = () => {
             </div>
           )}
           
-          {!publicationsLoading && filteredPublications.length > 0 && (
+          {!publicationsLoading && visiblePublications.length > 0 && (
             <div className={styles.publicationsGrid}>
-              {filteredPublications.map(publication => (
-                <article 
-                  key={publication.id_publication} 
-                  className={`${styles.publicationCard} ${publication.publication_active === false ? styles.inactiveCard : ''}`}
-                >
-                  <div className={styles.cardHeaderWrapper}>
-                    <div className={styles.cardHeader}>
-                      <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
-                      {publication.publisher && (
-                        <div className={styles.publisherInfo}>
-                          {publication.publisher.image_user ? (
-                            <img 
-                              src={getImageUrl(publication.publisher.image_user)}
-                              alt={publication.publisher.name_user}
-                              className={styles.publisherAvatar}
-                              onError={(e) => {
-                                console.error('Failed to load publisher image:', publication.publisher.image_user);
-                                e.target.style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <div className={styles.publisherAvatarPlaceholder}>
-                              <User size={16} />
-                            </div>
-                          )}
-                          <span className={styles.publisherName}>
-                            {publication.publisher.name_user}
-                          </span>
-                        </div>
-                      )}
+              {visiblePublications.map(publication => {
+                console.log('Rendering publication:', {
+                  id: publication.id_publication,
+                  title: publication.title_pub,
+                  image_pub: publication.image_pub,
+                  organization: publication.organization?.name_org,
+                  //update: Log approval and active status
+                  pub_approved: publication.pub_approved,
+                  publication_active: publication.publication_active
+                });
+                
+                return (
+                  <article 
+                    key={publication.id_publication} 
+                    className={styles.publicationCard}
+                  >
+                    <div className={styles.cardHeaderWrapper}>
+                      <div className={styles.cardHeader}>
+                        <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
+                        {publication.publisher && (
+                          <div className={styles.publisherInfo}>
+                            {publication.publisher.image_user ? (
+                              <img 
+                                src={getImageUrl(publication.publisher.image_user)}
+                                alt={publication.publisher.name_user}
+                                className={styles.publisherAvatar}
+                                onError={(e) => {
+                                  console.error('Failed to load publisher image:', publication.publisher.image_user);
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className={styles.publisherAvatarPlaceholder}>
+                                <User size={16} />
+                              </div>
+                            )}
+                            <span className={styles.publisherName}>
+                              {publication.publisher.name_user}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <ActionButtonsPublication
+                        publication={publication}
+                        onEdit={handleEditPublication}
+                        onDelete={handleDeletePublication}
+                        onToggleActive={handleToggleActive}
+                        onRefresh={fetchPublications}
+                      />
                     </div>
                     
-                    <ActionButtonsPublication
-                      publication={publication}
-                      onEdit={handleEditPublication}
-                      onDelete={handleDeletePublication}
-                      onToggleActive={handleToggleActive}
-                      onRefresh={fetchPublications}
-                    />
-                  </div>
-                  
-                  {publication.publication_active === false && (
-                    <div className={styles.inactiveBadge}>
-                      <EyeOff size={14} />
-                      <span>Publicación desactivada</span>
-                    </div>
-                  )}
-                  
-                  {publication.organization && (
-                    <div className={styles.organizationBadge}>
-                      <CheckCircle size={14} />
-                      <span>{publication.organization.name_org}</span>
-                    </div>
-                  )}
-                  
-                  {publication.image_pub && (
-                    <div 
-                      className={styles.publicationImageWrapper}
-                      onClick={() => handleImageClick(publication.image_pub)}
-                    >
-                      <img 
-                        src={getImageUrl(publication.image_pub)}
-                        alt={publication.title_pub}
-                        className={styles.publicationImage}
-                        onLoad={() => {
-                          console.log('Publication image loaded successfully:', publication.image_pub);
-                        }}
-                        onError={(e) => {
-                          console.error('Failed to load publication image:', publication.image_pub);
-                          console.error('Attempted URL:', getImageUrl(publication.image_pub));
-                          e.target.parentElement.style.display = 'none';
-                        }}
-                      />
-                      <div className={styles.imageOverlay}>
-                        <ImageIcon size={24} />
-                        <span>Ver imagen</span>
+                    {publication.organization && (
+                      <div className={styles.organizationBadge}>
+                        <CheckCircle size={14} />
+                        <span>{publication.organization.name_org}</span>
                       </div>
-                    </div>
-                  )}
-                  
-                  <div className={styles.cardContent}>
-                    <p className={styles.publicationContent}>{publication.content_pub}</p>
-                  </div>
-                  
-                  <div className={styles.cardFooter}>
-                    <div className={styles.dateTime}>
-                      <div className={styles.dateTimeItem}>
-                        <Calendar size={14} />
-                        <span>{formatDate(publication.date_pub)}</span>
-                      </div>
-                      {publication.time_pub && (
-                        <div className={styles.dateTimeItem}>
-                          <Clock size={14} />
-                          <span>{formatTime(publication.time_pub)}</span>
+                    )}
+                    
+                    {publication.image_pub && (
+                      <div 
+                        className={styles.publicationImageWrapper}
+                        onClick={() => handleImageClick(publication.image_pub)}
+                      >
+                        <img 
+                          src={getImageUrl(publication.image_pub)}
+                          alt={publication.title_pub}
+                          className={styles.publicationImage}
+                          onLoad={(e) => {
+                            console.log('✅ Publication image loaded successfully:', {
+                              publicationId: publication.id_publication,
+                              imagePath: publication.image_pub,
+                              url: e.target.src
+                            });
+                          }}
+                          onError={(e) => {
+                            console.error('❌ Failed to load publication image:', {
+                              publicationId: publication.id_publication,
+                              imagePath: publication.image_pub,
+                              attemptedUrl: e.target.src,
+                              naturalWidth: e.target.naturalWidth,
+                              naturalHeight: e.target.naturalHeight
+                            });
+                            
+                            e.target.parentElement.style.display = 'none';
+                          }}
+                        />
+                        <div className={styles.imageOverlay}>
+                          <ImageIcon size={24} />
+                          <span>Ver imagen</span>
                         </div>
-                      )}
+                      </div>
+                    )}
+                    
+                    <div className={styles.cardContent}>
+                      <p className={styles.publicationContent}>{publication.content_pub}</p>
                     </div>
-                  </div>
-                </article>
-              ))}
+                    
+                    <div className={styles.cardFooter}>
+                      <div className={styles.dateTime}>
+                        <div className={styles.dateTimeItem}>
+                          <Calendar size={14} />
+                          <span>{formatDate(publication.date_pub)}</span>
+                        </div>
+                        {publication.time_pub && (
+                          <div className={styles.dateTimeItem}>
+                            <Clock size={14} />
+                            <span>{formatTime(publication.time_pub)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
           
-          {!publicationsLoading && filteredPublications.length > 0 && (
+          {!publicationsLoading && visiblePublications.length > 0 && (
             <div className={styles.publicationsCount}>
               <p>
-                Mostrando {filteredPublications.length} {filteredPublications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
+                Mostrando {visiblePublications.length} {visiblePublications.length === 1 ? 'publicación aprobada' : 'publicaciones aprobadas'}
                 {filters.searchTerm && ` para "${filters.searchTerm}"`}
               </p>
             </div>

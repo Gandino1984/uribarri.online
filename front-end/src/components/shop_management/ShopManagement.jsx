@@ -6,7 +6,7 @@ import ShopsListBySeller from './components/shops_list_by_seller/ShopsListBySell
 import ShopCreationForm from './components/shop_creation_form/ShopCreationForm.jsx';
 import ProductManagement from './components/product_management/ProductManagement.jsx';
 import { ShopManagementUtils } from './ShopManagementUtils.jsx';
-import styles from '../../../../public/css/ShopManagement.module.css';
+import styles from '../../../css/ShopManagement.module.css';
 
 const ShopManagement = () => {
   const { currentUser, logout } = useAuth();

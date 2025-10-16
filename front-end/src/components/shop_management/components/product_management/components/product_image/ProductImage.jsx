@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Camera, Loader } from 'lucide-react';
 import { useUI } from '../../../../../../app_context/UIContext.jsx';
 import { useProduct } from '../../../../../../app_context/ProductContext.jsx';
-import styles from '../../../../../../../../public/css/ProductImage.module.css';
+import styles from '../../../../../../../../css/ProductImage.module.css';
 import { ProductImageUtils } from './ProductImageUtils.jsx';
 
 // UPDATE: Refactored to use specialized context hooks instead of AppContext

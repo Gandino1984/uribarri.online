@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../../../../../../public/css/ShopCreationForm.module.css';
+import styles from '../../../../../../css/ShopCreationForm.module.css';
 import axiosInstance from '../../../../../utils/app/axiosConfig.js';
 
 const ShopBasicInfo = ({ newShop, setNewShop, shopTypesAndSubtypes }) => {

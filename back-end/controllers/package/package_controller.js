@@ -1,3 +1,4 @@
+// back-end/controllers/package/package_controller.js
 import package_model from "../../models/package_model.js";
 import product_model from "../../models/product_model.js";
 import shop_model from "../../models/shop_model.js";
@@ -29,6 +30,9 @@ async function getAll() {
 
 async function create(packageData) {
     try {
+        console.log('=== PACKAGE_CONTROLLER.CREATE() START ===');
+        console.log('Received packageData:', JSON.stringify(packageData, null, 2));
+        
         const { 
             id_shop, 
             id_product1, 
@@ -38,30 +42,49 @@ async function create(packageData) {
             id_product5, 
             name_package,
             discount_package,
-            image_package //update: Added image_package
+            image_package
         } = packageData;
 
         // Validate required field
         if (!id_product1) {
+            console.error('✗ Validation failed: Missing id_product1');
             return { error: "Se requiere al menos un producto para crear un paquete" };
         }
+
+        if (!id_shop) {
+            console.error('✗ Validation failed: Missing id_shop');
+            return { error: "Se requiere un ID de comercio" };
+        }
+
+        if (!name_package || name_package.trim() === '') {
+            console.error('✗ Validation failed: Missing name_package');
+            return { error: "Se requiere un nombre para el paquete" };
+        }
+
+        console.log('✓ Basic validation passed');
+        console.log('Checking if shop exists...');
 
         // Check if shop exists
         const shopExists = await shop_model.findByPk(id_shop);
         if (!shopExists) {
+            console.error('✗ Shop not found with ID:', id_shop);
             return { error: "El comercio especificado no existe" };
         }
+        console.log('✓ Shop exists:', shopExists.name_shop);
 
-        //update: Validate discount_package if provided
         if (discount_package !== undefined && discount_package !== null) {
             const discount = parseInt(discount_package);
             if (isNaN(discount) || discount < 0 || discount > 100) {
+                console.error('✗ Invalid discount value:', discount_package);
                 return { error: "El descuento del paquete debe ser un número entre 0 y 100" };
             }
         }
+        console.log('✓ Discount validation passed');
 
         // Verify that products exist and belong to the shop
         const productIds = [id_product1, id_product2, id_product3, id_product4, id_product5].filter(id => id);
+        
+        console.log('Validating products:', productIds);
         
         if (productIds.length > 0) {
             const productsCount = await product_model.count({
@@ -71,13 +94,18 @@ async function create(packageData) {
                 }
             });
 
+            console.log(`Found ${productsCount} products matching IDs and shop`);
+
             if (productsCount !== productIds.length) {
+                console.error('✗ Product validation failed');
+                console.error(`Expected ${productIds.length} products, found ${productsCount}`);
                 return { error: "Algunos productos no existen o no pertenecen a este comercio" };
             }
         }
+        console.log('✓ All products validated');
 
-        // Create the package
-        const package_created = await package_model.create({
+        // Prepare data for creation
+        const createData = {
             id_shop,
             id_product1,
             id_product2: id_product2 || null,
@@ -86,18 +114,41 @@ async function create(packageData) {
             id_product5: id_product5 || null,
             name_package: name_package || null,
             discount_package: discount_package || 0,
-            image_package: image_package || null, //update: Include image_package
+            image_package: image_package || null,
             active_package: true,
-            // creation_package will be set automatically by the model default
-        });
+        };
+
+        console.log('Creating package with data:', JSON.stringify(createData, null, 2));
+
+        // Create the package
+        const package_created = await package_model.create(createData);
+        
+        console.log('✓ Package created successfully!');
+        console.log('Created package:', JSON.stringify(package_created.toJSON(), null, 2));
         
         return { 
             data: package_created,
             success: "¡Paquete creado con éxito!"
         };
     } catch (err) {
-        console.error("-> package_controller.js - create() - Error = ", err);
-        return { error: "Error al crear el paquete" };
+        console.error('=== PACKAGE_CONTROLLER.CREATE() ERROR ===');
+        console.error('Error name:', err.name);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+        console.error('Full error object:', err);
+        
+        // Check for Sequelize validation errors
+        if (err.name === 'SequelizeValidationError') {
+            console.error('Sequelize Validation Error details:', err.errors);
+            return { error: `Error de validación: ${err.errors.map(e => e.message).join(', ')}` };
+        }
+        
+        if (err.name === 'SequelizeDatabaseError') {
+            console.error('Sequelize Database Error details:', err.parent);
+            return { error: `Error de base de datos: ${err.message}` };
+        }
+        
+        return { error: "Error al crear el paquete: " + err.message };
     }
 }
 
@@ -114,7 +165,6 @@ async function update(id_package, packageData) {
             return { error: "Se requiere al menos un producto para el paquete" };
         }
 
-        //update: Validate discount_package if provided
         if (packageData.hasOwnProperty('discount_package') && packageData.discount_package !== null) {
             const discount = parseInt(packageData.discount_package);
             if (isNaN(discount) || discount < 0 || discount > 100) {
@@ -154,7 +204,7 @@ async function update(id_package, packageData) {
         if (packageData.hasOwnProperty('name_package')) updateData.name_package = packageData.name_package;
         if (packageData.hasOwnProperty('active_package')) updateData.active_package = packageData.active_package;
         if (packageData.hasOwnProperty('discount_package')) updateData.discount_package = packageData.discount_package;
-        if (packageData.hasOwnProperty('image_package')) updateData.image_package = packageData.image_package; //update: Include image_package
+        if (packageData.hasOwnProperty('image_package')) updateData.image_package = packageData.image_package;
 
         // Update the package
         await packageToUpdate.update(updateData);
@@ -209,7 +259,6 @@ async function getById(id_package) {
             if (packageData.id_product4) packageData.product4 = productsMap[packageData.id_product4];
             if (packageData.id_product5) packageData.product5 = productsMap[packageData.id_product5];
 
-            //update: Calculate total price and discounted price for the package
             let totalPrice = 0;
             products.forEach(product => {
                 totalPrice += parseFloat(product.price_product) || 0;
@@ -285,7 +334,6 @@ async function getByShopId(id_shop, activeStatus = null) {
                 if (pkg.id_product4 && productsMap[pkg.id_product4]) pkgData.product4 = productsMap[pkg.id_product4];
                 if (pkg.id_product5 && productsMap[pkg.id_product5]) pkgData.product5 = productsMap[pkg.id_product5];
 
-                //update: Calculate total price and discounted price for each package
                 let totalPrice = 0;
                 products.forEach(product => {
                     totalPrice += parseFloat(product.price_product) || 0;
@@ -352,19 +400,20 @@ async function removeById(id_package) {
             return { error: "Paquete no encontrado" };
         }
 
-        //update: If package has an image, try to delete it
         if (package_found.image_package) {
             try {
-                // Get shop to find the correct directory
                 const shop = await shop_model.findByPk(package_found.id_shop);
                 if (shop) {
                     const imagePath = path.join(
                         __dirname,
                         '..',
                         '..',
-                        '..',
-                        'public',
-                        package_found.image_package
+                        'assets',
+                        'images',
+                        'shops',
+                        shop.name_shop,
+                        'package_images',
+                        path.basename(package_found.image_package)
                     );
                     
                     await fs.unlink(imagePath);
@@ -400,7 +449,6 @@ async function removeByShopId(id_shop, transaction) {
             return { count: 0 };
         }
 
-        //update: Delete package images
         const shop = await shop_model.findByPk(id_shop);
         if (shop) {
             for (const pkg of packages) {
@@ -410,9 +458,12 @@ async function removeByShopId(id_shop, transaction) {
                             __dirname,
                             '..',
                             '..',
-                            '..',
-                            'public',
-                            pkg.image_package
+                            'assets',
+                            'images',
+                            'shops',
+                            shop.name_shop,
+                            'package_images',
+                            path.basename(pkg.image_package)
                         );
                         
                         await fs.unlink(imagePath);
@@ -441,7 +492,6 @@ async function removeByShopId(id_shop, transaction) {
     }
 }
 
-//update: Function to update package image after upload
 async function updatePackageImage(id_package, imagePath) {
     try {
         const packageToUpdate = await package_model.findByPk(id_package);

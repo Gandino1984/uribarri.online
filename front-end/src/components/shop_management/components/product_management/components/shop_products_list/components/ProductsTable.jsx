@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductTableHeader from './ProductTableHeader';
 import ProductTableRow from './ProductTableRow';
-import styles from '../../../../../../../../../public/css/ShopProductsList.module.css';
+import styles from '../../../../../../../../css/ShopProductsList.module.css';
 
 const ProductsTable = ({ 
   displayedProducts, 

@@ -21,7 +21,6 @@ const ensureDirectoryExists = async (dirPath) => {
   }
 };
 
-//update: Added function to clean existing product images before saving new ones
 const cleanExistingProductImages = async (dirPath, productId) => {
   try {
     // Check if directory exists first
@@ -85,14 +84,11 @@ const productImageStorage = multer.diskStorage({
       const shopName = shop.name_shop;
       console.log(`Found shop name: ${shopName} for ID: ${shopId}, product ID: ${productId}`);
       
-      // Create path for shop-specific product images - use forward slashes for Docker compatibility
       const uploadsDir = path.join(
         __dirname, 
         '..',
-        '..',
-        'public', 
+        'assets',
         'images', 
-        'uploads', 
         'shops', 
         shopName, 
         'product_images'
@@ -103,7 +99,6 @@ const productImageStorage = multer.diskStorage({
       // Ensure the directory exists
       await ensureDirectoryExists(uploadsDir);
       
-      //update: Clean existing product images before saving new one
       await cleanExistingProductImages(uploadsDir, productId);
       
       console.log(`Product image will be stored in: ${uploadsDir}`);
@@ -115,6 +110,9 @@ const productImageStorage = multer.diskStorage({
         console.warn('Could not set directory permissions:', chmodError.message);
       }
       
+      //update: Store shop name in request for later use
+      req.uploadShopName = shopName;
+      
       cb(null, uploadsDir);
     } catch (error) {
       console.error('Error setting up upload directory:', error);
@@ -123,7 +121,6 @@ const productImageStorage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const productId = req.headers['x-product-id'];
-    //update: Use temporary filename since we'll rename after WebP conversion
     const tempFileName = `temp_${productId}_${Date.now()}${path.extname(file.originalname)}`;
     console.log(`Generated temporary filename: ${tempFileName}`);
     cb(null, tempFileName);
@@ -145,7 +142,7 @@ const uploadProductImage = multer({
   storage: productImageStorage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 //update: Increased to 10MB limit for initial upload (we'll compress it later)
+    fileSize: 10 * 1024 * 1024 // 10MB limit for initial upload (we'll compress it later)
   }
 }).single('productImage'); // IMPORTANT: This must match the field name from the frontend
 
@@ -198,11 +195,9 @@ const handleProductImageUpload = async (req, res, next) => {
       // Validate the image
       await validateImageMiddleware(req, res, async () => {
         try {
-          //update: Process the image (convert to WebP and compress to 1MB)
           console.log('Processing uploaded image for WebP conversion and compression...');
           const processedFile = await processUploadedImage(req.file);
           
-          //update: Rename the processed file to 'product_[id].webp'
           const productId = req.headers['x-product-id'];
           const finalFilename = `product_${productId}.webp`;
           const finalPath = path.join(path.dirname(processedFile.path), finalFilename);
@@ -228,12 +223,20 @@ const handleProductImageUpload = async (req, res, next) => {
           // Update req.file with the processed file info
           req.file = processedFile;
           
+          //update: Create the correct database path format: assets/images/shops/...
+          const shopName = req.uploadShopName;
+          const dbPath = `assets/images/shops/${shopName}/product_images/${finalFilename}`;
+          
+          //update: Add the database path to the request object
+          req.file.dbPath = dbPath;
+          
           const stats = await fs.stat(finalPath);
           console.log('Image processed successfully:', {
             filename: processedFile.filename,
             size: Math.round(stats.size / 1024) + 'KB',
             type: processedFile.mimetype,
-            path: processedFile.path
+            path: processedFile.path,
+            dbPath: dbPath
           });
           
           next();
