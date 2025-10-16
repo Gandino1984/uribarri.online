@@ -26,7 +26,7 @@ const InfoBoard = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.uribarri.online';
   
   const fetchPublications = useCallback(async () => {
     await fetchAllPublications();

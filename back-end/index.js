@@ -165,46 +165,13 @@ app.use(cors({
 // Routes
 app.use("/", router);
 
-app.use((err, req, res, next) => {
-    console.error('❌ Server error:', err);
-    res.status(err.status || 500).json({
-        error: err.message || 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-initializeDatabase().then(() => {
-    app.use("/", router);
-
-    app.listen(INTERNAL_PORT, '0.0.0.0', () => {
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log(`SERVIDOR INTERNO EN EL PUERTO = ${INTERNAL_PORT}`);
-        console.log(`PUERTO EXTERNO MAPEADO A = ${EXTERNAL_PORT}`);
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    });
-});
 
 // Start server
 app.listen(INTERNAL_PORT, '0.0.0.0', () => {
+    console.log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`);
     console.log(`>>> SERVIDOR INTERNO EN EL PUERTO = ${INTERNAL_PORT}`);
     console.log(`>>> PUERTO EXTERNO MAPEADO A = ${EXTERNAL_PORT}`);
     console.log(`Serving legacy images from: ${path.join(__dirname, '..', 'public', 'images')}`);
     console.log(`Serving backend assets from: ${path.join(__dirname, 'assets', 'images')}`);
-    
-    const shopsDir = path.join(__dirname, 'assets', 'images', 'shops');
-    if (fs.existsSync(shopsDir)) {
-        console.log('\n📁 Shops directory structure:');
-        try {
-            const shops = fs.readdirSync(shopsDir);
-            shops.forEach(shopName => {
-                console.log(`  - ${shopName}`);
-                const shopPath = path.join(shopsDir, shopName, 'cover_image');
-                if (fs.existsSync(shopPath)) {
-                    const images = fs.readdirSync(shopPath);
-                    images.forEach(img => console.log(`    └─ ${img}`));
-                }
-            });
-        } catch (err) {
-            console.log('Error reading shops directory:', err.message);
-        }
-    } else {
-        console.log('\n📁 Shops directory does not exist yet');
-    }
+    console.log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`);
 });
