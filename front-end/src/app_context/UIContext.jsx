@@ -22,6 +22,9 @@ export const UIProvider = ({ children }) => {
   const [showErrorCard, setShowErrorCard] = useState(false);
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   
+  //update: Add email verification state - NOT persisted to localStorage
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  
   //update: Initialize navigation states - only restore from localStorage if user is logged in
   const [showTopBar, setShowTopBar] = useState(() => {
     const currentUser = localStorage.getItem('currentUser');
@@ -138,8 +141,45 @@ export const UIProvider = ({ children }) => {
   
   const [isCardMinimized, setIsCardMinimized] = useState(false);
 
+  //update: Detect email verification intent from URL on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const email = urlParams.get('email');
+    const isVerificationPath = window.location.pathname === '/verify-email';
+    
+    // Check if this is an email verification request
+    const isEmailVerification = (token && email) || isVerificationPath;
+    
+    if (isEmailVerification) {
+      console.log('=== EMAIL VERIFICATION DETECTED ===');
+      console.log('Token:', token);
+      console.log('Email:', email);
+      console.log('Path:', window.location.pathname);
+      
+      // Show email verification component and hide everything else
+      setShowEmailVerification(true);
+      setShowLandingPage(false);
+      setShowShopManagement(false);
+      setShowShopStore(false);
+      setShowShopWindow(false);
+      setShowInfoManagement(false);
+      setShowProductManagement(false);
+      setShowShopsListBySeller(false);
+      setShowRiderManagement(false);
+      setShowOffersBoard(false);
+      setShowTopBar(false);
+      
+      console.log('Email verification view activated');
+      console.log('===================================');
+    }
+  }, []); // Run only once on mount
+
   //update: Save navigation state to localStorage whenever it changes
   useEffect(() => {
+    // Don't save state if email verification is active
+    if (showEmailVerification) return;
+    
     const navigationState = {
       showTopBar,
       showLandingPage,
@@ -167,7 +207,8 @@ export const UIProvider = ({ children }) => {
     showShopsListBySeller,
     showRiderManagement,
     showOffersBoard,
-    showInfoManagement
+    showInfoManagement,
+    showEmailVerification
   ]);
 
   //update: Save navigation intent to localStorage
@@ -220,6 +261,7 @@ export const UIProvider = ({ children }) => {
     setShowOffersBoard(false);
     setShowInfoManagement(false);
     setNavigationIntent(null);
+    setShowEmailVerification(false);
     
     console.log('Navigation state cleared - redirecting to LandingPage');
   };
@@ -352,6 +394,10 @@ export const UIProvider = ({ children }) => {
         //update: Navigation intent
         navigationIntent, setNavigationIntent,
         clearNavigationState,
+        
+        //update: Email verification state
+        showEmailVerification, 
+        setShowEmailVerification,
         
         // Image modal handlers
         showImageModal, setShowImageModal,

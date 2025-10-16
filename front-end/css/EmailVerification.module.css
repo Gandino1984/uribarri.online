@@ -1,26 +1,24 @@
-/* front-end/src/components/email_verification/EmailVerification.module.css */
-
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 1rem;
+  padding: 20px;
 }
 
 .card {
   background: white;
-  border-radius: 12px;
-  padding: 3rem 2rem;
-  max-width: 450px;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 500px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
-  animation: slideUp 0.5s ease-out;
+  animation: slideIn 0.3s ease-out;
 }
 
-@keyframes slideUp {
+@keyframes slideIn {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -32,15 +30,26 @@
 }
 
 .iconWrapper {
+  margin-bottom: 24px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-bottom: 1.5rem;
 }
 
 .loadingIcon {
-  color: var(--app-purple);
+  color: #667eea;
   animation: spin 1s linear infinite;
+}
+
+.successIcon {
+  color: #10b981;
+}
+
+.errorIcon {
+  color: #ef4444;
+}
+
+.warningIcon {
+  color: #f59e0b;
 }
 
 @keyframes spin {
@@ -52,67 +61,81 @@
   }
 }
 
-.successIcon {
-  color: #10b981;
-  animation: scaleIn 0.5s ease-out;
-}
-
-.errorIcon {
-  color: #ef4444;
-  animation: scaleIn 0.5s ease-out;
-}
-
-.warningIcon {
-  color: #f59e0b;
-  animation: scaleIn 0.5s ease-out;
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
 .title {
-  font-size: 1.875rem;
-  font-weight: bold;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
   color: #1f2937;
-  margin-bottom: 1rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .message {
-  font-size: 1rem;
+  font-size: 16px;
   color: #6b7280;
+  margin-bottom: 24px;
   line-height: 1.6;
-  margin-bottom: 2rem;
+}
+
+.accountsBox {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.accountsTitle {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.accountsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.accountItem {
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.accountItem:last-child {
+  margin-bottom: 0;
 }
 
 .primaryButton {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  background-color: var(--app-purple);
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  background: #667eea;
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-transform: uppercase;
-  min-width: 200px;
-  margin: 0.5rem;
+  transition: all 0.2s;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .primaryButton:hover:not(:disabled) {
-  background-color: var(--app-purple-darker);
+  background: #5568d3;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(151, 71, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.primaryButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .primaryButton:disabled {
@@ -121,44 +144,54 @@
 }
 
 .secondaryButton {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  background-color: transparent;
-  color: var(--app-purple);
-  border: 2px solid var(--app-purple);
-  padding: 0.75rem 1.5rem;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-transform: uppercase;
-  min-width: 200px;
-  margin: 0.5rem;
+  transition: all 0.2s;
+  margin-top: 12px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .secondaryButton:hover {
-  background-color: var(--app-purple-transparent);
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.secondaryButton:active {
+  transform: translateY(0);
 }
 
 .buttonLoadingIcon {
   animation: spin 1s linear infinite;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .card {
-    padding: 2rem 1.5rem;
+    padding: 30px 20px;
   }
-  
+
   .title {
-    font-size: 1.5rem;
+    font-size: 24px;
   }
-  
+
+  .message {
+    font-size: 14px;
+  }
+
   .primaryButton,
   .secondaryButton {
-    width: 100%;
-    margin: 0.5rem 0;
+    font-size: 14px;
+    padding: 12px 20px;
   }
 }

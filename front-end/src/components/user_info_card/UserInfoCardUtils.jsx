@@ -135,7 +135,7 @@ export const UserInfoCardUtils = () => {
         
         try {
             // Get base URL from axios config
-            const baseURL = axiosInstance.defaults.baseURL || 'http://localhost:3000';
+            const baseURL = axiosInstance.defaults.baseURL || 'https://app.uribarri.online';
             
             //update: If imagePath is just a username (which is what the backend returns now),
             // construct the URL using the /user/image/:userName endpoint

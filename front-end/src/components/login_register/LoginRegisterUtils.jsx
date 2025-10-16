@@ -48,7 +48,7 @@ export const LoginRegisterUtils = () => {
 
   const { validateUsername } = useUsernameValidation();
   
-  const { validateIPRegistration } = useIPValidation();
+  const { validateIPRegistration } = useIPValidation(); 
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
