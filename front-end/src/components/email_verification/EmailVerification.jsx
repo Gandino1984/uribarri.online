@@ -1,22 +1,24 @@
-// front-end/src/components/email_verification/EmailVerification.jsx
-
+//update: Minor improvements for better navigation handling
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Mail, Loader, RefreshCw } from 'lucide-react';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 import styles from '../../../css/EmailVerification.module.css';
 
 const EmailVerification = () => {
-  const [verificationStatus, setVerificationStatus] = useState('verifying'); // 'verifying', 'success', 'error', 'expired'
+  const [verificationStatus, setVerificationStatus] = useState('verifying'); 
   const [errorMessage, setErrorMessage] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
+  //update: Track verified user types for display
+  const [verifiedUserTypes, setVerifiedUserTypes] = useState([]);
 
   useEffect(() => {
     const verifyEmail = async () => {
-      // Get URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
       const email = urlParams.get('email');
+
+      console.log('EmailVerification - Verifying with:', { token, email });
 
       if (!token || !email) {
         setVerificationStatus('error');
@@ -24,16 +26,18 @@ const EmailVerification = () => {
         return;
       }
 
-      setUserEmail(email);
+      setUserEmail(decodeURIComponent(email));
 
       try {
         const response = await axiosInstance.post('/user/verify-email', {
-          email,
-          token
+          email: decodeURIComponent(email),
+          token: token
         });
 
+        console.log('Verification response:', response.data);
+
         if (response.data.error) {
-          if (response.data.error.includes('expirado')) {
+          if (response.data.error.includes('expirado') || response.data.error.includes('expired')) {
             setVerificationStatus('expired');
           } else {
             setVerificationStatus('error');
@@ -41,11 +45,22 @@ const EmailVerification = () => {
           setErrorMessage(response.data.error);
         } else {
           setVerificationStatus('success');
+          //update: Store verified user types if available
+          if (response.data.data?.user_types) {
+            setVerifiedUserTypes(response.data.data.user_types);
+          }
         }
       } catch (error) {
         console.error('Error verifying email:', error);
         setVerificationStatus('error');
-        setErrorMessage('Error al verificar el email. Por favor intenta de nuevo.');
+        
+        if (error.response?.data?.error) {
+          setErrorMessage(error.response.data.error);
+        } else if (error.message === 'Network Error') {
+          setErrorMessage('Error de conexión. Por favor verifica tu conexión a internet.');
+        } else {
+          setErrorMessage('Error al verificar el email. Por favor intenta de nuevo.');
+        }
       }
     };
 
@@ -78,8 +93,19 @@ const EmailVerification = () => {
   };
 
   const handleNavigateToLogin = () => {
-    // Remove query parameters and redirect to main page
+    //update: Navigate to root and let the app handle login state
     window.location.href = window.location.origin;
+  };
+
+  //update: Helper to format user type names
+  const formatUserType = (type) => {
+    const typeNames = {
+      'user': '👤 Usuario',
+      'seller': '🏪 Vendedor',
+      'rider': '🚴 Repartidor',
+      'provider': '📦 Proveedor'
+    };
+    return typeNames[type] || type;
   };
 
   return (
@@ -105,10 +131,28 @@ const EmailVerification = () => {
               Tu dirección de correo electrónico ha sido verificada exitosamente.
               Ya puedes iniciar sesión en tu cuenta.
             </p>
+            
+            {/*update: Show verified account types if multiple*/}
+            {verifiedUserTypes.length > 0 && (
+              <div className={styles.accountsBox}>
+                <p className={styles.accountsTitle}>
+                  {verifiedUserTypes.length > 1 ? 'Cuentas verificadas:' : 'Cuenta verificada:'}
+                </p>
+                <ul className={styles.accountsList}>
+                  {verifiedUserTypes.map((type, index) => (
+                    <li key={index} className={styles.accountItem}>
+                      {formatUserType(type)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
             <button 
               className={styles.primaryButton}
               onClick={handleNavigateToLogin}
             >
+              <Mail size={20} />
               Ir a Iniciar Sesión
             </button>
           </>

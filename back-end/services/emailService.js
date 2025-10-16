@@ -63,7 +63,7 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
     }
     
     // Construct verification URL
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
+    const verificationUrl = `https://app.uribarri.online/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
     
     console.log('Verification URL generated:', verificationUrl);
     
