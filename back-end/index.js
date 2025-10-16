@@ -135,14 +135,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
     origin: [
-    'https://uribarri.online',
-    'https://app.uribarri.online',
-    'https://api.uribarri.online'
+    // 'https://uribarri.online',
+    // 'https://app.uribarri.online',
+    // 'https://api.uribarri.online'
     // Local development origins (uncomment if needed)
-    // 'http://localhost:5173',
-    //   'http://localhost:5173', 
-    //   'http://127.0.0.1:5173',
-    //   `http://localhost:${EXTERNAL_PORT}`
+    'http://localhost:5173',
+      'http://localhost:5173', 
+      'http://127.0.0.1:5173',
+      `http://localhost:${EXTERNAL_PORT}`
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
