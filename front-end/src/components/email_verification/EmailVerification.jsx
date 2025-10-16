@@ -1,18 +1,29 @@
-//update: Minor improvements for better navigation handling
+//update: Use state-based navigation instead of React Router
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Mail, Loader, RefreshCw } from 'lucide-react';
 import axiosInstance from '../../utils/app/axiosConfig.js';
+import { useUI } from '../../app_context/UIContext.jsx';
 import styles from '../../../css/EmailVerification.module.css';
 
 const EmailVerification = () => {
+  //update: Get state from UIContext
+  const { 
+    showEmailVerification, 
+    setShowEmailVerification,
+    setShowLandingPage,
+    setShowTopBar
+  } = useUI();
+  
   const [verificationStatus, setVerificationStatus] = useState('verifying'); 
   const [errorMessage, setErrorMessage] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
-  //update: Track verified user types for display
   const [verifiedUserTypes, setVerifiedUserTypes] = useState([]);
 
   useEffect(() => {
+    //update: Only run verification if this component should be shown
+    if (!showEmailVerification) return;
+
     const verifyEmail = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
@@ -45,7 +56,6 @@ const EmailVerification = () => {
           setErrorMessage(response.data.error);
         } else {
           setVerificationStatus('success');
-          //update: Store verified user types if available
           if (response.data.data?.user_types) {
             setVerifiedUserTypes(response.data.data.user_types);
           }
@@ -65,7 +75,7 @@ const EmailVerification = () => {
     };
 
     verifyEmail();
-  }, []);
+  }, [showEmailVerification]);
 
   const handleResendVerification = async () => {
     if (!userEmail || isResending) return;
@@ -92,12 +102,19 @@ const EmailVerification = () => {
     }
   };
 
+  //update: Navigate back to landing page using state
   const handleNavigateToLogin = () => {
-    //update: Navigate to root and let the app handle login state
-    window.location.href = window.location.origin;
+    console.log('Navigating back to landing page');
+    
+    // Clear URL parameters
+    window.history.replaceState({}, document.title, window.location.pathname);
+    
+    // Reset states to show landing page
+    setShowEmailVerification(false);
+    setShowLandingPage(true);
+    setShowTopBar(false);
   };
 
-  //update: Helper to format user type names
   const formatUserType = (type) => {
     const typeNames = {
       'user': '👤 Usuario',
@@ -107,6 +124,11 @@ const EmailVerification = () => {
     };
     return typeNames[type] || type;
   };
+
+  //update: Don't render if this component shouldn't be shown
+  if (!showEmailVerification) {
+    return null;
+  }
 
   return (
     <div className={styles.container}>
@@ -132,7 +154,6 @@ const EmailVerification = () => {
               Ya puedes iniciar sesión en tu cuenta.
             </p>
             
-            {/*update: Show verified account types if multiple*/}
             {verifiedUserTypes.length > 0 && (
               <div className={styles.accountsBox}>
                 <p className={styles.accountsTitle}>
