@@ -11,9 +11,9 @@ import { Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, D
 const iconComponents = [Banana, Apple, Bean, Beef, Carrot, Beer, Croissant, Drill, Dog, Fish, Drumstick, Gift, Gem, Ham, Palette, Printer, Wrench, Car, Scissors, HeartPulse, BookMarked, Mouse, Cpu, Laptop, Smile, ChefHat, Laugh, Lollipop, Cake, Pizza, ShoppingBasket, Speaker, Amphora, ConciergeBell, Flower, Baby, Shirt, Watch, Sandwich];
 
 const gradientColors = [
-  '#6d48dd', // --gradient-purple-start
-  '#9c42dd', // --gradient-purple-mid
-  '#e9487e'  // --gradient-purple-end
+  '#6d48dd',
+  '#9c42dd',
+  '#e9487e'
 ];
 
 const NumericKeyboard = ({ 
@@ -35,7 +35,6 @@ const NumericKeyboard = ({
     setError 
   } = useUI();
 
-  // Use useMemo to memoize the icons array
   const icons = useMemo(() => iconComponents, []);
   
   useEffect(() => {
@@ -53,9 +52,8 @@ const NumericKeyboard = ({
 
   useEffect(() => {
     if (showMaskedPassword) {
-      // 🎨 UPDATE: Create icons with gradient colors based on their position
+      //update: Changed icon size from 10 to 20 for better visibility
       setDisplayedPassword(passwordIcons.map((Icon, index) => {
-        // Calculate color based on position in the password
         const colorIndex = Math.min(
           Math.floor(index / (value.length || 1) * gradientColors.length),
           gradientColors.length - 1
@@ -64,7 +62,7 @@ const NumericKeyboard = ({
         
         return (
           <div key={index} className={styles.iconWrapper}>
-            <Icon size={10} color={"black"} strokeWidth={2} />
+            <Icon size={20} color={"black"} strokeWidth={2} />
           </div>
         );
       }));
@@ -152,7 +150,6 @@ const NumericKeyboard = ({
   );
 };
 
-// Add PropTypes validation
 NumericKeyboard.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,

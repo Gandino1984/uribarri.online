@@ -1,14 +1,10 @@
-// back-end/services/emailService.js
-
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create reusable transporter object using SMTP transport
 const createTransporter = () => {
-  //update: Enhanced logging for debugging
   console.log('=== EMAIL CONFIGURATION DEBUG ===');
   console.log('EMAIL_HOST:', process.env.EMAIL_HOST || 'smtp.gmail.com');
   console.log('EMAIL_PORT:', process.env.EMAIL_PORT || 587);
@@ -24,36 +20,31 @@ const createTransporter = () => {
     console.error('EMAIL_PASS:', process.env.EMAIL_PASS ? 'SET' : 'NOT SET');
   }
   
-  //update: Fixed - use createTransport instead of createTransporter
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // The spaces in the app password are OK
+      pass: process.env.EMAIL_PASS,
     },
-    //update: Add additional configuration for better compatibility
     tls: {
       rejectUnauthorized: false
     },
-    debug: true, // Enable debug output
-    logger: true // Log to console
+    debug: true,
+    logger: true
   });
 };
 
-// Generate verification token
 export const generateVerificationToken = () => {
   return crypto.randomBytes(32).toString('hex');
 };
 
-// Send verification email
 export const sendVerificationEmail = async (userEmail, userName, verificationToken) => {
   try {
     console.log('Attempting to send verification email to:', userEmail);
     const transporter = createTransporter();
     
-    //update: Test transporter connection first
     try {
       await transporter.verify();
       console.log('Email server connection verified successfully');
@@ -62,12 +53,12 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
       return { success: false, error: 'Email server connection failed: ' + verifyError.message };
     }
     
-    // Construct verification URL
-    const verificationUrl = `https://app.uribarri.online/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
+    //update: Use FRONTEND_URL from environment variable instead of hardcoded production URL
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationUrl = `${frontendUrl}/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
     
     console.log('Verification URL generated:', verificationUrl);
     
-    // Email HTML template
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -161,7 +152,6 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
       </html>
     `;
     
-    // Plain text version for email clients that don't support HTML
     const textContent = `
       Hola ${userName}!
       
@@ -178,7 +168,6 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
       El equipo de Uribarri.Online
     `;
     
-    // Send mail with defined transport object
     const mailOptions = {
       from: `"Uribarri.Online" <${process.env.EMAIL_USER}>`,
       to: userEmail,
@@ -211,7 +200,6 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
   }
 };
 
-// Send welcome email after successful verification
 export const sendWelcomeEmail = async (userEmail, userName) => {
   try {
     console.log('Sending welcome email to:', userEmail);
@@ -297,8 +285,183 @@ export const sendWelcomeEmail = async (userEmail, userName) => {
   }
 };
 
+export const sendPasswordResetEmail = async (userEmail, userName, resetToken) => {
+  try {
+    console.log('Attempting to send password reset email to:', userEmail);
+    const transporter = createTransporter();
+    
+    try {
+      await transporter.verify();
+      console.log('Email server connection verified successfully');
+    } catch (verifyError) {
+      console.error('Email server verification failed:', verifyError);
+      return { success: false, error: 'Email server connection failed: ' + verifyError.message };
+    }
+    
+    //update: Use FRONTEND_URL from environment variable instead of hardcoded production URL
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(userEmail)}`;
+    
+    console.log('Password reset URL generated:', resetUrl);
+    
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: 'Montserrat', Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .container {
+              background-color: #f8f9fa;
+              border-radius: 10px;
+              padding: 30px;
+              margin-top: 20px;
+            }
+            .header {
+              text-align: center;
+              color: #9747ff;
+              font-size: 28px;
+              font-weight: bold;
+              margin-bottom: 20px;
+            }
+            .content {
+              background-color: white;
+              padding: 25px;
+              border-radius: 8px;
+              margin-top: 20px;
+            }
+            .button {
+              display: inline-block;
+              padding: 12px 30px;
+              margin: 20px 0;
+              background-color: #9747ff;
+              color: white !important;
+              text-decoration: none;
+              border-radius: 8px;
+              font-weight: 600;
+              text-transform: uppercase;
+            }
+            .button:hover {
+              background-color: #7431ca;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              color: #666;
+              font-size: 12px;
+            }
+            .warning {
+              background-color: #fff3cd;
+              border: 1px solid #ffc107;
+              color: #856404;
+              padding: 10px;
+              border-radius: 5px;
+              margin-top: 20px;
+            }
+            .security-notice {
+              background-color: #d1ecf1;
+              border: 1px solid #bee5eb;
+              color: #0c5460;
+              padding: 10px;
+              border-radius: 5px;
+              margin-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              Uribarri.Online
+            </div>
+            <div class="content">
+              <h2>¡Hola ${userName}!</h2>
+              <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Uribarri.Online.</p>
+              
+              <p>Para restablecer tu contraseña, por favor haz clic en el siguiente botón:</p>
+              
+              <div style="text-align: center;">
+                <a href="${resetUrl}" class="button">Restablecer Contraseña</a>
+              </div>
+              
+              <p>O copia y pega este enlace en tu navegador:</p>
+              <p style="word-break: break-all; background-color: #f5f5f5; padding: 10px; border-radius: 5px;">
+                ${resetUrl}
+              </p>
+              
+              <div class="warning">
+                <strong>⚠️ Importante:</strong> Este enlace expirará en 1 hora por motivos de seguridad.
+              </div>
+              
+              <div class="security-notice">
+                <strong>🔒 Nota de Seguridad:</strong> Si no solicitaste restablecer tu contraseña, puedes ignorar este correo de forma segura. Tu contraseña actual no se verá afectada.
+              </div>
+            </div>
+            <div class="footer">
+              <p>© 2024 Uribarri.Online - Gestión de pedidos y reservas online</p>
+              <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    const textContent = `
+      Hola ${userName}!
+      
+      Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en Uribarri.Online.
+      
+      Para restablecer tu contraseña, visita el siguiente enlace:
+      ${resetUrl}
+      
+      Este enlace expirará en 1 hora por motivos de seguridad.
+      
+      Si no solicitaste restablecer tu contraseña, puedes ignorar este correo de forma segura.
+      
+      Saludos,
+      El equipo de Uribarri.Online
+    `;
+    
+    const mailOptions = {
+      from: `"Uribarri.Online" <${process.env.EMAIL_USER}>`,
+      to: userEmail,
+      subject: '🔑 Restablece tu contraseña - Uribarri.Online',
+      text: textContent,
+      html: htmlContent,
+    };
+    
+    console.log('Sending password reset email with options:', {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject
+    });
+    
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log('Password reset email sent successfully:', info.messageId);
+    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
+    
+    return { success: true, messageId: info.messageId };
+    
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      response: error.response
+    });
+    return { success: false, error: error.message };
+  }
+};
+
 export default {
   generateVerificationToken,
   sendVerificationEmail,
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  sendPasswordResetEmail
 };

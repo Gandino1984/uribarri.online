@@ -22,8 +22,10 @@ export const UIProvider = ({ children }) => {
   const [showErrorCard, setShowErrorCard] = useState(false);
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   
-  //update: Add email verification state - NOT persisted to localStorage
+  //update: Add email verification and password reset states - NOT persisted to localStorage
   const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   
   //update: Initialize navigation states - only restore from localStorage if user is logged in
   const [showTopBar, setShowTopBar] = useState(() => {
@@ -141,24 +143,24 @@ export const UIProvider = ({ children }) => {
   
   const [isCardMinimized, setIsCardMinimized] = useState(false);
 
-  //update: Detect email verification intent from URL on mount
+  //update: Detect email verification, password reset, or forgot password from URL on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const email = urlParams.get('email');
-    const isVerificationPath = window.location.pathname === '/verify-email';
+    const currentPath = window.location.pathname;
     
-    // Check if this is an email verification request
-    const isEmailVerification = (token && email) || isVerificationPath;
+    console.log('=== URL DETECTION ON MOUNT ===');
+    console.log('Current path:', currentPath);
+    console.log('Has token:', !!token);
+    console.log('Has email:', !!email);
     
-    if (isEmailVerification) {
-      console.log('=== EMAIL VERIFICATION DETECTED ===');
-      console.log('Token:', token);
-      console.log('Email:', email);
-      console.log('Path:', window.location.pathname);
-      
-      // Show email verification component and hide everything else
-      setShowEmailVerification(true);
+    //update: CRITICAL FIX - Check path FIRST before determining what to show
+    if (currentPath === '/reset-password' || currentPath.includes('/reset-password')) {
+      console.log('âœ… RESET PASSWORD PAGE DETECTED');
+      setShowResetPassword(true);
+      setShowEmailVerification(false);
+      setShowForgotPassword(false);
       setShowLandingPage(false);
       setShowShopManagement(false);
       setShowShopStore(false);
@@ -169,16 +171,47 @@ export const UIProvider = ({ children }) => {
       setShowRiderManagement(false);
       setShowOffersBoard(false);
       setShowTopBar(false);
-      
-      console.log('Email verification view activated');
-      console.log('===================================');
+    } else if (currentPath === '/forgot-password' || currentPath.includes('/forgot-password')) {
+      console.log('âœ… FORGOT PASSWORD PAGE DETECTED');
+      setShowForgotPassword(true);
+      setShowEmailVerification(false);
+      setShowResetPassword(false);
+      setShowLandingPage(false);
+      setShowShopManagement(false);
+      setShowShopStore(false);
+      setShowShopWindow(false);
+      setShowInfoManagement(false);
+      setShowProductManagement(false);
+      setShowShopsListBySeller(false);
+      setShowRiderManagement(false);
+      setShowOffersBoard(false);
+      setShowTopBar(false);
+    } else if ((currentPath === '/verify-email' || currentPath.includes('/verify-email')) && token && email) {
+      console.log('âœ… EMAIL VERIFICATION PAGE DETECTED');
+      setShowEmailVerification(true);
+      setShowResetPassword(false);
+      setShowForgotPassword(false);
+      setShowLandingPage(false);
+      setShowShopManagement(false);
+      setShowShopStore(false);
+      setShowShopWindow(false);
+      setShowInfoManagement(false);
+      setShowProductManagement(false);
+      setShowShopsListBySeller(false);
+      setShowRiderManagement(false);
+      setShowOffersBoard(false);
+      setShowTopBar(false);
+    } else {
+      console.log('âž¡ï¸ Normal page - no special routing needed');
     }
+    
+    console.log('===================================');
   }, []); // Run only once on mount
 
   //update: Save navigation state to localStorage whenever it changes
   useEffect(() => {
-    // Don't save state if email verification is active
-    if (showEmailVerification) return;
+    // Don't save state if on special pages
+    if (showEmailVerification || showResetPassword || showForgotPassword) return;
     
     const navigationState = {
       showTopBar,
@@ -208,7 +241,9 @@ export const UIProvider = ({ children }) => {
     showRiderManagement,
     showOffersBoard,
     showInfoManagement,
-    showEmailVerification
+    showEmailVerification,
+    showResetPassword,
+    showForgotPassword
   ]);
 
   //update: Save navigation intent to localStorage
@@ -262,6 +297,8 @@ export const UIProvider = ({ children }) => {
     setShowInfoManagement(false);
     setNavigationIntent(null);
     setShowEmailVerification(false);
+    setShowResetPassword(false);
+    setShowForgotPassword(false);
     
     console.log('Navigation state cleared - redirecting to LandingPage');
   };
@@ -395,9 +432,13 @@ export const UIProvider = ({ children }) => {
         navigationIntent, setNavigationIntent,
         clearNavigationState,
         
-        //update: Email verification state
+        //update: Email verification and password reset states
         showEmailVerification, 
         setShowEmailVerification,
+        showResetPassword,
+        setShowResetPassword,
+        showForgotPassword,
+        setShowForgotPassword,
         
         // Image modal handlers
         showImageModal, setShowImageModal,

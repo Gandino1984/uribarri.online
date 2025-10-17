@@ -10,16 +10,14 @@
 .passwordDisplay{
     display: flex;
     align-items: center;
-    /* border: 2px dashed lightgray; */
     justify-content: center;
-    height: 2rem;
+    height: 2.5rem;
     gap: .8rem;
     padding: .2rem .3rem .2rem .3rem;
     overflow: hidden;
     transition: all .3s ease;
 }
 
-/* 🎨 UPDATE: Added iconWrapper styling for better icon placement */
 .iconWrapper {
     display: flex;
     align-items: center;
@@ -46,7 +44,6 @@
     font-weight: 600;
     border-radius: 50%;
     padding: .3rem .5rem;
-    /* border: 1px solid rgba(255, 255, 255, 0.6); */
     user-select: none;
     margin: .2rem;
     color: black;
@@ -56,8 +53,6 @@
 
 .key:hover{
     color: var(--app-purple);
-    /* background-color: var(--); */
-    /* box-shadow: 0px 0px 15px 1px var(--saturated-blue-transparent);  */
 }
 
 .row{

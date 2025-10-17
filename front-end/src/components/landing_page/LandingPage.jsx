@@ -1,10 +1,10 @@
-//update: LandingPage.jsx - Using public folder for portrait images
+//update: LandingPage.jsx - Using public folder for portrait images, fixed swipe direction, removed pulse dots
 import { useRef, useState, useEffect } from 'react';
 import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../css/LandingPage.module.css';
-import { Mouse, MoveDown, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
+import { Mouse, MoveUp, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
 
 const LandingPage = () => {
   const { 
@@ -34,20 +34,17 @@ const LandingPage = () => {
   const [isIAButtonPressed, setIsIAButtonPressed] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
-  //update: Use public folder URLs instead of imports
   const portraits = [
     '/images/portraits/user1.png',
     '/images/portraits/user2.png',
     '/images/portraits/user3.png',
     '/images/portraits/user4.png',
     '/images/portraits/user5.png',
-    // '/images/portraits/user6.png',
     '/images/portraits/user7.png',
     '/images/portraits/user8.png',
     '/images/portraits/user9.png',
   ];
   
-  // Rest of component remains exactly the same...
   useEffect(() => {
     const checkDevice = () => {
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -323,18 +320,13 @@ const LandingPage = () => {
                   strokeWidth={1.5}
                 />
                 <div className={styles.swipeIndicator}>
-                  <MoveDown 
+                  <MoveUp 
                     className={styles.swipeArrow}
                     size={20}
                     color="#D1FF1F"
                     strokeWidth={2}
                   />
                 </div>
-              </div>
-              <div className={styles.pulseDots}>
-                <span className={styles.pulseDot}></span>
-                <span className={styles.pulseDot}></span>
-                <span className={styles.pulseDot}></span>
               </div>
             </div>
           ) : (
