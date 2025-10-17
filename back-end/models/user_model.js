@@ -15,7 +15,6 @@ const user_model = sequelize.define("user", {
     email_user: {
         type: DataTypes.STRING(255),
         allowNull: false,
-        //update: Removed unique constraint to allow same email for different user types
     },
     pass_user: {
         type: DataTypes.STRING(255), 
@@ -61,6 +60,16 @@ const user_model = sequelize.define("user", {
         type: DataTypes.DATE,
         allowNull: true
     },
+    //update:
+    password_reset_token: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+    //update:
+    password_reset_token_expires: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     is_manager: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -69,7 +78,6 @@ const user_model = sequelize.define("user", {
 }, {
     timestamps: false,
     freezeTableName: true,
-    //update: Added composite unique constraint for email_user + type_user
     indexes: [
         {
             unique: true,
@@ -79,6 +87,11 @@ const user_model = sequelize.define("user", {
         {
             fields: ['is_manager'],
             name: 'idx_is_manager'
+        },
+        //update:
+        {
+            fields: ['password_reset_token'],
+            name: 'idx_password_reset_token'
         }
     ]
 });

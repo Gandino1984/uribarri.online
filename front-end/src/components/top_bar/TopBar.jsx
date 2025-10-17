@@ -1,17 +1,21 @@
-//update: Enhanced to support public navigation for ShopWindow and InfoManagement with dynamic title colors
+//update: Added ChangePassword modal functionality for logged-in users
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
-import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper } from 'lucide-react';
+import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useProduct } from '../../app_context/ProductContext.jsx';
 import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
+//update: Import ChangePassword component
+import ChangePassword from '../email_verification/ChangePassword.jsx';
 
 function TopBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserInfoCard, setShowUserInfoCard] = useState(false);
+  //update: Add state for ChangePassword modal
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -52,7 +56,6 @@ function TopBar() {
     clearUserSession
   } = TopBarUtils();
 
-  //update: Determine title color based on current scenario
   const getTitleColorClass = () => {
     if (showInfoManagement) {
       return styles.titleGreen;
@@ -60,7 +63,7 @@ function TopBar() {
     if (showShopWindow || showShopStore || showShopManagement || showShopsListBySeller || showProductManagement) {
       return styles.titlePurple;
     }
-    return styles.titlePurple; // Default to purple
+    return styles.titlePurple;
   };
 
   useEffect(() => {
@@ -128,12 +131,17 @@ function TopBar() {
     setShowUserInfoCard(false);
   };
   
+  //update: Handler for opening ChangePassword modal
+  const handleChangePasswordClick = () => {
+    setShowChangePassword(true);
+    setMobileMenuOpen(false);
+  };
+  
   const handleRefresh = () => {
     setIsRefreshing(true);
     window.location.reload();
   };
   
-  //update: Public navigation handlers
   const handleShopWindowClick = () => {
     console.log('TopBar: Navigating to ShopWindow');
     setShowShopWindow(true);
@@ -165,7 +173,6 @@ function TopBar() {
     return false;
   };
   
-  //update: Show navigation buttons in desktop view
   const shouldShowPublicNav = () => {
     return !showShopsListBySeller && !showProductManagement && !showShopCreationForm;
   };
@@ -198,13 +205,11 @@ function TopBar() {
       <div className={`${styles.container} ${isVisible ? styles.visible : styles.hidden}`}>
         <div className={styles.contentWrapper}>
           <div className={styles.titleWrapper}>
-              {/*update: Dynamic title color based on scenario*/}
               <span className={`${styles.title} ${getTitleColorClass()}`}>
                 uribarri.online
               </span>
           </div>
 
-          {/*update: Public navigation buttons in desktop view */}
           {shouldShowPublicNav() && (
             <div className={styles.publicNavButtons}>
               <button 
@@ -242,6 +247,17 @@ function TopBar() {
                   <span>Refrescar</span>
                 </button>
                 
+                {/*update: Add Change Password button*/}
+                <button 
+                  type="button" 
+                  className={styles.changePasswordButton}
+                  onClick={handleChangePasswordClick}
+                  title="Cambiar contraseña"
+                >
+                  <Lock size={16}/>
+                  <span>Contraseña</span>
+                </button>
+                
                 <button 
                   type="button" 
                   className={styles.profileButton} 
@@ -263,7 +279,6 @@ function TopBar() {
                 </button>
               </>
             ) : (
-              //update: Show login button for anonymous users on public pages
               (showShopWindow || showInfoManagement) && (
                 <button 
                   type="button" 
@@ -316,7 +331,6 @@ function TopBar() {
                   </>
                 )}
 
-                {/*update: Public navigation in mobile menu */}
                 {shouldShowPublicNav() && (
                   <>
                     <button 
@@ -351,6 +365,17 @@ function TopBar() {
                     
                     <div className={styles.menuDivider}></div>
                     
+                    {/*update: Add Change Password button to mobile menu*/}
+                    <button 
+                      className={styles.changePasswordMenuButton}
+                      onClick={handleChangePasswordClick}
+                    >
+                      <Lock size={16} className={styles.buttonIcon} />
+                      <span className={styles.buttonText}>Cambiar contraseña</span>
+                    </button>
+                    
+                    <div className={styles.menuDivider}></div>
+                    
                     <button 
                       className={styles.profileMenuButton}
                       onClick={handleProfileClick}
@@ -373,7 +398,6 @@ function TopBar() {
                     </button>
                   </>
                 ) : (
-                  //update: Login button for anonymous users in mobile menu
                   (showShopWindow || showInfoManagement) && (
                     <button 
                       className={styles.loginMenuButton}
@@ -399,6 +423,12 @@ function TopBar() {
       {currentUser && showUserInfoCard && (
         <UserInfoCard onClose={handleCloseUserInfoCard} />
       )}
+      
+      {/*update: Add ChangePassword modal*/}
+      <ChangePassword 
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </>
   );
 }

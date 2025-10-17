@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
   `verification_token` VARCHAR(255) NULL,
   `verification_token_expires` DATETIME NULL,
+  `password_reset_token` VARCHAR(255) NULL,
+  `password_reset_token_expires` DATETIME NULL,
   `is_manager` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `id_user_UNIQUE` (`id_user` ASC) VISIBLE,
@@ -49,7 +51,8 @@ CREATE TABLE IF NOT EXISTS `DB_gestionPedidosOnline_2024`.`user` (
   INDEX `idx_verification_token` (`verification_token` ASC) VISIBLE,
   INDEX `idx_email_verified` (`email_verified` ASC) VISIBLE,
   INDEX `idx_email_user` (`email_user` ASC) VISIBLE,
-  INDEX `idx_is_manager` (`is_manager` ASC) VISIBLE
+  INDEX `idx_is_manager` (`is_manager` ASC) VISIBLE,
+  INDEX `idx_password_reset_token` (`password_reset_token` ASC) VISIBLE
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------

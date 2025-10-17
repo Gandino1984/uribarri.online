@@ -165,28 +165,6 @@
   filter: drop-shadow(0 2px 8px rgba(151, 71, 255, 0.5));
 }
 
-.pulseDots {
-  display: flex;
-  gap: 4px;
-  margin-top: -4px;
-}
-
-.pulseDot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(151, 71, 255, 0.6);
-  animation: dotPulse 2s ease-in-out infinite;
-}
-
-.pulseDot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.pulseDot:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
 .desktopScrollIndicator {
   position: relative;
   display: flex;
@@ -373,17 +351,6 @@
   100% {
     transform: translateX(-50%) translateY(-15px);
     opacity: 0;
-  }
-}
-
-@keyframes dotPulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
   }
 }
 
@@ -859,7 +826,6 @@
   .scrollText,
   .handIcon,
   .swipeArrow,
-  .pulseDot,
   .mouseIcon,
   .scrollWheel {
     animation: none;

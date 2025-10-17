@@ -1,10 +1,9 @@
-//update: LandingPage.jsx - Using public folder for portrait images, fixed swipe direction
+//update: LandingPage.jsx - Using public folder for portrait images, fixed swipe direction, removed pulse dots
 import { useRef, useState, useEffect } from 'react';
 import { animated, useSpring, useTransition, config } from '@react-spring/web';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import styles from '../../../css/LandingPage.module.css';
-//update: Changed MoveDown to MoveUp for correct swipe direction
 import { Mouse, MoveUp, ChevronDown, Hand, ShoppingBag, Newspaper, Bot } from 'lucide-react';
 
 const LandingPage = () => {
@@ -321,7 +320,6 @@ const LandingPage = () => {
                   strokeWidth={1.5}
                 />
                 <div className={styles.swipeIndicator}>
-                  {/*update: Changed MoveDown to MoveUp for correct swipe direction*/}
                   <MoveUp 
                     className={styles.swipeArrow}
                     size={20}
@@ -329,11 +327,6 @@ const LandingPage = () => {
                     strokeWidth={2}
                   />
                 </div>
-              </div>
-              <div className={styles.pulseDots}>
-                <span className={styles.pulseDot}></span>
-                <span className={styles.pulseDot}></span>
-                <span className={styles.pulseDot}></span>
               </div>
             </div>
           ) : (

@@ -173,14 +173,21 @@ router.post('/resend-verification', async (req, res) => {
     }
 });
 
-//update: Get userName from headers since multer can't access req.body in time
+//update:
+router.post('/request-password-reset', userApiController.requestPasswordReset);
+
+//update:
+router.post('/reset-password', userApiController.resetPasswordWithToken);
+
+//update:
+router.post('/change-password', userApiController.changePassword);
+
 const handleUpload = async (req, res) => {
     try {
         console.log('=== HANDLE UPLOAD START ===');
         console.log('req.file:', req.file);
         console.log('req.headers:', req.headers);
         
-        //update: Get userName from headers instead of req.body
         const userName = req.headers['x-user-name'];
         
         console.log('userName from headers:', userName);

@@ -160,6 +160,39 @@
   flex-shrink: 0;
 }
 
+/*update: Forgot password link styles*/
+.forgotPasswordLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #9747ff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin: -4px 0 4px 0;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.forgotPasswordLink:hover {
+  color: #7431ca;
+  background: rgba(151, 71, 255, 0.08);
+}
+
+.forgotPasswordLink:active {
+  transform: scale(0.98);
+}
+
+.forgotPasswordLink svg {
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .backButton {
     top: 10px;
@@ -171,6 +204,12 @@
   .backButton span {
     display: none;
   }
+
+  /*update: Responsive forgot password link*/
+  .forgotPasswordLink {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -178,6 +217,12 @@
     top: 8px;
     left: 8px;
     padding: 6px 10px;
+  }
+
+  /*update: Even smaller screens*/
+  .forgotPasswordLink {
+    font-size: 12px;
+    padding: 7px 8px;
   }
 }
 

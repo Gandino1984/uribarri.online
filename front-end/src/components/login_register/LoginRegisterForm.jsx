@@ -1,3 +1,4 @@
+//update: Fixed forgot password navigation to use UIContext instead of window.location.href
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import { useAuth } from '../../app_context/AuthContext.jsx';
@@ -8,12 +9,11 @@ import EmailVerificationPending from "../email_verification/EmailVerificationPen
 import { FormFields } from './components/FormFields.jsx';
 import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
-//update: Import ArrowLeft icon for back button
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, KeyRound } from 'lucide-react';
 import styles from '../../../css/LoginRegisterForm.module.css';
 
 // Memoize form content
-const FormContent = React.memo(() => {
+const FormContent = React.memo(({ onForgotPassword }) => {
   const { isLoggingIn } = useAuth();
   
   return (
@@ -24,6 +24,19 @@ const FormContent = React.memo(() => {
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
         <FormFields />
+        
+        {/*update: Add "Forgot Password?" link only when logging in*/}
+        {isLoggingIn && (
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className={styles.forgotPasswordLink}
+          >
+            <KeyRound size={16} />
+            <span>¿Olvidaste tu contraseña?</span>
+          </button>
+        )}
+        
         <KeyboardSection />
       </form>
     </div>
@@ -41,7 +54,6 @@ const LoginRegisterForm = () => {
     showShopStore,
     showShopWindow,
     success,
-    //update: Import navigation functions for back button
     setShowLandingPage,
     setNavigationIntent,
     setShowInfoManagement,
@@ -49,18 +61,17 @@ const LoginRegisterForm = () => {
     setShowRiderManagement,
     setShowShopManagement,
     setShowShopStore,
-    setShowShopWindow
+    setShowShopWindow,
+    //update: Get forgot password state setter
+    setShowForgotPassword
   } = useUI();
   
-  // Track if mounted, not animation state
   const [isMounted, setIsMounted] = useState(false);
   const [showVerificationPending, setShowVerificationPending] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
   
-  // Simple state to track if we should show content
   const shouldShow = !showLandingPage && !showShopManagement && !currentUser && !showShopStore && !showShopWindow && !showVerificationPending;
   
-  // Show TopBar when form is visible
   useEffect(() => {
     if (shouldShow && !isMounted) {
       setShowTopBar(true);
@@ -76,15 +87,12 @@ const LoginRegisterForm = () => {
     }
   }, [success, email_user]);
 
-  //update: Handler for back to landing page
   const handleBackToLanding = useCallback(() => {
     console.log('Navigating back to LandingPage from LoginRegisterForm');
     
-    // Clear navigation intent
     setNavigationIntent(null);
     localStorage.removeItem('navigationIntent');
     
-    // Reset all navigation states
     setShowLandingPage(true);
     setShowTopBar(false);
     setShowShopManagement(false);
@@ -107,6 +115,37 @@ const LoginRegisterForm = () => {
     setNavigationIntent
   ]);
 
+  //update: Handler for forgot password navigation using UIContext
+  const handleForgotPassword = useCallback(() => {
+    console.log('Navigating to ForgotPassword page');
+    
+    // Update URL without page reload
+    window.history.pushState({}, '', '/forgot-password');
+    
+    // Hide all other views
+    setShowLandingPage(false);
+    setShowShopManagement(false);
+    setShowShopStore(false);
+    setShowShopWindow(false);
+    setShowInfoManagement(false);
+    setShowShopsListBySeller(false);
+    setShowRiderManagement(false);
+    setShowTopBar(false);
+    
+    // Show forgot password view
+    setShowForgotPassword(true);
+  }, [
+    setShowForgotPassword,
+    setShowLandingPage,
+    setShowShopManagement,
+    setShowShopStore,
+    setShowShopWindow,
+    setShowInfoManagement,
+    setShowShopsListBySeller,
+    setShowRiderManagement,
+    setShowTopBar
+  ]);
+
   const getTransition = useCallback(() => {
     return {
       from: { opacity: 0, transform: 'translateY(10px)' },
@@ -123,7 +162,6 @@ const LoginRegisterForm = () => {
     setPendingEmail('');
   }, []);
   
-  // Return appropriate component based on state
   if (showVerificationPending && pendingEmail) {
     return <EmailVerificationPending email={pendingEmail} onBackToLogin={handleBackToLogin} />;
   }
@@ -136,7 +174,6 @@ const LoginRegisterForm = () => {
     return <ShopManagement />;
   }
   
-  // Clean, simple render without extra animations that might loop
   return transitions((style, item) => 
     item && (
       <animated.div 
@@ -153,7 +190,7 @@ const LoginRegisterForm = () => {
             <span>Volver al Inicio</span>
           </button>
 
-          <FormContent />
+          <FormContent onForgotPassword={handleForgotPassword} />
         </div>
       </animated.div>
     )

@@ -1,5 +1,3 @@
-//update: Added getUserImage function to serve images from backend
-// back-end/controllers/user/user_api_controller.js
 import userController from "./user_controller.js";
 import bcrypt from 'bcrypt';
 import user_model from "../../models/user_model.js";
@@ -168,7 +166,6 @@ async function updateProfileImage(userName, imagePath) {
             };
         }
 
-        // Update the user's image path in the database
         await user.update({ image_user: imagePath });
 
         return {
@@ -186,7 +183,6 @@ async function updateProfileImage(userName, imagePath) {
     }
 }
 
-//update: New function to serve user images from backend
 async function getUserImage(req, res) {
     try {
         const { userName } = req.params;
@@ -197,7 +193,6 @@ async function getUserImage(req, res) {
         
         console.log('Serving image for user:', userName);
         
-        // Verify user exists
         const user = await user_model.findOne({
             where: { name_user: userName }
         });
@@ -206,7 +201,6 @@ async function getUserImage(req, res) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
         
-        // Construct path to user's image directory
         const userImageDir = path.join(
             __dirname,
             '..',
@@ -219,14 +213,12 @@ async function getUserImage(req, res) {
         
         console.log('Looking for image in:', userImageDir);
         
-        // Check if directory exists
         try {
             await fs.access(userImageDir);
         } catch {
             return res.status(404).json({ error: 'No se encontró imagen de perfil' });
         }
         
-        // Look for profile image file (profile.jpg, profile.png, profile.webp, etc.)
         const files = await fs.readdir(userImageDir);
         const profileImage = files.find(file => file.startsWith('profile.'));
         
@@ -237,7 +229,6 @@ async function getUserImage(req, res) {
         const imagePath = path.join(userImageDir, profileImage);
         console.log('Serving image from:', imagePath);
         
-        // Determine content type based on file extension
         const ext = path.extname(profileImage).toLowerCase();
         const contentTypeMap = {
             '.jpg': 'image/jpeg',
@@ -248,11 +239,9 @@ async function getUserImage(req, res) {
         
         const contentType = contentTypeMap[ext] || 'image/jpeg';
         
-        // Set appropriate headers
         res.setHeader('Content-Type', contentType);
-        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+        res.setHeader('Cache-Control', 'public, max-age=86400');
         
-        // Send the file
         res.sendFile(imagePath);
         
     } catch (error) {
@@ -306,6 +295,95 @@ async function searchByName(req, res) {
     }
 }
 
+//update:
+async function requestPasswordReset(req, res) {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ 
+                error: 'El email es obligatorio' 
+            });
+        }
+        
+        const { error, data, message } = await userController.requestPasswordReset(email);
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ message, data });
+    } catch (err) {
+        console.error("-> user_api_controller.js - requestPasswordReset() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al solicitar el restablecimiento de contraseña",
+            details: err.message
+        });
+    }
+}
+
+//update:
+async function resetPasswordWithToken(req, res) {
+    try {
+        const { email, token, newPassword } = req.body;
+        
+        if (!email || !token || !newPassword) {
+            return res.status(400).json({ 
+                error: 'Email, token y nueva contraseña son obligatorios' 
+            });
+        }
+        
+        const { error, data, message } = await userController.resetPasswordWithToken(
+            email, 
+            token, 
+            newPassword
+        );
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ message, data });
+    } catch (err) {
+        console.error("-> user_api_controller.js - resetPasswordWithToken() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al restablecer la contraseña",
+            details: err.message
+        });
+    }
+}
+
+//update:
+async function changePassword(req, res) {
+    try {
+        const { id_user, oldPassword, newPassword } = req.body;
+        
+        if (!id_user || !oldPassword || !newPassword) {
+            return res.status(400).json({ 
+                error: 'ID de usuario, contraseña actual y nueva contraseña son obligatorios' 
+            });
+        }
+        
+        const { error, data, message } = await userController.changePassword(
+            id_user, 
+            oldPassword, 
+            newPassword
+        );
+        
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        
+        res.json({ message, data });
+    } catch (err) {
+        console.error("-> user_api_controller.js - changePassword() - Error =", err);
+        res.status(500).json({ 
+            error: "Error al cambiar la contraseña",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -318,7 +396,10 @@ export {
     updateProfileImage,
     getByEmail, 
     searchByName,
-    getUserImage
+    getUserImage,
+    requestPasswordReset,
+    resetPasswordWithToken,
+    changePassword
 }
 
 export default {
@@ -333,5 +414,8 @@ export default {
     updateProfileImage,
     getByEmail,  
     searchByName,
-    getUserImage
+    getUserImage,
+    requestPasswordReset,
+    resetPasswordWithToken,
+    changePassword
 }
