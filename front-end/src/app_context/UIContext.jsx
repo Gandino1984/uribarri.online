@@ -22,12 +22,15 @@ export const UIProvider = ({ children }) => {
   const [showErrorCard, setShowErrorCard] = useState(false);
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   
-  //update: Add email verification and password reset states - NOT persisted to localStorage
+  //update: Add notification history state
+  const [cardHistory, setCardHistory] = useState([]);
+  const [showNotificationHistory, setShowNotificationHistory] = useState(false);
+  const MAX_HISTORY_ITEMS = 10;
+  
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   
-  //update: Initialize navigation states - only restore from localStorage if user is logged in
   const [showTopBar, setShowTopBar] = useState(() => {
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) return false;
@@ -38,7 +41,7 @@ export const UIProvider = ({ children }) => {
   
   const [showLandingPage, setShowLandingPage] = useState(() => {
     const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) return true; // Always start with LandingPage if no user
+    if (!currentUser) return true;
     
     const stored = localStorage.getItem('appNavigationState');
     return stored ? JSON.parse(stored).showLandingPage : true;
@@ -116,11 +119,9 @@ export const UIProvider = ({ children }) => {
     return stored ? JSON.parse(stored).showInfoManagement : false;
   });
 
-  //update: Navigation intent - don't persist across sessions, only within active session
   const [navigationIntent, setNavigationIntent] = useState(() => {
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) {
-      // Clear any stale navigation intent if no user is logged in
       localStorage.removeItem('navigationIntent');
       return null;
     }
@@ -143,7 +144,6 @@ export const UIProvider = ({ children }) => {
   
   const [isCardMinimized, setIsCardMinimized] = useState(false);
 
-  //update: Detect email verification, password reset, or forgot password from URL on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -155,9 +155,8 @@ export const UIProvider = ({ children }) => {
     console.log('Has token:', !!token);
     console.log('Has email:', !!email);
     
-    //update: CRITICAL FIX - Check path FIRST before determining what to show
     if (currentPath === '/reset-password' || currentPath.includes('/reset-password')) {
-      console.log('âœ… RESET PASSWORD PAGE DETECTED');
+      console.log('✅ RESET PASSWORD PAGE DETECTED');
       setShowResetPassword(true);
       setShowEmailVerification(false);
       setShowForgotPassword(false);
@@ -172,7 +171,7 @@ export const UIProvider = ({ children }) => {
       setShowOffersBoard(false);
       setShowTopBar(false);
     } else if (currentPath === '/forgot-password' || currentPath.includes('/forgot-password')) {
-      console.log('âœ… FORGOT PASSWORD PAGE DETECTED');
+      console.log('✅ FORGOT PASSWORD PAGE DETECTED');
       setShowForgotPassword(true);
       setShowEmailVerification(false);
       setShowResetPassword(false);
@@ -187,7 +186,7 @@ export const UIProvider = ({ children }) => {
       setShowOffersBoard(false);
       setShowTopBar(false);
     } else if ((currentPath === '/verify-email' || currentPath.includes('/verify-email')) && token && email) {
-      console.log('âœ… EMAIL VERIFICATION PAGE DETECTED');
+      console.log('✅ EMAIL VERIFICATION PAGE DETECTED');
       setShowEmailVerification(true);
       setShowResetPassword(false);
       setShowForgotPassword(false);
@@ -202,15 +201,13 @@ export const UIProvider = ({ children }) => {
       setShowOffersBoard(false);
       setShowTopBar(false);
     } else {
-      console.log('âž¡ï¸ Normal page - no special routing needed');
+      console.log('⚡️ Normal page - no special routing needed');
     }
     
     console.log('===================================');
-  }, []); // Run only once on mount
+  }, []);
 
-  //update: Save navigation state to localStorage whenever it changes
   useEffect(() => {
-    // Don't save state if on special pages
     if (showEmailVerification || showResetPassword || showForgotPassword) return;
     
     const navigationState = {
@@ -246,7 +243,6 @@ export const UIProvider = ({ children }) => {
     showForgotPassword
   ]);
 
-  //update: Save navigation intent to localStorage
   useEffect(() => {
     if (navigationIntent) {
       console.log('Saving navigation intent to localStorage:', navigationIntent);
@@ -256,7 +252,6 @@ export const UIProvider = ({ children }) => {
     }
   }, [navigationIntent]);
   
-  //update: Clean up stale navigation state on mount if no user is logged in
   useEffect(() => {
     const currentUser = localStorage.getItem('currentUser');
     
@@ -264,21 +259,17 @@ export const UIProvider = ({ children }) => {
       console.log('No user logged in - clearing any stale navigation state');
       localStorage.removeItem('navigationIntent');
       
-      // Only clear navigation state if we're not on the landing page
-      // This prevents clearing state during the initial mount
       const storedState = localStorage.getItem('appNavigationState');
       if (storedState) {
         const parsed = JSON.parse(storedState);
-        // If stored state shows we're not on landing page, clear it
         if (!parsed.showLandingPage) {
           console.log('Clearing stale navigation state from previous session');
           localStorage.removeItem('appNavigationState');
         }
       }
     }
-  }, []); // Run only once on mount
+  }, []);
 
-  //update: Function to clear all navigation state (for logout)
   const clearNavigationState = () => {
     console.log('=== CLEARING ALL NAVIGATION STATE ===');
     localStorage.removeItem('appNavigationState');
@@ -303,6 +294,26 @@ export const UIProvider = ({ children }) => {
     console.log('Navigation state cleared - redirecting to LandingPage');
   };
 
+  //update: Add card to history
+  const addToCardHistory = (type, content) => {
+    const newCard = {
+      id: Date.now(),
+      type,
+      content,
+      timestamp: new Date().toISOString()
+    };
+    
+    setCardHistory(prev => {
+      const updated = [newCard, ...prev].slice(0, MAX_HISTORY_ITEMS);
+      return updated;
+    });
+  };
+
+  //update: Clear card history
+  const clearCardHistory = () => {
+    setCardHistory([]);
+  };
+
   // Confirmation modal helpers
   const openConfirmationModal = (message, onConfirm, onCancel) => {
     setConfirmationMessage(message);
@@ -318,7 +329,6 @@ export const UIProvider = ({ children }) => {
     setCancelAction(null);
   };
 
-  // Handle confirm/cancel actions
   const handleConfirm = () => {
     if (confirmAction) {
       confirmAction();
@@ -341,7 +351,6 @@ export const UIProvider = ({ children }) => {
     setIsDeclined(false);
   };
 
-  // Clear notifications
   const clearNotifications = () => {
     setInfo({});
     setError({});
@@ -360,7 +369,6 @@ export const UIProvider = ({ children }) => {
     setSuccess({});
   };
 
-  //update: Helper functions to set single error/success messages with auto-display
   const setSingleError = (key, message) => {
     setError({ [key]: message });
     setShowErrorCard(true);
@@ -376,13 +384,11 @@ export const UIProvider = ({ children }) => {
     setShowInfoCard(true);
   };
 
-  // Open image modal with a specific image
   const openImageModal = (imageSrc) => {
     setModalImageSrc(imageSrc);
     setShowImageModal(true);
   };
 
-  // Close image modal
   const closeImageModal = () => {
     setShowImageModal(false);
     setModalImageSrc('');
@@ -391,7 +397,6 @@ export const UIProvider = ({ children }) => {
   return (
     <UIContext.Provider 
       value={{
-        // Messages and notifications
         info, setInfo,
         error, setError,
         success, setSuccess,
@@ -399,23 +404,26 @@ export const UIProvider = ({ children }) => {
         clearError,
         clearInfo, 
         clearSuccess,
-        //update: Added helper functions
         setSingleError,
         setSingleSuccess,
         setSingleInfo,
         
-        // Modal handlers
         showConfirmationModal, setShowConfirmationModal,
         confirmationMessage, setConfirmationMessage,
         openConfirmationModal, closeConfirmationModal,
         handleConfirm, handleCancel,
         
-        // Card visibility
         showInfoCard, setShowInfoCard,
         showErrorCard, setShowErrorCard,
         showSuccessCard, setShowSuccessCard,
         
-        // Navigation and UI state
+        //update: Card history exports
+        cardHistory,
+        addToCardHistory,
+        clearCardHistory,
+        showNotificationHistory,
+        setShowNotificationHistory,
+        
         showTopBar, setShowTopBar,
         showLandingPage, setShowLandingPage,
         showShopManagement, setShowShopManagement,
@@ -428,11 +436,9 @@ export const UIProvider = ({ children }) => {
         showOffersBoard, setShowOffersBoard,
         showInfoManagement, setShowInfoManagement,
         
-        //update: Navigation intent
         navigationIntent, setNavigationIntent,
         clearNavigationState,
         
-        //update: Email verification and password reset states
         showEmailVerification, 
         setShowEmailVerification,
         showResetPassword,
@@ -440,7 +446,6 @@ export const UIProvider = ({ children }) => {
         showForgotPassword,
         setShowForgotPassword,
         
-        // Image modal handlers
         showImageModal, setShowImageModal,
         modalImageSrc, setModalImageSrc,
         openImageModal, closeImageModal,
