@@ -187,7 +187,7 @@ const LoginRegisterForm = () => {
             title="Volver al inicio"
           >
             <ArrowLeft size={20} />
-            <span>Volver al Inicio</span>
+            <span>AL INICIO</span>
           </button>
 
           <FormContent onForgotPassword={handleForgotPassword} />
