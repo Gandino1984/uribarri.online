@@ -4,41 +4,69 @@
   width: 100%;
   min-height: 100vh;
   gap: 1.5rem;
-  margin-top: 2rem;
+  margin-top: 6rem;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
 .backButtonContainer {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  position: fixed;
+  top: 4.5rem;
+  left: 1rem;
+  z-index: 10005;
 }
 
 .backButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
   background: white;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: 50%;
   color: black;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .backButton:hover {
   background: lightgray;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.backButton span {
-  font-size: 0.95rem;
+@media screen and (min-width: 481px) {
+  .backButtonContainer {
+    top: 5rem;
+    left: 1.5rem;
+  }
+
+  .backButton {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+@media screen and (min-width: 641px) {
+  .backButtonContainer {
+    top: 5.5rem;
+    left: 2rem;
+  }
+
+  .backButton {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .backButtonContainer {
+    left: 3rem;
+  }
 }
 
 .content {
@@ -567,22 +595,9 @@
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;
-    /*update: Adjust margin for back button on tablet */
-    margin-top: 8.5rem;
+    margin-top: 6.5rem;
   }
   
-  /*update: Responsive back button container */
-  .backButtonContainer {
-    padding: 0 0.5rem;
-  }
-  
-  .backButton {
-    padding: 0.6rem 1rem;
-  }
-  
-  .backButton span {
-    font-size: 0.9rem;
-  }
   
   .content {
     gap: 1rem;
@@ -636,22 +651,9 @@
 
 @media (max-width: 480px) {
   .container {
-    /*update: Adjust margin for back button on mobile */
-    margin-top: 8rem;
+    margin-top: 6rem;
   }
   
-  /*update: Responsive back button for mobile */
-  .backButtonContainer {
-    padding: 0 0.25rem;
-  }
-  
-  .backButton {
-    padding: 0.5rem 0.75rem;
-  }
-  
-  .backButton span {
-    font-size: 0.85rem;
-  }
   
   .header {
     gap: 0.75rem;

@@ -25,7 +25,7 @@ export const formatImageUrl = (imagePath) => {
     }
     
     const cleanPath = imagePath.replace(/^\/+/, '');
-    const baseURL = axiosInstance.defaults.baseURL || 'http://localhost:3000';
+    const baseURL = axiosInstance.defaults.baseURL || 'https://app.uribarri.online';
     
     let finalPath;
     

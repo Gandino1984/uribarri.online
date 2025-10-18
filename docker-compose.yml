@@ -1,34 +1,11 @@
 # docker-compose.yml
 services:
-
-  backend:
-    container_name: backend_uribarri
-    build: .
-    restart: unless-stopped
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - ./public:/app/public
-      - ./public/images/uploads:/app/public/images/uploads
-    environment:
-      - MYSQL_PORT=3306
-      - MYSQL_HOST=${MYSQL_HOST}
-      - VIRTUAL_HOST=api.uribarri.online
-      - LETSENCRYPT_HOST=api.uribarri.online
-      - LETSENCRYPT_EMAIL=andinogerman@gmail.com
-    depends_on:
-      - db
-    networks:
-      - proxy
-      - uribarri_internal 
-    # ports:
-    #   - ${APP_PORT}:3000
   db:
     container_name: ${MYSQL_HOST}
     image: mysql:8.0
     restart: unless-stopped
-    # ports:
-    #   - ${MYSQL_PORT}:3306
+    ports:
+      - ${MYSQL_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -38,6 +15,8 @@ services:
       - mysql-data:/var/lib/mysql
       - data:/var/lib/mysql
       - ./db/scripts:/docker-entrypoint-initdb.d
+    # networks:
+    #   - uribarri_internal
 
   backend:
     build: .
@@ -47,24 +26,28 @@ services:
       - ${APP_PORT}:3000
     depends_on:
       - db
-    env_file:
-      - .env
     environment:
       - MYSQL_PORT=3306
       - MYSQL_HOST=${MYSQL_HOST}
-    volumes:
+    #   - VIRTUAL_HOST=api.uribarri.online
+    #   - LETSENCRYPT_HOST=api.uribarri.online
+    #   - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+    # volumes:
       - .:/app
       - /app/node_modules
       - ./public:/app/public
       - ./public/images/uploads:/app/public/images/uploads
       - ./back-end/assets:/app/back-end/assets
+    # networks:
+    #   - proxy
+    #   - uribarri_internal
 
 volumes:
   data:
   node_modules:
 
-networks:
-  proxy:
-    name: nginx-proxy
-    external: true
-  uribarri_internal:
+# networks:
+#   proxy:
+#     name: nginx-proxy
+#     external: true
+#   uribarri_internal:

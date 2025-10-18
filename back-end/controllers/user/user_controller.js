@@ -1,11 +1,59 @@
-// back-end/controllers/user/user_controller.js
 import { console } from "inspector";
 import user_model from "../../models/user_model.js";
 import bcrypt from "bcrypt";
-import { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail } from "../../services/emailService.js";
+import { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } from "../../services/emailService.js";
 import { Op } from "sequelize";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+//update: Helper function to create properly formatted expiration dates using UTC
+const createExpirationDate = (hoursFromNow) => {
+    const now = new Date();
+    const expiration = new Date(now.getTime() + (hoursFromNow * 60 * 60 * 1000));
+    
+    console.log('=== EXPIRATION DATE DEBUG ===');
+    console.log('Current time (local):', now.toString());
+    console.log('Current time (UTC):', now.toISOString());
+    console.log('Current timestamp:', now.getTime());
+    console.log('Expiration time (local):', expiration.toString());
+    console.log('Expiration time (UTC):', expiration.toISOString());
+    console.log('Expiration timestamp:', expiration.getTime());
+    console.log('Hours added:', hoursFromNow);
+    console.log('Milliseconds added:', hoursFromNow * 60 * 60 * 1000);
+    console.log('============================');
+    
+    return expiration;
+};
+
+//update: Improved expiration check with detailed debugging and proper comparison
+const isExpired = (expirationDate) => {
+    if (!expirationDate) {
+        console.log('=== EXPIRATION CHECK: No expiration date provided ===');
+        return true;
+    }
+    
+    const now = new Date();
+    const expiration = new Date(expirationDate);
+    
+    // Get timestamps for accurate comparison
+    const nowTimestamp = now.getTime();
+    const expirationTimestamp = expiration.getTime();
+    const diffMs = expirationTimestamp - nowTimestamp;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    
+    console.log('=== EXPIRATION CHECK DEBUG ===');
+    console.log('Current time:', now.toISOString());
+    console.log('Current timestamp:', nowTimestamp);
+    console.log('Expiration time from DB:', expirationDate);
+    console.log('Expiration time parsed:', expiration.toISOString());
+    console.log('Expiration timestamp:', expirationTimestamp);
+    console.log('Difference (ms):', diffMs);
+    console.log('Difference (minutes):', diffMinutes);
+    console.log('Is expired:', nowTimestamp >= expirationTimestamp);
+    console.log('==============================');
+    
+    return nowTimestamp >= expirationTimestamp;
+};
 
 const validateUserData = (userData) => {
     console.log("-> user_controller.js - validateUserData() - userData = ", userData);
@@ -152,7 +200,6 @@ async function create(userData) {
             };
         }
 
-        // Check if user already exists
         const existingUser = await user_model.findOne({ 
             where: { name_user: userData.name_user } 
         });
@@ -163,7 +210,6 @@ async function create(userData) {
             };
         }
         
-        //update: Check if email+type combination already exists
         if (userData.email_user && userData.type_user) {
             const existingEmailType = await user_model.findOne({ 
                 where: { 
@@ -179,7 +225,6 @@ async function create(userData) {
             }
         }
         
-        // Create new user
         const user = await user_model.create(userData);
         console.log("Created user:", user);
 
@@ -221,13 +266,11 @@ async function login(userData) {
             };
         }
 
-        //update: Enhanced debugging for is_manager field
         console.log('-> login() - Full user object from DB:', user);
         console.log('-> login() - User dataValues:', user.dataValues);
         console.log('-> login() - is_manager raw value:', user.dataValues.is_manager);
         console.log('-> login() - is_manager type:', typeof user.dataValues.is_manager);
 
-        //update: Check if email is verified - BLOCK LOGIN if not verified
         if (user.email_verified === false || user.email_verified === 0) {
             console.log('-> login() - User email not verified, blocking login');
             return {
@@ -246,7 +289,6 @@ async function login(userData) {
             };
         }
 
-        //update: Build complete user response including ALL fields from database
         const userResponse = {
             id_user: user.dataValues.id_user,
             name_user: user.dataValues.name_user,
@@ -258,10 +300,9 @@ async function login(userData) {
             age_user: user.dataValues.age_user,
             calification_user: user.dataValues.calification_user,
             email_verified: user.dataValues.email_verified,
-            is_manager: user.dataValues.is_manager // Use raw value from database
+            is_manager: user.dataValues.is_manager
         };
 
-        //update: Final debug check before sending response
         console.log('-> login() - FINAL userResponse being sent:', JSON.stringify(userResponse));
         console.log('-> login() - FINAL is_manager value:', userResponse.is_manager);
         console.log('-> login() - FINAL is_manager type:', typeof userResponse.is_manager);
@@ -296,7 +337,6 @@ async function register(userData) {
             };
         }
 
-        // Check if user already exists
         const existingUser = await user_model.findOne({ 
             where: { name_user: userData.name_user } 
         });
@@ -308,7 +348,6 @@ async function register(userData) {
             };
         }
         
-        //update: Check if email+type combination already exists
         const existingEmailType = await user_model.findOne({ 
             where: { 
                 email_user: userData.email_user,
@@ -323,7 +362,6 @@ async function register(userData) {
             };
         }
 
-        //update: Check if email exists with other user types and suggest available types
         const existingEmailAccounts = await user_model.findAll({ 
             where: { 
                 email_user: userData.email_user
@@ -339,7 +377,6 @@ async function register(userData) {
             console.log('-> register() - Available types for this email:', availableTypes);
         }
 
-        // Add default values if not provided
         if (userData.calification_user === undefined) {
             userData.calification_user = 5;
         }
@@ -350,10 +387,8 @@ async function register(userData) {
             userData.age_user = 18;
         }
 
-        //update: Generate verification token and expiry
         const verificationToken = generateVerificationToken();
-        const verificationTokenExpires = new Date();
-        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+        const verificationTokenExpires = createExpirationDate(24);
 
         userData.verification_token = verificationToken;
         userData.verification_token_expires = verificationTokenExpires;
@@ -361,7 +396,6 @@ async function register(userData) {
 
         const user = await user_model.create(userData);
 
-        //update: Send verification email
         console.log('About to send verification email to:', userData.email_user);
         const emailResult = await sendVerificationEmail(
             userData.email_user,
@@ -374,7 +408,6 @@ async function register(userData) {
             console.error('Failed to send verification email:', emailResult.error);
         }
 
-        // Return user data without sensitive information
         const userResponse = {
             id_user: user.id_user,
             name_user: user.name_user,
@@ -402,41 +435,69 @@ async function register(userData) {
     }
 }
 
-// Rest of functions remain the same...
 async function verifyEmail(email, token) {
     try {
+        console.log('=== VERIFY EMAIL START ===');
+        console.log('Email:', email);
+        console.log('Token:', token);
+        
         const users = await user_model.findAll({
             where: {
                 email_user: email,
-                verification_token: token,
-                verification_token_expires: {
-                    [Op.gt]: new Date()
-                }
+                verification_token: token
             }
         });
 
+        console.log('Found users with matching email and token:', users.length);
+
         if (!users || users.length === 0) {
+            console.log('No users found with this email and token');
             return {
-                error: "Token inválido o expirado"
+                error: "Token inválido o no encontrado"
             };
         }
 
+        const validUsers = [];
         for (const user of users) {
+            console.log(`Checking user ${user.name_user}:`);
+            console.log('  - verification_token_expires:', user.verification_token_expires);
+            console.log('  - Type:', typeof user.verification_token_expires);
+            
+            if (isExpired(user.verification_token_expires)) {
+                console.log(`  - Token EXPIRED for user ${user.name_user}`);
+            } else {
+                console.log(`  - Token VALID for user ${user.name_user}`);
+                validUsers.push(user);
+            }
+        }
+
+        if (validUsers.length === 0) {
+            console.log('All tokens are expired');
+            return {
+                error: "El enlace de verificación ha expirado. Por favor solicita un nuevo enlace."
+            };
+        }
+
+        for (const user of validUsers) {
             await user.update({
                 email_verified: true,
                 verification_token: null,
                 verification_token_expires: null
             });
             
+            console.log(`Email verified for user: ${user.name_user}`);
+            
             await sendWelcomeEmail(user.email_user, user.name_user);
         }
+
+        console.log('=== VERIFY EMAIL SUCCESS ===');
 
         return {
             message: "Email verificado exitosamente",
             data: {
                 email_verified: true,
-                accounts_verified: users.length,
-                user_types: users.map(u => u.type_user)
+                accounts_verified: validUsers.length,
+                user_types: validUsers.map(u => u.type_user)
             }
         };
     } catch (err) {
@@ -467,8 +528,7 @@ async function resendVerificationEmail(email) {
         }
 
         const verificationToken = generateVerificationToken();
-        const verificationTokenExpires = new Date();
-        verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+        const verificationTokenExpires = createExpirationDate(24);
 
         await user.update({
             verification_token: verificationToken,
@@ -499,6 +559,236 @@ async function resendVerificationEmail(email) {
     }
 }
 
+//update: Improved password reset request with better logging
+async function requestPasswordReset(email) {
+    try {
+        console.log('=== REQUEST PASSWORD RESET START ===');
+        console.log('Email:', email);
+        
+        if (!email || !emailRegex.test(email)) {
+            return {
+                error: "Email inválido"
+            };
+        }
+
+        const users = await user_model.findAll({
+            where: { email_user: email }
+        });
+
+        if (!users || users.length === 0) {
+            return {
+                error: "No existe ninguna cuenta con ese email"
+            };
+        }
+
+        console.log('Found', users.length, 'user(s) with this email');
+
+        const resetToken = generateVerificationToken();
+        const resetTokenExpires = createExpirationDate(1); // 1 hour expiration
+
+        console.log('Generated reset token:', resetToken);
+        console.log('Token will expire at:', resetTokenExpires.toISOString());
+
+        for (const user of users) {
+            console.log(`Updating user ${user.name_user} with reset token`);
+            await user.update({
+                password_reset_token: resetToken,
+                password_reset_token_expires: resetTokenExpires
+            });
+            
+            // Verify the update
+            const updatedUser = await user_model.findByPk(user.id_user);
+            console.log('Verified saved expiration for', user.name_user, ':', updatedUser.password_reset_token_expires);
+        }
+
+        const emailResult = await sendPasswordResetEmail(
+            email,
+            users[0].name_user,
+            resetToken
+        );
+
+        if (!emailResult.success) {
+            console.error('Failed to send password reset email:', emailResult.error);
+            return {
+                error: "Error al enviar el email de restablecimiento"
+            };
+        }
+
+        console.log('=== REQUEST PASSWORD RESET SUCCESS ===');
+
+        return {
+            message: "Se ha enviado un email con instrucciones para restablecer tu contraseña",
+            data: {
+                email: email,
+                accounts_count: users.length
+            }
+        };
+    } catch (err) {
+        console.error("Error in requestPasswordReset:", err);
+        return {
+            error: "Error al solicitar el restablecimiento de contraseña",
+            details: err.message
+        };
+    }
+}
+
+//update: Improved password reset with detailed debugging
+async function resetPasswordWithToken(email, token, newPassword) {
+    try {
+        console.log('=== RESET PASSWORD WITH TOKEN START ===');
+        console.log('Email:', email);
+        console.log('Token:', token);
+        
+        if (!email || !token || !newPassword) {
+            return {
+                error: "Email, token y nueva contraseña son requeridos"
+            };
+        }
+
+        if (newPassword.length !== 4 || !/^\d+$/.test(newPassword)) {
+            return {
+                error: "La contraseña debe tener exactamente 4 dígitos"
+            };
+        }
+
+        const users = await user_model.findAll({
+            where: {
+                email_user: email,
+                password_reset_token: token
+            }
+        });
+
+        console.log('Found users with matching email and token:', users.length);
+
+        if (!users || users.length === 0) {
+            console.log('No users found - invalid token');
+            return {
+                error: "Token inválido. Por favor solicita un nuevo enlace de restablecimiento."
+            };
+        }
+
+        //update: Check each user's expiration with detailed logging
+        const validUsers = [];
+        for (const user of users) {
+            console.log(`\nChecking user: ${user.name_user}`);
+            console.log('User ID:', user.id_user);
+            console.log('password_reset_token_expires from DB:', user.password_reset_token_expires);
+            console.log('Type:', typeof user.password_reset_token_expires);
+            
+            const expired = isExpired(user.password_reset_token_expires);
+            console.log('Is expired:', expired);
+            
+            if (!expired) {
+                validUsers.push(user);
+            }
+        }
+
+        if (validUsers.length === 0) {
+            console.log('All tokens expired');
+            return {
+                error: "Token expirado. Por favor solicita un nuevo enlace de restablecimiento."
+            };
+        }
+
+        console.log('Valid users found:', validUsers.length);
+
+        const hashedPassword = await bcrypt.hash(newPassword, 5);
+
+        for (const user of validUsers) {
+            console.log(`Updating password for user: ${user.name_user}`);
+            await user.update({
+                pass_user: hashedPassword,
+                password_reset_token: null,
+                password_reset_token_expires: null
+            });
+        }
+
+        console.log('=== RESET PASSWORD WITH TOKEN SUCCESS ===');
+
+        return {
+            message: "Contraseña restablecida exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.",
+            data: {
+                accounts_updated: validUsers.length,
+                user_types: validUsers.map(u => u.type_user)
+            }
+        };
+    } catch (err) {
+        console.error("Error in resetPasswordWithToken:", err);
+        return {
+            error: "Error al restablecer la contraseña",
+            details: err.message
+        };
+    }
+}
+
+async function changePassword(userId, oldPassword, newPassword) {
+    try {
+        console.log('-> changePassword() - User ID:', userId);
+        
+        if (!userId || !oldPassword || !newPassword) {
+            return {
+                error: "ID de usuario, contraseña actual y nueva contraseña son requeridos"
+            };
+        }
+
+        if (oldPassword.length !== 4 || !/^\d+$/.test(oldPassword)) {
+            return {
+                error: "La contraseña actual debe tener exactamente 4 dígitos"
+            };
+        }
+
+        if (newPassword.length !== 4 || !/^\d+$/.test(newPassword)) {
+            return {
+                error: "La nueva contraseña debe tener exactamente 4 dígitos"
+            };
+        }
+
+        if (oldPassword === newPassword) {
+            return {
+                error: "La nueva contraseña debe ser diferente a la actual"
+            };
+        }
+
+        const user = await user_model.findByPk(userId);
+
+        if (!user) {
+            return {
+                error: "Usuario no encontrado"
+            };
+        }
+
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.pass_user);
+
+        if (!isPasswordValid) {
+            return {
+                error: "La contraseña actual es incorrecta"
+            };
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 5);
+
+        await user.update({
+            pass_user: hashedPassword
+        });
+
+        console.log('-> changePassword() - Password changed successfully for user:', user.name_user);
+
+        return {
+            message: "Contraseña cambiada exitosamente",
+            data: {
+                user_id: user.id_user,
+                user_name: user.name_user
+            }
+        };
+    } catch (err) {
+        console.error("Error in changePassword:", err);
+        return {
+            error: "Error al cambiar la contraseña",
+            details: err.message
+        };
+    }
+}
+
 async function update(id, userData) {
     try {
         if (!id) {
@@ -519,7 +809,6 @@ async function update(id, userData) {
             };
         }
         
-        //update: Check if email+type combination would be duplicated
         if (userData.email_user && userData.email_user !== user.email_user) {
             const existingEmailType = await user_model.findOne({ 
                 where: { 
@@ -535,11 +824,9 @@ async function update(id, userData) {
                 };
             }
 
-            //update: If email is changed, require re-verification
             userData.email_verified = false;
             const verificationToken = generateVerificationToken();
-            const verificationTokenExpires = new Date();
-            verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+            const verificationTokenExpires = createExpirationDate(24);
             
             userData.verification_token = verificationToken;
             userData.verification_token_expires = verificationTokenExpires;
@@ -647,7 +934,6 @@ async function updateProfileImage(userName, imagePath) {
     }
 }
 
-//update: Get user by email
 async function getByEmail(email_user) {
     try {
         if (!email_user) {
@@ -670,7 +956,6 @@ async function getByEmail(email_user) {
     }
 }
 
-//update: Search users by name (partial match using LIKE)
 async function searchByName(name_user) {
     try {
         if (!name_user || name_user.length < 2) {
@@ -710,8 +995,11 @@ export {
     updateProfileImage,
     verifyEmail,
     resendVerificationEmail,
-     getByEmail,  
-    searchByName  
+    getByEmail,  
+    searchByName,
+    requestPasswordReset,
+    resetPasswordWithToken,
+    changePassword
 };
 
 export default { 
@@ -726,6 +1014,9 @@ export default {
     updateProfileImage,
     verifyEmail,
     resendVerificationEmail,
-     getByEmail,  
-    searchByName  
+    getByEmail,  
+    searchByName,
+    requestPasswordReset,
+    resetPasswordWithToken,
+    changePassword
 };

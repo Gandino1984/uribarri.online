@@ -1,4 +1,4 @@
-//update: Enhanced public access for ShopWindow and InfoBoard
+//update: Fixed routing logic to properly handle password reset pages
 import { useEffect } from 'react';
 import { UIProvider } from "./app_context/UIContext.jsx";
 import { AuthProvider } from "./app_context/AuthContext.jsx";
@@ -26,6 +26,9 @@ import ShopManagement from "../src/components/shop_management/ShopManagement.jsx
 import RiderOrdersManagement from "../src/components/rider_order_management/RiderOrderManagement.jsx";
 import EmailVerification from "../src/components/email_verification/EmailVerification.jsx";
 import InfoManagement from "../src/components/info_management/InfoManagement.jsx";
+//update: Import password reset components
+import ForgotPassword from "./components/email_verification/ForgotPassword.jsx";
+import ResetPassword from "./components/email_verification/ResetPassword.jsx";
 
 const AppContent = () => {
   const { 
@@ -42,18 +45,18 @@ const AppContent = () => {
     setShowTopBar,
     showOffersBoard,
     showInfoManagement,
-    setShowInfoManagement
+    setShowInfoManagement,
+    //update: Get password reset states
+    showEmailVerification,
+    showResetPassword,
+    showForgotPassword
   } = useUI();
   const { currentUser } = useAuth();
   
-  //update: Check if we're on the email verification page
-  const isEmailVerificationPage = window.location.pathname === '/verify-email' || 
-                                  window.location.search.includes('token=');
-  
-  //update: Enhanced routing effect - ONLY runs on mount and when user logs in/out
   useEffect(() => {
-    //update: Don't run routing logic if on email verification page
-    if (isEmailVerificationPage) {
+    //update: Don't run routing logic if on special pages
+    if (showEmailVerification || showResetPassword || showForgotPassword) {
+      console.log('On special page - skipping normal routing logic');
       return;
     }
     
@@ -61,7 +64,6 @@ const AppContent = () => {
     console.log('currentUser:', currentUser);
     console.log('currentUser?.type_user:', currentUser?.type_user);
     
-    //update: Show TopBar if user is logged in OR if viewing public pages
     if (currentUser || showShopWindow || showInfoManagement) {
       setShowTopBar(true);
       console.log('TopBar enabled');
@@ -79,19 +81,38 @@ const AppContent = () => {
       showLandingPage
     });
   }, [
-    currentUser?.id_user, // Only re-run when user logs in/out
-    isEmailVerificationPage,
+    currentUser?.id_user,
+    showEmailVerification,
+    showResetPassword,
+    showForgotPassword,
     showShopWindow,
     showInfoManagement
   ]);
   
   const renderMainContent = () => {
-    //update: Show EmailVerification component if on verification page
-    if (isEmailVerificationPage) {
+    console.log('=== RENDER MAIN CONTENT ===');
+    console.log('showResetPassword:', showResetPassword);
+    console.log('showForgotPassword:', showForgotPassword);
+    console.log('showEmailVerification:', showEmailVerification);
+    
+    //update: PRIORITY 1 - Password reset pages (highest priority)
+    if (showResetPassword) {
+      console.log('✅ Rendering: ResetPassword');
+      return <ResetPassword />;
+    }
+    
+    if (showForgotPassword) {
+      console.log('✅ Rendering: ForgotPassword');
+      return <ForgotPassword />;
+    }
+    
+    //update: PRIORITY 2 - Email verification
+    if (showEmailVerification) {
+      console.log('✅ Rendering: EmailVerification');
       return <EmailVerification />;
     }
     
-    //update: Priority order for displaying components - allow public access
+    //update: PRIORITY 3 - Regular app pages
     if (showInfoManagement) {
       console.log('Rendering: InfoManagement (public access allowed)');
       return <InfoManagement />;
@@ -130,8 +151,7 @@ const AppContent = () => {
     <div className={styles.mainContainer}>
       <ConfirmationModal />
       <ImageModal />
-      {/* Hide TopBar when OffersBoard is shown or on email verification page */}
-      {showTopBar && !showOffersBoard && !isEmailVerificationPage && <TopBar />} 
+      {showTopBar && !showOffersBoard && !showEmailVerification && !showResetPassword && !showForgotPassword && <TopBar />} 
       <CardDisplay />
       {renderMainContent()}
     </div>

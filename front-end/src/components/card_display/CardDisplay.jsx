@@ -1,12 +1,13 @@
+//update: Added notification history tracking
 import { useEffect, useState, useRef } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import styles from '../../../css/CardDisplay.module.css';
 import ErrorCard from '../card_display/components/error_card/ErrorCard.jsx';
 import SuccessCard from '../card_display/components/success_card/SuccessCard.jsx';
 import InfoCard from '../card_display/components/info_card/InfoCard.jsx';
+import NotificationHistory from './components/NotificationHistory.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 
-//update: Complete rewrite with slide-down animations
 function CardDisplay() {
   const [activeCards, setActiveCards] = useState([]);
   const cardIdCounter = useRef(0);
@@ -23,15 +24,16 @@ function CardDisplay() {
     setShowInfoCard,
     clearError,
     clearSuccess,
-    clearInfo
+    clearInfo,
+    //update: Get history function
+    addToCardHistory
   } = useUI();
   
-  // Helper function to check if an object has any non-empty values
   const hasAnyValue = (obj) => {
     return obj && Object.values(obj).some(value => value);
   };
   
-  //update: Add a new card with animation
+  //update: Add card with history tracking
   const addCard = (type, content) => {
     const newCard = {
       id: cardIdCounter.current++,
@@ -42,7 +44,9 @@ function CardDisplay() {
     
     setActiveCards(prev => [...prev, newCard]);
     
-    // Trigger animation after mount
+    //update: Add to history when card is created
+    addToCardHistory(type, content);
+    
     setTimeout(() => {
       setActiveCards(prev => 
         prev.map(card => 
@@ -51,26 +55,21 @@ function CardDisplay() {
       );
     }, 10);
     
-    // Auto-hide after 4 seconds
     setTimeout(() => {
       removeCard(newCard.id, type);
     }, 4000);
   };
   
-  //update: Remove card with animation
   const removeCard = (cardId, type) => {
-    // Start exit animation
     setActiveCards(prev => 
       prev.map(card => 
         card.id === cardId ? { ...card, isVisible: false } : card
       )
     );
     
-    // Remove from DOM after animation
     setTimeout(() => {
       setActiveCards(prev => prev.filter(card => card.id !== cardId));
       
-      // Clear the appropriate state
       switch(type) {
         case 'error':
           setShowErrorCard(false);
@@ -88,7 +87,6 @@ function CardDisplay() {
     }, 300);
   };
   
-  // Watch for new error messages
   useEffect(() => {
     if (error && hasAnyValue(error) && !activeCards.some(c => c.type === 'error')) {
       setShowErrorCard(true);
@@ -96,7 +94,6 @@ function CardDisplay() {
     }
   }, [error]);
   
-  // Watch for new success messages
   useEffect(() => {
     if (success && hasAnyValue(success) && !activeCards.some(c => c.type === 'success')) {
       setShowSuccessCard(true);
@@ -104,7 +101,6 @@ function CardDisplay() {
     }
   }, [success]);
   
-  // Watch for new info messages
   useEffect(() => {
     if (info && hasAnyValue(info) && !activeCards.some(c => c.type === 'info')) {
       setShowInfoCard(true);
@@ -113,19 +109,22 @@ function CardDisplay() {
   }, [info]);
 
   return (
-    <div className={styles.cardDisplayContainer}>
-      {activeCards.map((card) => (
-        <AnimatedCard 
-          key={card.id} 
-          card={card}
-          onClose={() => removeCard(card.id, card.type)}
-        />
-      ))}
-    </div>
+    <>
+      <div className={styles.cardDisplayContainer}>
+        {activeCards.map((card) => (
+          <AnimatedCard 
+            key={card.id} 
+            card={card}
+            onClose={() => removeCard(card.id, card.type)}
+          />
+        ))}
+      </div>
+      {/* update: Add notification history button */}
+      <NotificationHistory />
+    </>
   );
 }
 
-//update: New animated card component
 const AnimatedCard = ({ card, onClose }) => {
   const slideAnimation = useSpring({
     from: {

@@ -319,15 +319,15 @@ const ShopsListBySeller = () => {
 
   return (
     <div className={styles.container}>
-      {/*update: Add back button at the top of the container */}
+      {/*update: Back button with only arrow icon */}
       <div className={styles.backButtonContainer}>
-        <button 
+        <button
           onClick={handleBackToShopWindow}
           className={styles.backButton}
           title="Volver al barrio"
+          aria-label="Volver al barrio"
         >
           <ArrowLeft size={20} />
-          <span>Volver al barrio</span>
         </button>
       </div>
       

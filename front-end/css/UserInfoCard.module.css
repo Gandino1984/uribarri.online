@@ -15,22 +15,19 @@
 /* update: Main card container - fixed centering for mobile */
 .userInfoCard {
   position: fixed;
-  top: 3.5rem; /* Closer to top on mobile */
+  top: 3.5rem;
   left: 50%;
-  /* Transform handled by React Spring animation */
   z-index: 9999;
   background-color: white;
   border-radius: 15px;
-  /* border: 2px solid var(--app-purple); */
-  /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); */
-  padding: 1rem; /* Smaller padding for mobile */
-  width: calc(100% - 2rem); /* Full width minus margins on both sides */
-  max-width: 320px; /* Smaller max-width for mobile */
-  min-width: 280px; /* Minimum width for very small screens */
+  padding: 1rem;
+  width: calc(100% - 2rem);
+  max-width: 360px;
+  min-width: 320px;
   user-select: none;
-  margin: 0 auto; /* Center horizontally */
-  max-height: 85vh; /* Limit height on mobile */
-  overflow-y: auto; /* Add scroll for long content */
+  margin: 0 auto;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 /* update: Close button - smaller on mobile */
@@ -302,12 +299,51 @@
 }
 
 .userEmail {
-  font-size: 0.75rem; /* Smaller on mobile */
+  font-size: 0.75rem;
   color: gray;
   margin: 0;
   font-weight: 500;
-  word-break: break-all; /* Handle long emails */
+  word-break: break-all;
   max-width: 100%;
+}
+
+.badgesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.02rem;
+  transition: transform 0.2s ease;
+}
+
+.statusBadge:hover {
+  transform: translateX(3px);
+}
+
+.badgeIcon {
+  flex-shrink: 0;
+}
+
+.contributorBadge {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
+}
+
+.organizationManagerBadge {
+  background: linear-gradient(135deg, #9747FF 0%, #6a1b9a 100%);
+  box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3);
 }
 
 /*update: New styles for context sections (shops and organizations) - mobile first */
@@ -462,7 +498,12 @@
 @media (min-width: 360px) {
   .userInfoCard {
     padding: 1.5rem;
-    max-width: 340px;
+    max-width: 380px;
+  }
+
+  .statusBadge {
+    font-size: 0.7rem;
+    padding: 0.45rem 0.7rem;
   }
   
   .profileImageContainer {
@@ -512,8 +553,13 @@
 @media (min-width: 481px) {
   .userInfoCard {
     top: 4rem;
-    max-width: 380px;
+    max-width: 420px;
     padding: 1.75rem;
+  }
+
+  .statusBadge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
   }
   
   .profileImageContainer {
@@ -598,8 +644,13 @@
 @media (min-width: 641px) {
   .userInfoCard {
     top: 5rem;
-    max-width: 420px;
+    max-width: 480px;
     padding: 2rem;
+  }
+
+  .statusBadge {
+    font-size: 0.8rem;
+    padding: 0.55rem 0.85rem;
   }
   
   .closeButton {
@@ -660,8 +711,13 @@
 /* Desktop (1025px+) */
 @media (min-width: 1025px) {
   .userInfoCard {
-    max-width: 400px;
-    padding: 2rem;
+    max-width: 520px;
+    padding: 2.5rem;
+  }
+
+  .statusBadge {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.9rem;
   }
   
   .profileImageContainer {

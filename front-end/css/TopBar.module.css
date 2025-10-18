@@ -1,4 +1,4 @@
-/*update: Mobile-First Base Styles with scroll animations, public navigation support, and dynamic title colors */
+/*update: Added changePasswordButton and changePasswordMenuButton styles */
 .container {
     width: 100%;
     display: flex;
@@ -61,7 +61,6 @@
     transition: color 0.3s ease;
 }
 
-/*update: Dynamic title colors based on scenario*/
 .titlePurple {
     color: var(--app-purple);
 }
@@ -70,7 +69,6 @@
     color: var(--app-green-darker);
 }
 
-/*update: Public navigation buttons - hidden on mobile */
 .publicNavButtons {
     display: none;
     align-items: center;
@@ -79,7 +77,6 @@
     justify-content: center;
 }
 
-/*update: Navigation button styling */
 .navButton {
     display: flex;
     align-items: center;
@@ -98,7 +95,6 @@
 
 .navButton:hover {
     background-color: var(--light-gray);
-    /* border-color: var(--app-purple); */
 }
 
 .navButton.activeNav {
@@ -123,7 +119,6 @@
     display: none;
 }
 
-/*update: Refresh button styling */
 .refreshButton {
     display: flex;
     align-items: center;
@@ -153,6 +148,32 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/*update: Change Password button styles for desktop*/
+.changePasswordButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.changePasswordButton:hover {
+    background-color: var(--light-gray);
+    border-color: #f59e0b;
+}
+
+.changePasswordButton svg {
+    flex-shrink: 0;
 }
 
 .mobileMenuContainer {
@@ -193,7 +214,7 @@
     position: absolute;
     top: calc(100% + 0.5rem);
     right: 0;
-    min-width: 220px;
+    width: max-content;
     background: white;
     border: 2px solid transparent;
     border-radius: 8px;
@@ -209,6 +230,7 @@
 .mobileMenu.open {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.25rem;
     opacity: 1;
     visibility: visible;
@@ -218,6 +240,7 @@
 .mobileMenu button {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     background: transparent;
@@ -229,6 +252,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
+    width: 100%;
 }
 
 .backButton {
@@ -239,7 +263,6 @@
     background-color: var(--light-gray);
 }
 
-/*update: Mobile menu navigation buttons */
 .navMenuButton {
     display: flex;
     align-items: center;
@@ -269,7 +292,6 @@
     font-weight: 700;
 }
 
-/*update: Refresh menu button */
 .refreshMenuButton {
     display: flex;
     align-items: center;
@@ -292,6 +314,31 @@
 
 .refreshMenuButton.refreshing .buttonIcon {
     animation: spinRefresh 0.8s linear infinite;
+}
+
+/*update: Change Password button styles for mobile menu*/
+.changePasswordMenuButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f59e0b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.changePasswordMenuButton:hover {
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+.changePasswordMenuButton .buttonIcon {
+    flex-shrink: 0;
 }
 
 .profileMenuButton {
@@ -331,7 +378,6 @@
     border-color: lightgray;
     box-shadow: 0 3px 12px rgba(128, 128, 128, 0.15);
 }
-
 
 .loginMenuButton {
     display: flex;
@@ -416,7 +462,6 @@
     }
 }
 
-/*update: Desktop - show public navigation */
 @media (min-width: 769px) {
     .container {
         background: rgba(255, 255, 255, 0.98);
@@ -425,34 +470,13 @@
     .userInfoWrapper {
         display: block;
     }
-    
-    .buttonsContainer {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    /*update: Show public navigation buttons on desktop */
+
     .publicNavButtons {
-        display: flex;
-    }
-    
-    .burgerButton {
         display: none;
-    }
-    
-    .buttonsContainer .backButton {
-        font-weight: 600;
-        color: black;
-        background-color: white;
-    }
-    
-    .buttonsContainer .backButton:hover {
-        background-color: var(--light-gray);
     }
 }
 
-/*update: Medium screens - hide nav button text, show only icons */
+/*update: Hide button text on medium screens, show only icons*/
 @media (min-width: 769px) and (max-width: 1024px) {
     .navButton {
         padding: 0.5rem 0.75rem;
@@ -461,6 +485,18 @@
     
     .navButton span {
         display: none;
+    }
+    
+    /*update: Also hide text for change password button on medium screens*/
+    .changePasswordButton span {
+        display: none;
+    }
+    
+    .changePasswordButton {
+        padding: 0.5rem;
+        width: 40px;
+        height: 40px;
+        justify-content: center;
     }
 }
 

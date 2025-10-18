@@ -5,7 +5,6 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  /* margin-top: 3rem; */
   position: relative;
   z-index: 100;
 }
@@ -17,7 +16,6 @@
   right: 0;
   top: 0;
   bottom: 0;
-  /* background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 20%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 70%); */
   pointer-events: none;
   z-index: 0;
 }
@@ -29,12 +27,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* background-image:  */
-    /* linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), */
-    /* linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); */
   background-size: 20px 20px;
   pointer-events: none;
   z-index: 1;
+}
+
+.formFieldsWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+  /* width: 100%; */
 }
 
 .formContainer {
@@ -67,7 +71,6 @@
   color: rgb(11, 11, 11);
   text-align: center;
   margin-bottom: 1.5rem;
-  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
   letter-spacing: 0.5px;
 }
 
@@ -80,8 +83,7 @@
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.205);
   border-radius: 12px;
-background-color: white;
-  /* background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.245), var(--superlight-gradient-purple-end)); */
+  background-color: white;
   padding: .7rem .5rem .7rem .5rem;
   backdrop-filter: blur(1.9px);
   z-index: 0;
@@ -130,23 +132,17 @@ background-color: white;
   color: black;
   border: 2px solid lightgray;
   background-color: var(--light-gray);
-  /* box-shadow: 0px 0px 15px 1px var(--satur-blue-transparent) !important; */
 }
 
 .inactive {
   color: lightgray;
   cursor: not-allowed;
-  /* opacity: 0.3; */
 }
 
-/* Add these styles to your LoginRegisterForm.module.css file */
-
-/*update: Back button styles for returning to landing page */
 .backButton {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  margin-left: 1rem;
+  position: fixed;
+  top: 4.5rem;
+  left: 1rem;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -159,22 +155,12 @@ background-color: white;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 100;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  z-index: 10005;
   text-transform: none;
 }
 
 .backButton:hover {
   background-color: lightgray;
-  /* border-color: var(--app-purple);
-  color: var(--app-purple); */
-  /* transform: translateX(-4px); */
-  /* box-shadow: 0 4px 12px rgba(151, 71, 255, 0.25); */
-}
-
-.backButton:active {
-  
-  /* transform: translateX(-2px); */
 }
 
 .backButton svg {
@@ -182,31 +168,72 @@ background-color: white;
   flex-shrink: 0;
 }
 
-.backButton:hover svg {
-  /* color: var(--app-purple); */
-  /* transform: translateX(-2px); */
+/*update: Forgot password link styles*/
+.forgotPasswordLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: gray;
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin: 4px 0 4px 0;
+  border-radius: 6px;
+  /* width: 100%; */
 }
 
-/* Mobile responsive */
+.forgotPasswordLink:hover {
+  color: black;
+  background: lightgray;
+}
+
+.forgotPasswordLink:active {
+  transform: scale(0.98);
+}
+
+.forgotPasswordLink svg {
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .backButton {
-    top: 10px;
-    left: 10px;
     padding: 8px 12px;
     font-size: 13px;
   }
-  
+
   .backButton span {
     display: none;
   }
+
+  /*update: Responsive forgot password link*/
+  .forgotPasswordLink {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
 }
 
-/* Very small mobile */
 @media (max-width: 480px) {
   .backButton {
-    top: 8px;
-    left: 8px;
     padding: 6px 10px;
+  }
+
+  /*update: Even smaller screens*/
+  .forgotPasswordLink {
+    font-size: 12px;
+    padding: 7px 8px;
+  }
+}
+
+@media screen and (min-width: 481px) {
+  .backButton {
+    top: 5rem;
+    left: 1.5rem;
   }
 }
 
@@ -222,6 +249,13 @@ background-color: white;
 
   .inputSection {
     padding-right: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 641px) {
+  .backButton {
+    top: 5.5rem;
+    left: 2rem;
   }
 }
 
@@ -241,7 +275,6 @@ background-color: white;
 
   input[type="text"],
   input[type="number"],
-  /*update: Added email input type to responsive styles*/
   input[type="email"],
   select {
     flex: 1;
@@ -261,26 +294,23 @@ background-color: white;
   }
 }
 
+@media screen and (min-width: 1025px) {
+  .backButton {
+    left: 3rem;
+  }
+}
+
 @media screen and (min-width: 1440px) {
   .container {
     justify-content: center;
     align-items: center;
   }
-  
+
   .formContainer {
     justify-content: space-between;
     gap: 4rem;
     max-width: 700px;
   }
-  
-  .toggleButton {
-    min-width: 120px;
-  }
-  
-  .submitButton {
-    min-width: 120px;
-  }
-
 
   .formTitle {
     font-size: 3rem;
