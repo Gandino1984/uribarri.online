@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
-import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock } from 'lucide-react';
+import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock, Store } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -161,6 +161,17 @@ function TopBar() {
     setShowShopsListBySeller(false);
     setMobileMenuOpen(false);
   };
+
+  //update: Handler for navigating to shop management (for sellers)
+  const handleMyShopsClick = () => {
+    console.log('TopBar: Navigating to ShopsListBySeller (My Shops)');
+    setShowShopsListBySeller(true);
+    setShowShopManagement(true);
+    setShowShopWindow(false);
+    setShowInfoManagement(false);
+    setShowLandingPage(false);
+    setMobileMenuOpen(false);
+  };
   
   const shouldShowBackButton = () => {
     if (showInfoManagement) return true;
@@ -212,8 +223,8 @@ function TopBar() {
 
           {shouldShowPublicNav() && (
             <div className={styles.publicNavButtons}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={`${styles.navButton} ${showShopWindow ? styles.activeNav : ''}`}
                 onClick={handleShopWindowClick}
                 title="Ver comercios"
@@ -221,9 +232,9 @@ function TopBar() {
                 <ShoppingBag size={18} />
                 <span>Comercios</span>
               </button>
-              
-              <button 
-                type="button" 
+
+              <button
+                type="button"
                 className={`${styles.navButton} ${showInfoManagement ? styles.activeNavGreen : ''}`}
                 onClick={handleInfoManagementClick}
                 title="Ver tablón informativo"
@@ -231,6 +242,19 @@ function TopBar() {
                 <Newspaper size={18} />
                 <span>Tablón</span>
               </button>
+
+              {/*update: Add My Shops button for sellers*/}
+              {currentUser?.type_user === 'seller' && (
+                <button
+                  type="button"
+                  className={`${styles.navButton} ${showShopsListBySeller ? styles.activeNav : ''}`}
+                  onClick={handleMyShopsClick}
+                  title="Gestionar mis comercios"
+                >
+                  <Store size={18} />
+                  <span>Mis Comercios</span>
+                </button>
+              )}
             </div>
           )}
 
@@ -333,22 +357,33 @@ function TopBar() {
 
                 {shouldShowPublicNav() && (
                   <>
-                    <button 
+                    <button
                       className={` ${styles.navMenuButton} ${showShopWindow ? styles.activeNav : ''}`}
                       onClick={handleShopWindowClick}
                     >
                       <ShoppingBag size={16} className={styles.buttonIcon} />
-                      <span className={styles.buttonText}>Comercios</span>
+                      <span className={styles.buttonText}>Escaparate</span>
                     </button>
-                    
-                    <button 
+
+                    <button
                       className={`${styles.navMenuButton} ${showInfoManagement ? styles.activeNavGreen : ''}`}
                       onClick={handleInfoManagementClick}
                     >
                       <Newspaper size={16} className={styles.buttonIcon} />
                       <span className={styles.buttonText}>Tablón</span>
                     </button>
-                    
+
+                    {/*update: Add My Shops button for sellers in mobile menu*/}
+                    {currentUser?.type_user === 'seller' && (
+                      <button
+                        className={`${styles.navMenuButton} ${showShopsListBySeller ? styles.activeNav : ''}`}
+                        onClick={handleMyShopsClick}
+                      >
+                        <Store size={16} className={styles.buttonIcon} />
+                        <span className={styles.buttonText}>Mis Comercios</span>
+                      </button>
+                    )}
+
                     <div className={styles.menuDivider}></div>
                   </>
                 )}

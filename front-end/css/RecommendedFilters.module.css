@@ -1,8 +1,8 @@
 /*update: Mobile-First Base Styles (360px and up) */
 .container {
   width: 100%;
-  margin-bottom: 1.5rem;
-  padding-top: 1rem;
+  /* margin-bottom: 1.5rem; */
+  /* padding-top: 1rem; */
   /* background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); */
   border-radius: 16px;
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
@@ -72,7 +72,7 @@
 }
 
 .sliderContainer {
-  overflow-x: auto;  
+  overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
   scrollbar-width: none;
@@ -276,7 +276,7 @@
   .subtitle {
     font-size: 0.938rem;
   }
-  
+
   .label {
     font-size: 0.875rem;
     padding: 0.438rem 0.938rem;
@@ -289,41 +289,41 @@
     margin-bottom: 1.75rem;
     padding: 1.25rem 0;
   }
-  
+
   .header {
     margin-bottom: 1.25rem;
   }
-  
+
   .subtitle {
     font-size: 1rem;
   }
-  
+
   .sliderWrapper {
     padding: 0 3.5rem;
   }
-  
+
   .scrollButton {
     width: 44px;
     height: 44px;
   }
-  
+
   .sliderTrack {
     gap: 1.25rem;
   }
-  
+
   .imageWrapper {
     border-radius: 24px;
   }
-  
+
   .labelWrapper {
     bottom: -38px;
   }
-  
+
   .label {
     font-size: 0.938rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .clearFilterButton {
     font-size: 0.875rem;
     padding: 0.5rem 1.125rem;
@@ -336,37 +336,37 @@
     margin-bottom: 2rem;
     border-radius: 20px;
   }
-  
+
   .header {
     text-align: left;
     padding: 0 2rem;
   }
-  
+
   .subtitle {
     font-size: 1.063rem;
   }
-  
+
   .sliderWrapper {
     padding: 0 4rem;
   }
-  
+
   .scrollButton {
     width: 48px;
     height: 48px;
   }
-  
+
   .scrollButtonLeft {
     left: 0.75rem;
   }
-  
+
   .scrollButtonRight {
     right: 0.75rem;
   }
-  
+
   .imageWrapper {
     border-width: 5px;
   }
-  
+
   .filterButton:hover {
     transform: translateY(-8px);
   }
@@ -377,44 +377,44 @@
   .container {
     padding: 1.5rem 0;
   }
-  
+
   .header {
     margin-bottom: 1.5rem;
   }
-  
+
   .subtitle {
     font-size: 1.125rem;
   }
-  
+
   .sliderContainer {
     padding: 1.25rem 0 2.5rem;
   }
-  
+
   .sliderTrack {
     gap: 1.5rem;
     padding: 0 0.75rem;
   }
-  
+
   .imageWrapper {
     border-radius: 28px;
   }
-  
+
   .labelWrapper {
     bottom: -42px;
   }
-  
+
   .label {
     font-size: 1rem;
     padding: 0.563rem 1.125rem;
     border-radius: 28px;
   }
-  
+
   .label::before {
     width: 12px;
     height: 12px;
     top: -6px;
   }
-  
+
   .activeDot {
     width: 10px;
     height: 10px;
@@ -427,45 +427,45 @@
     margin-bottom: 2.5rem;
     padding: 1.75rem 0;
   }
-  
+
   .header {
     padding: 0 3rem;
   }
-  
+
   .subtitle {
     font-size: 1.188rem;
     letter-spacing: 0.02em;
   }
-  
+
   .sliderWrapper {
     padding: 0 4.5rem;
   }
-  
+
   .scrollButton {
     width: 52px;
     height: 52px;
   }
-  
+
   .scrollButtonLeft {
     left: 1rem;
   }
-  
+
   .scrollButtonRight {
     right: 1rem;
   }
-  
+
   .sliderTrack {
     gap: 1.75rem;
   }
-  
+
   .imageWrapper {
     border-radius: 32px;
   }
-  
+
   .filterButton:hover {
     transform: translateY(-10px);
   }
-  
+
   .clearFilterButton {
     font-size: 0.938rem;
     padding: 0.563rem 1.375rem;
@@ -477,11 +477,11 @@
   .subtitle {
     font-size: 1.25rem;
   }
-  
+
   .sliderTrack {
     gap: 2rem;
   }
-  
+
   .label {
     font-size: 1.063rem;
     padding: 0.625rem 1.25rem;
@@ -495,38 +495,38 @@
     margin-bottom: 3rem;
     border-radius: 24px;
   }
-  
+
   .header {
     padding: 0 4rem;
   }
-  
+
   .subtitle {
     font-size: 1.313rem;
   }
-  
+
   .sliderWrapper {
     padding: 0 5rem;
   }
-  
+
   .scrollButton {
     width: 56px;
     height: 56px;
   }
-  
+
   .sliderContainer {
     padding: 1.5rem 0 3rem;
   }
-  
+
   .sliderTrack {
     gap: 2.25rem;
     padding: 0 1rem;
   }
-  
+
   .imageWrapper {
     border-radius: 36px;
     border-width: 6px;
   }
-  
+
   .labelWrapper {
     bottom: -48px;
   }
@@ -537,31 +537,31 @@
   .subtitle {
     font-size: 1.375rem;
   }
-  
+
   .scrollButton {
     width: 60px;
     height: 60px;
   }
-  
+
   .scrollButton svg {
     width: 28px;
     height: 28px;
   }
-  
+
   .sliderTrack {
     gap: 2.5rem;
   }
-  
+
   .imageWrapper {
     border-radius: 40px;
   }
-  
+
   .label {
     font-size: 1.125rem;
     padding: 0.688rem 1.438rem;
     border-radius: 32px;
   }
-  
+
   .clearFilterButton {
     font-size: 1rem;
     padding: 0.625rem 1.625rem;
@@ -573,41 +573,41 @@
   .container {
     padding: 2.5rem 0;
   }
-  
+
   .header {
     padding: 0 5rem;
   }
-  
+
   .subtitle {
     font-size: 1.5rem;
   }
-  
+
   .sliderWrapper {
     padding: 0 6rem;
   }
-  
+
   .scrollButton {
     width: 68px;
     height: 68px;
   }
-  
+
   .scrollButtonLeft {
     left: 1.5rem;
   }
-  
+
   .scrollButtonRight {
     right: 1.5rem;
   }
-  
+
   .sliderTrack {
     gap: 3rem;
   }
-  
+
   .imageWrapper {
     border-radius: 48px;
     border-width: 7px;
   }
-  
+
   .label {
     font-size: 1.25rem;
     padding: 0.813rem 1.688rem;
@@ -621,91 +621,91 @@
     margin-bottom: 4rem;
     border-radius: 32px;
   }
-  
+
   .header {
     padding: 0 7rem;
     margin-bottom: 2rem;
   }
-  
+
   .subtitle {
     font-size: 1.875rem;
   }
-  
+
   .sliderWrapper {
     padding: 0 8rem;
   }
-  
+
   .scrollButton {
     width: 88px;
     height: 88px;
   }
-  
+
   .scrollButton svg {
     width: 40px;
     height: 40px;
   }
-  
+
   .scrollButtonLeft {
     left: 2rem;
   }
-  
+
   .scrollButtonRight {
     right: 2rem;
   }
-  
+
   .sliderContainer {
     padding: 2rem 0 4rem;
   }
-  
+
   .sliderTrack {
     gap: 4rem;
     padding: 0 1.5rem;
   }
-  
+
   /*update: Larger squared images for 4K */
   .filterButton {
     flex: 0 0 calc(50% - 2rem);
   }
-  
+
   .imageWrapper {
     border-radius: 64px;
     border-width: 10px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
   }
-  
+
   .filterButton:hover {
     transform: translateY(-16px);
   }
-  
+
   .filterButton:hover .imageWrapper {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   }
-  
+
   .labelWrapper {
     bottom: -64px;
   }
-  
+
   .label {
     font-size: 1.625rem;
     padding: 1.125rem 2.25rem;
     border-radius: 40px;
   }
-  
+
   .label::before {
     width: 16px;
     height: 16px;
     top: -8px;
   }
-  
+
   .activeDot {
     width: 14px;
     height: 14px;
   }
-  
+
   .clearFilterWrapper {
     margin-top: 2rem;
   }
-  
+
   .clearFilterButton {
     font-size: 1.5rem;
     padding: 1rem 2.5rem;
