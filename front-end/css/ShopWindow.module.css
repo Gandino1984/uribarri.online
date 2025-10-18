@@ -25,7 +25,7 @@
 /*update: Public browsing notification */
 .publicBrowsingNote {
   padding: 0.75rem 1rem;
-  background-color: var(--app-purple-transparent);
+  /* background-color: var(--app-purple-transparent); */
   /* border-left: 4px solid var(--app-purple); */
   border-radius: 6px;
   color: var(--app-purple);
@@ -179,8 +179,9 @@
 
 .retryButton {
   padding: 0.375rem 0.75rem;
-  background: var(--app-purple);
-  color: white;
+  /* background: var(--app-purple); */
+  background-color: var(--light-gray);
+  color: black;
   border: 2px solid transparent;
   border-radius: 8px;
   font-size: 0.75rem;
@@ -190,7 +191,7 @@
 }
 
 .retryButton:hover {
-  background: var(--app-purple-darker);
+  background: lightgray;
   box-shadow: 0 4px 12px rgba(146, 51, 234, 0.151);
 }
 
@@ -299,7 +300,7 @@
   }
 
   .filterButtonSection {
-    justify-content: flex-start;
+    justify-content: center;
     padding: 0 0.5rem;
     margin-bottom: 1.25rem;
   }

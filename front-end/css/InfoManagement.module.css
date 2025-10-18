@@ -120,10 +120,10 @@
   color: var(--app-green-darker);
 }
 
-/*update: Modern radio toggle container - responsive layout */
+/*update: Modern radio toggle container - centered layout */
 .radioToggleContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-direction: row;
   align-items: center;
   padding: 0 1rem;
@@ -683,6 +683,7 @@
 /* Large Desktop (1440px+) */
 @media (min-width: 1440px) {
   .container {
+    margin-top: 6rem;
     gap: 2.5rem;
   }
   

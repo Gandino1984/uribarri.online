@@ -7,10 +7,10 @@
   padding: 1rem;
 }
 
-/* Filters Button Container */
+/* Filters Button Container - centered layout */
 .filtersButtonContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
   gap: 1rem;

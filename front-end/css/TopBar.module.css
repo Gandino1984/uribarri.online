@@ -256,7 +256,20 @@
 }
 
 .backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--saturated-blue);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .backButton:hover {
@@ -272,7 +285,7 @@
     border: none;
     border-radius: 8px;
     color: black;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
@@ -334,7 +347,7 @@
 }
 
 .changePasswordMenuButton:hover {
-    background-color: rgba(245, 158, 11, 0.1);
+    background-color: var(--light-gray);
 }
 
 .changePasswordMenuButton .buttonIcon {
@@ -342,7 +355,20 @@
 }
 
 .profileMenuButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--app-purple);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .profileMenuButton:hover {
@@ -350,7 +376,20 @@
 }
 
 .logoutButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: #dc2626;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .logoutButton:hover {
