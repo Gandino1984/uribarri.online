@@ -133,10 +133,28 @@ export const LoginRegisterUtils = () => {
     setPasswordIcons([]);    
   };
 
+  //update: Show InfoCard with user type description when user selects a type
   const handleUserTypeChange = (e) => {
-    setUserType(e.target.value);
+    const selectedType = e.target.value;
+    setUserType(selectedType);
+
     if(type_user) {
       setIsLoggingIn(false);
+    }
+
+    // User type descriptions
+    const userTypeDescriptions = {
+      'user': 'Como Usuari@, podrás explorar tiendas locales, realizar pedidos y participar en el Tablón Informativo del barrio.',
+      'seller': 'Como Vendedor/a, podrás crear y gestionar tus propias tiendas, publicar productos y también participar en el Tablón Informativo del barrio.',
+      'rider': 'Como Repartidor/a, podrás gestionar y entregar los pedidos de las tiendas locales a los clientes.',
+      'shop_handler': 'Como Gestor/a de tienda, podrás administrar tiendas de otros vendedores (función próximamente).',
+      'shop_provider': 'Como Mayorista, podrás proveer productos a múltiples tiendas (función próximamente).'
+    };
+
+    // Show info card with the selected user type description
+    if (selectedType && userTypeDescriptions[selectedType]) {
+      setInfo({ userTypeInfo: userTypeDescriptions[selectedType] });
+      setShowInfoCard(true);
     }
   };
 
