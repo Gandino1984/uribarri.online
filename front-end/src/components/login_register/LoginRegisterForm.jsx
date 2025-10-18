@@ -23,19 +23,21 @@ const FormContent = React.memo(({ onForgotPassword }) => {
       </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
-        <FormFields />
-        
-        {/*update: Add "Forgot Password?" link only when logging in*/}
-        {isLoggingIn && (
-          <button
-            type="button"
-            onClick={onForgotPassword}
-            className={styles.forgotPasswordLink}
-          >
-            <KeyRound size={16} />
-            <span>¿Olvidaste tu contraseña?</span>
-          </button>
-        )}
+        <div className={styles.formFieldsWrapper}>
+          <FormFields />  
+          
+          {/*update: Add "Forgot Password?" link only when logging in*/}
+          {isLoggingIn && (
+            <button
+              type="button"
+              onClick={onForgotPassword}
+              className={styles.forgotPasswordLink}
+            >
+              {/* <KeyRound size={16} /> */}
+              <span>¿Olvidaste tu contraseña?</span>
+            </button>
+          )}
+        </div>
         
         <KeyboardSection />
       </form>
@@ -187,7 +189,6 @@ const LoginRegisterForm = () => {
             title="Volver al inicio"
           >
             <ArrowLeft size={20} />
-            <span>AL INICIO</span>
           </button>
 
           <FormContent onForgotPassword={handleForgotPassword} />
