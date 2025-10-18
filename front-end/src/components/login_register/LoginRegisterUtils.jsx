@@ -133,10 +133,28 @@ export const LoginRegisterUtils = () => {
     setPasswordIcons([]);    
   };
 
+  //update: Show InfoCard with user type description when user selects a type
   const handleUserTypeChange = (e) => {
-    setUserType(e.target.value);
+    const selectedType = e.target.value;
+    setUserType(selectedType);
+
     if(type_user) {
       setIsLoggingIn(false);
+    }
+
+    // User type descriptions
+    const userTypeDescriptions = {
+      'user': 'Como Usuari@, podrás explorar tiendas locales, realizar pedidos y participar en el Tablón Informativo del barrio.',
+      'seller': 'Como Vendedor/a, podrás crear y gestionar tus propias tiendas, publicar productos y también participar en el Tablón Informativo del barrio.',
+      'rider': 'Como Repartidor/a, podrás gestionar y entregar los pedidos de las tiendas locales a los clientes.',
+      'shop_handler': 'Como Gestor/a de tienda, podrás administrar tiendas de otros vendedores (función próximamente).',
+      'shop_provider': 'Como Mayorista, podrás proveer productos a múltiples tiendas (función próximamente).'
+    };
+
+    // Show info card with the selected user type description
+    if (selectedType && userTypeDescriptions[selectedType]) {
+      setInfo({ userTypeInfo: userTypeDescriptions[selectedType] });
+      setShowInfoCard(true);
     }
   };
 
@@ -381,62 +399,69 @@ export const LoginRegisterUtils = () => {
         setError(prevError => ({ ...prevError, databaseResponseError: "Error en el registro" }));
         throw new Error(response.data.error);
       }
-  
+
       const userData = response.data.data;
-      
+
       if (!userData || !userData.id_user) {
         setError(prevError => ({ ...prevError, userError: "Datos de usuario incompletos" }));
         throw new Error('Error en el registro: datos de usuario incompletos');
       }
-  
+
       console.log('Registration successful. User must verify email before logging in.');
-      
+
       clearUserSession();
       setIsLoggingIn(true);
-      
-      setSuccess(prevSuccess => ({ 
-        ...prevSuccess, 
-        registrationSuccess: "¡Registro exitoso! Por favor revisa tu correo electrónico para verificar tu cuenta antes de iniciar sesión." 
+
+      setSuccess(prevSuccess => ({
+        ...prevSuccess,
+        registrationSuccess: "¡Registro exitoso! Por favor revisa tu correo electrónico para verificar tu cuenta antes de iniciar sesión."
       }));
-      
-      setInfo(prevInfo => ({
-        ...prevInfo,
+
+      //update: Clear the 'sending email' message and show the verification pending message
+      setInfo({
         verificationPending: `Hemos enviado un correo de verificación a ${userData.email_user}. Por favor verifica tu cuenta antes de iniciar sesión.`
-      }));
+      });
       setShowInfoCard(true);
-      
+
     } catch (err) {
       console.error('-> handleRegistrationResponse() = ', err);
     }
   };
 
   const handleRegistration = async (cleanedUsername, password, type_user, userLocation, userEmail) => {
-    try {    
+    try {
       const registrationData = {
         name_user: cleanedUsername,
         pass_user: password,
         email_user: userEmail,
         type_user: type_user,
         location_user: userLocation,
-        calification_user: 5 
+        calification_user: 5
       };
-  
+
+      //update: Clear password repeat message and show sending email info
+      setShowRepeatPasswordMessage(false);
+      setInfo({
+        sendingEmail: `Creando cuenta y enviando correo de verificación a ${userEmail}...`
+      });
+      setShowInfoCard(true);
+
       const response = await axiosInstance.post('/user/register', registrationData);
-      
+
       console.log('-> LoginRegisterUtils.jsx - handleRegistration() - /user/register response = ', response);
-  
+
       await handleRegistrationResponse(response);
-  
+
       setPassword('');
       setPasswordRepeat('');
       setDisplayedPassword('');
       setShowPasswordRepeat(false);
       setUserType('');
-  
+
     } catch (err) {
       console.error('-> LoginRegisterUtils.jsx - handleRegistration() - Error = ', err);
       setError(prevError => ({ ...prevError, userError: "Error al registrar el usuario" }));
-    }     
+    }
   };
     
   const handleFormSubmit = async (e) => {

@@ -1,6 +1,7 @@
 // front-end/src/components/user_info_card/UserInfoCard.jsx
 import { useEffect, useRef, useState } from 'react';
-import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield } from 'lucide-react';
+//update: Added Star and Award icons for contributor and manager badges
+import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield, Star, Award } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
@@ -10,7 +11,6 @@ import styles from '../../../css/UserInfoCard.module.css';
 import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
-//update: Modified to accept userData prop for viewing other users and fetch additional info
 const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const { 
     currentUser 
@@ -476,20 +476,34 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
             <p className={styles.userType}>
               {getUserTypeDisplay(displayUser.type_user)}
             </p>
+
             {displayUser.location_user && (
               <p className={styles.userLocation}>
                 📍 {displayUser.location_user}
               </p>
             )}
-            {/* {displayUser.age_user && (
-              <p className={styles.userAge}>
-                Edad: {displayUser.age_user} años
-              </p>
-            )} */}
             {displayUser.email_user && (
               <p className={styles.userEmail}>
                 {displayUser.email_user}
               </p>
+            )}
+
+            {(displayUser.contributor_user || displayUser.is_manager) && (
+              <div className={styles.badgesSection}>
+                {displayUser.contributor_user && (
+                  <div className={styles.statusBadge + ' ' + styles.contributorBadge}>
+                    <Star size={12} className={styles.badgeIcon} />
+                    <span>Contribuidor de la Plataforma</span>
+                  </div>
+                )}
+
+                {displayUser.is_manager && (
+                  <div className={styles.statusBadge + ' ' + styles.organizationManagerBadge}>
+                    <Award size={12} className={styles.badgeIcon} />
+                    <span>Puede crear asociaciones</span>
+                  </div>
+                )}
+              </div>
             )}
             
             {/*update: Display shops for sellers */}

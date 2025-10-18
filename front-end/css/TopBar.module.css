@@ -214,7 +214,7 @@
     position: absolute;
     top: calc(100% + 0.5rem);
     right: 0;
-    min-width: 220px;
+    width: max-content;
     background: white;
     border: 2px solid transparent;
     border-radius: 8px;
@@ -230,6 +230,7 @@
 .mobileMenu.open {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.25rem;
     opacity: 1;
     visibility: visible;
@@ -239,6 +240,7 @@
 .mobileMenu button {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     background: transparent;
@@ -250,6 +252,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
+    width: 100%;
 }
 
 .backButton {
@@ -467,29 +470,9 @@
     .userInfoWrapper {
         display: block;
     }
-    
-    .buttonsContainer {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
+
     .publicNavButtons {
-        display: flex;
-    }
-    
-    .burgerButton {
         display: none;
-    }
-    
-    .buttonsContainer .backButton {
-        font-weight: 600;
-        color: black;
-        background-color: white;
-    }
-    
-    .buttonsContainer .backButton:hover {
-        background-color: var(--light-gray);
     }
 }
 

@@ -32,6 +32,15 @@
   z-index: 1;
 }
 
+.formFieldsWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+  /* width: 100%; */
+}
+
 .formContainer {
   display: flex;
   justify-content: center;  
@@ -131,10 +140,9 @@
 }
 
 .backButton {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  margin-left: 1rem;
+  position: fixed;
+  top: 4.5rem;
+  left: 1rem;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -147,7 +155,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 100;
+  z-index: 10005;
   text-transform: none;
 }
 
@@ -169,20 +177,20 @@
   padding: 10px 12px;
   background: transparent;
   border: none;
-  color: #9747ff;
-  font-size: 14px;
+  color: gray;
+  font-size: .8rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
-  margin: -4px 0 4px 0;
-  border-radius: 8px;
-  width: 100%;
+  margin: 4px 0 4px 0;
+  border-radius: 6px;
+  /* width: 100%; */
 }
 
 .forgotPasswordLink:hover {
-  color: #7431ca;
-  background: rgba(151, 71, 255, 0.08);
+  color: black;
+  background: lightgray;
 }
 
 .forgotPasswordLink:active {
@@ -195,12 +203,10 @@
 
 @media (max-width: 768px) {
   .backButton {
-    top: 10px;
-    left: 10px;
     padding: 8px 12px;
     font-size: 13px;
   }
-  
+
   .backButton span {
     display: none;
   }
@@ -214,8 +220,6 @@
 
 @media (max-width: 480px) {
   .backButton {
-    top: 8px;
-    left: 8px;
     padding: 6px 10px;
   }
 
@@ -223,6 +227,13 @@
   .forgotPasswordLink {
     font-size: 12px;
     padding: 7px 8px;
+  }
+}
+
+@media screen and (min-width: 481px) {
+  .backButton {
+    top: 5rem;
+    left: 1.5rem;
   }
 }
 
@@ -238,6 +249,13 @@
 
   .inputSection {
     padding-right: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 641px) {
+  .backButton {
+    top: 5.5rem;
+    left: 2rem;
   }
 }
 
@@ -276,12 +294,18 @@
   }
 }
 
+@media screen and (min-width: 1025px) {
+  .backButton {
+    left: 3rem;
+  }
+}
+
 @media screen and (min-width: 1440px) {
   .container {
     justify-content: center;
     align-items: center;
   }
-  
+
   .formContainer {
     justify-content: space-between;
     gap: 4rem;

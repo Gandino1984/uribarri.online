@@ -17,13 +17,15 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  opacity: 0.3;
 }
 
 .historyButton:hover {
   background-color: var(--app-purple-dark, #6b46c1);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 1;
 }
 
 .historyButton:active {
