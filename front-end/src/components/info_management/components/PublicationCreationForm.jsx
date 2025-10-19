@@ -365,7 +365,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     <div className={styles.container}>
       <div className={styles.formHeader}>
         <h2 className={styles.formTitle}>
-          {editMode ? <Edit size={24} /> : <FileText size={24} />}
+          {/* {editMode ? <Edit size={24} /> : <FileText size={24} />} */}
           <span>{editMode ? 'Editar Publicación' : 'Crear Nueva Publicación'}</span>
         </h2>
         <p className={styles.formSubtitle}>
@@ -379,8 +379,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
           <label htmlFor="id_org" className={styles.label}>
-            <Building2 size={16} />
-            <span>Asociación *</span>
+            {/* <Building2 size={16} /> */}
+            <span>Asociación </span>
           </label>
           <select
             id="id_org"
@@ -416,8 +416,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         <div className={styles.formGroup}>
           <label htmlFor="title_pub" className={styles.label}>
-            <FileText size={16} />
-            <span>Título de la Publicación *</span>
+            {/* <FileText size={16} /> */}
+            <span>Título de la Publicación </span>
           </label>
           <input
             type="text"
@@ -443,8 +443,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         <div className={styles.formGroup}>
           <label htmlFor="content_pub" className={styles.label}>
-            <FileText size={16} />
-            <span>Contenido *</span>
+            {/* <FileText size={16} /> */}
+            <span>Contenido </span>
           </label>
           <textarea
             id="content_pub"
@@ -500,7 +500,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <Image size={16} />
+            {/* <Image size={16} /> */}
             <span>Imagen de la Publicación</span>
           </label>
           

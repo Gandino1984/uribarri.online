@@ -327,8 +327,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         {/* Organization Name Field */}
         <div className={styles.formGroup}>
           <label htmlFor="name_org" className={styles.label}>
-            <Building2 size={16} />
-            <span>Nombre de la asociación *</span>
+            <span>Nombre de la asociación </span>
           </label>
           <input
             type="text"
@@ -355,7 +354,6 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         {/* Organization Scope Field */}
         <div className={styles.formGroup}>
           <label htmlFor="scope_org" className={styles.label}>
-            <MapPin size={16} />
             <span>Ámbito de Actuación</span>
           </label>
           <textarea
@@ -383,7 +381,7 @@ const OrganizationCreationForm = ({ onSuccess, onCancel, editMode = false, organ
         {/* Image Upload Field */}
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <Image size={16} />
+            {/* <Image size={16} /> */}
             <span>Imagen de la asociación</span>
           </label>
           

@@ -249,10 +249,7 @@ const InfoBoard = () => {
                             <span className={styles.publisherName}>
                               {publication.publisher.name_user}
                             </span>
-                          </div>
-                        )}
-                      </div>
-                      
+
                       <ActionButtonsPublication
                         publication={publication}
                         onEdit={handleEditPublication}
@@ -260,6 +257,12 @@ const InfoBoard = () => {
                         onToggleActive={handleToggleActive}
                         onRefresh={fetchPublications}
                       />
+
+                          </div>
+                        )}
+                      </div>
+                      
+                      
                     </div>
                     
                     {publication.organization && (
