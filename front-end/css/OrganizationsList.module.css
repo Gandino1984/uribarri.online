@@ -235,26 +235,61 @@
   flex-wrap: wrap;
 }
 
-/*update: Action button styling matching ShopManagement */
+/*update: Manager actions layout - 2x2 grid on all desktop sizes */
+@media (min-width: 768px) {
+  .managerActions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .adminActions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .managerActions {
+    /*update: Keep 2x2 grid for better organization */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+}
+
+@media (min-width: 1800px) {
+  .managerActions {
+    /*update: Keep 2x2 grid even on ultra-wide for consistency */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+  }
+}
+
+/*update: Action button styling - no ellipsis, use smaller text and better sizing */
 .actionButton {
   flex: 1;
   /*update: Add min-width to prevent too narrow buttons */
-  min-width: 100px;
-  padding: 0.65rem 1rem;
+  min-width: 90px;
+  padding: 0.6rem 0.5rem;
   border: 2px solid transparent;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: var(--light-gray);
   color: black;
   text-transform: uppercase;
-  letter-spacing: 0.03rem;
+  letter-spacing: 0.02rem;
+  /*update: Allow text to wrap if absolutely necessary */
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .actionButton:disabled {
@@ -570,59 +605,102 @@
 @media (min-width: 1025px) and (max-width: 1439px) {
   .container {
     padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
   }
-  
-  /*update: Three columns on desktop */
+
+  /*update: Two columns on desktop for better button space */
   .organizationsGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
-  
+
   .organizationCard {
     padding: 1.25rem;
   }
-  
+
   .orgImage,
   .orgImagePlaceholder {
     width: 70px;
     height: 70px;
   }
-  
+
   .orgName {
     font-size: 1.1rem;
   }
-  
+
   .actionButton {
-    padding: 0.8rem 1.25rem;
-    font-size: 0.9rem;
+    padding: 0.7rem 0.75rem;
+    font-size: 0.85rem;
+    min-width: 110px;
   }
 }
 
-/* Large Desktop (1440px+) */
-@media (min-width: 1440px) {
-  /*update: Four columns on large screens */
+/* Large Desktop (1440px - 1799px) */
+@media (min-width: 1440px) and (max-width: 1799px) {
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /*update: Three columns with more space per card */
   .organizationsGrid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.75rem;
   }
-  
+
   .organizationCard {
     padding: 1.5rem;
   }
-  
+
   .orgImage,
   .orgImagePlaceholder {
     width: 75px;
     height: 75px;
   }
-  
+
   .orgName {
     font-size: 1.15rem;
   }
-  
+
   .actionButton {
-    padding: 0.85rem 1.4rem;
-    font-size: 0.95rem;
+    padding: 0.7rem 0.75rem;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+}
+
+/* Ultra-wide Desktop (1800px+) */
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  /*update: Three columns even on ultra-wide for optimal button space */
+  .organizationsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .organizationCard {
+    padding: 1.75rem;
+  }
+
+  .orgImage,
+  .orgImagePlaceholder {
+    width: 80px;
+    height: 80px;
+  }
+
+  .orgName {
+    font-size: 1.2rem;
+  }
+
+  .actionButton {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    min-width: 120px;
   }
 }
 

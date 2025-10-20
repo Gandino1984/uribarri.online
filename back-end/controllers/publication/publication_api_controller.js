@@ -284,6 +284,33 @@ async function uploadImage(req, res) {
     }
 }
 
+//update: New endpoint to remove publication image
+async function removeImage(req, res) {
+    try {
+        const { id_publication } = req.body;
+
+        if (!id_publication) {
+            return res.status(400).json({
+                error: 'El ID de la publicación es obligatorio'
+            });
+        }
+
+        const { error, data, message } = await publicationController.removeImage(id_publication);
+
+        if (error) {
+            return res.status(400).json({ error });
+        }
+
+        res.json({ error: null, data, message });
+    } catch (err) {
+        console.error('Error removing publication image:', err);
+        res.status(500).json({
+            error: 'Error al eliminar la imagen de la publicación',
+            details: err.message
+        });
+    }
+}
+
 async function approvePublication(req, res) {
     try {
         const {
@@ -364,6 +391,7 @@ export {
     update,
     removeById,
     uploadImage,
+    removeImage, //update: Added removeImage export
     approvePublication,
     toggleActive
 };
@@ -378,6 +406,7 @@ export default {
     update,
     removeById,
     uploadImage,
+    removeImage, //update: Added removeImage export
     approvePublication,
     toggleActive
 };

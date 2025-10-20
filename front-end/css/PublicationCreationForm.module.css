@@ -143,18 +143,18 @@
 /* Image Upload Styles */
 .imageUploadArea {
   position: relative;
-  border: 2px dashed #cbd5e0;
+  border: 2px dashed lightgray;
   border-radius: 8px;
   padding: 40px 20px;
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
-  background: #fafafa;
+  background: var(--light-gray);
 }
 
 .imageUploadArea:hover {
-  border-color: #3498db;
-  background: #f0f8ff;
+  border-color: var(--app-purple);
+  background: var(--app-purple-transparent);
 }
 
 .fileInput {
@@ -175,7 +175,7 @@
 }
 
 .fileInputLabel svg {
-  color: #3498db;
+  color: var(--app-purple);
 }
 
 .fileInputLabel span:first-of-type {
@@ -257,12 +257,12 @@
 }
 
 .submitButton {
-  background: #3498db;
+  background: var(--app-green);
   color: white;
 }
 
 .submitButton:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--app-green-darker);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
@@ -293,20 +293,20 @@
   display: flex;
   gap: 12px;
   padding: 16px;
-  background: #e8f4fd;
+  background: var(--app-purple-transparent);
   border-radius: 8px;
   margin-top: 20px;
-  border: 1px solid #bee5eb;
+  /* border: 1px solid #bee5eb; */
 }
 
 .infoNote svg {
-  color: #3498db;
+  color: var(--app-purple-darker);
   flex-shrink: 0;
 }
 
 .infoNote p {
   margin: 0;
-  color: #2c3e50;
+  color: var(--app-purple);
   font-size: 0.9rem;
   line-height: 1.5;
 }

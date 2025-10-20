@@ -22,10 +22,12 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(
-    editMode && publicationData?.image_pub 
+    editMode && publicationData?.image_pub
       ? `${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`
       : null
   );
+  //update: Track if user wants to remove the existing image
+  const [removeExistingImage, setRemoveExistingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [userManagedOrgs, setUserManagedOrgs] = useState([]);
@@ -79,7 +81,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
-    
+
     if (file) {
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!validTypes.includes(file.type)) {
@@ -89,7 +91,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         }));
         return;
       }
-      
+
       if (file.size > 10 * 1024 * 1024) {
         setError(prev => ({
           ...prev,
@@ -97,9 +99,11 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         }));
         return;
       }
-      
+
       setImageFile(file);
-      
+      //update: Reset removeExistingImage flag when user selects a new image
+      setRemoveExistingImage(false);
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -108,12 +112,13 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   };
   
+  //update: Fixed to properly clear image in edit mode
   const handleRemoveImage = () => {
     setImageFile(null);
+    setImagePreview(null);
+    //update: Mark that user wants to remove existing image
     if (editMode && publicationData?.image_pub) {
-      setImagePreview(`${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`);
-    } else {
-      setImagePreview(null);
+      setRemoveExistingImage(true);
     }
     const fileInput = document.getElementById('pub-image-input');
     if (fileInput) {
@@ -182,17 +187,35 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         }
         
         const updatedPublication = updateResponse.data.data;
-        
-        if (imageFile && updatedPublication) {
+
+        //update: Handle image removal or replacement
+        if (removeExistingImage && !imageFile) {
+          // User wants to remove the image
+          try {
+            await axiosInstance.delete('/publication/remove-image', {
+              data: {
+                id_publication: updatedPublication.id_publication
+              }
+            });
+            console.log('Image removed successfully');
+          } catch (imgError) {
+            console.error('Error removing image:', imgError);
+            setError(prev => ({
+              ...prev,
+              imageRemoveError: 'Error al eliminar la imagen'
+            }));
+          }
+        } else if (imageFile && updatedPublication) {
+          // User wants to upload/replace the image
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
-          
+
           try {
             console.log('Uploading publication image with headers:', {
               'x-publication-id': updatedPublication.id_publication,
               'x-organization-id': updatedPublication.id_org
             });
-            
+
             const uploadResponse = await axiosInstance.post('/publication/upload-image', formDataImage, {
               headers: {
                 'Content-Type': 'multipart/form-data',
@@ -200,9 +223,9 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
                 'x-organization-id': updatedPublication.id_org.toString()
               }
             });
-            
+
             console.log('Image upload response:', uploadResponse.data);
-            
+
             if (uploadResponse.data.error) {
               console.error('Error in upload response:', uploadResponse.data.error);
               setError(prev => ({
@@ -365,7 +388,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     <div className={styles.container}>
       <div className={styles.formHeader}>
         <h2 className={styles.formTitle}>
-          {editMode ? <Edit size={24} /> : <FileText size={24} />}
+          {/* {editMode ? <Edit size={24} /> : <FileText size={24} />} */}
           <span>{editMode ? 'Editar Publicación' : 'Crear Nueva Publicación'}</span>
         </h2>
         <p className={styles.formSubtitle}>
@@ -379,8 +402,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
           <label htmlFor="id_org" className={styles.label}>
-            <Building2 size={16} />
-            <span>Asociación *</span>
+            {/* <Building2 size={16} /> */}
+            <span>Asociación </span>
           </label>
           <select
             id="id_org"
@@ -416,8 +439,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         <div className={styles.formGroup}>
           <label htmlFor="title_pub" className={styles.label}>
-            <FileText size={16} />
-            <span>Título de la Publicación *</span>
+            {/* <FileText size={16} /> */}
+            <span>Título de la Publicación </span>
           </label>
           <input
             type="text"
@@ -443,8 +466,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         <div className={styles.formGroup}>
           <label htmlFor="content_pub" className={styles.label}>
-            <FileText size={16} />
-            <span>Contenido *</span>
+            {/* <FileText size={16} /> */}
+            <span>Contenido </span>
           </label>
           <textarea
             id="content_pub"
@@ -500,7 +523,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <Image size={16} />
+            {/* <Image size={16} /> */}
             <span>Imagen de la Publicación</span>
           </label>
           

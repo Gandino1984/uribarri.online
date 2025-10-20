@@ -32,7 +32,7 @@ services:
     #   - VIRTUAL_HOST=api.uribarri.online
     #   - LETSENCRYPT_HOST=api.uribarri.online
     #   - LETSENCRYPT_EMAIL=andinogerman@gmail.com
-    # volumes:
+    volumes:
       - .:/app
       - /app/node_modules
       - ./public:/app/public

@@ -92,10 +92,11 @@
 }
 
 .inputSection{
-  display: flex;
+  display: flex; 
   align-items: center;
-  justify-content: center;
-  padding-left: .5rem;
+  justify-content: center; 
+  width: 100%;  
+  /* padding-left: .5rem; */
 }
 
 .formActions {
@@ -248,7 +249,7 @@
   }
 
   .inputSection {
-    padding-right: 1.5rem;
+    /* padding-right: 1.5rem; */
   }
 }
 
