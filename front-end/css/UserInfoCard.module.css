@@ -330,7 +330,7 @@
   /* max-width: 90%; */
   font-size: 0.8rem;
   font-weight: 500;
-  color: black;
+  /* color: black; */
   letter-spacing: 0.05rem;
   transition: transform 0.2s ease;  
 }
@@ -344,11 +344,13 @@
 }
 
 .contributorBadge {
+  color: var(--app-purple-darker);
   background-color: var(--app-purple-light);
   /* box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3); */
 }
 
 .organizationManagerBadge {
+  color: var(--app-green-darker);
   background-color: var(--app-green-light);
   /* box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3); */
 }
