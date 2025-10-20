@@ -114,10 +114,10 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
           
           //update: Debug to see structure
           console.log('Raw participations response:', participations);
-          
+
           // If participations don't include full organization data, fetch organizations separately
           const organizationsWithDetails = [];
-          
+
           for (const participation of participations) {
             // Check if organization data is already included
             if (participation.name_org || participation.organization?.name_org) {
@@ -125,8 +125,10 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
               organizationsWithDetails.push({
                 id_org: participation.id_org || participation.id_organization,
                 name_org: participation.name_org || participation.organization?.name_org,
-                is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
+                //update: Check org_managed field instead of is_manager
+                org_managed: participation.org_managed === 1 || participation.org_managed === true || participation.org_managed === '1',
                 scope_org: participation.scope_org || participation.organization?.scope_org,
+                joined_date: participation.created_at,
                 ...participation
               });
             } else if (participation.id_org || participation.id_organization) {
@@ -136,13 +138,15 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 const orgDetailResponse = await axiosInstance.post('/organization/by-id', {
                   id_organization: orgId
                 });
-                
+
                 if (orgDetailResponse.data && !orgDetailResponse.data.error) {
                   const orgData = orgDetailResponse.data.data;
                   organizationsWithDetails.push({
                     ...orgData,
-                    is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
-                    participant_id: participation.id_participant
+                    //update: Check org_managed field instead of is_manager
+                    org_managed: participation.org_managed === 1 || participation.org_managed === true || participation.org_managed === '1',
+                    participant_id: participation.id_participant,
+                    joined_date: participation.created_at
                   });
                 }
               } catch (err) {
@@ -150,12 +154,12 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
               }
             }
           }
-          
+
           console.log('Organizations with details:', organizationsWithDetails);
           setUserOrganizations(organizationsWithDetails);
-          
+
           // Check if user manages any organization
-          const managed = organizationsWithDetails.find(org => org.is_manager);
+          const managed = organizationsWithDetails.find(org => org.org_managed);
           if (managed) {
             console.log('User manages organization:', managed);
             setManagedOrganization(managed);
@@ -541,10 +545,11 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                   {userOrganizations.map(org => {
                     const orgId = org.id_org || org.id_organization;
                     const orgName = org.name_org || org.organization?.name_org || 'Asociación';
-                    const isManager = org.is_manager;
-                    const isFounder = org.id_user === displayUser.id_user || 
+                    //update: Use org_managed instead of is_manager
+                    const isManager = org.org_managed === 1 || org.org_managed === true || org.org_managed === '1';
+                    const isFounder = org.id_user === displayUser.id_user ||
                                      org.manager?.id_user === displayUser.id_user;
-                    
+
                     return (
                       <div key={orgId} className={styles.contextItem}>
                         <div className={styles.contextItemHeader}>
@@ -553,28 +558,28 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                           )}
                           <span className={styles.contextItemName}>{orgName}</span>
                         </div>
-                        
+
                         {org.scope_org && (
                           <span className={styles.contextItemDetail}>
                             Ámbito: {org.scope_org}
                           </span>
                         )}
-                        
+
                         <div className={styles.roleInfo}>
                           {isFounder && isManager ? (
                             <span className={styles.contextItemBadge + ' ' + styles.founderBadge}>
-                              Fundador/a y Administrador/a
+                              Fundador/a y Gestor/a
                             </span>
                           ) : isManager ? (
                             <span className={styles.contextItemBadge + ' ' + styles.managerBadge}>
-                              Administrador/a
+                              Gestor/a
                             </span>
                           ) : (
                             <span className={styles.contextItemBadge + ' ' + styles.memberBadge}>
                               Miembro
                             </span>
                           )}
-                          
+
                           {org.joined_date && (
                             <span className={styles.joinedDate}>
                               Desde: {new Date(org.joined_date).toLocaleDateString('es-ES', {

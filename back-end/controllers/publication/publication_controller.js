@@ -466,9 +466,26 @@ async function removeById(id_publication) {
 async function uploadImage(id_publication, imagePath) {
     try {
         const publication = await publication_model.findByPk(id_publication);
-        
+
         if (!publication) {
             return { error: "Publicación no encontrada" };
+        }
+
+        //update: Delete old image file if it exists
+        if (publication.image_pub) {
+            const fs = await import('fs');
+            const path = await import('path');
+            const oldImagePath = path.join(process.cwd(), publication.image_pub);
+
+            try {
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                    console.log('Old publication image deleted:', oldImagePath);
+                }
+            } catch (deleteErr) {
+                console.error('Error deleting old publication image:', deleteErr);
+                // Continue even if deletion fails
+            }
         }
 
         console.log('Updating publication image path:', {
@@ -477,17 +494,59 @@ async function uploadImage(id_publication, imagePath) {
         });
 
         await publication.update({ image_pub: imagePath });
-        
-        return { 
-            data: { 
+
+        return {
+            data: {
                 id_publication: id_publication,
-                image_pub: imagePath 
+                image_pub: imagePath
             },
-            message: "Imagen actualizada correctamente" 
+            message: "Imagen actualizada correctamente"
         };
     } catch (err) {
         console.error("Error al actualizar imagen de la publicación =", err);
         return { error: "Error al actualizar la imagen" };
+    }
+}
+
+//update: New function to remove publication image
+async function removeImage(id_publication) {
+    try {
+        const publication = await publication_model.findByPk(id_publication);
+
+        if (!publication) {
+            return { error: "Publicación no encontrada" };
+        }
+
+        //update: Delete image file if it exists
+        if (publication.image_pub) {
+            const fs = await import('fs');
+            const path = await import('path');
+            const imagePath = path.join(process.cwd(), publication.image_pub);
+
+            try {
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
+                    console.log('Publication image deleted:', imagePath);
+                }
+            } catch (deleteErr) {
+                console.error('Error deleting publication image file:', deleteErr);
+                return { error: "Error al eliminar el archivo de imagen" };
+            }
+        }
+
+        //update: Clear image_pub field in database
+        await publication.update({ image_pub: null });
+
+        return {
+            data: {
+                id_publication: id_publication,
+                image_pub: null
+            },
+            message: "Imagen eliminada correctamente"
+        };
+    } catch (err) {
+        console.error("Error al eliminar imagen de la publicación =", err);
+        return { error: "Error al eliminar la imagen" };
     }
 }
 
@@ -587,30 +646,32 @@ async function toggleActive(id_publication, publication_active) {
     }
 }
 
-export { 
-    getAll, 
+export {
+    getAll,
     getById,
     getByUserId,
     getByDateRange,
     getByOrganizationId,
-    create, 
-    update, 
+    create,
+    update,
     removeById,
     uploadImage,
+    removeImage, //update: Added removeImage export
     approvePublication,
     toggleActive
 };
 
-export default { 
-    getAll, 
+export default {
+    getAll,
     getById,
     getByUserId,
     getByDateRange,
     getByOrganizationId,
-    create, 
-    update, 
+    create,
+    update,
     removeById,
     uploadImage,
+    removeImage, //update: Added removeImage export
     approvePublication,
     toggleActive
 };
