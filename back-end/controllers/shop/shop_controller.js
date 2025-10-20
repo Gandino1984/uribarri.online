@@ -4,6 +4,7 @@ import user_model from "../../models/user_model.js";
 import shop_type_model from "../../models/shop_type_model.js";
 import shop_subtype_model from "../../models/shop_subtype_model.js";
 import product_model from "../../models/product_model.js";
+import package_model from "../../models/package_model.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -555,23 +556,74 @@ async function removeByIdWithProducts(id_shop) {
        }
 
        const shop = await shop_model.findByPk(id_shop);
-       
+
        if (!shop) {
-           return { 
+           return {
                error: "Comercio no encontrado",
            };
+       }
+
+       //update: First, delete all packages associated with this shop (including their images)
+       const packages = await package_model.findAll({
+           where: { id_shop: id_shop }
+       });
+
+       let deletedPackages = 0;
+       if (packages && packages.length > 0) {
+           // Delete package images first
+           for (const pkg of packages) {
+               if (pkg.image_package) {
+                   const imagePath = path.join(__dirname, '..', '..', pkg.image_package);
+                   try {
+                       if (fs.existsSync(imagePath)) {
+                           fs.unlinkSync(imagePath);
+                           console.log(`Imagen de paquete eliminada: ${pkg.image_package}`);
+                       }
+                   } catch (err) {
+                       console.error('Error al eliminar imagen de paquete:', err);
+                   }
+               }
+           }
+
+           // Delete all packages
+           deletedPackages = await package_model.destroy({
+               where: { id_shop: id_shop }
+           });
+
+           console.log(`${deletedPackages} paquete(s) eliminados del comercio ${shop.name_shop}`);
+       }
+
+       //update: Delete all product images before deleting products
+       const products = await product_model.findAll({
+           where: { id_shop: id_shop }
+       });
+
+       if (products && products.length > 0) {
+           for (const product of products) {
+               if (product.image_product) {
+                   const imagePath = path.join(__dirname, '..', '..', product.image_product);
+                   try {
+                       if (fs.existsSync(imagePath)) {
+                           fs.unlinkSync(imagePath);
+                           console.log(`Imagen de producto eliminada: ${product.image_product}`);
+                       }
+                   } catch (err) {
+                       console.error('Error al eliminar imagen de producto:', err);
+                   }
+               }
+           }
        }
 
        // Delete all products associated with this shop
        const deletedProducts = await product_model.destroy({
            where: { id_shop: id_shop }
        });
-       
-       console.log(`${deletedProducts} productos eliminados del comercio ${shop.name_shop}`);
+
+       console.log(`${deletedProducts} producto(s) eliminados del comercio ${shop.name_shop}`);
 
        //update: Delete shop folder from backend assets if exists
        const shopPath = path.join(__dirname, '..', '..', 'assets', 'images', 'shops', shop.name_shop);
-       
+
        if (fs.existsSync(shopPath)) {
            try {
                fs.rmSync(shopPath, { recursive: true, force: true });
@@ -583,10 +635,11 @@ async function removeByIdWithProducts(id_shop) {
 
        await shop.destroy();
 
-       return { 
+       return {
            data: id_shop,
-           message: `El comercio y sus ${deletedProducts} productos se han eliminado.`,
-           deletedProducts: deletedProducts
+           message: `El comercio, sus ${deletedProducts} producto(s) y ${deletedPackages} paquete(s) se han eliminado.`,
+           deletedProducts: deletedProducts,
+           deletedPackages: deletedPackages
        };
    } catch (err) {
        console.error("-> shop_controller.js - removeByIdWithProducts() - Error = ", err);

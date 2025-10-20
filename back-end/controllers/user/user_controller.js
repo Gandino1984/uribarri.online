@@ -1,8 +1,19 @@
 import { console } from "inspector";
 import user_model from "../../models/user_model.js";
+import shop_model from "../../models/shop_model.js";
+import organization_model from "../../models/organization_model.js";
+import publication_model from "../../models/publication_model.js";
+import order_model from "../../models/order_model.js";
 import bcrypt from "bcrypt";
 import { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } from "../../services/emailService.js";
 import { Op } from "sequelize";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -883,26 +894,135 @@ async function removeById(id_user) {
         }
 
         const user = await user_model.findByPk(id_user);
-        
+
         if (!user) {
-            return { 
+            return {
                 error: "Usuario no encontrado",
-                details: "Usuario no encontrado" 
+                details: "Usuario no encontrado"
             };
         }
 
-        await user.destroy();       
-        
-        return { 
+        console.log(`🗑️ Iniciando eliminación del usuario ${user.name_user} (ID: ${id_user})`);
+
+        //update: Check for active orders (prevent deletion if user has active orders)
+        const activeOrders = await order_model.findAll({
+            where: {
+                id_user: id_user,
+                order_status: {
+                    [Op.in]: ['pending', 'confirmed', 'preparing', 'ready']
+                }
+            }
+        });
+
+        if (activeOrders && activeOrders.length > 0) {
+            return {
+                error: `No se puede eliminar el usuario porque tiene ${activeOrders.length} pedido(s) activo(s)`,
+                details: "Completa o cancela los pedidos activos antes de eliminar el usuario"
+            };
+        }
+
+        let deletedCounts = {
+            shops: 0,
+            products: 0,
+            packages: 0,
+            organizations: 0,
+            publications: 0
+        };
+
+        //update: Import shop controller to use removeByIdWithProducts
+        const shopController = await import('../shop/shop_controller.js');
+
+        //update: Delete all shops owned by this user (cascades to products and packages)
+        const shops = await shop_model.findAll({
+            where: { id_user: id_user }
+        });
+
+        if (shops && shops.length > 0) {
+            for (const shop of shops) {
+                console.log(`Eliminando comercio: ${shop.name_shop}`);
+                const result = await shopController.default.removeByIdWithProducts(shop.id_shop);
+                if (result.deletedProducts) deletedCounts.products += result.deletedProducts;
+                if (result.deletedPackages) deletedCounts.packages += result.deletedPackages;
+                deletedCounts.shops++;
+            }
+        }
+
+        //update: Import organization controller
+        const organizationController = await import('../organization/organization_controller.js');
+
+        //update: Delete all organizations managed by this user (cascades to publications)
+        const organizations = await organization_model.findAll({
+            where: { id_user: id_user }
+        });
+
+        if (organizations && organizations.length > 0) {
+            for (const org of organizations) {
+                console.log(`Eliminando asociación: ${org.name_org}`);
+                const result = await organizationController.default.removeById(org.id_organization);
+                if (result.deletedPublications) deletedCounts.publications += result.deletedPublications;
+                deletedCounts.organizations++;
+            }
+        }
+
+        //update: Import publication controller
+        const publicationController = await import('../publication/publication_controller.js');
+
+        //update: Delete all standalone publications by this user (not tied to organizations)
+        const standalonePublications = await publication_model.findAll({
+            where: {
+                id_user_pub: id_user,
+                id_org: null
+            }
+        });
+
+        if (standalonePublications && standalonePublications.length > 0) {
+            for (const publication of standalonePublications) {
+                console.log(`Eliminando publicación: ${publication.title_pub}`);
+                await publicationController.default.removeById(publication.id_publication);
+                deletedCounts.publications++;
+            }
+        }
+
+        //update: Delete user image if exists
+        if (user.image_user) {
+            const imagePath = path.join(__dirname, '..', '..', user.image_user);
+            try {
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
+                    console.log(`Imagen de usuario eliminada: ${user.image_user}`);
+                }
+            } catch (err) {
+                console.error('Error al eliminar imagen de usuario:', err);
+            }
+        }
+
+        //update: Delete user folder if exists
+        const userFolderPath = path.join(__dirname, '..', '..', 'assets', 'images', 'users', user.name_user);
+        if (fs.existsSync(userFolderPath)) {
+            try {
+                fs.rmSync(userFolderPath, { recursive: true, force: true });
+                console.log(`Carpeta del usuario ${user.name_user} eliminada`);
+            } catch (err) {
+                console.error('Error al eliminar carpeta de usuario:', err);
+            }
+        }
+
+        //update: Finally, delete the user
+        await user.destroy();
+
+        console.log(`✅ Usuario ${user.name_user} eliminado exitosamente`);
+
+        return {
             data: id_user,
-            message: "El usuario se ha borrado." 
+            message: `El usuario se ha eliminado junto con ${deletedCounts.shops} comercio(s), ${deletedCounts.products} producto(s), ${deletedCounts.packages} paquete(s), ${deletedCounts.organizations} asociación(es) y ${deletedCounts.publications} publicación(es).`,
+            deletedCounts: deletedCounts
         };
 
     } catch (err) {
         console.error("-> user_controller.js - removeById() - Error = ", err);
-        return { 
+        return {
             error: "Error al borrar el usuario",
-            details: err.message 
+            details: err.message
         };
     }
 }

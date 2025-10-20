@@ -1,6 +1,7 @@
 // back-end/controllers/organization/organization_controller.js
 import organization_model from "../../models/organization_model.js";
 import participant_model from "../../models/participant_model.js";
+import publication_model from "../../models/publication_model.js";
 import user_model from "../../models/user_model.js";
 import sequelize from "../../config/sequelize.js";
 import fs from 'fs';
@@ -454,9 +455,42 @@ async function removeById(id_organization) {
             transaction: t
         });
 
+        //update: Delete all publications for this organization (including images)
+        const publications = await publication_model.findAll({
+            where: { id_org: id_organization },
+            transaction: t
+        });
+
+        let deletedPublications = 0;
+        if (publications && publications.length > 0) {
+            // Delete publication images first
+            for (const publication of publications) {
+                if (publication.image_pub) {
+                    const backendDir = path.resolve(__dirname, '..', '..');
+                    const imagePath = path.join(backendDir, publication.image_pub);
+                    try {
+                        if (fs.existsSync(imagePath)) {
+                            fs.unlinkSync(imagePath);
+                            console.log(`Imagen de publicación eliminada: ${publication.image_pub}`);
+                        }
+                    } catch (err) {
+                        console.error('Error al eliminar imagen de publicación:', err);
+                    }
+                }
+            }
+
+            // Delete all publications
+            deletedPublications = await publication_model.destroy({
+                where: { id_org: id_organization },
+                transaction: t
+            });
+
+            console.log(`${deletedPublications} publicación(es) eliminadas de la asociación ${organization.name_org}`);
+        }
+
         //update: Delete organization folder if exists - NOW using backend assets path
         const orgPath = path.join(__dirname, '..', '..', 'assets', 'images', 'organizations', organization.name_org);
-        
+
         if (fs.existsSync(orgPath)) {
             try {
                 fs.rmSync(orgPath, { recursive: true, force: true });
@@ -467,13 +501,16 @@ async function removeById(id_organization) {
         }
 
         await organization.destroy({ transaction: t });
-        
+
         // Commit the transaction
         await t.commit();
 
-        return { 
+        return {
             data: id_organization,
-            message: "La asociación se ha eliminado." 
+            message: deletedPublications > 0
+                ? `La asociación y ${deletedPublications} publicación(es) se han eliminado.`
+                : "La asociación se ha eliminado.",
+            deletedPublications: deletedPublications
         };
     } catch (err) {
         await t.rollback();

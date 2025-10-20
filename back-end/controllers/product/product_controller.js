@@ -2,6 +2,7 @@
 import product_model from "../../models/product_model.js";
 import product_category_model from "../../models/product_category_model.js";
 import product_subcategory_model from "../../models/product_subcategory_model.js";
+import package_model from "../../models/package_model.js";
 import { Op } from "sequelize";
 import fs from 'fs';
 import path from 'path';
@@ -504,6 +505,43 @@ async function removeById(id_product) {
             return { error: "Producto no encontrado" };
         }
 
+        //update: Check if product is referenced in any packages
+        const packagesWithProduct = await package_model.findAll({
+            where: {
+                [Op.or]: [
+                    { id_product1: id_product },
+                    { id_product2: id_product },
+                    { id_product3: id_product },
+                    { id_product4: id_product },
+                    { id_product5: id_product }
+                ]
+            }
+        });
+
+        if (packagesWithProduct && packagesWithProduct.length > 0) {
+            // Product is in one or more packages - delete those packages first
+            console.log(`Producto está en ${packagesWithProduct.length} paquete(s). Eliminando paquetes...`);
+
+            for (const pkg of packagesWithProduct) {
+                // Delete package image if exists
+                if (pkg.image_package) {
+                    const pkgImagePath = path.join(BACKEND_ROOT, pkg.image_package);
+                    try {
+                        if (fs.existsSync(pkgImagePath)) {
+                            fs.unlinkSync(pkgImagePath);
+                            console.log(`Imagen de paquete eliminada: ${pkg.image_package}`);
+                        }
+                    } catch (err) {
+                        console.error('Error al eliminar imagen de paquete:', err);
+                    }
+                }
+
+                // Delete the package
+                await pkg.destroy();
+                console.log(`Paquete ${pkg.name_package || pkg.id_package} eliminado`);
+            }
+        }
+
         // Delete the image and folder if the product has an image
         if (product.image_product) {
             const imagePath = product.image_product;
@@ -516,7 +554,10 @@ async function removeById(id_product) {
 
         return {
             data: id_product,
-            success: "Producto eliminado",
+            success: packagesWithProduct && packagesWithProduct.length > 0
+                ? `Producto y ${packagesWithProduct.length} paquete(s) eliminados`
+                : "Producto eliminado",
+            deletedPackages: packagesWithProduct ? packagesWithProduct.length : 0
         };
     } catch (err) {
         console.error("-> product_controller.js - removeById() - Error = ", err);
