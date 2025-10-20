@@ -1,8 +1,10 @@
 :root {
   --app-purple:  #9747ff;
+  --app-purple-light:  #b984ffd5;
   --app-purple-darker:  #7431ca;
   --app-purple-transparent:  #af71ff15;  
   --app-green: #8dac13cc;
+  --app-green-light: #cbf130cc;
   --app-green-darker: #5b6e0dcc;
   --app-green-transparent: #d2ff1f18;
   --light-gray: rgb(243, 243, 243);

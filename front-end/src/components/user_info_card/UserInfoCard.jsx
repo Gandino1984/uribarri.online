@@ -497,14 +497,14 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 {displayUser.contributor_user && (
                   <div className={styles.statusBadge + ' ' + styles.contributorBadge}>
                     <Star size={12} className={styles.badgeIcon} />
-                    <span>Contribuidor de la Plataforma</span>
+                    <span>Contribuidor/a</span>
                   </div>
                 )}
 
                 {displayUser.is_manager && (
                   <div className={styles.statusBadge + ' ' + styles.organizationManagerBadge}>
                     <Award size={12} className={styles.badgeIcon} />
-                    <span>Puede crear asociaciones</span>
+                    <span>Gestor/a</span>
                   </div>
                 )}
               </div>
@@ -553,9 +553,9 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                     return (
                       <div key={orgId} className={styles.contextItem}>
                         <div className={styles.contextItemHeader}>
-                          {isManager && (
+                          {/* {isManager && (
                             <Shield size={12} className={styles.roleIcon} />
-                          )}
+                          )} */}
                           <span className={styles.contextItemName}>{orgName}</span>
                         </div>
 

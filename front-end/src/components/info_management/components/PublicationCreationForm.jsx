@@ -113,7 +113,9 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   };
   
   //update: Fixed to properly clear image in edit mode
-  const handleRemoveImage = () => {
+  const handleRemoveImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     setImageFile(null);
     setImagePreview(null);
     //update: Mark that user wants to remove existing image
@@ -123,6 +125,10 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     const fileInput = document.getElementById('pub-image-input');
     if (fileInput) {
       fileInput.value = '';
+    }
+    const fileInputChange = document.getElementById('pub-image-input-change');
+    if (fileInputChange) {
+      fileInputChange.value = '';
     }
   };
   
@@ -526,7 +532,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
             {/* <Image size={16} /> */}
             <span>Imagen de la Publicación</span>
           </label>
-          
+
           {!imagePreview ? (
             <div className={styles.imageUploadArea}>
               <input
@@ -547,20 +553,39 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
             </div>
           ) : (
             <div className={styles.imagePreviewContainer}>
-              <img 
-                src={imagePreview} 
-                alt="Vista previa" 
+              <img
+                src={imagePreview}
+                alt="Vista previa"
                 className={styles.imagePreview}
               />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className={styles.removeImageButton}
-                disabled={isSubmitting}
-                title={imageFile ? "Eliminar imagen" : "Cambiar imagen"}
-              >
-                <X size={20} />
-              </button>
+              <div className={styles.imageActions}>
+                <input
+                  type="file"
+                  id="pub-image-input-change"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleImageSelect}
+                  className={styles.fileInput}
+                  disabled={isSubmitting}
+                />
+                <label
+                  htmlFor="pub-image-input-change"
+                  className={styles.changeImageButton}
+                  title="Cambiar imagen"
+                >
+                  <Image size={16} />
+                  <span>Cambiar</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className={styles.removeImageButton}
+                  disabled={isSubmitting}
+                  title="Eliminar imagen"
+                >
+                  <X size={16} />
+                  <span>Eliminar</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

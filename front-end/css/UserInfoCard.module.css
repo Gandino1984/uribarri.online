@@ -20,7 +20,7 @@
   z-index: 9999;
   background-color: white;
   border-radius: 15px;
-  padding: .4rem;
+  /* padding: .2rem; */
   width: calc(100% - 2rem);
   max-width: 360px;
   min-width: 320px;
@@ -310,7 +310,10 @@
 
 .badgesSection {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  /* flex-direction: column; */
   gap: 0.4rem;
   margin-top: 0.5rem;
   /* width: 100%; */
@@ -321,14 +324,15 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
+  width: fit-content;
   padding: 0.4rem 0.6rem;
   border-radius: 30px;
-  max-width: 90%;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 0.01rem;
-  transition: transform 0.2s ease;
+  /* max-width: 90%; */
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: black;
+  letter-spacing: 0.05rem;
+  transition: transform 0.2s ease;  
 }
 
 .statusBadge:hover {
@@ -340,13 +344,13 @@
 }
 
 .contributorBadge {
-  background: linear-gradient(135deg, var(--app-purple) 0%, var(--app-purple-darker) 100%);
-  box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3);
+  background-color: var(--app-purple-light);
+  /* box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3); */
 }
 
 .organizationManagerBadge {
-  background: linear-gradient(135deg, var(--app-green) 0%, var(--app-green-darker) 100%);
-  box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3);
+  background-color: var(--app-green-light);
+  /* box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3); */
 }
 
 /*update: New styles for context sections (shops and organizations) - mobile first */
@@ -366,7 +370,7 @@
 }
 
 .contextIcon {
-  color: var(--app-purple);
+  color: gray;
   width: 14px;
   height: 14px;
 }
@@ -386,10 +390,12 @@
 }
 
 .contextItem {
-  background-color: #f8f9fa;
+  background-color: var(--light-gray);
   padding: 0.5rem;
   border-radius: 6px;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
   gap: 0.2rem;
   transition: background-color 0.2s;
@@ -397,8 +403,8 @@
 }
 
 .contextItem:hover {
-  background-color: #e9ecef;
-  border-color: var(--app-purple);
+  /* background-color: #e9ecef; */
+  /* border-color: var(--app-purple); */
 }
 
 .contextItemHeader {
@@ -428,15 +434,18 @@
 .roleInfo {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 0.3rem;
+  width: 100%;
   margin-top: 0.3rem;
 }
 
 .contextItemBadge {
   display: inline-block;
-  align-self: flex-start;
+  align-self: center;
   padding: 0.2rem 0.4rem;
-  color: white;
+  color: var(--app-green-darker);
   font-size: 0.6rem;
   font-weight: 600;
   border-radius: 4px;
@@ -445,7 +454,7 @@
 }
 
 .founderBadge {
-  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  /* background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); */
 }
 
 .managerBadge {
