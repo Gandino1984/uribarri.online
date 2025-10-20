@@ -15,7 +15,7 @@ const ActionButtonsPublication = ({
   onRefresh 
 }) => {
   const { currentUser } = useAuth();
-  const { setError, setSuccess, openConfirmationModal, closeConfirmationModal } = useUI();
+  const { setError, setSuccess, openModal } = useUI();
   const { userOrganizations } = useOrganization();
   
   const [showMenu, setShowMenu] = useState(false);
@@ -43,10 +43,18 @@ const ActionButtonsPublication = ({
     }
   }, [showMenu]);
   
-  //update: Fixed manager check to properly match organization IDs
+  //update: Fixed manager check to properly match organization IDs with enhanced logging
   const isManagerOfPublication = () => {
-    if (!currentUser || !publication.id_org) return false;
-    
+    if (!currentUser || !publication.id_org) {
+      console.log('🔴 ActionButtons - No currentUser or publication.id_org:', {
+        hasCurrentUser: !!currentUser,
+        userId: currentUser?.id_user,
+        publicationIdOrg: publication.id_org,
+        publicationTitle: publication.title_pub
+      });
+      return false;
+    }
+
     // Check if user manages the organization that owns this publication
     // The userOrganizations array contains participation objects where
     // the organization data is nested inside an 'organization' property
@@ -54,11 +62,31 @@ const ActionButtonsPublication = ({
       participation => {
         // Check both possible structures for organization ID
         const orgId = participation.organization?.id_organization || participation.id_org;
-        return orgId === publication.id_org && participation.org_managed;
+        const isManaged = participation.org_managed;
+        const matches = orgId === publication.id_org && isManaged;
+
+        if (matches) {
+          console.log('✅ Found managed organization match:', {
+            orgId,
+            publicationOrgId: publication.id_org,
+            isManaged,
+            publicationTitle: publication.title_pub
+          });
+        }
+
+        return matches;
       }
     );
-    
-    return !!managedOrg;
+
+    const isManager = !!managedOrg;
+    console.log('🔵 ActionButtons - isManager result:', {
+      isManager,
+      publicationId: publication.id_publication,
+      publicationTitle: publication.title_pub,
+      totalUserOrgs: userOrganizations?.length || 0
+    });
+
+    return isManager;
   };
   
   // Don't render if user is not a manager of this publication's organization
@@ -74,41 +102,78 @@ const ActionButtonsPublication = ({
     }
   };
   
-  //update: Handle delete action
+  //update: Handle delete action with enhanced logging
   const handleDelete = async () => {
+    console.log('��️ Delete button clicked for publication:', {
+      id: publication.id_publication,
+      title: publication.title_pub,
+      hasImage: !!publication.image_pub,
+      imagePath: publication.image_pub
+    });
+
     setShowMenu(false);
-    
-    openConfirmationModal(
-      '¿Eliminar publicación?',
-      `¿Estás seguro de que deseas eliminar la publicación "${publication.title_pub}"? Esta acción no se puede deshacer.`,
-      async () => {
+
+    //update: CRITICAL FIX - Use openModal which matches ConfirmationModal component
+    const confirmMessage = `¿Eliminar publicación?\n\n¿Estás seguro de que deseas eliminar la publicación "${publication.title_pub}"?\n\nEsta acción no se puede deshacer.`;
+
+    console.log('🔔 Opening confirmation modal with openModal');
+    openModal(confirmMessage, async (confirmed) => {
+      if (confirmed) {
+        console.log('🟢 User confirmed deletion for publication:', publication.id_publication);
         setIsProcessing(true);
         setCurrentAction('delete');
-        
+
         try {
+          console.log('📡 Sending DELETE request to:', `/publication/remove-by-id/${publication.id_publication}`);
           const response = await axiosInstance.delete(`/publication/remove-by-id/${publication.id_publication}`);
-          
+
+          console.log('📨 DELETE response received:', {
+            hasError: !!response.data.error,
+            message: response.data.message,
+            data: response.data.data
+          });
+
           if (!response.data.error) {
+            console.log('✅ Publication deleted successfully');
+            console.log('⏰ Waiting for backend transaction to commit...');
+
+            // Add delay to ensure backend transaction is committed and database is updated
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // Refresh first to get updated list
+            if (onRefresh) {
+              console.log('🔄 Calling onRefresh callback');
+              await onRefresh();
+              console.log('✅ Refresh completed');
+
+              // Force a small delay after refresh to ensure React processes state updates
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+
+            // Then call onDelete for any cleanup
+            if (onDelete) {
+              console.log('🔄 Calling onDelete callback');
+              onDelete(publication.id_publication);
+            }
+
+            // Show success message after refresh completes
             setSuccess(prev => ({
               ...prev,
               deleteSuccess: 'Publicación eliminada exitosamente'
             }));
-            
-            if (onDelete) {
-              onDelete(publication.id_publication);
-            }
-            
-            if (onRefresh) {
-              onRefresh();
-            }
           } else {
+            console.error('❌ Server returned error:', response.data.error);
             setError(prev => ({
               ...prev,
               deleteError: response.data.error
             }));
           }
         } catch (error) {
-          console.error('Error deleting publication:', error);
+          console.error('❌ Error deleting publication:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status
+          });
           setError(prev => ({
             ...prev,
             deleteError: 'Error al eliminar la publicación'
@@ -116,14 +181,11 @@ const ActionButtonsPublication = ({
         } finally {
           setIsProcessing(false);
           setCurrentAction(null);
-          closeConfirmationModal();
         }
-      },
-      () => {
-        // On cancel, just close the modal
-        closeConfirmationModal();
+      } else {
+        console.log('🔴 User cancelled deletion');
       }
-    );
+    });
   };
   
   //update: Handle toggle active/inactive status

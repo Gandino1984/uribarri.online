@@ -28,7 +28,15 @@ export const PublicationProvider = ({ children }) => {
 
   //update: Apply filters function - similar to ProductContext pattern
   const applyFilters = useCallback(() => {
+    console.log('🔍 applyFilters called with:', {
+      totalPublications: publications?.length || 0,
+      hasSearchTerm: filters.searchTerm?.trim() !== '',
+      hasOrgFilter: !!filters.filterByOrganization,
+      hasUserFilter: !!filters.filterByUser
+    });
+
     if (!publications || publications.length === 0) {
+      console.log('⚠️ No publications to filter');
       setFilteredPublications([]);
       return;
     }
@@ -63,44 +71,58 @@ export const PublicationProvider = ({ children }) => {
       filtered.reverse();
     }
 
+    console.log(`✅ applyFilters complete: ${filtered.length} publications after filtering`);
     setFilteredPublications(filtered);
   }, [publications, filters]);
 
   //update: Effect to apply filters whenever publications or filters change
   useEffect(() => {
+    console.log('🔄 Publications changed, applying filters...', {
+      publicationsCount: publications.length
+    });
     applyFilters();
-  }, [applyFilters]);
+  }, [applyFilters, publications]);
 
   // Fetch all publications
   const fetchAllPublications = useCallback(async () => {
+    console.log('📡 PublicationContext - fetchAllPublications called');
     try {
       setPublicationsLoading(true);
       const response = await axiosInstance.get('/publication');
-      
+
+      console.log('📨 Fetch response:', {
+        hasError: !!response.data?.error,
+        publicationsCount: response.data?.data?.length || 0
+      });
+
       if (response.data && !response.data.error) {
         let pubs = response.data.data || [];
-        
+
         // Sort by newest first by default
         pubs.sort((a, b) => {
           const dateA = new Date(`${a.date_pub}T${a.time_pub || '00:00:00'}`);
           const dateB = new Date(`${b.date_pub}T${b.time_pub || '00:00:00'}`);
           return dateB - dateA;
         });
-        
+
+        console.log(`✅ Setting ${pubs.length} publications in context`, {
+          publicationIds: pubs.map(p => ({ id: p.id_publication, title: p.title_pub }))
+        });
         setPublications(pubs);
         return pubs;
       } else {
-        setError(prev => ({ 
-          ...prev, 
-          publicationError: response.data.error || 'Error al cargar publicaciones' 
+        console.error('❌ Error in fetch response:', response.data.error);
+        setError(prev => ({
+          ...prev,
+          publicationError: response.data.error || 'Error al cargar publicaciones'
         }));
         return [];
       }
     } catch (err) {
-      console.error('Error fetching publications:', err);
-      setError(prev => ({ 
-        ...prev, 
-        publicationError: 'Error al cargar las publicaciones' 
+      console.error('❌ Error fetching publications:', err);
+      setError(prev => ({
+        ...prev,
+        publicationError: 'Error al cargar las publicaciones'
       }));
       return [];
     } finally {
@@ -237,31 +259,37 @@ export const PublicationProvider = ({ children }) => {
 
   // Delete a publication
   const deletePublication = useCallback(async (publicationId) => {
+    console.log('🗑️ PublicationContext - deletePublication called:', publicationId);
     try {
       const response = await axiosInstance.delete(`/publication/remove-by-id/${publicationId}`);
-      
+
+      console.log('📨 Delete response:', response.data);
+
       if (response.data && !response.data.error) {
-        setSuccess(prev => ({ 
-          ...prev, 
-          deleteSuccess: response.data.message || 'Publicación eliminada' 
+        console.log('✅ Delete successful, refreshing publications...');
+        setSuccess(prev => ({
+          ...prev,
+          deleteSuccess: response.data.message || 'Publicación eliminada'
         }));
-        
+
         // Refresh publications
         await fetchAllPublications();
-        
+        console.log('✅ Publications refreshed after deletion');
+
         return true;
       } else {
-        setError(prev => ({ 
-          ...prev, 
-          deleteError: response.data.error || 'Error al eliminar la publicación' 
+        console.error('❌ Server returned error:', response.data.error);
+        setError(prev => ({
+          ...prev,
+          deleteError: response.data.error || 'Error al eliminar la publicación'
         }));
         return false;
       }
     } catch (err) {
-      console.error('Error deleting publication:', err);
-      setError(prev => ({ 
-        ...prev, 
-        deleteError: 'Error al eliminar la publicación' 
+      console.error('❌ Error deleting publication:', err);
+      setError(prev => ({
+        ...prev,
+        deleteError: 'Error al eliminar la publicación'
       }));
       return false;
     }

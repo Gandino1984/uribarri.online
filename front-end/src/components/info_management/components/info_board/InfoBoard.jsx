@@ -20,7 +20,9 @@ const InfoBoard = () => {
     publicationsLoading,
     fetchAllPublications,
     filters,
-    publications
+    publications,
+    setFilteredPublications,
+    setPublications
   } = usePublication();
 
   const [editingPublication, setEditingPublication] = useState(null);
@@ -33,12 +35,22 @@ const InfoBoard = () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
   
   const fetchPublications = useCallback(async () => {
+    console.log('🔄 InfoBoard - fetchPublications called');
     await fetchAllPublications();
+    console.log('✅ InfoBoard - fetchPublications completed');
   }, [fetchAllPublications]);
   
   useEffect(() => {
     fetchPublications();
   }, [fetchPublications]);
+
+  // Monitor when filteredPublications changes
+  useEffect(() => {
+    console.log('📊 InfoBoard - filteredPublications changed:', {
+      count: filteredPublications.length,
+      ids: filteredPublications.map(p => p.id_publication)
+    });
+  }, [filteredPublications]);
   
   //update: Handler to open publication reader
   const handleOpenPublication = (publication) => {
@@ -73,13 +85,41 @@ const InfoBoard = () => {
     setEditingPublication(null);
   };
 
-  const handleDeletePublication = (publicationId) => {
+  const handleDeletePublication = async (publicationId) => {
+    console.log('🗑️ InfoBoard - handleDeletePublication called for ID:', publicationId);
+
+    //update: Optimistic update - immediately remove from UI for instant feedback
+    console.log('⚡ Optimistically removing publication from UI');
+    setPublications(prev => {
+      const updated = prev.filter(pub => pub.id_publication !== publicationId);
+      console.log('📝 Updated publications:', {
+        before: prev.length,
+        after: updated.length,
+        removedId: publicationId
+      });
+      return updated;
+    });
+
+    setFilteredPublications(prev => {
+      const updated = prev.filter(pub => pub.id_publication !== publicationId);
+      console.log('📝 Updated filteredPublications:', {
+        before: prev.length,
+        after: updated.length
+      });
+      return updated;
+    });
+
     //update: Close reader if the deleted publication is open
     if (selectedPublication?.id_publication === publicationId) {
+      console.log('📖 Closing reader for deleted publication');
       setShowReader(false);
       setSelectedPublication(null);
     }
+
+    console.log('🔄 Fetching publications in background to sync with backend');
+    // Fetch in background to sync with backend (in case of any discrepancies)
     fetchPublications();
+    console.log('✅ InfoBoard - handleDeletePublication completed');
   };
 
   const handleToggleActive = (publicationId, newStatus) => {
@@ -155,15 +195,27 @@ const InfoBoard = () => {
   
   //update: Filter publications to only show approved AND active ones for public InfoBoard
   const getVisiblePublications = () => {
-    return filteredPublications.filter(pub => {
+    console.log('🔍 InfoBoard - getVisiblePublications called', {
+      filteredPublicationsCount: filteredPublications.length,
+      publicationIds: filteredPublications.map(p => p.id_publication)
+    });
+
+    const visible = filteredPublications.filter(pub => {
       // Only show publications that are both approved AND active
       const isApproved = pub.pub_approved === true || pub.pub_approved === 1;
       const isActive = pub.publication_active !== false && pub.publication_active !== 0;
-      
+
       return isApproved && isActive;
     });
+
+    console.log('✅ InfoBoard - visiblePublications result:', {
+      visibleCount: visible.length,
+      visibleIds: visible.map(p => p.id_publication)
+    });
+
+    return visible;
   };
-  
+
   const visiblePublications = getVisiblePublications();
   
   return (
