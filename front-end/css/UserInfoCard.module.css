@@ -15,7 +15,7 @@
 /* update: Main card container - fixed centering for mobile */
 .userInfoCard {
   position: fixed;
-  top: 3.5rem;
+  top: 50%;
   left: 50%;
   z-index: 9999;
   background-color: white;
@@ -25,9 +25,9 @@
   max-width: 360px;
   min-width: 320px;
   user-select: none;
-  margin: 0 auto;
-  /* max-height: 85vh; */
+  max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 /* update: Close button - smaller on mobile */
@@ -355,20 +355,67 @@
   /* box-shadow: 0 2px 6px rgba(151, 71, 255, 0.3); */
 }
 
-/*update: New styles for context sections (shops and organizations) - mobile first */
-.contextSection {
+/*update: Single "Más Info" section */
+.moreInfoSection {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
   border-top: 1px solid #e0e0e0;
   width: 100%;
 }
 
-.contextHeader {
+.moreInfoButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.75rem;
+  background-color: var(--app-purple-transparent);
+  color: var(--app-purple);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moreInfoButton:hover {
+  background-color: var(--app-purple);
+  color: white;
+  border-color: var(--app-purple);
+}
+
+.moreInfoText {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.moreInfoContent {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contextSubSection {
+  width: 100%;
+}
+
+.contextSubHeader {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   margin-bottom: 0.5rem;
+  padding: 0.4rem 0;
+}
+
+.contextSubTitle {
   font-size: 0.75rem;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
 }
 
 .contextIcon {
@@ -383,6 +430,16 @@
   color: #333;
   text-transform: uppercase;
   letter-spacing: 0.05rem;
+}
+
+.chevronIcon {
+  color: gray;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
 
 .contextList {
