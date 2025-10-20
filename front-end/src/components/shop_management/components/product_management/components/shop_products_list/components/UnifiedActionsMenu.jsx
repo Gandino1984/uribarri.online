@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
+import {
   Menu,
   X,
   ShoppingBag,
@@ -11,19 +11,21 @@ import {
   Filter,
   Package,
   PackageOpen,
-  ChevronRight
+  ChevronRight,
+  Copy
 } from 'lucide-react';
 import { animated, useSpring } from '@react-spring/web';
 import styles from '../../../../../../../../css/UnifiedActionsMenu.module.css';
 
-const UnifiedActionsMenu = ({ 
-  handleAddProduct, 
-  handleBulkUpdate, 
-  handleBulkDelete, 
-  toggleFilters, 
+const UnifiedActionsMenu = ({
+  handleAddProduct,
+  handleBulkUpdate,
+  handleBulkDelete,
+  handleDuplicateProduct,
+  toggleFilters,
   handleCreatePackage,
-  showFilters, 
-  selectedProducts, 
+  showFilters,
+  selectedProducts,
   activeFiltersCount,
   navigateToPackages,
   showCategoryManagement,
@@ -143,7 +145,16 @@ const UnifiedActionsMenu = ({
                   <SquarePlus size={18} />
                   <span>Crear Producto</span>
                 </button>
-                
+
+                <button
+                  onClick={() => handleAction(handleDuplicateProduct)}
+                  className={`${styles.submenuItem} ${selectedProducts.size !== 1 ? styles.disabled : ''}`}
+                  disabled={selectedProducts.size !== 1}
+                >
+                  <Copy size={18} />
+                  <span>Duplicar Producto</span>
+                </button>
+
                 <button
                   onClick={() => handleAction(handleBulkUpdate)}
                   className={`${styles.submenuItem} ${selectedProducts.size === 0 ? styles.disabled : ''}`}

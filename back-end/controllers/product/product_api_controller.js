@@ -510,6 +510,36 @@ async function verifyProductName(req, res) {
     }
 }
 
+//update: Duplicate product API endpoint
+async function duplicateProduct(req, res) {
+    try {
+        const { id_product } = req.params;
+
+        console.log('📋 API - Duplicate product request:', { id_product });
+
+        if (!id_product) {
+            return res.status(400).json({
+                error: "ID de producto requerido",
+                data: null
+            });
+        }
+
+        const result = await productController.duplicateProduct(id_product);
+
+        if (result.error) {
+            return res.status(404).json(result);
+        }
+
+        res.json(result);
+    } catch (err) {
+        console.error("❌ product_api_controller.js - duplicateProduct() - Error:", err);
+        res.status(500).json({
+            error: "Error al duplicar el producto",
+            data: null
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -526,7 +556,8 @@ export {
     getByLocality,
     toggleActiveStatus,
     getActiveByShopId,
-    getInactiveByShopId
+    getInactiveByShopId,
+    duplicateProduct
 }
 
 export default {
@@ -545,5 +576,6 @@ export default {
     getByLocality,
     toggleActiveStatus,
     getActiveByShopId,
-    getInactiveByShopId
+    getInactiveByShopId,
+    duplicateProduct
 }

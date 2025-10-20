@@ -95,7 +95,8 @@ const ShopProductsList = () => {
     refreshProductList,
     categories,
     subcategories,
-    fetchSubcategoriesByCategory
+    fetchSubcategoriesByCategory,
+    duplicateProduct
   } = useProduct();
 
   // Package context
@@ -262,7 +263,78 @@ const ShopProductsList = () => {
   const handleBulkUpdate = () => {
     handleBulkUpdateFn(selectedProducts, products, handleUpdateProduct, setError, setShowErrorCard);
   };
-  
+
+  // Handle product duplication
+  const handleDuplicateProduct = () => {
+    if (selectedProducts.size !== 1) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "Selecciona exactamente un producto para duplicar"
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    const productId = Array.from(selectedProducts)[0];
+    const product = products.find(p => p.id_product === productId);
+
+    if (!product) {
+      setError(prevError => ({
+        ...prevError,
+        productError: "Producto no encontrado"
+      }));
+      setShowErrorCard(true);
+      return;
+    }
+
+    setModalMessage(`¿Duplicar el producto "${product.name_product}"?\n\nSe creará una copia con el nombre "${product.name_product} (copia)".`);
+    setModalConfirmCallback(() => async (confirmed) => {
+      if (confirmed) {
+        console.log('User confirmed duplication, proceeding...');
+        try {
+          const result = await duplicateProduct(productId);
+
+          if (result.success) {
+            // Show success message
+            setSuccess(prev => ({
+              ...prev,
+              createSuccess: result.message || 'Producto duplicado exitosamente',
+              productSuccess: '',
+              deleteSuccess: '',
+              updateSuccess: ''
+            }));
+            setShowSuccessCard(true);
+
+            // Refresh the product list
+            await fetchProductsByShop();
+            refreshProductList();
+
+            // Clear selected products
+            setSelectedProducts(new Set());
+          } else {
+            // Show error message
+            console.error('Duplication failed:', result.error);
+            setError(prevError => ({
+              ...prevError,
+              productError: result.error || 'Error al duplicar el producto'
+            }));
+            setShowErrorCard(true);
+          }
+        } catch (error) {
+          console.error('Exception during duplication:', error);
+          setError(prevError => ({
+            ...prevError,
+            productError: error.message || 'Error al duplicar el producto'
+          }));
+          setShowErrorCard(true);
+        }
+      } else {
+        console.log('User cancelled duplication');
+      }
+    });
+    setIsModalOpen(true);
+  };
+
   // Handle delete product with confirmation modal
   const handleDeleteProduct = (product) => {
     console.log('handleDeleteProduct called with product:', product);
@@ -648,10 +720,11 @@ const ShopProductsList = () => {
                   </div>
                   
                   {/*update: Use UnifiedActionsMenu instead of ActionButtons and separate category button */}
-                  <UnifiedActionsMenu 
+                  <UnifiedActionsMenu
                     handleAddProduct={handleAddProduct}
                     handleBulkUpdate={handleBulkUpdate}
                     handleBulkDelete={handleBulkDelete}
+                    handleDuplicateProduct={handleDuplicateProduct}
                     handleCreatePackage={handleCreatePackage}
                     toggleFilters={toggleFilters}
                     showFilters={showFilters}
@@ -671,10 +744,11 @@ const ShopProductsList = () => {
                   
                   <div className={styles.buttonGroupContainer}>
                     {/*update: Use UnifiedActionsMenu for desktop as well */}
-                    <UnifiedActionsMenu 
+                    <UnifiedActionsMenu
                       handleAddProduct={handleAddProduct}
                       handleBulkUpdate={handleBulkUpdate}
                       handleBulkDelete={handleBulkDelete}
+                      handleDuplicateProduct={handleDuplicateProduct}
                       handleCreatePackage={handleCreatePackage}
                       toggleFilters={toggleFilters}
                       showFilters={showFilters}

@@ -527,62 +527,130 @@ async function removeById(id_product) {
 async function verifyProductName(name_product, id_shop) {
     try {
         const existingProduct = await product_model.findOne({
-            where: { 
+            where: {
                 id_shop: id_shop,
                 name_product: name_product,
             }
         });
-        
-        return { 
+
+        return {
             exists: !!existingProduct,
             data: existingProduct,
             success: "Verificación de producto completada"
         };
     } catch (err) {
         console.error("-> product_controller.js - verifyProductName() - Error = ", err);
-        return { 
+        return {
             error: "Error al verificar la existencia del producto",
             exists: false
         };
     }
 }
 
-export { 
-    getAll, 
-    getById, 
-    create, 
-    update, 
-    removeById, 
-    removeByShopId, 
-    getByShopId, 
-    getByType, 
-    getOnSale, 
-    updateProductImage, 
-    deleteImage,
-    verifyProductName,
-    getByCountry,
-    getByLocality,
-    toggleActiveStatus,
-    getActiveByShopId,
-    getInactiveByShopId
+//update: Duplicate product - creates a copy with " (copia)" appended to name
+async function duplicateProduct(id_product) {
+    try {
+        console.log('🔄 Duplicating product with ID:', id_product);
+
+        // Find the original product
+        const originalProduct = await product_model.findByPk(id_product);
+
+        if (!originalProduct) {
+            console.error('❌ Product not found for duplication:', id_product);
+            return { error: "Producto no encontrado" };
+        }
+
+        console.log('✅ Found product to duplicate:', originalProduct.name_product);
+
+        // Create a copy of the product data
+        const productData = originalProduct.toJSON();
+
+        // Remove the primary key and timestamps
+        delete productData.id_product;
+        delete productData.createdAt;
+        delete productData.updatedAt;
+
+        // Append " (copia)" to the name
+        productData.name_product = `${productData.name_product} (copia)`;
+
+        // Reset sold count for the copy
+        productData.sold_product = 0;
+
+        // Note: Image is NOT duplicated - the copy will not have an image
+        // This is intentional to avoid filesystem duplication
+        productData.image_product = null;
+
+        // Ensure season_product has a value (required field)
+        if (!productData.season_product || productData.season_product === null) {
+            productData.season_product = 'Todo el año';
+        }
+
+        // Set new creation date
+        productData.creation_product = new Date();
+
+        console.log('📝 Creating duplicate with name:', productData.name_product);
+
+        // Create the new product
+        const duplicatedProduct = await product_model.create(productData);
+
+        console.log('✅ Product duplicated successfully:', {
+            originalId: id_product,
+            originalName: originalProduct.name_product,
+            duplicateId: duplicatedProduct.id_product,
+            duplicateName: duplicatedProduct.name_product
+        });
+
+        return {
+            data: duplicatedProduct,
+            success: "Producto duplicado exitosamente"
+        };
+    } catch (err) {
+        console.error("❌ product_controller.js - duplicateProduct() - Error:", {
+            message: err.message,
+            stack: err.stack
+        });
+        return { error: "Error al duplicar el producto" };
+    }
 }
 
-export default { 
-    getAll, 
-    getById, 
-    create, 
-    update, 
-    removeById, 
-    removeByShopId, 
-    getByShopId, 
-    getByType, 
-    getOnSale, 
-    updateProductImage, 
+export {
+    getAll,
+    getById,
+    create,
+    update,
+    removeById,
+    removeByShopId,
+    getByShopId,
+    getByType,
+    getOnSale,
+    updateProductImage,
     deleteImage,
     verifyProductName,
     getByCountry,
     getByLocality,
     toggleActiveStatus,
     getActiveByShopId,
-    getInactiveByShopId
+    getInactiveByShopId,
+    duplicateProduct
+}
+
+export default {
+    getAll,
+    getById,
+    create,
+    update,
+    removeById,
+    removeByShopId,
+    getByShopId,
+    getByType,
+    getOnSale,
+    updateProductImage,
+    deleteImage,
+    verifyProductName,
+    getByCountry,
+    getByLocality,
+    toggleActiveStatus,
+    getActiveByShopId,
+    getInactiveByShopId,
+    duplicateProduct
 }
