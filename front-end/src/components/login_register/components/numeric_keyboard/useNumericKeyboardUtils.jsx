@@ -16,13 +16,14 @@ export const useNumericKeyboardUtils = (value, onChange, onPasswordComplete, onC
         e.preventDefault();
         if (value.length < MAX_PASSWORD_LENGTH) {
             const newValue = value + num;
-            // Update the actual password value
+            //update: Update the actual password value
             onChange(newValue);
-            // Update the displayed (masked) value
+            //update: Update the displayed (masked) value
             setDisplayedPassword(''.repeat(newValue.length));
-            
+
+            //update: Pass newValue to onPasswordComplete so it can check the actual length
             if (newValue.length === MAX_PASSWORD_LENGTH) {
-                onPasswordComplete();
+                onPasswordComplete(newValue);
             }
         }
     };
