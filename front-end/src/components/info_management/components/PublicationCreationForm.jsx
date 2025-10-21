@@ -8,6 +8,14 @@ import { FileText, Calendar, Clock, Image, X, Save, AlertCircle, Edit, Building2
 import styles from '../../../../css/PublicationCreationForm.module.css';
 
 const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, publicationData = null }) => {
+  //update: Log component props on every render
+  console.log('📋 PublicationCreationForm rendered:', {
+    editMode,
+    publicationId: publicationData?.id_publication,
+    hasImage: !!publicationData?.image_pub,
+    imagePath: publicationData?.image_pub
+  });
+
   const { currentUser } = useAuth();
   const { setError, setSuccess } = useUI();
   const { userOrganizations } = useOrganization();
@@ -21,12 +29,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
   });
   
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(
-    editMode && publicationData?.image_pub
-      ? `${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`
-      : null
-  );
-  //update: Track if user wants to remove the existing image
+  const [imagePreview, setImagePreview] = useState(null);
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -49,8 +52,13 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   }, [userOrganizations, editMode]);
   
+  //update: Initialize form data and image preview when entering edit mode
   useEffect(() => {
+    console.log('🔍 Edit mode useEffect triggered:', { editMode, publicationData });
+
     if (editMode && publicationData) {
+      console.log('📝 Setting form data for publication:', publicationData.id_publication);
+
       setFormData({
         title_pub: publicationData.title_pub || '',
         content_pub: publicationData.content_pub || '',
@@ -58,9 +66,35 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         date_pub: publicationData.date_pub || new Date().toISOString().split('T')[0],
         time_pub: publicationData.time_pub ? publicationData.time_pub.substring(0, 5) : new Date().toTimeString().split(' ')[0].substring(0, 5)
       });
+
+      //update: Set image preview if publication has an image, otherwise set to null
       if (publicationData.image_pub) {
-        setImagePreview(`${import.meta.env.VITE_API_URL}/${publicationData.image_pub}`);
+        //update: Properly encode the path to handle special characters like # and spaces
+        const pathSegments = publicationData.image_pub.split('/');
+        const encodedPath = pathSegments.map(segment => encodeURIComponent(segment)).join('/');
+        const imageUrl = `${import.meta.env.VITE_API_URL}/${encodedPath}`;
+
+        console.log('🖼️ Setting image preview:', {
+          image_pub: publicationData.image_pub,
+          encodedPath: encodedPath,
+          VITE_API_URL: import.meta.env.VITE_API_URL,
+          fullUrl: imageUrl
+        });
+        setImagePreview(imageUrl);
+      } else {
+        console.log('ℹ️ No image for this publication');
+        setImagePreview(null);
       }
+
+      //update: Reset flags when entering edit mode
+      setRemoveExistingImage(false);
+      setImageFile(null);
+    } else if (!editMode) {
+      //update: Reset everything when exiting edit mode
+      console.log('🔄 Exiting edit mode, resetting state');
+      setImagePreview(null);
+      setRemoveExistingImage(false);
+      setImageFile(null);
     }
   }, [editMode, publicationData]);
   
@@ -101,7 +135,6 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
       }
 
       setImageFile(file);
-      //update: Reset removeExistingImage flag when user selects a new image
       setRemoveExistingImage(false);
 
       const reader = new FileReader();
@@ -112,16 +145,25 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     }
   };
   
-  //update: Fixed to properly clear image in edit mode
+  //update: Handle image removal for both create and edit modes
   const handleRemoveImage = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    //update: Clear the new image file if user selected one
     setImageFile(null);
+
+    //update: Clear the preview
     setImagePreview(null);
-    //update: Mark that user wants to remove existing image
+
+    //update: In edit mode, mark that user wants to remove the existing image from the server
     if (editMode && publicationData?.image_pub) {
       setRemoveExistingImage(true);
     }
+
+    //update: Clear file input fields
     const fileInput = document.getElementById('pub-image-input');
     if (fileInput) {
       fileInput.value = '';
@@ -156,8 +198,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
-  
-  //update: Check if user is manager of selected organization
+
   const isManagerOfSelectedOrg = () => {
     if (!formData.id_org) return false;
     return userManagedOrgs.some(org => org.id_organization === formData.id_org);
@@ -194,9 +235,8 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
         
         const updatedPublication = updateResponse.data.data;
 
-        //update: Handle image removal or replacement
         if (removeExistingImage && !imageFile) {
-          // User wants to remove the image
+          //update: User wants to remove the existing image without adding a new one
           try {
             await axiosInstance.delete('/publication/remove-image', {
               data: {
@@ -212,7 +252,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
             }));
           }
         } else if (imageFile && updatedPublication) {
-          // User wants to upload/replace the image
+          //update: User wants to upload a new image or replace the existing one
           const formDataImage = new FormData();
           formDataImage.append('image', imageFile);
 
@@ -325,8 +365,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
             }));
           }
         }
-        
-        //update: Different success message depending on whether user is manager
+
         const isManager = isManagerOfSelectedOrg();
         setSuccess(prev => ({
           ...prev,
@@ -532,6 +571,7 @@ const PublicationCreationForm = ({ onSuccess, onCancel, editMode = false, public
             {/* <Image size={16} /> */}
             <span>Imagen de la Publicación</span>
           </label>
+          {console.log('🖼️ Rendering image section - imagePreview:', imagePreview)}
 
           {!imagePreview ? (
             <div className={styles.imageUploadArea}>

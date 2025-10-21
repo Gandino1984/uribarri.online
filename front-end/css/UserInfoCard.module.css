@@ -17,17 +17,19 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  z-index: 9999;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
   background-color: white;
-  border-radius: 15px;
-  /* padding: .2rem; */
+  border-radius: 12px;
+  padding: 1rem;
   width: calc(100% - 2rem);
-  max-width: 360px;
-  min-width: 320px;
+  max-width: 340px;
+  min-width: 300px;
   user-select: none;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 2px solid #e0e0e0;
 }
 
 /* update: Close button - smaller on mobile */
@@ -66,9 +68,10 @@
 /* update: Card content container */
 .cardContent {
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   align-items: center;
   gap: 1rem; /* Smaller gap on mobile */
+  width: 100%;
 }
 
 /* update: Profile section */
@@ -288,8 +291,8 @@
 }
 
 .userLocation {
-  font-size: 0.7rem;
-  color: #666;
+  font-size: 0.9rem;
+  color: black;
   margin: 0.2rem 0 0 0;
 }
 
@@ -300,9 +303,10 @@
 }
 
 .userEmail {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   color: gray;
-  margin: 0;
+  /* margin: 0; */
+  margin-bottom: .5rem;
   font-weight: 500;
   word-break: break-all;
   max-width: 100%;
@@ -369,8 +373,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 0.75rem;
-  background-color: var(--app-purple-transparent);
-  color: var(--app-purple);
+  background-color: var(--light-gray);
+  color: black;
   border: 2px solid transparent;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -380,9 +384,23 @@
 }
 
 .moreInfoButton:hover {
-  background-color: var(--app-purple);
-  color: white;
+  background-color: lightgray;
+}
+
+.moreInfoButton:active {
+  color: var(--app-purple-darker);
+  background-color: white;
+  /* border-color: var(--app-purple); */
+}
+
+.moreInfoButtonActive {
+  background-color: white;
+  color: var(--app-purple);
   border-color: var(--app-purple);
+}
+
+.moreInfoButtonActive:hover {
+  background-color: var(--app-purple-transparent);
 }
 
 .moreInfoText {
@@ -568,8 +586,8 @@
 /* Small phones (360px - 480px) */
 @media (min-width: 360px) {
   .userInfoCard {
-    padding: 1.5rem;
-    max-width: 380px;
+    padding: 1.25rem;
+    max-width: 360px;
   }
 
   .statusBadge {
@@ -623,9 +641,8 @@
 /* Larger phones (481px - 640px) */
 @media (min-width: 481px) {
   .userInfoCard {
-    top: 4rem;
-    max-width: 420px;
-    padding: 1.75rem;
+    max-width: 380px;
+    padding: 1.35rem;
   }
 
   .statusBadge {
@@ -714,9 +731,8 @@
 /* Tablets (641px - 1024px) */
 @media (min-width: 641px) {
   .userInfoCard {
-    top: 5rem;
-    max-width: 480px;
-    padding: 2rem;
+    max-width: 420px;
+    padding: 1.75rem;
   }
 
   .statusBadge {
@@ -782,60 +798,67 @@
 /* Desktop (1025px+) */
 @media (min-width: 1025px) {
   .userInfoCard {
-    max-width: 520px;
-    padding: 2.5rem;
+    max-width: 440px;
+    padding: 1.75rem;
   }
 
   .statusBadge {
     font-size: 0.85rem;
     padding: 0.6rem 0.9rem;
   }
-  
+
   .profileImageContainer {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
   }
-  
+
   .userName {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
-  
+
   .userType {
-    font-size: 1rem;
-    letter-spacing: 0.1rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.06rem;
   }
-  
+
   .userEmail {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
   }
-  
+
   .userInfo {
     gap: 0.5rem;
   }
-  
+
   .contextIcon {
     width: 18px;
     height: 18px;
   }
-  
+
   .contextTitle {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
-  
+
   .contextItem {
-    padding: 0.75rem;
+    padding: 0.7rem;
   }
-  
+
   .contextItemName {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
-  
+
   .contextItemDetail {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
-  
+
   .contextItemBadge {
-    font-size: 0.8rem;
-    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.55rem;
+  }
+}
+
+/* Extra large screens - cap the max width */
+@media (min-width: 1440px) {
+  .userInfoCard {
+    max-width: 460px;
   }
 }

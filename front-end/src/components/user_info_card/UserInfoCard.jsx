@@ -55,11 +55,11 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const slideAnimation = useSpring({
     from: {
       opacity: 0,
-      transform: 'translate(-50%, -200%)',
+      top: '-100%',
     },
     to: {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translate(-50%, -50%)' : 'translate(-50%, -200%)',
+      top: isVisible ? '50%' : '-100%',
     },
     config: {
       mass: 1,
@@ -517,7 +517,7 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
             {((displayUser.type_user === 'seller' && userShops.length > 0) || userOrganizations.length > 0) && (
               <div className={styles.moreInfoSection}>
                 <button
-                  className={styles.moreInfoButton}
+                  className={`${styles.moreInfoButton} ${showMoreInfo ? styles.moreInfoButtonActive : ''}`}
                   onClick={() => setShowMoreInfo(!showMoreInfo)}
                   type="button"
                 >

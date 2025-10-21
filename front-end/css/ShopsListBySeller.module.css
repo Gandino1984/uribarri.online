@@ -5,7 +5,7 @@
   min-height: 100vh;
   gap: 1.5rem;
   margin-top: 6rem;
-  overflow-x: hidden;
+  overflow-x: visible;
   overflow-y: auto;
 }
 
@@ -164,7 +164,7 @@
   background-color:  white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s ease;
 }
 
