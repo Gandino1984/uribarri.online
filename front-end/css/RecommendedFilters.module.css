@@ -1,11 +1,6 @@
-/*update: Mobile-First Base Styles (360px and up) */
 .container {
   width: 100%;
-  /* margin-bottom: 1.5rem; */
-  /* padding-top: 1rem; */
-  /* background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); */
   border-radius: 16px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
 }
 
 .header {
@@ -13,7 +8,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
   padding: 0 1rem;
 }
 
@@ -22,24 +17,20 @@
   max-width: 90%;
   font-size: 1rem;
   color: black;
-  /* font-weight:500; */
 }
 
-/*update: Slider wrapper with scroll buttons */
 .sliderWrapper {
   position: relative;
   width: 100%;
   padding: 0 1rem;
 }
 
-/*update: Scroll buttons - mobile first */
 .scrollButton {
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
   width: 40px;
   height: 40px;
   color: white;
@@ -77,7 +68,7 @@
   scroll-behavior: smooth;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 1rem 0 2rem;
+  padding: 1rem 0 2.5rem;
   cursor: grab;
   user-select: none;
 }
@@ -96,7 +87,6 @@
   padding: 0 0.5rem;
 }
 
-/*update: Filter button - mobile first with squared design */
 .filterButton {
   max-width: 10rem;
   flex: 0 0 calc(50% - 0.5rem);
@@ -111,11 +101,10 @@
 
 .filterButton:hover {
     background-color: transparent !important;
-  transform: translateY(-6px);
 }
 
 .filterButton.active {
-  transform: scale(1.02);
+  transform: scale(1.01);
 }
 
 .imageWrapper {
@@ -150,7 +139,6 @@
   transform: scale(1.08);
 }
 
-/*update: Overlay for better text visibility */
 .imageOverlay {
   position: absolute;
   top: 0;
@@ -164,7 +152,7 @@
     rgba(0, 0, 0, 0.6) 100%
   );
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
   pointer-events: none;
 }
 
@@ -202,7 +190,7 @@
   position: relative;
 }
 
-/*update: Speech bubble arrow */
+
 .label::before {
   content: '';
   position: absolute;
@@ -214,7 +202,6 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
-/*update: Active indicator */
 .activeIndicator {
   position: absolute;
   bottom: -12px;
@@ -245,7 +232,6 @@
   }
 }
 
-/*update: Clear filter button */
 .clearFilterWrapper {
   display: flex;
   justify-content: center;
@@ -271,7 +257,6 @@
   box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
 }
 
-/*update: Small phones (360px - 479px) */
 @media (min-width: 360px) {
   .subtitle {
     font-size: 0.938rem;
@@ -283,7 +268,6 @@
   }
 }
 
-/*update: Large phones (480px - 639px) */
 @media (min-width: 480px) {
   .container {
     margin-bottom: 1.75rem;
@@ -330,7 +314,6 @@
   }
 }
 
-/*update: Small tablets (640px - 767px) */
 @media (min-width: 640px) {
   .container {
     margin-bottom: 2rem;

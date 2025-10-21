@@ -120,9 +120,7 @@
 }
 
 .cancelButton:hover {
-  font-weight: 600;
-  color: white;
-  background-color: var(--saturated-blue);
+  background-color: lightgray;
 }
 
 .continueButton {

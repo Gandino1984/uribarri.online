@@ -10,31 +10,31 @@
 .headerSection {
   width: 100%;
   text-align: center;
+  justify-content: center;
+  flex-direction: column;
   margin-bottom: 0.5rem;
 }
 
 .title {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #1f2937;
+  color: black;
   letter-spacing: 0.03rem;
   padding: 0.5rem 0;
   margin: 0;
 }
 
-/*update: Public browsing notification */
 .publicBrowsingNote {
   padding: 0.75rem 1rem;
-  /* background-color: var(--app-purple-transparent); */
-  /* border-left: 4px solid var(--app-purple); */
-  border-radius: 6px;
-  color: var(--app-purple);
+  background-color: var(--app-purple-transparent);
+  border-radius: 8px;
+  color: var(--app-purple-darker);
   font-size: 0.9rem;
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 500;
   line-height: 1.5;
-  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
+  text-align: center;
 }
 
 .filterButtonSection {
@@ -94,6 +94,9 @@
 }
 
 .shopsCount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 0.5rem;
   padding: 0.25rem;
   text-align: center;
@@ -227,7 +230,7 @@
 .shopCardWrapper {
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s ease;
   margin: 0;
 }

@@ -109,6 +109,9 @@
 }
 
 .searchButton:active:not(:disabled) {
+  border: 2px solid var(--app-green);
+  background-color: white;
+  /* color: var(--app-green) !important; */
   /* transform: translateY(0); */
 }
 

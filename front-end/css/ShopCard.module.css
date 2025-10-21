@@ -10,7 +10,7 @@
   position: relative;
   /* offset-x | offset-y | color */
   /* box-shadow: 0px 0px 5px 1px lightgray; */
-  /* overflow: hidden; */
+  overflow: visible;
 }
 
 
@@ -40,7 +40,7 @@
   margin: 0 auto;
   position: relative;
   transition: all 0.3s ease;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -96,7 +96,10 @@
 .title {
   font-weight: 700;
   color: black;
-  word-break: break-word;
+  font-size: clamp(0.9rem, 4vw, 1.5rem);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rating {
@@ -333,12 +336,12 @@
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
   border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
   border-radius: 6px;
   z-index: 100;
-  overflow:hidden
+  /* overflow:hidden */
 }
 
 .infoCardText{
@@ -552,7 +555,7 @@
     background-color: white !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    /* overflow: hidden !important; */
   }
   
   /* Solid white backdrop to prevent any bleed-through */
@@ -633,10 +636,18 @@
 
 /* Responsive breakpoints */
 @media (max-width: 639px) {
+  .title {
+    font-size: clamp(0.85rem, 5vw, 1.1rem);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    hyphens: auto;
+  }
+
   .container {
     max-height: 400px;
   }
-  
+
   .infoContainer {
     min-height: 150px;
     max-height: 200px;
@@ -645,21 +656,22 @@
 
 @media (min-width: 640px) {
   .responsiveContainer {
-    max-width: 540px;
+    max-width: 85%;
   }
-  
+
   .title {
-    font-size: 1.375rem;
+    font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+    white-space: nowrap;
   }
 
   .minimized {
     max-width: 220px;
   }
-  
+
   .updateButton {
     padding: 0.5rem 0.875rem;
   }
-  
+
   .container {
     max-height: 450px;
   }
@@ -667,9 +679,14 @@
 
 @media (min-width: 768px) {
   .responsiveContainer {
-    max-width: 640px;
+    max-width: 90%;
   }
-  
+
+  .title {
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    white-space: nowrap;
+  }
+
   .header {
     flex-direction: row;
     justify-content: space-between;
@@ -679,29 +696,29 @@
   .minimized {
     max-width: 240px;
   }
-  
+
   .updateButton {
     padding: 0.5rem 1rem;
   }
-  
+
   .updateButtonText {
     font-size: 0.9375rem;
   }
-  
+
   .mapContainer {
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .container {
     max-height: 480px;
   }
-  
+
   .infoContainer {
     min-height: 160px;
     max-height: 220px;
   }
-  
+
   .shopCardWrapper.withMap {
     height: 480px;
   }
@@ -709,25 +726,26 @@
 
 @media (min-width: 1024px) {
   .responsiveContainer {
-    max-width: 700px;
+    max-width: 95%;
   }
-  
+
   .title {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    white-space: nowrap;
   }
-  
+
   .scheduleInfo {
     gap: .7rem;
   }
-  
+
   .responsiveContainerRow:not(:has(.minimized)) {
     min-height: 400px;
   }
-  
+
   .container {
     max-height: 500px;
   }
-  
+
   .infoContainer {
     max-height: 250px;
   }
@@ -735,12 +753,29 @@
 
 @media (min-width: 1280px) {
   .responsiveContainer {
-    max-width: 800px;
+    max-width: 96%;
   }
-  
+
+  .title {
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    white-space: nowrap;
+  }
+
   .responsiveContainerColumn,
   .responsiveContainerRow {
     padding: 0 2rem;
+  }
+}
+
+/* Extra large screens (1440px+) */
+@media (min-width: 1440px) {
+  .responsiveContainer {
+    max-width: 97%;
+  }
+
+  .title {
+    font-size: clamp(1.3rem, 1.6vw, 1.7rem);
+    white-space: nowrap;
   }
 }
 
@@ -750,11 +785,11 @@
     box-shadow: none;
     break-inside: avoid;
   }
-  
+
   .responsiveContainer {
     max-width: 100%;
   }
-  
+
   .mapContainer {
     display: none;
   }

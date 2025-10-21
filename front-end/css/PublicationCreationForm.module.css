@@ -160,9 +160,9 @@
 .fileInput {
   position: absolute;
   opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 .fileInputLabel {
@@ -190,7 +190,9 @@
 
 .imagePreviewContainer {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   max-width: 100%;
 }
 
@@ -199,28 +201,60 @@
   max-height: 300px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  object-fit: contain;
+}
+
+.imageActions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.changeImageButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--app-purple);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.changeImageButton:hover {
+  background: var(--app-purple-darker);
+  transform: translateY(-1px);
 }
 
 .removeImageButton {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(231, 76, 60, 0.9);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .removeImageButton:hover {
   background: #c0392b;
-  transform: scale(1.1);
+  transform: translateY(-1px);
+}
+
+.removeImageButton:disabled,
+.changeImageButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Form Actions */

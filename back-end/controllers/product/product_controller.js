@@ -2,6 +2,7 @@
 import product_model from "../../models/product_model.js";
 import product_category_model from "../../models/product_category_model.js";
 import product_subcategory_model from "../../models/product_subcategory_model.js";
+import package_model from "../../models/package_model.js";
 import { Op } from "sequelize";
 import fs from 'fs';
 import path from 'path';
@@ -504,6 +505,43 @@ async function removeById(id_product) {
             return { error: "Producto no encontrado" };
         }
 
+        //update: Check if product is referenced in any packages
+        const packagesWithProduct = await package_model.findAll({
+            where: {
+                [Op.or]: [
+                    { id_product1: id_product },
+                    { id_product2: id_product },
+                    { id_product3: id_product },
+                    { id_product4: id_product },
+                    { id_product5: id_product }
+                ]
+            }
+        });
+
+        if (packagesWithProduct && packagesWithProduct.length > 0) {
+            // Product is in one or more packages - delete those packages first
+            console.log(`Producto está en ${packagesWithProduct.length} paquete(s). Eliminando paquetes...`);
+
+            for (const pkg of packagesWithProduct) {
+                // Delete package image if exists
+                if (pkg.image_package) {
+                    const pkgImagePath = path.join(BACKEND_ROOT, pkg.image_package);
+                    try {
+                        if (fs.existsSync(pkgImagePath)) {
+                            fs.unlinkSync(pkgImagePath);
+                            console.log(`Imagen de paquete eliminada: ${pkg.image_package}`);
+                        }
+                    } catch (err) {
+                        console.error('Error al eliminar imagen de paquete:', err);
+                    }
+                }
+
+                // Delete the package
+                await pkg.destroy();
+                console.log(`Paquete ${pkg.name_package || pkg.id_package} eliminado`);
+            }
+        }
+
         // Delete the image and folder if the product has an image
         if (product.image_product) {
             const imagePath = product.image_product;
@@ -516,7 +554,10 @@ async function removeById(id_product) {
 
         return {
             data: id_product,
-            success: "Producto eliminado",
+            success: packagesWithProduct && packagesWithProduct.length > 0
+                ? `Producto y ${packagesWithProduct.length} paquete(s) eliminados`
+                : "Producto eliminado",
+            deletedPackages: packagesWithProduct ? packagesWithProduct.length : 0
         };
     } catch (err) {
         console.error("-> product_controller.js - removeById() - Error = ", err);
@@ -527,62 +568,130 @@ async function removeById(id_product) {
 async function verifyProductName(name_product, id_shop) {
     try {
         const existingProduct = await product_model.findOne({
-            where: { 
+            where: {
                 id_shop: id_shop,
                 name_product: name_product,
             }
         });
-        
-        return { 
+
+        return {
             exists: !!existingProduct,
             data: existingProduct,
             success: "Verificación de producto completada"
         };
     } catch (err) {
         console.error("-> product_controller.js - verifyProductName() - Error = ", err);
-        return { 
+        return {
             error: "Error al verificar la existencia del producto",
             exists: false
         };
     }
 }
 
-export { 
-    getAll, 
-    getById, 
-    create, 
-    update, 
-    removeById, 
-    removeByShopId, 
-    getByShopId, 
-    getByType, 
-    getOnSale, 
-    updateProductImage, 
-    deleteImage,
-    verifyProductName,
-    getByCountry,
-    getByLocality,
-    toggleActiveStatus,
-    getActiveByShopId,
-    getInactiveByShopId
+//update: Duplicate product - creates a copy with " (copia)" appended to name
+async function duplicateProduct(id_product) {
+    try {
+        console.log('🔄 Duplicating product with ID:', id_product);
+
+        // Find the original product
+        const originalProduct = await product_model.findByPk(id_product);
+
+        if (!originalProduct) {
+            console.error('❌ Product not found for duplication:', id_product);
+            return { error: "Producto no encontrado" };
+        }
+
+        console.log('✅ Found product to duplicate:', originalProduct.name_product);
+
+        // Create a copy of the product data
+        const productData = originalProduct.toJSON();
+
+        // Remove the primary key and timestamps
+        delete productData.id_product;
+        delete productData.createdAt;
+        delete productData.updatedAt;
+
+        // Append " (copia)" to the name
+        productData.name_product = `${productData.name_product} (copia)`;
+
+        // Reset sold count for the copy
+        productData.sold_product = 0;
+
+        // Note: Image is NOT duplicated - the copy will not have an image
+        // This is intentional to avoid filesystem duplication
+        productData.image_product = null;
+
+        // Ensure season_product has a value (required field)
+        if (!productData.season_product || productData.season_product === null) {
+            productData.season_product = 'Todo el año';
+        }
+
+        // Set new creation date
+        productData.creation_product = new Date();
+
+        console.log('📝 Creating duplicate with name:', productData.name_product);
+
+        // Create the new product
+        const duplicatedProduct = await product_model.create(productData);
+
+        console.log('✅ Product duplicated successfully:', {
+            originalId: id_product,
+            originalName: originalProduct.name_product,
+            duplicateId: duplicatedProduct.id_product,
+            duplicateName: duplicatedProduct.name_product
+        });
+
+        return {
+            data: duplicatedProduct,
+            success: "Producto duplicado exitosamente"
+        };
+    } catch (err) {
+        console.error("❌ product_controller.js - duplicateProduct() - Error:", {
+            message: err.message,
+            stack: err.stack
+        });
+        return { error: "Error al duplicar el producto" };
+    }
 }
 
-export default { 
-    getAll, 
-    getById, 
-    create, 
-    update, 
-    removeById, 
-    removeByShopId, 
-    getByShopId, 
-    getByType, 
-    getOnSale, 
-    updateProductImage, 
+export {
+    getAll,
+    getById,
+    create,
+    update,
+    removeById,
+    removeByShopId,
+    getByShopId,
+    getByType,
+    getOnSale,
+    updateProductImage,
     deleteImage,
     verifyProductName,
     getByCountry,
     getByLocality,
     toggleActiveStatus,
     getActiveByShopId,
-    getInactiveByShopId
+    getInactiveByShopId,
+    duplicateProduct
+}
+
+export default {
+    getAll,
+    getById,
+    create,
+    update,
+    removeById,
+    removeByShopId,
+    getByShopId,
+    getByType,
+    getOnSale,
+    updateProductImage,
+    deleteImage,
+    verifyProductName,
+    getByCountry,
+    getByLocality,
+    toggleActiveStatus,
+    getActiveByShopId,
+    getInactiveByShopId,
+    duplicateProduct
 }

@@ -174,7 +174,7 @@ const fetchOwnerData = useCallback(async () => {
     <>
     <div className={`${styles.shopCardWrapper} ${showMap && !minimized && !isSmallScreen ? styles.withMap : ''}`}>
      
-      <div 
+      <div
         className={`${styles.container} ${minimized ? styles.minimized : ''} ${showValorationForm ? styles.expanded : ''}`}
       >
         {minimized ? (
@@ -219,7 +219,7 @@ const fetchOwnerData = useCallback(async () => {
             
             {showValorationForm && (
               <div className={styles.valorationFormContainer}>
-                <ShopValorationForm 
+                <ShopValorationForm
                   key={valorationKey}
                   shop={shop}
                   onClose={handleValorationClose}
@@ -232,21 +232,21 @@ const fetchOwnerData = useCallback(async () => {
       </div>
 
       {showMap && !minimized && (
-        <div 
-          className={styles.mapWrapper} 
+        <div
+          className={styles.mapWrapper}
         >
-          <ShopMap 
-            shop={shop} 
-            isSmallScreen={isSmallScreen} 
+          <ShopMap
+            shop={shop}
+            isSmallScreen={isSmallScreen}
             onBack={() => setShowMap(false)}
           />
-        </div>    
+        </div>
       )}
     </div>
-    
-    {/*update: Render UserInfoCard for shop owner */}
+
+    {/*update: Render UserInfoCard for shop owner - outside ShopCard as modal */}
     {showOwnerInfo && ownerData && (
-      <UserInfoCard 
+      <UserInfoCard
         userData={ownerData}
         onClose={handleCloseOwnerInfo}
         isOwnerView={true}

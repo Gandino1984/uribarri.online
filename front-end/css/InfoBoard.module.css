@@ -88,11 +88,11 @@
 
 .filteredCount {
   padding: 0.5rem 1rem;
-  background: #f0f7ff;
-  border: 1px solid #d0e7ff;
+  background: var(--app-green-light);
+  border: 2px solid transparent;
   border-radius: 20px;
-  color: #4a90e2;
-  font-size: 0.875rem;
+  color: gray;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
@@ -150,20 +150,20 @@
 
 .resetButton {
   padding: 0.75rem 1.5rem;
-  background: #4a90e2;
-  color: #ffffff;
+  background: white;
+  color: black;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .resetButton:hover {
-  background: #3a7bc8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  background: lightgray;
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); */
 }
 
 /* Publications Grid */

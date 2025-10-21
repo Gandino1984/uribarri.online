@@ -116,4 +116,7 @@ router.delete('/delete-image/:id_product', productApiController.deleteImage);
 
 router.post("/verify-product-name", productApiController.verifyProductName);
 
+//update: Duplicate product route
+router.post("/duplicate/:id_product", productApiController.duplicateProduct);
+
 export default router;
