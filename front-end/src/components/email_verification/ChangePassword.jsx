@@ -124,7 +124,7 @@ const ChangePassword = ({ isOpen, onClose }) => {
         </button>
         
         <div className={styles.header}>
-          <Lock size={40} className={styles.icon} />
+          {/* <Lock size={40} className={styles.icon} /> */}
           <h2 className={styles.title}>Cambiar contraseña</h2>
         </div>
         
@@ -139,11 +139,7 @@ const ChangePassword = ({ isOpen, onClose }) => {
           
           <div className={styles.passwordSection}>
             <label className={styles.label}>{getStepLabel()}</label>
-            
-            <div className={styles.passwordDisplay}>
-              {'*'.repeat(getCurrentPassword().length)}
-            </div>
-            
+
             <NumericKeyboard
               key={keyboardKey}
               value={getCurrentPassword()}

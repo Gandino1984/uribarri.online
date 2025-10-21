@@ -1,55 +1,81 @@
-.stepTracker {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    right: 0;
-    top: -1rem;
-    width: 100%;
-    position: absolute;
-    flex-shrink: 1;
-    min-width: min-content;
+/* Step Indicator Container */
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Individual Step Circle */
+.step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e0e0;
+  color: #999;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+/* Active Step (current step) */
+.step.active {
+  background: var(--app-purple);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Completed Step (previous steps) */
+.step.completed {
+  background: #4caf50;
+  color: white;
+}
+
+/* Connecting Line Between Steps */
+.stepLine {
+  width: 40px;
+  height: 2px;
+  background: #e0e0e0;
+}
+
+/* Tablet Breakpoint */
+@media (max-width: 768px) {
+  .step {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
   }
-  
-  .stepDot {
-    user-select: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background-color: #e0e0e0;
-    margin: 0 .3rem;
-    z-index: 2;
-    transition: all 0.2s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #666;
-    font-size: 0.9rem;
-    font-weight: 600;
-    position: relative;
+
+  .stepLine {
+    width: 30px;
   }
-  
-  .stepDot.active {
-    margin-right: .5rem;
-    margin-left: .5rem;
-    background-color: var(--app-purple);
-    color: white;
-    transform: scale(1.4);
+
+  .stepIndicator {
+    gap: 10px;
+    margin-bottom: 16px;
   }
-  
-  /* Media queries for responsive design */
-  @media screen and (max-width: 600px) {
-    /* 📱 Enhanced mobile step indicator styles */
-    .stepDot {
-      width: 20px;
-      height: 20px;
-      margin: 0 0.15rem;
-      font-size: 0.7rem;
-    }
+}
+
+/* Mobile Breakpoint */
+@media (max-width: 480px) {
+  .step {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
   }
-  
-  @media screen and (max-width: 350px) {
-    .stepTracker {
-      align-self: center;
-      margin-top: 0;
-    }
+
+  .stepLine {
+    width: 20px;
   }
+
+  .stepIndicator {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+}

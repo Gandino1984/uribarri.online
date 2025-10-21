@@ -23,6 +23,7 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease;
+    color: var(--app-purple);
 }
 
 .keyboard{
@@ -46,7 +47,7 @@
     padding: .3rem .5rem;
     user-select: none;
     margin: .2rem;
-    color: black;
+    color: black !important;
     background-color: var(--light-gray);
     transition: all .3s ease;
 }

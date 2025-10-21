@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 import styles from '../../../../../css/ShopCreationForm.module.css';
 import { ShopCreationFormUtils } from './ShopCreationFormUtils.jsx';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, X } from 'lucide-react';
 import { useAuth } from '../../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../../app_context/UIContext.jsx';
 import { useShop } from '../../../../app_context/ShopContext.jsx';
@@ -225,22 +225,33 @@ const ShopCreationForm = () => {
 
   const confirmResetForm = () => {
     // If form is empty, just reset without confirmation
-    const isFormEmpty = !newShop.name_shop && 
-                        !newShop.id_type && 
-                        !newShop.location_shop && 
+    const isFormEmpty = !newShop.name_shop &&
+                        !newShop.id_type &&
+                        !newShop.location_shop &&
                         !selectedImage;
-    
+
     if (isFormEmpty) {
       resetForm();
       return;
     }
-    
+
     // Set pending reset flag to true
     setIsResetPending(true);
-    
+
     // Open confirmation modal
     setModalMessage("¿Estás seguro de limpiar todos los campos del formulario?");
     setIsModalOpen(true);
+  };
+
+  const handleClose = () => {
+    // Reset form state
+    resetForm();
+
+    // Clear selected shop if editing
+    setSelectedShop(null);
+
+    // Close the form
+    setShowShopCreationForm(false);
   };
 
   // Navigation Utils
@@ -542,10 +553,19 @@ const ShopCreationForm = () => {
       </p>
       {formTransition((style, show) => 
         show && (
-          <animated.div 
-            className={styles.container} 
+          <animated.div
+            className={styles.container}
             style={style}
           >
+            <button
+              onClick={handleClose}
+              className={styles.closeButton}
+              type="button"
+              title="Cerrar formulario"
+            >
+              <X size={24} />
+            </button>
+
             <div className={styles.content}>
               <div className={styles.header}>   
                 <StepTracker currentStep={currentStep} totalSteps={totalSteps} />
