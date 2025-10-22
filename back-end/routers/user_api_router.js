@@ -182,6 +182,9 @@ router.post('/reset-password', userApiController.resetPasswordWithToken);
 //update:
 router.post('/change-password', userApiController.changePassword);
 
+//update: Contact shop owner route
+router.post('/contact-shop-owner', userApiController.contactShopOwner);
+
 const handleUpload = async (req, res) => {
     try {
         console.log('=== HANDLE UPLOAD START ===');

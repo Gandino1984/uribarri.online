@@ -384,6 +384,39 @@ async function changePassword(req, res) {
     }
 }
 
+async function contactShopOwner(req, res) {
+    try {
+        const { senderName, senderEmail, recipientEmail, shopName, message, subject } = req.body;
+
+        if (!senderName || !senderEmail || !recipientEmail || !shopName || !message) {
+            return res.status(400).json({
+                error: 'Nombre del remitente, email del remitente, email del destinatario, nombre del comercio y mensaje son obligatorios'
+            });
+        }
+
+        const result = await userController.contactShopOwner(
+            senderName,
+            senderEmail,
+            recipientEmail,
+            shopName,
+            message,
+            subject
+        );
+
+        if (result.error) {
+            return res.status(400).json({ error: result.error });
+        }
+
+        res.json({ message: result.message, success: result.success });
+    } catch (err) {
+        console.error("-> user_api_controller.js - contactShopOwner() - Error =", err);
+        res.status(500).json({
+            error: "Error al enviar el mensaje de contacto",
+            details: err.message
+        });
+    }
+}
+
 export {
     getAll,
     getById,
@@ -394,12 +427,13 @@ export {
     register,
     getByUserName,
     updateProfileImage,
-    getByEmail, 
+    getByEmail,
     searchByName,
     getUserImage,
     requestPasswordReset,
     resetPasswordWithToken,
-    changePassword
+    changePassword,
+    contactShopOwner
 }
 
 export default {
@@ -412,10 +446,11 @@ export default {
     register,
     getByUserName,
     updateProfileImage,
-    getByEmail,  
+    getByEmail,
     searchByName,
     getUserImage,
     requestPasswordReset,
     resetPasswordWithToken,
-    changePassword
+    changePassword,
+    contactShopOwner
 }

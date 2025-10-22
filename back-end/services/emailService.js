@@ -459,9 +459,178 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
   }
 };
 
+export const sendContactShopOwnerEmail = async (senderName, senderEmail, recipientEmail, shopName, message, subject = '') => {
+  try {
+    console.log('Attempting to send contact email to shop owner:', recipientEmail);
+    const transporter = createTransporter();
+
+    try {
+      await transporter.verify();
+      console.log('Email server connection verified successfully');
+    } catch (verifyError) {
+      console.error('Email server verification failed:', verifyError);
+      return { success: false, error: 'Email server connection failed: ' + verifyError.message };
+    }
+
+    const emailSubject = subject || `Mensaje de ${senderName} sobre ${shopName}`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: 'Montserrat', Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .container {
+              background-color: #f8f9fa;
+              border-radius: 10px;
+              padding: 30px;
+              margin-top: 20px;
+            }
+            .header {
+              text-align: center;
+              color: #9747ff;
+              font-size: 28px;
+              font-weight: bold;
+              margin-bottom: 20px;
+            }
+            .content {
+              background-color: white;
+              padding: 25px;
+              border-radius: 8px;
+              margin-top: 20px;
+            }
+            .shop-name {
+              color: #9747ff;
+              font-weight: bold;
+              font-size: 18px;
+              margin-bottom: 15px;
+            }
+            .sender-info {
+              background-color: #f0f0f0;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 20px 0;
+            }
+            .message-box {
+              background-color: #f8f9fa;
+              padding: 20px;
+              border-left: 4px solid #9747ff;
+              border-radius: 5px;
+              margin: 20px 0;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #ddd;
+              color: #666;
+              font-size: 12px;
+            }
+            .note {
+              background-color: #fff3cd;
+              padding: 15px;
+              border-radius: 5px;
+              border-left: 4px solid #ffc107;
+              margin-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              💬 Nuevo Mensaje
+            </div>
+            <div class="content">
+              <div class="shop-name">
+                📍 Sobre tu comercio: ${shopName}
+              </div>
+
+              <p>Has recibido un nuevo mensaje a través de Uribarri.Online:</p>
+
+              <div class="sender-info">
+                <strong>👤 De:</strong> ${senderName}<br>
+                <strong>📧 Email:</strong> ${senderEmail}
+              </div>
+
+              <div class="message-box">
+                <strong>Mensaje:</strong><br><br>
+                ${message.replace(/\n/g, '<br>')}
+              </div>
+
+              <div class="note">
+                <strong>💡 Nota:</strong> Puedes responder directamente a este correo para contactar con ${senderName}.
+              </div>
+            </div>
+            <div class="footer">
+              <p>© 2024 Uribarri.Online - Conectando comercios locales con la comunidad</p>
+              <p>Este mensaje fue enviado a través de la plataforma Uribarri.Online</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const textContent = `
+      Nuevo mensaje sobre tu comercio: ${shopName}
+
+      De: ${senderName}
+      Email: ${senderEmail}
+
+      Mensaje:
+      ${message}
+
+      ---
+      Puedes responder directamente a este correo para contactar con ${senderName}.
+
+      Saludos,
+      El equipo de Uribarri.Online
+    `;
+
+    const mailOptions = {
+      from: `"Uribarri.Online" <${process.env.EMAIL_USER}>`,
+      to: recipientEmail,
+      replyTo: senderEmail,
+      subject: emailSubject,
+      text: textContent,
+      html: htmlContent,
+    };
+
+    console.log('Sending contact email with options:', {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      replyTo: mailOptions.replyTo,
+      subject: mailOptions.subject
+    });
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log('Contact email sent successfully:', info.messageId);
+    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
+
+    return { success: true, messageId: info.messageId };
+
+  } catch (error) {
+    console.error('Error sending contact email:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      response: error.response
+    });
+    return { success: false, error: error.message };
+  }
+};
+
 export default {
   generateVerificationToken,
   sendVerificationEmail,
   sendWelcomeEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendContactShopOwnerEmail
 };
