@@ -21,57 +21,55 @@ const ShopHeader = memo(({
   
   return (
     <div className={styles.headerControls}>
-      <button 
-        className={styles.active} 
+      <button
+        className={styles.active}
         onClick={toggleMinimized}
         title="Minimizar tarjeta"
         aria-label="Minimizar tarjeta"
       >
-        <Minimize2 size={16} />
+        <Minimize2 className={styles.headerIcon} />
       </button>
-      
+
       {isSeller && (
-        <button 
-          className={styles.active} 
+        <button
+          className={styles.active}
           onClick={handleUpdateShop}
           title="Editar comercio"
           aria-label="Editar comercio"
         >
-          <Edit size={16} />
+          <Edit className={styles.headerIcon} />
         </button>
       )}
-      
-      <button 
+
+      <button
         className={styles.active}
         onClick={toggleMap}
         title="Mostrar ubicación en mapa"
         aria-label="Mostrar ubicación en mapa"
       >
-        <Map size={16} />
+        <Map className={styles.headerIcon} />
       </button>
-      
+
       {canValorate && (
-        <button 
+        <button
           className={`${styles.active} ${showValorationForm ? styles.activeToggled : ''}`}
           onClick={handleToggleValoration}
           title="Valorar comercio"
           aria-label="Valorar comercio"
         >
-          <Star size={16} />
+          <Star className={styles.headerIcon} />
         </button>
       )}
-      
-      {/*update: Owner info button */}
+
       <button
         className={`${styles.active} ${showOwnerInfo ? styles.activeToggled : ''}`}
         onClick={handleShowOwnerInfo}
         title="Ver información del propietario"
         aria-label="Ver información del propietario"
       >
-        <User size={16} />
+        <User className={styles.headerIcon} />
       </button>
 
-      {/*update: Email shop owner button */}
       {canValorate && (
         <button
           className={`${styles.active} ${showEmailForm ? styles.activeToggled : ''}`}
@@ -79,7 +77,7 @@ const ShopHeader = memo(({
           title="Contactar con el comercio"
           aria-label="Contactar con el comercio"
         >
-          <Mail size={16} />
+          <Mail className={styles.headerIcon} />
         </button>
       )}
 
@@ -89,7 +87,7 @@ const ShopHeader = memo(({
         title="Reportar actividad inusual"
         aria-label="Reportar actividad inusual"
       >
-        <AlertTriangle size={16} />
+        <AlertTriangle className={styles.headerIcon} />
       </button>
     </div>
   );

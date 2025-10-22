@@ -190,6 +190,15 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.headerIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .icon {
@@ -459,15 +468,15 @@
   opacity: .5;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: .2rem .2rem;
+  justify-content: center;
+  padding: .2rem;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  margin-right: .5rem;
   background-color: white;
   transition: all 0.2s ease;
   border: 2px solid transparent;
+  flex-shrink: 0;
 }
 
 .active:hover {
@@ -476,7 +485,7 @@
 }
 
 .activeToggled {
-  border-color: var(app-purple) !important;
+  border-color: var(--app-purple) !important;
 }
 
 .inactive {
@@ -676,6 +685,59 @@
   }
 }
 
+/* Screens under 700px - header controls compact mode */
+@media (max-width: 699px) {
+  .headerControls {
+    top: 0.3rem;
+    right: 0.3rem;
+    gap: 0.2rem;
+    max-width: calc(100% - 0.6rem);
+    flex-wrap: wrap;
+  }
+
+  .headerIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .active {
+    padding: 0.15rem;
+    border-radius: 5px;
+  }
+}
+
+/* Medium-small screens (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .headerControls {
+    gap: 0.18rem;
+  }
+
+  .headerIcon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .active {
+    padding: 0.13rem;
+  }
+}
+
+/* Small screens (361px - 480px) */
+@media (min-width: 361px) and (max-width: 480px) {
+  .headerControls {
+    gap: 0.1rem;
+  }
+
+  .headerIcon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .active {
+    padding: 0.1rem;
+  }
+}
+
 /* Responsive breakpoints */
 @media (max-width: 639px) {
   .shopCardWrapper {
@@ -728,9 +790,13 @@
     gap: 0.15rem;
   }
 
+  .headerIcon {
+    width: 12px;
+    height: 12px;
+  }
+
   .active {
-    padding: 0.1rem 0.1rem;
-    margin-right: 0.2rem;
+    padding: 0.12rem;
   }
 
   .starsContainer {
@@ -941,12 +1007,19 @@
   }
 
   .headerControls {
-    gap: 0.1rem;
+    top: 0.25rem;
+    right: 0.25rem;
+    gap: 0.12rem;
+    max-width: calc(100% - 0.5rem);
+  }
+
+  .headerIcon {
+    width: 11px;
+    height: 11px;
   }
 
   .active {
-    padding: 0.08rem 0.08rem;
-    margin-right: 0.15rem;
+    padding: 0.1rem;
   }
 
   .starsContainer {
@@ -1045,12 +1118,18 @@
   .headerControls {
     top: 0.2rem;
     right: 0.2rem;
-    gap: 0.05rem;
+    gap: 0.08rem;
+    max-width: calc(100% - 0.4rem);
+  }
+
+  .headerIcon {
+    width: 10px;
+    height: 10px;
   }
 
   .active {
-    padding: 0.05rem 0.05rem;
-    margin-right: 0.1rem;
+    padding: 0.08rem;
+    border-width: 1px;
   }
 
   .starsContainer {
@@ -1108,12 +1187,21 @@
   }
 
   .headerControls {
+    top: 0.15rem;
+    right: 0.15rem;
     gap: 0.05rem;
+    max-width: calc(100% - 0.3rem);
+  }
+
+  .headerIcon {
+    width: 9px;
+    height: 9px;
   }
 
   .active {
-    padding: 0.05rem 0.05rem;
-    margin-right: 0.05rem;
+    padding: 0.06rem;
+    border-width: 1px;
+    border-radius: 4px;
   }
 
   .infoContainer {
