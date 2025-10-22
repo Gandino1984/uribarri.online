@@ -1,11 +1,6 @@
 # ===============================================
 # Docker Compose Configuration
 # ===============================================
-# For production deployment with Nginx proxy, uncomment the
-# VIRTUAL_HOST, LETSENCRYPT_* environment variables and networks
-
-version: '3.8'
-
 services:
   # ===============================================
   # MySQL Database Service
@@ -14,8 +9,6 @@ services:
     container_name: ${MYSQL_HOST}
     image: mysql:8.0
     restart: unless-stopped
-    ports:
-      - ${MYSQL_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -34,26 +27,21 @@ services:
     build: .
     container_name: back-end
     restart: unless-stopped
-    ports:
-      # Development: expose port directly
-      - ${APP_PORT}:3000
-      # Production: comment out port mapping if using nginx-proxy
     depends_on:
       - db
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - MYSQL_PORT=3306
+      - NODE_ENV=${NODE_ENV:-production}
+      - MYSQL_PORT=3305
       - MYSQL_HOST=${MYSQL_HOST}
       - FRONTEND_URL=${FRONTEND_URL}
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
-      # Production: Uncomment for nginx-proxy + Let's Encrypt
-      # - VIRTUAL_HOST=api.uribarri.online
-      # - VIRTUAL_PORT=3000
-      # - LETSENCRYPT_HOST=api.uribarri.online
-      # - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+      - VIRTUAL_HOST=api.uribarri.online
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=api.uribarri.online
+      - LETSENCRYPT_EMAIL=andinogerman@gmail.com
     volumes:
       - .:/app
       - /app/node_modules
@@ -62,8 +50,7 @@ services:
       - ./back-end/assets:/app/back-end/assets
     networks:
       - uribarri_internal
-      # Production: Uncomment to connect to nginx-proxy network
-      # - proxy
+      - proxy
 
 volumes:
   mysql-data:
@@ -72,7 +59,6 @@ volumes:
 networks:
   uribarri_internal:
     driver: bridge
-  # Production: Uncomment to use nginx-proxy network
-  # proxy:
-  #   name: nginx-proxy
-  #   external: true
+  proxy:
+    name: nginx-proxy
+    external: true

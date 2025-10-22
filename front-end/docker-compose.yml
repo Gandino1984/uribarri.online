@@ -5,15 +5,15 @@ services:
     container_name: uribarri_frontend
     expose:
       - "80"
-    # environment:
-    #   - VIRTUAL_HOST=app.uribarri.online
-    #   - LETSENCRYPT_HOST=app.uribarri.online
-    #   - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+    environment:
+      - VIRTUAL_HOST=app.uribarri.online
+      - LETSENCRYPT_HOST=app.uribarri.online
+      - LETSENCRYPT_EMAIL=andinogerman@gmail.com
     volumes:
       - ./dist:/usr/share/nginx/html:ro
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro 
-    # networks:
-    #   - proxy
+    networks:
+      - proxy
     restart: unless-stopped
 
 networks:
