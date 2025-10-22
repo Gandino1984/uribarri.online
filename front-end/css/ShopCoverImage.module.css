@@ -1,11 +1,13 @@
 .container {
   position: relative;
   width: 100%;
+  max-width: 100%;
   overflow: hidden;
   aspect-ratio: 3/1;
   flex-shrink: 0;
   flex-grow: 1;
   max-height: 250px;
+  box-sizing: border-box;
 }
 
 .imageWrapper {
@@ -248,10 +250,32 @@
   }
 }
 
+/* Portrait screens under 700px - prevent horizontal overflow */
+@media (orientation: portrait) and (max-width: 699px) {
+  .container {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .imageWrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .image {
+    width: 100%;
+    max-width: 100%;
+    object-fit: cover;
+  }
+}
+
 @media (orientation: portrait) and (max-width: 639px) {
   .container {
     aspect-ratio: 2/1;
     max-height: 100px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .uploadButtonContainer {
