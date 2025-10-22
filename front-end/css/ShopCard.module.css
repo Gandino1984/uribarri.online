@@ -44,7 +44,7 @@
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  max-height: 500px;
+  max-height: 85vh;
 }
 
 .container.minimized {
@@ -69,8 +69,8 @@
   padding: .5rem;
   flex-shrink: 0;
   overflow-y: auto;
-  min-height: 180px;
-  max-height: 250px;
+  min-height: 120px;
+  max-height: 200px;
 }
 
 
@@ -645,12 +645,22 @@
   }
 
   .container {
-    max-height: 400px;
+    max-height: 70vh;
   }
 
   .infoContainer {
-    min-height: 150px;
-    max-height: 200px;
+    min-height: 100px;
+    max-height: 150px;
+    padding: 0.4rem;
+  }
+
+  .headerControls {
+    gap: 0.2rem;
+  }
+
+  .active {
+    padding: 0.15rem 0.15rem;
+    margin-right: 0.3rem;
   }
 }
 
@@ -776,6 +786,81 @@
   .title {
     font-size: clamp(1.3rem, 1.6vw, 1.7rem);
     white-space: nowrap;
+  }
+}
+
+/* Portrait mode optimizations for small screens */
+@media (orientation: portrait) and (max-width: 639px) {
+  .container {
+    max-height: 65vh;
+  }
+
+  .infoContainer {
+    min-height: 80px;
+    max-height: 120px;
+    padding: 0.3rem;
+  }
+
+  .scheduleInfo {
+    gap: 0.3rem;
+  }
+
+  .scheduleTime {
+    font-size: 0.75rem;
+  }
+
+  .shopType,
+  .location {
+    font-size: 0.75rem;
+  }
+
+  .orderButtonContainer {
+    padding: 0.4rem;
+  }
+
+  .orderButton {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra small portrait screens (very compact) */
+@media (orientation: portrait) and (max-width: 480px) and (max-height: 700px) {
+  .container {
+    max-height: 60vh;
+  }
+
+  .infoContainer {
+    min-height: 70px;
+    max-height: 100px;
+    padding: 0.25rem;
+  }
+
+  .title {
+    font-size: clamp(0.8rem, 4.5vw, 1rem);
+    line-height: 1.2;
+  }
+
+  .scheduleTime {
+    font-size: 0.7rem;
+  }
+
+  .icon {
+    margin-right: 0.3rem;
+  }
+
+  .headerControls {
+    top: 0.3rem;
+    right: 0.3rem;
+  }
+
+  .active {
+    padding: 0.1rem 0.1rem;
+    margin-right: 0.2rem;
+  }
+
+  .valorationFormContainer {
+    padding: 0.5rem;
   }
 }
 

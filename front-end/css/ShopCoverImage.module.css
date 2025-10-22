@@ -197,7 +197,7 @@
 @media (max-width: 639px) {
   .container {
     aspect-ratio: 2.5/1;
-    max-height: 150px;
+    max-height: 120px;
   }
 }
 
@@ -250,19 +250,27 @@
 
 @media (orientation: portrait) and (max-width: 639px) {
   .container {
-    aspect-ratio: 2.5/1;
-    max-height: 140px;
+    aspect-ratio: 2/1;
+    max-height: 100px;
   }
-  
+
   .uploadButtonContainer {
-    padding: 8px;
+    padding: 6px;
   }
-  
+
   .uploadButton {
-    padding: 8px;
+    padding: 6px;
   }
-  
+
   .uploadText {
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .editText {
+    font-size: 12px;
+  }
+
+  .editIcon {
+    margin-bottom: 4px;
   }
 }
