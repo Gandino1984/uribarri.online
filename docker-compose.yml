@@ -9,6 +9,8 @@ services:
     container_name: ${MYSQL_HOST}
     image: mysql:8.0
     restart: unless-stopped
+    # ports:
+    #   - ${MYSQL_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -27,6 +29,8 @@ services:
     build: .
     container_name: back-end
     restart: unless-stopped
+    # ports:
+    #   - ${APP_PORT}:3000
     depends_on:
       - db
     environment:
