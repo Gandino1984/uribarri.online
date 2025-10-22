@@ -1,19 +1,21 @@
 import React, { memo } from 'react';
-import { Minimize2, Edit, Map, Star, AlertTriangle, User } from 'lucide-react';
+import { Minimize2, Edit, Map, Star, AlertTriangle, User, Mail } from 'lucide-react';
 import styles from '../../../../../../css/ShopCard.module.css';
 
-const ShopHeader = memo(({ 
-  minimized, 
-  toggleMinimized, 
-  handleUpdateShop, 
-  toggleMap, 
+const ShopHeader = memo(({
+  minimized,
+  toggleMinimized,
+  handleUpdateShop,
+  toggleMap,
   handleToggleValoration,
   handleReport,
   handleShowOwnerInfo,
-  isSeller, 
+  handleToggleEmailForm,
+  isSeller,
   canValorate,
   showValorationForm,
-  showOwnerInfo
+  showOwnerInfo,
+  showEmailForm
 }) => {
   if (minimized) return null;
   
@@ -60,7 +62,7 @@ const ShopHeader = memo(({
       )}
       
       {/*update: Owner info button */}
-      <button 
+      <button
         className={`${styles.active} ${showOwnerInfo ? styles.activeToggled : ''}`}
         onClick={handleShowOwnerInfo}
         title="Ver información del propietario"
@@ -68,8 +70,20 @@ const ShopHeader = memo(({
       >
         <User size={16} />
       </button>
-      
-      <button 
+
+      {/*update: Email shop owner button */}
+      {canValorate && (
+        <button
+          className={`${styles.active} ${showEmailForm ? styles.activeToggled : ''}`}
+          onClick={handleToggleEmailForm}
+          title="Contactar con el comercio"
+          aria-label="Contactar con el comercio"
+        >
+          <Mail size={16} />
+        </button>
+      )}
+
+      <button
         className={styles.active}
         onClick={handleReport}
         title="Reportar actividad inusual"

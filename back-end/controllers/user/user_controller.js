@@ -1103,40 +1103,110 @@ async function searchByName(name_user) {
     }
 }
 
-export { 
-    getAll, 
-    getById, 
-    create, 
-    update, 
-    removeById, 
-    login, 
-    register,
-    getByUserName,
-    updateProfileImage,
-    verifyEmail,
-    resendVerificationEmail,
-    getByEmail,  
-    searchByName,
-    requestPasswordReset,
-    resetPasswordWithToken,
-    changePassword
+const contactShopOwner = async (senderName, senderEmail, recipientEmail, shopName, message, subject) => {
+    console.log('-> user_controller - contactShopOwner');
+
+    try {
+        // Validate inputs
+        if (!senderName || !senderEmail || !recipientEmail || !shopName || !message) {
+            return {
+                error: 'Todos los campos son requeridos'
+            };
+        }
+
+        // Validate email formats
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(senderEmail)) {
+            return {
+                error: 'El email del remitente no es válido'
+            };
+        }
+        if (!emailRegex.test(recipientEmail)) {
+            return {
+                error: 'El email del destinatario no es válido'
+            };
+        }
+
+        // Validate message length
+        if (message.length > 500) {
+            return {
+                error: 'El mensaje no puede exceder 500 caracteres'
+            };
+        }
+
+        if (message.length < 10) {
+            return {
+                error: 'El mensaje debe tener al menos 10 caracteres'
+            };
+        }
+
+        // Send email using the email service
+        const { sendContactShopOwnerEmail } = await import('../../services/emailService.js');
+        const result = await sendContactShopOwnerEmail(
+            senderName,
+            senderEmail,
+            recipientEmail,
+            shopName,
+            message,
+            subject
+        );
+
+        if (result.success) {
+            console.log('Contact email sent successfully');
+            return {
+                message: 'Mensaje enviado correctamente',
+                success: true
+            };
+        } else {
+            console.error('Failed to send contact email:', result.error);
+            return {
+                error: 'Error al enviar el mensaje: ' + result.error
+            };
+        }
+    } catch (error) {
+        console.error('Error in contactShopOwner:', error);
+        return {
+            error: 'Error al procesar la solicitud'
+        };
+    }
 };
 
-export default { 
-    getAll, 
-    getById, 
-    create, 
-    update, 
-    removeById, 
-    login, 
+export {
+    getAll,
+    getById,
+    create,
+    update,
+    removeById,
+    login,
     register,
     getByUserName,
     updateProfileImage,
     verifyEmail,
     resendVerificationEmail,
-    getByEmail,  
+    getByEmail,
     searchByName,
     requestPasswordReset,
     resetPasswordWithToken,
-    changePassword
+    changePassword,
+    contactShopOwner
+};
+
+export default {
+    getAll,
+    getById,
+    create,
+    update,
+    removeById,
+    login,
+    register,
+    getByUserName,
+    updateProfileImage,
+    verifyEmail,
+    resendVerificationEmail,
+    getByEmail,
+    searchByName,
+    requestPasswordReset,
+    resetPasswordWithToken,
+    changePassword,
+    contactShopOwner
 };
