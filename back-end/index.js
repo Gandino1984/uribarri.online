@@ -141,7 +141,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
         'https://api.uribarri.online'
     ]
     : [
-        'http://localhost:5173',
+        'https://app.uribarri.online',
         'http://127.0.0.1:5173',
         `http://localhost:${EXTERNAL_PORT}`
     ];
