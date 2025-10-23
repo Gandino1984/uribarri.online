@@ -20,21 +20,22 @@
   font-weight: 800;
   color: black;
   letter-spacing: 0.03rem;
-  padding: 0.5rem 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   margin: 0;
 }
 
 .publicBrowsingNote {
-  padding: 0.75rem 1rem;
+  /* width: 90%; */
+  padding: 0.5rem 1em;
   background-color: var(--app-purple-transparent);
   border-radius: 8px;
-  color: var(--app-purple-darker);
-  font-size: 0.9rem;
+  color: var(--app-purple);
+  font-size: 0.8rem;
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 500;
   line-height: 1.5;
-  text-align: center;
 }
 
 .filterButtonSection {
