@@ -70,9 +70,9 @@ const RecommendedFilters = ({ onFilterSelect, currentFilter }) => {
                   <div className={styles.imageOverlay} />
                 </div>
                 
-                {/* Label with animation */}
-                <div 
-                  className={`${styles.labelWrapper} ${hoveredIndex === index ? styles.visible : ''}`}
+                {/* Label with animation - always visible, animated on hover */}
+                <div
+                  className={`${styles.labelWrapper} ${styles.alwaysVisible} ${hoveredIndex === index ? styles.hovered : ''}`}
                 >
                   <span className={styles.label}>{filter.label}</span>
                 </div>

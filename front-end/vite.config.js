@@ -8,14 +8,17 @@ export default defineConfig(({ mode }) => {
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), '');
   
-  //update: Get API URL from environment variable or use default
-  // const apiUrl = 'localhost:3007'; // Default for local development
-  const apiUrl = env.VITE_API_URL;
-  
+  //update: Get API URL from environment variable or use default for development
+  // In development mode, default to localhost:3007
+  // In production mode, proxy isn't used (only for dev server)
+  const apiUrl = env.VITE_API_URL || 'https://api.uribarri.online';
+
   if (env.VITE_API_URL) {
     console.log('VITE_API_URL from env:', env.VITE_API_URL);
+  } else {
+    console.log('Using default API URL for dev server proxy');
   }
-  
+
   console.log('--------------- >>>>   Vite config - API URL:', apiUrl);
   console.log('Vite config - Mode:', mode);
 
