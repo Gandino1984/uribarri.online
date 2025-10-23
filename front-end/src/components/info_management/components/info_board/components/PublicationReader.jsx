@@ -12,7 +12,7 @@ const PublicationReader = ({ publication, onClose, onEdit, onDelete, onToggleAct
   const { openImageModal } = useUI();
   const contentRef = useRef(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.uribarri.online';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http.//localhost:3007';
 
   const slideAnimation = useSpring({
     from: {

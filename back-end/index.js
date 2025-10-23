@@ -137,13 +137,13 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = process.env.NODE_ENV === 'production'
     ? [
         'https://uribarri.online',
-        'https://app.uribarri.online',
-        'https://api.uribarri.online'
+        'http.//localhost:5173',
+        'http.//localhost:3007'
     ]
     : [
-        'https://app.uribarri.online',
+        'http.//localhost:5173',
         'http://127.0.0.1:5173',
-        process.env.FRONTEND_URL || 'https://app.uribarri.online'
+        process.env.FRONTEND_URL || 'http.//localhost:5173'
     ];
 
 app.use(cors({

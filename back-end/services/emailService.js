@@ -54,7 +54,7 @@ export const sendVerificationEmail = async (userEmail, userName, verificationTok
     }
     
     //update: Use FRONTEND_URL from environment variable instead of hardcoded production URL
-    const frontendUrl = process.env.FRONTEND_URL || 'https://app.uribarri.online';
+    const frontendUrl = process.env.FRONTEND_URL || 'http.//localhost:5173';
     const verificationUrl = `${frontendUrl}/verify-email?token=${verificationToken}&email=${encodeURIComponent(userEmail)}`;
     
     console.log('Verification URL generated:', verificationUrl);
@@ -299,7 +299,7 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
     }
     
     //update: Use FRONTEND_URL from environment variable instead of hardcoded production URL
-    const frontendUrl = process.env.FRONTEND_URL || 'https://app.uribarri.online';
+    const frontendUrl = process.env.FRONTEND_URL || 'http.//localhost:5173';
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(userEmail)}`;
     
     console.log('Password reset URL generated:', resetUrl);
