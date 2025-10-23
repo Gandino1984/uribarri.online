@@ -30,13 +30,10 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .backButton:hover {
   background: lightgray;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 @media screen and (min-width: 481px) {
@@ -171,7 +168,7 @@
 .shopCard {
   background-color:  white;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   overflow: hidden;
   transition: all 0.3s ease;
   width: 100%;
@@ -183,7 +180,7 @@
 }
 
 .shopCard.selectedShop {
-  box-shadow: 0 0 0 2px var(--app-purple);
+  /* box-shadow: 0 0 0 2px var(--app-purple); */
   background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1));
 }
 
@@ -435,7 +432,8 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  backdrop-filter: blur(4px);
+  color: gray;
+  /* backdrop-filter: blur(4px); */
 }
 
 .limitHeader {
@@ -453,10 +451,10 @@
 
 .upgradeMessage {
   text-align: center;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  color: gray;
   margin: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+  background-color: white;
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.2);

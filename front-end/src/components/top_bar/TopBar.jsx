@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
-import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock, Store } from 'lucide-react';
+import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock, Store, Bell } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -10,6 +10,8 @@ import { useProduct } from '../../app_context/ProductContext.jsx';
 import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 //update: Import ChangePassword component
 import ChangePassword from '../email_verification/ChangePassword.jsx';
+//update: Import NotificationHistory component
+import NotificationHistory from '../card_display/components/NotificationHistory.jsx';
 
 function TopBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -44,7 +46,9 @@ function TopBar() {
     showInfoManagement,
     setShowInfoManagement,
     setShowShopsListBySeller,
-    setShowShopManagement
+    setShowShopManagement,
+    showNotificationHistory,
+    setShowNotificationHistory
   } = useUI();
   
   const {
@@ -136,7 +140,12 @@ function TopBar() {
     setShowChangePassword(true);
     setMobileMenuOpen(false);
   };
-  
+
+  //update: Handler for toggling notification history
+  const handleNotificationHistoryClick = () => {
+    setShowNotificationHistory(!showNotificationHistory);
+  };
+
   const handleRefresh = () => {
     setIsRefreshing(true);
     window.location.reload();
@@ -325,7 +334,19 @@ function TopBar() {
 
           {(currentUser || (!currentUser && (showShopWindow || showInfoManagement))) && (
             <div className={styles.mobileMenuContainer}>
-              <button 
+              {/*update: Add notification history button for logged-in users*/}
+              {currentUser && (
+                <button
+                  className={`${styles.notificationButton} ${showNotificationHistory ? styles.active : ''}`}
+                  onClick={handleNotificationHistoryClick}
+                  aria-label="Ver historial de notificaciones"
+                  title="Historial de notificaciones"
+                >
+                  <Bell size={20} />
+                </button>
+              )}
+
+              <button
                 className={`${styles.burgerButton} ${mobileMenuOpen ? styles.active : ''}`}
                 onClick={toggleMobileMenu}
                 aria-label="Menu"
@@ -458,12 +479,15 @@ function TopBar() {
       {currentUser && showUserInfoCard && (
         <UserInfoCard onClose={handleCloseUserInfoCard} />
       )}
-      
+
       {/*update: Add ChangePassword modal*/}
-      <ChangePassword 
+      <ChangePassword
         isOpen={showChangePassword}
         onClose={() => setShowChangePassword(false)}
       />
+
+      {/*update: Add NotificationHistory component*/}
+      {currentUser && <NotificationHistory />}
     </>
   );
 }

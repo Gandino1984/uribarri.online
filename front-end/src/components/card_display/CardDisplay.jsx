@@ -5,7 +5,6 @@ import styles from '../../../css/CardDisplay.module.css';
 import ErrorCard from '../card_display/components/error_card/ErrorCard.jsx';
 import SuccessCard from '../card_display/components/success_card/SuccessCard.jsx';
 import InfoCard from '../card_display/components/info_card/InfoCard.jsx';
-import NotificationHistory from './components/NotificationHistory.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 
 function CardDisplay() {
@@ -109,19 +108,15 @@ function CardDisplay() {
   }, [info]);
 
   return (
-    <>
-      <div className={styles.cardDisplayContainer}>
-        {activeCards.map((card) => (
-          <AnimatedCard 
-            key={card.id} 
-            card={card}
-            onClose={() => removeCard(card.id, card.type)}
-          />
-        ))}
-      </div>
-      {/* update: Add notification history button */}
-      <NotificationHistory />
-    </>
+    <div className={styles.cardDisplayContainer}>
+      {activeCards.map((card) => (
+        <AnimatedCard
+          key={card.id}
+          card={card}
+          onClose={() => removeCard(card.id, card.type)}
+        />
+      ))}
+    </div>
   );
 }
 
