@@ -382,6 +382,12 @@ async function acceptTransfer(id_transfer_request, response_message = null) {
         transferRequest.response_message = response_message;
         await transferRequest.save();
 
+        //update: Update the organization's id_user to point to the new manager
+        const organization = await organization_model.findByPk(transferRequest.id_org);
+        if (organization) {
+            await organization.update({ id_user: transferRequest.id_to_user });
+        }
+
         //update: Remove manager status from old manager
         const oldManagerParticipation = await participant_model.findOne({
             where: {

@@ -221,11 +221,45 @@ export const ProductProvider = ({ children }) => {
   const refreshProductList = () => {
     setProductListKey(prevKey => prevKey + 1);
   };
-  
+
+  //update: Duplicate product - creates a copy with " (copia)" in name
+  const duplicateProduct = async (productId) => {
+    try {
+      console.log('📋 Duplicating product:', productId);
+
+      const response = await axiosInstance.post(`/product/duplicate/${productId}`);
+
+      if (response.data.error) {
+        console.error('❌ Error duplicating product:', response.data.error);
+        return {
+          success: false,
+          error: response.data.error
+        };
+      }
+
+      console.log('✅ Product duplicated successfully:', response.data.data);
+
+      // Refresh the product list to show the new copy
+      refreshProductList();
+
+      return {
+        success: true,
+        data: response.data.data,
+        message: response.data.success
+      };
+    } catch (error) {
+      console.error('❌ Error in duplicateProduct:', error);
+      return {
+        success: false,
+        error: 'Error al duplicar el producto'
+      };
+    }
+  };
+
   const getAvailableProductTypesForShop = (shopType) => {
     // Get the category names allowed for this shop type
     const allowedCategoryNames = shopToProductTypesMap[shopType] || [];
-    
+
     // Filter categories based on the allowed names
     return categories.filter(cat => allowedCategoryNames.includes(cat.name_category));
   };
@@ -259,6 +293,7 @@ export const ProductProvider = ({ children }) => {
     shopToProductTypesMap, setShopToProductTypesMap,
     getAvailableProductTypesForShop,
     resetProductTypeFields,
+    duplicateProduct,
     //update: Add new category-related state and functions
     categories,
     subcategories,

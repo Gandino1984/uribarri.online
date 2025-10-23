@@ -22,11 +22,13 @@ router.patch("/toggle-active", publicationApiController.toggleActive);
 
 // DELETE routes
 router.delete("/remove-by-id/:id_publication", publicationApiController.removeById);
+//update: Add route to remove publication image
+router.delete("/remove-image", publicationApiController.removeImage);
 
 // POST route for image upload with middleware
 router.post(
-  "/upload-image", 
-  handlePublicationImageUpload, 
+  "/upload-image",
+  handlePublicationImageUpload,
   publicationApiController.uploadImage
 );
 

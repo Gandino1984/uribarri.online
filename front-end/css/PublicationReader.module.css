@@ -1,0 +1,495 @@
+/* PublicationReader.module.css - Mobile-First Full-Screen Design */
+
+/* ============================================
+   BASE STYLES (Mobile - 320px and up)
+   ============================================ */
+
+.readerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  background: white;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Header Section */
+.readerHeader {
+  position: relative;
+  padding: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  background: linear-gradient(to bottom, #fafafa, white);
+  overflow: visible;
+  z-index: 10;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+}
+
+.organizationInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.organizationBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--app-green-transparent);
+  color: var(--app-green-darker);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.organizationBadge svg {
+  color: var(--app-green);
+  width: 14px;
+  height: 14px;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background: #e0e0e0;
+  transform: rotate(90deg);
+}
+
+.closeButton:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.closeButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Title */
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+/* Metadata Section */
+.metadata {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.publisherInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.publisherAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.publisherAvatarPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--app-green-transparent);
+  color: var(--app-green-darker);
+}
+
+.publisherAvatarPlaceholder svg {
+  width: 16px;
+  height: 16px;
+}
+
+.publisherName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.dateTimeInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dateTimeItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.dateTimeItem svg {
+  color: #95a5a6;
+  width: 14px;
+  height: 14px;
+}
+
+/* Actions Wrapper */
+.actionsWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-right: 0.5rem;
+}
+
+/* Content Section */
+.readerContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background: white;
+}
+
+.readerContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.readerContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.readerContent::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.readerContent::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Image Container */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.imageContainer:active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.publicationImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 300px;
+  object-fit: contain;
+  background: #f5f5f5;
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.imageOverlay svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  width: 24px;
+  height: 24px;
+}
+
+/* Show overlay on touch devices when tapping */
+.imageContainer:active .imageOverlay {
+  opacity: 1;
+}
+
+/* Content Text */
+.contentText {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #34495e;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.contentText p {
+  margin: 0 0 0.875rem 0;
+}
+
+.contentText p:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   TABLET (min-width: 768px)
+   ============================================ */
+@media (min-width: 768px) {
+  /* Full-screen remains the same on all devices */
+
+  .readerHeader {
+    padding: 1.25rem;
+  }
+
+  .headerTop {
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  .organizationBadge {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .organizationBadge svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .closeButton {
+    width: 40px;
+    height: 40px;
+  }
+
+  .closeButton svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .title {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .metadata {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .publisherInfo {
+    gap: 0.75rem;
+  }
+
+  .publisherAvatar,
+  .publisherAvatarPlaceholder {
+    width: 40px;
+    height: 40px;
+  }
+
+  .publisherAvatarPlaceholder svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .publisherName {
+    font-size: 0.95rem;
+  }
+
+  .dateTimeInfo {
+    gap: 1rem;
+  }
+
+  .dateTimeItem {
+    font-size: 0.875rem;
+    gap: 0.5rem;
+  }
+
+  .dateTimeItem svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .readerContent {
+    padding: 1.25rem;
+  }
+
+  .readerContent::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .readerContent::-webkit-scrollbar-track {
+    border-radius: 4px;
+  }
+
+  .readerContent::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+  }
+
+  .imageContainer {
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+  }
+
+  /* Hover effects for desktop */
+  .imageContainer:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .imageContainer:hover .imageOverlay {
+    opacity: 1;
+  }
+
+  .publicationImage {
+    max-height: 400px;
+  }
+
+  .imageOverlay {
+    font-size: 0.9rem;
+  }
+
+  .imageOverlay svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .contentText {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .contentText p {
+    margin-bottom: 1rem;
+  }
+}
+
+/* ============================================
+   DESKTOP (min-width: 1024px)
+   ============================================ */
+@media (min-width: 1024px) {
+  /* Full-screen remains the same on all devices */
+
+  .readerHeader {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .readerContent {
+    padding: 1.5rem;
+  }
+
+  .publicationImage {
+    max-height: 500px;
+  }
+
+  .imageOverlay svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .contentText {
+    font-size: 1.05rem;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY & ANIMATIONS
+   ============================================ */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .readerContainer {
+    animation: none;
+  }
+
+  .imageContainer,
+  .closeButton,
+  .imageOverlay {
+    transition: none;
+  }
+
+  .closeButton:hover {
+    transform: none;
+  }
+
+  .closeButton:active {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .readerContainer {
+    border: 2px solid #000;
+  }
+
+  .organizationBadge {
+    border: 1px solid var(--app-green-darker);
+  }
+
+  .closeButton {
+    border: 2px solid #000;
+  }
+}

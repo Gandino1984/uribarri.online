@@ -179,6 +179,35 @@
 .mobileMenuContainer {
     position: relative;
     z-index: 10001;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/*update: Notification history button styles */
+.notificationButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: black;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.notificationButton:hover {
+    color: black;
+    background-color: lightgray;
+}
+
+.notificationButton.active {
+    background-color: var(--light-gray);
+    color: var(--app-purple);
+    border: 2px solid var(--app-purple);
+    box-shadow: 0 3px 10px lightgray;
 }
 
 .burgerButton {
@@ -221,7 +250,7 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
+    /* transform: translateY(-10px); */
     transition: all 0.3s ease;
     z-index: 10002;
     padding: 0.5rem;
@@ -231,7 +260,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.1rem;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -256,7 +285,20 @@
 }
 
 .backButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--saturated-blue);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .backButton:hover {
@@ -266,13 +308,14 @@
 .navMenuButton {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    /* gap: 0.5rem;  */
+    padding: 0.75rem .5rem;
+    margin-bottom: .5rem;
     background: transparent;
     border: none;
     border-radius: 8px;
     color: black;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
@@ -295,8 +338,8 @@
 .refreshMenuButton {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
     background: transparent;
     border: none;
     border-radius: 8px;
@@ -320,7 +363,7 @@
 .changePasswordMenuButton {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    /* gap: 0.5rem; */
     padding: 0.75rem 1rem;
     background: transparent;
     border: none;
@@ -334,7 +377,7 @@
 }
 
 .changePasswordMenuButton:hover {
-    background-color: rgba(245, 158, 11, 0.1);
+    background-color: var(--light-gray);
 }
 
 .changePasswordMenuButton .buttonIcon {
@@ -342,7 +385,20 @@
 }
 
 .profileMenuButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--app-purple);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .profileMenuButton:hover {
@@ -350,7 +406,20 @@
 }
 
 .logoutButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: #dc2626;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
 }
 
 .logoutButton:hover {

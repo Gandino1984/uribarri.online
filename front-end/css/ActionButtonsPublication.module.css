@@ -2,6 +2,7 @@
 .container {
   position: relative;
   display: inline-block;
+  z-index: 20;
 }
 
 .menuButton {
@@ -45,17 +46,21 @@
 .dropdownMenu {
   position: absolute;
   top: 100%;
+  left: auto;
   right: 0;
   margin-top: 4px;
   min-width: 160px;
+  max-width: 200px;
+  width: max-content;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1),
               0 4px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  z-index: 1000;
+  z-index: 10000;
   animation: slideDown 0.2s ease;
+  transform-origin: top right;
 }
 
 @keyframes slideDown {
@@ -77,16 +82,16 @@
   padding: 10px 16px;
   border: none;
   background: none;
-  color: var(--text-primary, #1f2937);
-  font-size: 14px;
+  color: black;
+  font-size: .9rem;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .menuItem:hover {
-  background-color: var(--bg-hover, #f9fafb);
+  background-color: lightgray;
 }
 
 .menuItem svg {
@@ -94,11 +99,11 @@
 }
 
 .toggleItem {
-  color: #6366f1;
+  color: var(--app-green);
 }
 
 .toggleItem:hover {
-  background-color: #eef2ff;
+  background-color: lightgray;
 }
 
 .deleteItem {
@@ -118,15 +123,17 @@
 /* Mobile responsiveness */
 @media (max-width: 640px) {
   .dropdownMenu {
-    right: auto;
-    left: -130px;
+    right: 0;
+    left: auto;
+    min-width: 140px;
+    max-width: calc(100vw - 2rem);
   }
-  
+
   .menuButton {
     width: 28px;
     height: 28px;
   }
-  
+
   .menuItem {
     padding: 8px 12px;
     font-size: 13px;

@@ -47,8 +47,9 @@ const ResetPassword = () => {
     }
   }, [newPassword, showConfirmPassword]);
   
-  const handlePasswordComplete = () => {
-    if (newPassword.length === 4 && !showConfirmPassword) {
+  //update: Accept newValue parameter to avoid React state timing issues
+  const handlePasswordComplete = (newValue) => {
+    if (newValue.length === 4 && !showConfirmPassword) {
       console.log('Password complete via callback');
       setShowConfirmPassword(true);
       setKeyboardKey(prev => prev + 1);

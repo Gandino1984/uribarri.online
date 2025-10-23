@@ -5,7 +5,8 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  gap: 1.5rem;
+  gap: 1.3rem;
+  margin-top: 1rem;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -68,7 +69,10 @@
 
 .header {
   text-align: center;
-  padding: 1.5rem 1rem;
+  padding-top: 1.5rem;
+  padding-left: 1.5rem; 
+  padding-right: 1.5rem;
+  padding-bottom: 0;
   border-radius: 12px;
   max-width: 1200px;
   margin: 0 auto;
@@ -120,10 +124,10 @@
   color: var(--app-green-darker);
 }
 
-/*update: Modern radio toggle container - responsive layout */
+/*update: Modern radio toggle container - centered layout */
 .radioToggleContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-direction: row;
   align-items: center;
   padding: 0 1rem;
@@ -212,7 +216,7 @@
   transform: translateX(calc(100% + 4px));
 }
 
-.managerActions,
+
 .boardActions {
   display: flex;
   justify-content: center;
@@ -221,6 +225,19 @@
   padding: 0 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.managerActions
+ {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  max-width: 1200px;
+  margin-top: 1rem;
   width: 100%;
   flex-wrap: wrap;
 }
@@ -683,6 +700,7 @@
 /* Large Desktop (1440px+) */
 @media (min-width: 1440px) {
   .container {
+    margin-top: 6rem;
     gap: 2.5rem;
   }
   

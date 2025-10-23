@@ -4,7 +4,6 @@ import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { useOrganization } from '../../../app_context/OrganizationContext.jsx';
 import axiosInstance from '../../../utils/app/axiosConfig.js';
-//update: Import ActionButtonsPublication and PublicationCreationForm
 import ActionButtonsPublication from './ActionButtonsPublication.jsx';
 import PublicationCreationForm from './PublicationCreationForm.jsx';
 import { CheckCircle, XCircle, Clock, FileText, User, Calendar, Image as ImageIcon, AlertCircle, EyeOff } from 'lucide-react';
@@ -14,13 +13,20 @@ const PublicationManagement = ({ organizationId }) => {
   const { currentUser } = useAuth();
   const { setError, setSuccess, openImageModal } = useUI();
   const { userOrganizations } = useOrganization();
+
+  //update: Helper function to encode image path for URLs with special characters
+  const getEncodedImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    const pathSegments = imagePath.split('/');
+    const encodedPath = pathSegments.map(segment => encodeURIComponent(segment)).join('/');
+    return `${import.meta.env.VITE_API_URL}/${encodedPath}`;
+  };
   
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all'); // all, pending, approved, rejected, active, inactive
   const [approvingPub, setApprovingPub] = useState(null);
   const [rejectingPub, setRejectingPub] = useState(null);
-  //update: Add state for edit form
   const [editingPublication, setEditingPublication] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   
@@ -129,34 +135,27 @@ const PublicationManagement = ({ organizationId }) => {
       setRejectingPub(null);
     }
   };
-  
-  //update: Handle edit publication
+
   const handleEditPublication = (publication) => {
     setEditingPublication(publication);
     setShowEditForm(true);
   };
-  
-  //update: Handle successful edit
+
   const handleEditSuccess = (updatedPublication) => {
     setShowEditForm(false);
     setEditingPublication(null);
-    // Refresh publications
     fetchOrganizationPublications();
   };
-  
-  //update: Handle cancel edit
+
   const handleCancelEdit = () => {
     setShowEditForm(false);
     setEditingPublication(null);
   };
-  
-  //update: Handle delete publication (called from ActionButtonsPublication)
+
   const handleDeletePublication = (publicationId) => {
-    // Just refresh the list after deletion
     fetchOrganizationPublications();
   };
-  
-  //update: Handle toggle active status (called from ActionButtonsPublication)
+
   const handleToggleActive = (publicationId, newStatus) => {
     // Update the local state immediately for better UX
     setPublications(prevPubs => 
@@ -216,8 +215,7 @@ const PublicationManagement = ({ organizationId }) => {
       </div>
     );
   }
-  
-  //update: Show edit form if editing
+
   if (showEditForm && editingPublication) {
     return (
       <PublicationCreationForm 
@@ -302,8 +300,7 @@ const PublicationManagement = ({ organizationId }) => {
                     </>
                   )}
                 </div>
-                
-                {/* update: Add ActionButtonsPublication for all publications */}
+
                 <ActionButtonsPublication
                   publication={pub}
                   onEdit={handleEditPublication}
@@ -312,8 +309,7 @@ const PublicationManagement = ({ organizationId }) => {
                   onRefresh={fetchOrganizationPublications}
                 />
               </div>
-              
-              {/* update: Show inactive badge if publication is inactive */}
+
               {pub.publication_active === false && (
                 <div className={styles.inactiveBadge}>
                   <EyeOff size={14} />
@@ -334,9 +330,9 @@ const PublicationManagement = ({ organizationId }) => {
               <p className={styles.publicationContent}>{pub.content_pub}</p>
               
               {pub.image_pub && (
-                <div 
+                <div
                   className={styles.publicationImage}
-                  onClick={() => openImageModal(`${import.meta.env.VITE_API_URL}/${pub.image_pub}`)}
+                  onClick={() => openImageModal(getEncodedImageUrl(pub.image_pub))}
                 >
                   <ImageIcon size={16} />
                   <span>Ver imagen</span>

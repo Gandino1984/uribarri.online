@@ -124,7 +124,6 @@ const FiltersForPublications = ({ onClose = null }) => {
         {/* Search Bar */}
         <div className={styles.searchSection}>
           <div className={styles.searchInputWrapper}>
-            <Search size={18} className={styles.searchIcon} />
             <input
               type="text"
               placeholder="Buscar por título, contenido, usuario o asociación..."
@@ -154,7 +153,6 @@ const FiltersForPublications = ({ onClose = null }) => {
           {/* Organization Filter */}
           <div className={styles.filterGroup}>
             <label htmlFor="org-filter" className={styles.filterLabel}>
-              <Building2 size={16} />
               <span>Asociación:</span>
             </label>
             <select
@@ -175,7 +173,7 @@ const FiltersForPublications = ({ onClose = null }) => {
           {/* User Filter */}
           <div className={styles.filterGroup}>
             <label htmlFor="user-filter" className={styles.filterLabel}>
-              <User size={16} />
+              {/* <User size={16} /> */}
               <span>Usuario:</span>
             </label>
             <select
@@ -196,7 +194,7 @@ const FiltersForPublications = ({ onClose = null }) => {
           {/* Sort Order Filter */}
           <div className={styles.filterGroup}>
             <label htmlFor="sort-filter" className={styles.filterLabel}>
-              <Calendar size={16} />
+              {/* <Calendar size={16} /> */}
               <span>Ordenar:</span>
             </label>
             <select

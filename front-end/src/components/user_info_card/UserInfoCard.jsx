@@ -1,7 +1,7 @@
 // front-end/src/components/user_info_card/UserInfoCard.jsx
 import { useEffect, useRef, useState } from 'react';
-//update: Added Star and Award icons for contributor and manager badges
-import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield, Star, Award } from 'lucide-react';
+//update: Added Star and Award icons for contributor and manager badges, ChevronDown for dropdowns
+import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield, Star, Award, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
@@ -35,16 +35,19 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const isCurrentUser = !userData || (currentUser?.id_user === userData?.id_user);
 
   const fileInputRef = useRef(null);
-  const [imageKey, setImageKey] = useState(Date.now()); 
+  const [imageKey, setImageKey] = useState(Date.now());
   const [hasValidImage, setHasValidImage] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
-  
+
   //update: New state for shops and organizations
   const [userShops, setUserShops] = useState([]);
   const [userOrganizations, setUserOrganizations] = useState([]);
   const [managedOrganization, setManagedOrganization] = useState(null);
   const [contextDataLoading, setContextDataLoading] = useState(false);
+
+  //update: State for single collapsible "more info" section
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
   
   const profileContainerRef = useRef(null);
   const popupRef = useRef(null);
@@ -52,11 +55,11 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
   const slideAnimation = useSpring({
     from: {
       opacity: 0,
-      transform: 'translate(-50%, -150%)',
+      top: '-100%',
     },
     to: {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translate(-50%, 0%)' : 'translate(-50%, -150%)',
+      top: isVisible ? '50%' : '-100%',
     },
     config: {
       mass: 1,
@@ -114,10 +117,10 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
           
           //update: Debug to see structure
           console.log('Raw participations response:', participations);
-          
+
           // If participations don't include full organization data, fetch organizations separately
           const organizationsWithDetails = [];
-          
+
           for (const participation of participations) {
             // Check if organization data is already included
             if (participation.name_org || participation.organization?.name_org) {
@@ -125,8 +128,10 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
               organizationsWithDetails.push({
                 id_org: participation.id_org || participation.id_organization,
                 name_org: participation.name_org || participation.organization?.name_org,
-                is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
+                //update: Check org_managed field instead of is_manager
+                org_managed: participation.org_managed === 1 || participation.org_managed === true || participation.org_managed === '1',
                 scope_org: participation.scope_org || participation.organization?.scope_org,
+                joined_date: participation.created_at,
                 ...participation
               });
             } else if (participation.id_org || participation.id_organization) {
@@ -136,13 +141,15 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 const orgDetailResponse = await axiosInstance.post('/organization/by-id', {
                   id_organization: orgId
                 });
-                
+
                 if (orgDetailResponse.data && !orgDetailResponse.data.error) {
                   const orgData = orgDetailResponse.data.data;
                   organizationsWithDetails.push({
                     ...orgData,
-                    is_manager: participation.is_manager === 1 || participation.is_manager === true || participation.is_manager === '1',
-                    participant_id: participation.id_participant
+                    //update: Check org_managed field instead of is_manager
+                    org_managed: participation.org_managed === 1 || participation.org_managed === true || participation.org_managed === '1',
+                    participant_id: participation.id_participant,
+                    joined_date: participation.created_at
                   });
                 }
               } catch (err) {
@@ -150,12 +157,12 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
               }
             }
           }
-          
+
           console.log('Organizations with details:', organizationsWithDetails);
           setUserOrganizations(organizationsWithDetails);
-          
+
           // Check if user manages any organization
-          const managed = organizationsWithDetails.find(org => org.is_manager);
+          const managed = organizationsWithDetails.find(org => org.org_managed);
           if (managed) {
             console.log('User manages organization:', managed);
             setManagedOrganization(managed);
@@ -493,101 +500,120 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
                 {displayUser.contributor_user && (
                   <div className={styles.statusBadge + ' ' + styles.contributorBadge}>
                     <Star size={12} className={styles.badgeIcon} />
-                    <span>Contribuidor de la Plataforma</span>
+                    <span>Contribuidor/a</span>
                   </div>
                 )}
 
                 {displayUser.is_manager && (
                   <div className={styles.statusBadge + ' ' + styles.organizationManagerBadge}>
                     <Award size={12} className={styles.badgeIcon} />
-                    <span>Puede crear asociaciones</span>
+                    <span>Gestor/a</span>
                   </div>
                 )}
               </div>
             )}
             
-            {/*update: Display shops for sellers */}
-            {displayUser.type_user === 'seller' && userShops.length > 0 && (
-              <div className={styles.contextSection}>
-                <div className={styles.contextHeader}>
-                  <Store size={14} className={styles.contextIcon} />
-                  <span className={styles.contextTitle}>
-                    {userShops.length === 1 ? 'Tienda' : 'Tiendas'}
-                  </span>
-                </div>
-                <div className={styles.contextList}>
-                  {userShops.map(shop => (
-                    <div key={shop.id_shop} className={styles.contextItem}>
-                      <span className={styles.contextItemName}>{shop.name_shop}</span>
-                      {shop.location_shop && (
-                        <span className={styles.contextItemDetail}>📍 {shop.location_shop}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/*update: Display all organizations with role information */}
-            {userOrganizations.length > 0 && (
-              <div className={styles.contextSection}>
-                <div className={styles.contextHeader}>
-                  <Users size={14} className={styles.contextIcon} />
-                  <span className={styles.contextTitle}>
-                    {userOrganizations.length === 1 ? 'Asociación' : 'Asociaciones'}
-                  </span>
-                </div>
-                <div className={styles.contextList}>
-                  {userOrganizations.map(org => {
-                    const orgId = org.id_org || org.id_organization;
-                    const orgName = org.name_org || org.organization?.name_org || 'Asociación';
-                    const isManager = org.is_manager;
-                    const isFounder = org.id_user === displayUser.id_user || 
-                                     org.manager?.id_user === displayUser.id_user;
-                    
-                    return (
-                      <div key={orgId} className={styles.contextItem}>
-                        <div className={styles.contextItemHeader}>
-                          {isManager && (
-                            <Shield size={12} className={styles.roleIcon} />
-                          )}
-                          <span className={styles.contextItemName}>{orgName}</span>
-                        </div>
-                        
-                        {org.scope_org && (
-                          <span className={styles.contextItemDetail}>
-                            Ámbito: {org.scope_org}
+            {/*update: Single "Más Info" section combining shops and organizations */}
+            {((displayUser.type_user === 'seller' && userShops.length > 0) || userOrganizations.length > 0) && (
+              <div className={styles.moreInfoSection}>
+                <button
+                  className={`${styles.moreInfoButton} ${showMoreInfo ? styles.moreInfoButtonActive : ''}`}
+                  onClick={() => setShowMoreInfo(!showMoreInfo)}
+                  type="button"
+                >
+                  <span className={styles.moreInfoText}>Más Info</span>
+                  <ChevronDown
+                    size={16}
+                    className={`${styles.chevronIcon} ${showMoreInfo ? styles.chevronOpen : ''}`}
+                  />
+                </button>
+
+                {showMoreInfo && (
+                  <div className={styles.moreInfoContent}>
+                    {/*update: Display shops for sellers */}
+                    {displayUser.type_user === 'seller' && userShops.length > 0 && (
+                      <div className={styles.contextSubSection}>
+                        <div className={styles.contextSubHeader}>
+                          <Store size={14} className={styles.contextIcon} />
+                          <span className={styles.contextSubTitle}>
+                            {userShops.length === 1 ? 'Tienda' : 'Tiendas'}
                           </span>
-                        )}
-                        
-                        <div className={styles.roleInfo}>
-                          {isFounder && isManager ? (
-                            <span className={styles.contextItemBadge + ' ' + styles.founderBadge}>
-                              Fundador/a y Administrador/a
-                            </span>
-                          ) : isManager ? (
-                            <span className={styles.contextItemBadge + ' ' + styles.managerBadge}>
-                              Administrador/a
-                            </span>
-                          ) : (
-                            <span className={styles.contextItemBadge + ' ' + styles.memberBadge}>
-                              Miembro
-                            </span>
-                          )}
-                          
-                          {org.joined_date && (
-                            <span className={styles.joinedDate}>
-                              Desde: {new Date(org.joined_date).toLocaleDateString('es-ES', {
-                                month: 'short',
-                                year: 'numeric'
-                              })}
-                            </span>
-                          )}
+                        </div>
+                        <div className={styles.contextList}>
+                          {userShops.map(shop => (
+                            <div key={shop.id_shop} className={styles.contextItem}>
+                              <span className={styles.contextItemName}>{shop.name_shop}</span>
+                              {shop.location_shop && (
+                                <span className={styles.contextItemDetail}>📍 {shop.location_shop}</span>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    )}
+
+                    {/*update: Display all organizations with role information */}
+                    {userOrganizations.length > 0 && (
+                      <div className={styles.contextSubSection}>
+                        <div className={styles.contextSubHeader}>
+                          <Users size={14} className={styles.contextIcon} />
+                          <span className={styles.contextSubTitle}>
+                            {userOrganizations.length === 1 ? 'Asociación' : 'Asociaciones'}
+                          </span>
+                        </div>
+                        <div className={styles.contextList}>
+                          {userOrganizations.map(org => {
+                            const orgId = org.id_org || org.id_organization;
+                            const orgName = org.name_org || org.organization?.name_org || 'Asociación';
+                            //update: Use org_managed instead of is_manager
+                            const isManager = org.org_managed === 1 || org.org_managed === true || org.org_managed === '1';
+                            const isFounder = org.id_user === displayUser.id_user ||
+                                             org.manager?.id_user === displayUser.id_user;
+
+                            return (
+                              <div key={orgId} className={styles.contextItem}>
+                                <div className={styles.contextItemHeader}>
+                                  <span className={styles.contextItemName}>{orgName}</span>
+                                </div>
+
+                                {org.scope_org && (
+                                  <span className={styles.contextItemDetail}>
+                                    Ámbito: {org.scope_org}
+                                  </span>
+                                )}
+
+                                <div className={styles.roleInfo}>
+                                  {isFounder && isManager ? (
+                                    <span className={styles.contextItemBadge + ' ' + styles.founderBadge}>
+                                      Fundador/a y Gestor/a
+                                    </span>
+                                  ) : isManager ? (
+                                    <span className={styles.contextItemBadge + ' ' + styles.managerBadge}>
+                                      Gestor/a
+                                    </span>
+                                  ) : (
+                                    <span className={styles.contextItemBadge + ' ' + styles.memberBadge}>
+                                      Miembro
+                                    </span>
+                                  )}
+
+                                  {org.joined_date && (
+                                    <span className={styles.joinedDate}>
+                                      Desde: {new Date(org.joined_date).toLocaleDateString('es-ES', {
+                                        month: 'short',
+                                        year: 'numeric'
+                                      })}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
             

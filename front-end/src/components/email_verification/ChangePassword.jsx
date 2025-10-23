@@ -1,4 +1,3 @@
-//update: New component for logged-in users to change password
 import { useState } from 'react';
 import { X, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
@@ -20,11 +19,12 @@ const ChangePassword = ({ isOpen, onClose }) => {
   
   if (!isOpen) return null;
   
-  const handlePasswordComplete = () => {
-    if (currentStep === 'old' && oldPassword.length === 4) {
+  //update: Accept newValue parameter to avoid React state timing issues
+  const handlePasswordComplete = (newValue) => {
+    if (currentStep === 'old' && newValue.length === 4) {
       setCurrentStep('new');
       setKeyboardKey(prev => prev + 1);
-    } else if (currentStep === 'new' && newPassword.length === 4) {
+    } else if (currentStep === 'new' && newValue.length === 4) {
       setCurrentStep('confirm');
       setKeyboardKey(prev => prev + 1);
     }
@@ -124,7 +124,7 @@ const ChangePassword = ({ isOpen, onClose }) => {
         </button>
         
         <div className={styles.header}>
-          <Lock size={40} className={styles.icon} />
+          {/* <Lock size={40} className={styles.icon} /> */}
           <h2 className={styles.title}>Cambiar contraseña</h2>
         </div>
         
@@ -139,11 +139,7 @@ const ChangePassword = ({ isOpen, onClose }) => {
           
           <div className={styles.passwordSection}>
             <label className={styles.label}>{getStepLabel()}</label>
-            
-            <div className={styles.passwordDisplay}>
-              {'*'.repeat(getCurrentPassword().length)}
-            </div>
-            
+
             <NumericKeyboard
               key={keyboardKey}
               value={getCurrentPassword()}

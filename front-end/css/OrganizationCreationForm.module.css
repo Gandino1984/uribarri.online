@@ -235,7 +235,8 @@
 .formActions {
   display: flex;
   gap: 0.75rem;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
   margin-top: 0.75rem;
   padding-top: 1.25rem;
   border-top: 1px solid #e5e7eb;
@@ -306,21 +307,20 @@
   gap: 0.65rem;
   margin-top: 1.25rem;
   padding: 1rem;
-  background: #eff6ff;
+  background: var(--app-purple-transparent);
   border-radius: 8px;
-  border-left: 3px solid var(--app-purple);
 }
 
 .infoNote svg {
   flex-shrink: 0;
-  color: var(--app-purple);
+  color: var(--app-purple-darker);
   margin-top: 2px;
 }
 
 .infoNote p {
   margin: 0;
   font-size: 0.85rem;
-  color: #1e40af;
+  color: var(--app-purple);
   line-height: 1.5;
 }
 

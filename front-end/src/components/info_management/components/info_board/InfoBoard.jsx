@@ -7,55 +7,121 @@ import { usePublication } from '../../../../app_context/PublicationContext.jsx';
 import ActionButtonsPublication from '../../components/ActionButtonsPublication.jsx';
 import PublicationCreationForm from '../../components/PublicationCreationForm.jsx';
 import FiltersForPublications from './components/FiltersForPublications.jsx';
+import PublicationReader from './components/PublicationReader.jsx';
 import styles from '../../../../../css/InfoBoard.module.css';
-import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff, Filter } from 'lucide-react';
+import { Calendar, User, Clock, Image as ImageIcon, AlertCircle, CheckCircle, EyeOff, Filter, BookOpen } from 'lucide-react';
 
 const InfoBoard = () => {
   const { currentUser } = useAuth();
   const { setError, setSuccess, openImageModal } = useUI();
   const { userOrganizations } = useOrganization();
-  const { 
-    filteredPublications, 
+  const {
+    filteredPublications,
     publicationsLoading,
     fetchAllPublications,
     filters,
-    publications
+    publications,
+    setFilteredPublications,
+    setPublications
   } = usePublication();
-  
+
   const [editingPublication, setEditingPublication] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  //update: Add state for publication reader
+  const [selectedPublication, setSelectedPublication] = useState(null);
+  const [showReader, setShowReader] = useState(false);
   
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http.//localhost:3007';
   
   const fetchPublications = useCallback(async () => {
+    console.log('🔄 InfoBoard - fetchPublications called');
     await fetchAllPublications();
+    console.log('✅ InfoBoard - fetchPublications completed');
   }, [fetchAllPublications]);
   
   useEffect(() => {
     fetchPublications();
   }, [fetchPublications]);
+
+  // Monitor when filteredPublications changes
+  useEffect(() => {
+    console.log('📊 InfoBoard - filteredPublications changed:', {
+      count: filteredPublications.length,
+      ids: filteredPublications.map(p => p.id_publication)
+    });
+  }, [filteredPublications]);
   
+  //update: Handler to open publication reader
+  const handleOpenPublication = (publication) => {
+    setSelectedPublication(publication);
+    setShowReader(true);
+  };
+
+  //update: Handler to close publication reader
+  const handleCloseReader = () => {
+    setShowReader(false);
+    setSelectedPublication(null);
+  };
+
   const handleEditPublication = (publication) => {
     setEditingPublication(publication);
     setShowEditForm(true);
+    //update: Close reader if open
+    if (showReader) {
+      setShowReader(false);
+      setSelectedPublication(null);
+    }
   };
-  
+
   const handleEditSuccess = (updatedPublication) => {
     setShowEditForm(false);
     setEditingPublication(null);
     fetchPublications();
   };
-  
+
   const handleCancelEdit = () => {
     setShowEditForm(false);
     setEditingPublication(null);
   };
-  
-  const handleDeletePublication = (publicationId) => {
+
+  const handleDeletePublication = async (publicationId) => {
+    console.log('🗑️ InfoBoard - handleDeletePublication called for ID:', publicationId);
+
+    //update: Optimistic update - immediately remove from UI for instant feedback
+    console.log('⚡ Optimistically removing publication from UI');
+    setPublications(prev => {
+      const updated = prev.filter(pub => pub.id_publication !== publicationId);
+      console.log('📝 Updated publications:', {
+        before: prev.length,
+        after: updated.length,
+        removedId: publicationId
+      });
+      return updated;
+    });
+
+    setFilteredPublications(prev => {
+      const updated = prev.filter(pub => pub.id_publication !== publicationId);
+      console.log('📝 Updated filteredPublications:', {
+        before: prev.length,
+        after: updated.length
+      });
+      return updated;
+    });
+
+    //update: Close reader if the deleted publication is open
+    if (selectedPublication?.id_publication === publicationId) {
+      console.log('📖 Closing reader for deleted publication');
+      setShowReader(false);
+      setSelectedPublication(null);
+    }
+
+    console.log('🔄 Fetching publications in background to sync with backend');
+    // Fetch in background to sync with backend (in case of any discrepancies)
     fetchPublications();
+    console.log('✅ InfoBoard - handleDeletePublication completed');
   };
-  
+
   const handleToggleActive = (publicationId, newStatus) => {
     fetchPublications();
   };
@@ -129,28 +195,52 @@ const InfoBoard = () => {
   
   //update: Filter publications to only show approved AND active ones for public InfoBoard
   const getVisiblePublications = () => {
-    return filteredPublications.filter(pub => {
+    console.log('🔍 InfoBoard - getVisiblePublications called', {
+      filteredPublicationsCount: filteredPublications.length,
+      publicationIds: filteredPublications.map(p => p.id_publication)
+    });
+
+    const visible = filteredPublications.filter(pub => {
       // Only show publications that are both approved AND active
       const isApproved = pub.pub_approved === true || pub.pub_approved === 1;
       const isActive = pub.publication_active !== false && pub.publication_active !== 0;
-      
+
       return isApproved && isActive;
     });
+
+    console.log('✅ InfoBoard - visiblePublications result:', {
+      visibleCount: visible.length,
+      visibleIds: visible.map(p => p.id_publication)
+    });
+
+    return visible;
   };
-  
+
   const visiblePublications = getVisiblePublications();
   
   return (
     <div className={styles.container}>
+      {/* update: Publication Reader Modal */}
+      {showReader && selectedPublication && (
+        <PublicationReader
+          publication={selectedPublication}
+          onClose={handleCloseReader}
+          onEdit={handleEditPublication}
+          onDelete={handleDeletePublication}
+          onToggleActive={handleToggleActive}
+          onRefresh={fetchPublications}
+        />
+      )}
+
       {showEditForm && editingPublication && (
-        <PublicationCreationForm 
+        <PublicationCreationForm
           onSuccess={handleEditSuccess}
           onCancel={handleCancelEdit}
           editMode={true}
           publicationData={editingPublication}
         />
       )}
-      
+
       {!showEditForm && (
         <>
           <div className={styles.filtersButtonContainer}>
@@ -231,28 +321,27 @@ const InfoBoard = () => {
                         <h2 className={styles.publicationTitle}>{publication.title_pub}</h2>
                         {publication.publisher && (
                           <div className={styles.publisherInfo}>
-                            {publication.publisher.image_user ? (
-                              <img 
-                                src={getImageUrl(publication.publisher.image_user)}
-                                alt={publication.publisher.name_user}
-                                className={styles.publisherAvatar}
-                                onError={(e) => {
-                                  console.error('Failed to load publisher image:', publication.publisher.image_user);
-                                  e.target.style.display = 'none';
-                                }}
-                              />
-                            ) : (
-                              <div className={styles.publisherAvatarPlaceholder}>
-                                <User size={16} />
-                              </div>
-                            )}
-                            <span className={styles.publisherName}>
-                              {publication.publisher.name_user}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      
+                            <div className={styles.publisheInfoUser}>
+                              {publication.publisher.image_user ? (
+                                <img 
+                                  src={getImageUrl(publication.publisher.image_user)}
+                                  alt={publication.publisher.name_user}
+                                  className={styles.publisherAvatar}
+                                  onError={(e) => {
+                                    console.error('Failed to load publisher image:', publication.publisher.image_user);
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              ) : (
+                                <div className={styles.publisherAvatarPlaceholder}>
+                                  <User size={16} />
+                                </div>
+                              )}
+                              <span className={styles.publisherName}>
+                                {publication.publisher.name_user}
+                              </span>
+                            </div>
+
                       <ActionButtonsPublication
                         publication={publication}
                         onEdit={handleEditPublication}
@@ -260,6 +349,12 @@ const InfoBoard = () => {
                         onToggleActive={handleToggleActive}
                         onRefresh={fetchPublications}
                       />
+
+                          </div>
+                        )}
+                      </div>
+                      
+                      
                     </div>
                     
                     {publication.organization && (
@@ -305,9 +400,13 @@ const InfoBoard = () => {
                     )}
                     
                     <div className={styles.cardContent}>
-                      <p className={styles.publicationContent}>{publication.content_pub}</p>
+                      <p className={styles.publicationContent}>
+                        {publication.content_pub.length > 200
+                          ? `${publication.content_pub.substring(0, 200)}...`
+                          : publication.content_pub}
+                      </p>
                     </div>
-                    
+
                     <div className={styles.cardFooter}>
                       <div className={styles.dateTime}>
                         <div className={styles.dateTimeItem}>
@@ -321,6 +420,16 @@ const InfoBoard = () => {
                           </div>
                         )}
                       </div>
+
+                      {/* update: Add Read More button */}
+                      <button
+                        className={styles.readMoreButton}
+                        onClick={() => handleOpenPublication(publication)}
+                        title="Leer publicación completa"
+                      >
+                        <BookOpen size={16} />
+                        <span>Leer más</span>
+                      </button>
                     </div>
                   </article>
                 );

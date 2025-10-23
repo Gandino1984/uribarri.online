@@ -12,6 +12,7 @@ import useScreenSize from './components/useScreenSize.js';
 import ShopCardUtils from './ShopCardUtils.jsx';
 import ShopValorationForm from './components/shop_valoration/ShopValorationForm.jsx';
 import UserInfoCard from '../../../user_info_card/UserInfoCard.jsx';
+import EmailShopOwnerForm from './components/EmailShopOwnerForm.jsx';
 import { ShoppingCart } from 'lucide-react';
 import axiosInstance from '../../../../utils/app/axiosConfig.js';
 
@@ -24,6 +25,8 @@ const ShopCard = ({ shop, isClickable = false, hideActions = false, onOrder = nu
   const [showOwnerInfo, setShowOwnerInfo] = useState(false);
   const [ownerData, setOwnerData] = useState(null);
   const [loadingOwner, setLoadingOwner] = useState(false);
+  //update: Add state for email form
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const isSmallScreen = useScreenSize(768);
   
   const { currentUser } = useAuth();
@@ -79,14 +82,15 @@ const fetchOwnerData = useCallback(async () => {
   //update: Handle showing owner info
   const handleShowOwnerInfo = useCallback(async (e) => {
     e.stopPropagation();
-    
+
     if (!ownerData && !loadingOwner) {
       await fetchOwnerData();
     }
-    
+
     setShowOwnerInfo(true);
     setShowMap(false);
     setShowValorationForm(false);
+    setShowEmailForm(false);
   }, [ownerData, loadingOwner, fetchOwnerData]);
 
   //update: Handle closing owner info
@@ -94,14 +98,20 @@ const fetchOwnerData = useCallback(async () => {
     setShowOwnerInfo(false);
   }, []);
 
+  //update: Handle closing email form
+  const handleCloseEmailForm = useCallback(() => {
+    setShowEmailForm(false);
+  }, []);
+
   // Event handlers
   const toggleMinimized = useCallback(() => {
     setMinimized(prevState => !prevState);
-    
+
     if (!minimized === false) {
       setShowMap(false);
       setShowValorationForm(false);
       setShowOwnerInfo(false);
+      setShowEmailForm(false);
     }
   }, [minimized]);
 
@@ -111,6 +121,7 @@ const fetchOwnerData = useCallback(async () => {
     if (!showMap) {
       setShowValorationForm(false);
       setShowOwnerInfo(false);
+      setShowEmailForm(false);
     }
   }, [showMap]);
 
@@ -130,9 +141,21 @@ const fetchOwnerData = useCallback(async () => {
     if (!showValorationForm) {
       setShowMap(false);
       setShowOwnerInfo(false);
+      setShowEmailForm(false);
       setValorationKey(prev => prev + 1);
     }
   }, [showValorationForm]);
+
+  //update: Handler for toggling email form
+  const handleToggleEmailForm = useCallback((e) => {
+    e.stopPropagation();
+    setShowEmailForm(prev => !prev);
+    if (!showEmailForm) {
+      setShowMap(false);
+      setShowValorationForm(false);
+      setShowOwnerInfo(false);
+    }
+  }, [showEmailForm]);
 
   const handleReport = useCallback((e) => {
     e.stopPropagation();
@@ -174,14 +197,14 @@ const fetchOwnerData = useCallback(async () => {
     <>
     <div className={`${styles.shopCardWrapper} ${showMap && !minimized && !isSmallScreen ? styles.withMap : ''}`}>
      
-      <div 
+      <div
         className={`${styles.container} ${minimized ? styles.minimized : ''} ${showValorationForm ? styles.expanded : ''}`}
       >
         {minimized ? (
           <MinimizedCard toggleMinimized={toggleMinimized} />
         ) : (
           <>
-            <ShopHeader 
+            <ShopHeader
               minimized={minimized}
               toggleMinimized={toggleMinimized}
               handleUpdateShop={handleUpdateShop}
@@ -189,13 +212,16 @@ const fetchOwnerData = useCallback(async () => {
               handleToggleValoration={handleToggleValoration}
               handleReport={handleReport}
               handleShowOwnerInfo={handleShowOwnerInfo}
+              handleToggleEmailForm={handleToggleEmailForm}
               isSeller={isSeller}
               canValorate={canValorate}
               showValorationForm={showValorationForm}
               showOwnerInfo={showOwnerInfo}
+              showEmailForm={showEmailForm}
+              isOpen={isOpen}
             />
             <ShopCoverImage id_shop={shop.id_shop} />
-            <ShopDetails 
+            <ShopDetails
               shop={shop}
               formatTime={formatTime}
               formatShopType={shopTypeFormatted}
@@ -219,7 +245,7 @@ const fetchOwnerData = useCallback(async () => {
             
             {showValorationForm && (
               <div className={styles.valorationFormContainer}>
-                <ShopValorationForm 
+                <ShopValorationForm
                   key={valorationKey}
                   shop={shop}
                   onClose={handleValorationClose}
@@ -232,24 +258,34 @@ const fetchOwnerData = useCallback(async () => {
       </div>
 
       {showMap && !minimized && (
-        <div 
-          className={styles.mapWrapper} 
+        <div
+          className={styles.mapWrapper}
         >
-          <ShopMap 
-            shop={shop} 
-            isSmallScreen={isSmallScreen} 
+          <ShopMap
+            shop={shop}
+            isSmallScreen={isSmallScreen}
             onBack={() => setShowMap(false)}
           />
-        </div>    
+        </div>
       )}
     </div>
-    
-    {/*update: Render UserInfoCard for shop owner */}
+
+    {/*update: Render UserInfoCard for shop owner - outside ShopCard as modal */}
     {showOwnerInfo && ownerData && (
-      <UserInfoCard 
+      <UserInfoCard
         userData={ownerData}
         onClose={handleCloseOwnerInfo}
         isOwnerView={true}
+      />
+    )}
+
+    {/*update: Render EmailShopOwnerForm - outside ShopCard as modal */}
+    {showEmailForm && ownerData && (
+      <EmailShopOwnerForm
+        isOpen={showEmailForm}
+        onClose={handleCloseEmailForm}
+        shopOwnerEmail={ownerData.email_user}
+        shopName={shop.name_shop}
       />
     )}
     </>

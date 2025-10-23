@@ -10,31 +10,32 @@
 .headerSection {
   width: 100%;
   text-align: center;
+  justify-content: center;
+  flex-direction: column;
   margin-bottom: 0.5rem;
 }
 
 .title {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #1f2937;
+  color: black;
   letter-spacing: 0.03rem;
-  padding: 0.5rem 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   margin: 0;
 }
 
-/*update: Public browsing notification */
 .publicBrowsingNote {
-  padding: 0.75rem 1rem;
+  /* width: 90%; */
+  padding: 0.5rem 1em;
   background-color: var(--app-purple-transparent);
-  /* border-left: 4px solid var(--app-purple); */
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--app-purple);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 500;
   line-height: 1.5;
-  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); */
 }
 
 .filterButtonSection {
@@ -94,6 +95,9 @@
 }
 
 .shopsCount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 0.5rem;
   padding: 0.25rem;
   text-align: center;
@@ -179,8 +183,9 @@
 
 .retryButton {
   padding: 0.375rem 0.75rem;
-  background: var(--app-purple);
-  color: white;
+  /* background: var(--app-purple); */
+  background-color: var(--light-gray);
+  color: black;
   border: 2px solid transparent;
   border-radius: 8px;
   font-size: 0.75rem;
@@ -190,7 +195,7 @@
 }
 
 .retryButton:hover {
-  background: var(--app-purple-darker);
+  background: lightgray;
   box-shadow: 0 4px 12px rgba(146, 51, 234, 0.151);
 }
 
@@ -226,7 +231,7 @@
 .shopCardWrapper {
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s ease;
   margin: 0;
 }
@@ -299,7 +304,7 @@
   }
 
   .filterButtonSection {
-    justify-content: flex-start;
+    justify-content: center;
     padding: 0 0.5rem;
     margin-bottom: 1.25rem;
   }
@@ -401,12 +406,13 @@
 
   .headerSection {
     margin-bottom: 1.25rem;
+    text-align: center;
   }
 
   .title {
     font-size: 2.125rem;
     letter-spacing: 0.04em;
-    text-align: left;
+    text-align: center;
   }
 
   .filterButtonSection {
@@ -475,6 +481,7 @@
 
   .headerSection {
     margin-bottom: 1.5rem;
+    text-align: center;
   }
 
   .title {
@@ -577,6 +584,7 @@
 
   .headerSection {
     margin-bottom: 2rem;
+    text-align: center;
   }
 
   .title {

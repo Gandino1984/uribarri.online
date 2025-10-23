@@ -186,19 +186,34 @@ const TransferOrganization = ({ organization, onClose, onSuccess }) => {
         </div>
         
         <div className={styles.searchSection}>
-          <div className={styles.searchTypeToggle}>
-            <button 
-              className={searchType === 'name' ? styles.active : ''}
-              onClick={() => setSearchType('name')}
-            >
-              Buscar por nombre
-            </button>
-            <button 
-              className={searchType === 'email' ? styles.active : ''}
-              onClick={() => setSearchType('email')}
-            >
-              Buscar por email
-            </button>
+          <div className={styles.radioToggle}>
+            <input
+              type="radio"
+              id="search-name"
+              name="searchType"
+              value="name"
+              checked={searchType === 'name'}
+              onChange={(e) => setSearchType(e.target.value)}
+              className={styles.radioInput}
+            />
+            <label htmlFor="search-name" className={styles.radioLabel}>
+              Nombre
+            </label>
+
+            <input
+              type="radio"
+              id="search-email"
+              name="searchType"
+              value="email"
+              checked={searchType === 'email'}
+              onChange={(e) => setSearchType(e.target.value)}
+              className={styles.radioInput}
+            />
+            <label htmlFor="search-email" className={styles.radioLabel}>
+              Email
+            </label>
+
+            <div className={styles.radioSlider}></div>
           </div>
           
           <div className={styles.searchBar}>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 //update: Get API URL from environment variable with proper fallback to port 3007
-const apiUrl = import.meta?.env?.VITE_API_URL || 'http://localhost:3007';
+const apiUrl = import.meta?.env?.VITE_API_URL || 'http.//localhost:3007';
 
 console.log('🔧 Axios Config - API URL:', apiUrl);
 

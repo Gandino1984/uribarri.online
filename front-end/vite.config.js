@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   //update: Get API URL from environment variable or use default
-  const apiUrl = 'localhost:3007'; // Default for local development
-  // const apiUrl = env.VITE_API_URL;
+  // const apiUrl = 'localhost:3007'; // Default for local development
+  const apiUrl = env.VITE_API_URL;
   
   if (env.VITE_API_URL) {
     console.log('VITE_API_URL from env:', env.VITE_API_URL);
