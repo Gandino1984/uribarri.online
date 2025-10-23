@@ -43,6 +43,8 @@ const LandingPage = () => {
     '/images/portraits/user7.png',
     '/images/portraits/user8.png',
     '/images/portraits/user9.png',
+    '/images/portraits/user10.png',
+    '/images/portraits/user11.png',
   ];
   
   useEffect(() => {

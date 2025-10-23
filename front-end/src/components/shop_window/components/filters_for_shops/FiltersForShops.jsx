@@ -13,19 +13,19 @@ import CustomToggleSwitch from '../../../navigation_components/CustomToggleSwitc
 import PropTypes from 'prop-types';
 
 //update: Added onClose prop to handle closing the filters
-const FiltersForShops = ({ 
-  searchTerm,
-  filters,
-  shopTypesAndSubtypes,
-  activeFilterCount,
-  handleFilterChange,
-  handleSearchChange,
-  handleDeliveryChange,
-  handleOpenNowChange,
-  handleTopRatedChange,
-  handleDayChange,
-  handleResetFilters,
-  getAvailableSubtypes,
+const FiltersForShops = ({
+  searchTerm = '',
+  filters = {},
+  shopTypesAndSubtypes = {},
+  activeFilterCount = 0,
+  handleFilterChange = () => {},
+  handleSearchChange = () => {},
+  handleDeliveryChange = () => {},
+  handleOpenNowChange = () => {},
+  handleTopRatedChange = () => {},
+  handleDayChange = () => {},
+  handleResetFilters = () => {},
+  getAvailableSubtypes = () => [],
   onClose = null
 }) => {
   // Days of the week for filter
@@ -93,7 +93,7 @@ const FiltersForShops = ({
               className={`${styles.filterSelect} ${filters.tipo_comercio ? styles.hasValue : ''}`}
             >
               <option value="">Todos los tipos</option>
-              {Object.keys(shopTypesAndSubtypes).map((type) => (
+              {shopTypesAndSubtypes && Object.keys(shopTypesAndSubtypes).map((type) => (
                 <option key={type} value={type}>
                   {type}
                 </option>
@@ -110,7 +110,7 @@ const FiltersForShops = ({
                 className={`${styles.filterSelect} ${filters.subtipo_comercio ? styles.hasValue : ''}`}
               >
                 <option value="">Todos los subtipos</option>
-                {getAvailableSubtypes().map((subtype) => (
+                {getAvailableSubtypes && getAvailableSubtypes().map((subtype) => (
                   <option key={subtype} value={subtype}>
                     {subtype}
                   </option>
