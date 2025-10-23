@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { Store, MapPinned, Clock, Calendar, Bike, Star } from 'lucide-react';
+import { MapPinned, Clock, Calendar, Bike, Star } from 'lucide-react';
 import styles from '../../../../../../css/ShopCard.module.css';
 
 
@@ -45,11 +45,7 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
       </div>
       
       <div className={styles.scheduleInfo}>
-          <span className={`${styles.openStatus} ${isOpen ? styles.open : styles.closed}`}>
-            {isOpen ? 'Abierto' : 'Cerrado'}
-          </span>
         <p className={styles.shopType}>
-          <Store className={styles.icon} />
           {formatShopType}
         </p>
 
@@ -61,22 +57,22 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
         {/* <div className={styles.scheduleWrapper}> */}
           {hasContinuousSchedule ? (
             <span className={styles.scheduleTime}>
-              <Clock className={styles.icon} />
+              <Clock className={`${styles.icon} ${isOpen ? styles.shopOpen : styles.shopClosed}`} />
               {formatTime(shop?.morning_open)} - {formatTime(shop?.afternoon_close)}
             </span>
           ) : (
             <>
               <span className={styles.scheduleTime}>
-                <Clock className={styles.icon} />
+                <Clock className={`${styles.icon} ${isOpen ? styles.shopOpen : styles.shopClosed}`} />
                 Mañana: {formatTime(shop?.morning_open)} - {formatTime(shop?.morning_close)}
               </span>
               <span className={styles.scheduleTime}>
-                <Clock className={styles.icon} />
+                <Clock className={`${styles.icon} ${isOpen ? styles.shopOpen : styles.shopClosed}`} />
                 Tarde: {formatTime(shop?.afternoon_open)} - {formatTime(shop?.afternoon_close)}
               </span>
             </>
           )}
-        
+
         {/* </div> */}
 
         <span className={styles.scheduleTime}>
@@ -85,7 +81,7 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
         </span>
 
         <span className={styles.scheduleTime}>
-          <Bike className={styles.icon} />
+          <Bike className={`${styles.icon} ${shop?.has_delivery ? styles.deliveryAvailable : styles.deliveryNotAvailable}`} />
           Delivery {shop?.has_delivery ? 'disponible' : 'no disponible'}
         </span>
       </div>

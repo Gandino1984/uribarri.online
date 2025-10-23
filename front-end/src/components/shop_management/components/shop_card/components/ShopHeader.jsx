@@ -15,12 +15,16 @@ const ShopHeader = memo(({
   canValorate,
   showValorationForm,
   showOwnerInfo,
-  showEmailForm
+  showEmailForm,
+  isOpen
 }) => {
   if (minimized) return null;
-  
+
   return (
     <div className={styles.headerControls}>
+      <span className={`${styles.openStatus} ${isOpen ? styles.open : styles.closed}`}>
+        {isOpen ? 'Abierto' : 'Cerrado'}
+      </span>
       <button
         className={styles.active}
         onClick={toggleMinimized}

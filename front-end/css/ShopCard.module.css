@@ -72,18 +72,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-direction: column;
-  flex-wrap: wrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 0.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
   padding-bottom: .5rem;
   max-width: 100%;
   overflow-x: hidden;
-  flex-wrap: wrap;
 }
 .header h2{
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 
@@ -117,8 +117,8 @@
   font-size: 0.9rem;
   word-break: break-word;
   overflow-wrap: break-word;
-  width: 90%;
-  /* max-width: 100%; */
+  width: 100%;
+  max-width: 100%;
 }
 
 .locationIcon {
@@ -136,8 +136,9 @@
   font-size: 0.8rem;
   word-break: break-word;
   overflow-wrap: break-word;
-  width: 90%;
+  width: 100%;
   max-width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 .shopTypeIcon {
@@ -157,10 +158,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  width: 90%;
-  /* width: 100%; */
-  /* max-width: 100%; */
-  /* overflow: hidden; */
+  width: 100%;
+  max-width: 100%;
 }
 
 /* .scheduleInfo p{
@@ -172,7 +171,7 @@
   align-items: center;
   font-size: 0.9rem;
   color: black;
-  width: 90%;
+  width: 100%;
   max-width: 100%;
   gap: 0.5rem;
 }
@@ -186,7 +185,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
   max-width: calc(100% - 1rem);
   /* box-sizing: border-box; */
@@ -205,6 +204,24 @@
   height: 14px;
   min-width: 14px;
   flex-shrink: 0;
+}
+
+/* Delivery icon colors */
+.deliveryAvailable {
+  color: #10b981 !important;
+}
+
+.deliveryNotAvailable {
+  color: #ef4444 !important;
+}
+
+/* Shop open/closed icon colors */
+.shopOpen {
+  color: #10b981 !important;
+}
+
+.shopClosed {
+  color: #ef4444 !important;
 }
 
 .minimizeButton {
@@ -428,12 +445,10 @@
 
 /* Star rating */
 .starsContainer {
-  width: 100%;
   display: flex;
   align-items: center;
-  justify-content:right;
+  justify-content: flex-end;
   gap: .6rem;
-  padding-right: 1rem;
   flex-shrink: 0;
 }
 
@@ -506,15 +521,21 @@
 
 /* Open/Closed status */
 .openStatus {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  padding: 0.1rem 0.3rem;
-  border-radius: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  max-width: 8rem;
   text-align: center;
-  margin-bottom: .5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: calc(16px + 0.4rem + 4px);
+  box-sizing: border-box;
+  border: 2px solid transparent;
 }
 
 .openStatus.open {
@@ -692,11 +713,12 @@
 /* Screens under 700px - header controls compact mode */
 @media (max-width: 699px) {
   .shopCardWrapper {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .container {
-    overflow: hidden;
+    overflow: visible;
   }
 
   .headerControls {
@@ -720,23 +742,32 @@
   .header {
     padding-right: 0.5rem;
     gap: 0.4rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: flex-start;
   }
 
   .title {
     font-size: clamp(0.75rem, 4vw, 1rem);
-    flex: 1 1 auto;
+    flex: 1;
     min-width: 0;
-    max-width: calc(100% - 80px);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
   }
 
   .starsContainer {
     flex-shrink: 0;
-    flex-basis: auto;
+    margin-top: 0.2rem;
   }
 
   .infoContainer {
     padding: 0.4rem;
+  }
+
+  .openStatus {
+    font-size: 0.6rem;
+    padding: 0.18rem 0.4rem;
+    height: calc(13px + 0.36rem + 4px);
   }
 }
 
@@ -774,13 +805,14 @@
 /* Responsive breakpoints */
 @media (max-width: 639px) {
   .shopCardWrapper {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
     box-sizing: border-box;
   }
 
   .container {
-    max-height: 70vh;
-    overflow: hidden;
+    max-height: none;
+    overflow: visible;
     box-sizing: border-box;
   }
 
@@ -790,23 +822,23 @@
     overflow-wrap: break-word;
     white-space: normal;
     hyphens: auto;
-    max-width: calc(100% - 75px);
-    flex: 1 1 auto;
+    flex: 1;
     min-width: 0;
   }
 
   .infoContainer {
     min-height: 100px;
-    max-height: 150px;
+    max-height: none;
     padding: 0.4rem;
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
   }
 
   .header {
     gap: 0.3rem;
     padding-right: 0.5rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: flex-start;
   }
 
   .location,
@@ -842,11 +874,18 @@
   .starsContainer {
     gap: 0.2rem;
     flex-shrink: 0;
+    margin-top: 0.2rem;
   }
 
   .starIcon {
     width: 10px;
     height: 10px;
+  }
+
+  .openStatus {
+    font-size: 0.6rem;
+    padding: 0.18rem 0.4rem;
+    height: calc(13px + 0.36rem + 4px);
   }
 }
 

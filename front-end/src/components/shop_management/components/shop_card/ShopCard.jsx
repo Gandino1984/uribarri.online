@@ -218,9 +218,10 @@ const fetchOwnerData = useCallback(async () => {
               showValorationForm={showValorationForm}
               showOwnerInfo={showOwnerInfo}
               showEmailForm={showEmailForm}
+              isOpen={isOpen}
             />
             <ShopCoverImage id_shop={shop.id_shop} />
-            <ShopDetails 
+            <ShopDetails
               shop={shop}
               formatTime={formatTime}
               formatShopType={shopTypeFormatted}
