@@ -1,4 +1,4 @@
-import express from 'express'; 
+import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import sequelize from './config/sequelize.js';
@@ -6,6 +6,7 @@ import router from './routers/main_router.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import config, { logEnvironmentInfo } from './config/environment.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +16,7 @@ dotenv.config();
 const app = express();
 
 const INTERNAL_PORT = 3000;
-const EXTERNAL_PORT = process.env.APP_PORT || 3007;
+const EXTERNAL_PORT = config.app.port;
 
 // Middlewares
 
@@ -133,38 +134,8 @@ app.use('/assets/images', (req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure CORS origins based on environment
-const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? [
-        'https://uribarri.online',
-        'http.//localhost:5173',
-        'http.//localhost:3007'
-    ]
-    : [
-        'http.//localhost:5173',
-        'http://127.0.0.1:5173',
-        process.env.FRONTEND_URL || 'http.//localhost:5173'
-    ];
-
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Shop-ID',
-        'X-Shop-Name',
-        'X-Product-ID',
-        'X-Package-ID',
-        'X-Publication-ID',
-        'X-Organization-ID',
-        'X-User-ID',
-        'x-user-name',
-        'Content-Disposition'
-    ],
-    exposedHeaders: ['Content-Disposition']
-}));
+// Configure CORS using centralized config
+app.use(cors(config.cors));
 
 // Routes
 app.use("/", router);
@@ -172,10 +143,12 @@ app.use("/", router);
 
 // Start server
 app.listen(INTERNAL_PORT, '0.0.0.0', () => {
-    console.log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`);
-    console.log(`>>> SERVIDOR INTERNO EN EL PUERTO = ${INTERNAL_PORT}`);
-    console.log(`>>> PUERTO EXTERNO MAPEADO A = ${EXTERNAL_PORT}`);
-    console.log(`Serving legacy images from: ${path.join(__dirname, '..', 'public', 'images')}`);
-    console.log(`Serving backend assets from: ${path.join(__dirname, 'assets', 'images')}`);
-    console.log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>`);
+    console.log('');
+    logEnvironmentInfo();
+    console.log('');
+    console.log(`>>> Internal Port:  ${INTERNAL_PORT}`);
+    console.log(`>>> External Port:  ${EXTERNAL_PORT}`);
+    console.log(`>>> Legacy images:  ${path.join(__dirname, '..', 'public', 'images')}`);
+    console.log(`>>> Backend assets: ${path.join(__dirname, 'assets', 'images')}`);
+    console.log('');
 });

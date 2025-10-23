@@ -1,7 +1,8 @@
 import axios from 'axios';
+import config from '../../config/environment.js';
 
-//update: Get API URL from environment variable with proper fallback to port 3007
-const apiUrl = import.meta?.env?.VITE_API_URL || 'http.//localhost:3007';
+//update: Get API URL from centralized config
+const apiUrl = config.urls.api;
 
 console.log('🔧 Axios Config - API URL:', apiUrl);
 
