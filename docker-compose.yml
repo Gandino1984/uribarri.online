@@ -1,5 +1,10 @@
-# docker-compose.yml
+# ===============================================
+# Docker Compose Configuration
+# ===============================================
 services:
+  # ===============================================
+  # MySQL Database Service
+  # ===============================================
   db:
     container_name: ${MYSQL_HOST}
     image: mysql:8.0
@@ -10,28 +15,37 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}      
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - mysql-data:/var/lib/mysql
-      - data:/var/lib/mysql
       - ./db/scripts:/docker-entrypoint-initdb.d
     # networks:
     #   - uribarri_internal
 
-  backend:
+  # ===============================================
+  # Backend API Service (Node.js/Express)
+  # ===============================================
+  back-end:
     build: .
-    container_name: ${BACKEND_HOST}
+    container_name: back-end
     restart: unless-stopped
     ports:
       - ${APP_PORT}:3000
     depends_on:
       - db
     environment:
-      - MYSQL_PORT=3306
+      - NODE_ENV=${NODE_ENV:-development}
+      - MYSQL_PORT=3305
       - MYSQL_HOST=${MYSQL_HOST}
-    #   - VIRTUAL_HOST=api.uribarri.online
-    #   - LETSENCRYPT_HOST=api.uribarri.online
-    #   - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+      - FRONTEND_URL=${FRONTEND_URL}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      # - VIRTUAL_HOST=api.uribarri.online
+      # - VIRTUAL_PORT=3000
+      # - LETSENCRYPT_HOST=api.uribarri.online
+      # - LETSENCRYPT_EMAIL=andinogerman@gmail.com
     volumes:
       - .:/app
       - /app/node_modules
@@ -39,15 +53,16 @@ services:
       - ./public/images/uploads:/app/public/images/uploads
       - ./back-end/assets:/app/back-end/assets
     # networks:
-    #   - proxy
     #   - uribarri_internal
+    #   - proxy
 
 volumes:
-  data:
+  mysql-data:
   node_modules:
 
 # networks:
+#   uribarri_internal:
+#     driver: bridge
 #   proxy:
 #     name: nginx-proxy
 #     external: true
-#   uribarri_internal:

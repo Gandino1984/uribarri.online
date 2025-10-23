@@ -1,11 +1,13 @@
 .container {
   position: relative;
   width: 100%;
+  max-width: 100%;
   overflow: hidden;
   aspect-ratio: 3/1;
   flex-shrink: 0;
   flex-grow: 1;
   max-height: 250px;
+  box-sizing: border-box;
 }
 
 .imageWrapper {
@@ -197,7 +199,7 @@
 @media (max-width: 639px) {
   .container {
     aspect-ratio: 2.5/1;
-    max-height: 150px;
+    max-height: 120px;
   }
 }
 
@@ -248,21 +250,51 @@
   }
 }
 
+/* Portrait screens under 700px - prevent horizontal overflow */
+@media (orientation: portrait) and (max-width: 699px) {
+  .container {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .imageWrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .image {
+    width: 100%;
+    max-width: 100%;
+    object-fit: cover;
+  }
+}
+
 @media (orientation: portrait) and (max-width: 639px) {
   .container {
-    aspect-ratio: 2.5/1;
-    max-height: 140px;
+    aspect-ratio: 2/1;
+    max-height: 100px;
+    width: 100%;
+    max-width: 100%;
   }
-  
+
   .uploadButtonContainer {
-    padding: 8px;
+    padding: 6px;
   }
-  
+
   .uploadButton {
-    padding: 8px;
+    padding: 6px;
   }
-  
+
   .uploadText {
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .editText {
+    font-size: 12px;
+  }
+
+  .editIcon {
+    margin-bottom: 4px;
   }
 }

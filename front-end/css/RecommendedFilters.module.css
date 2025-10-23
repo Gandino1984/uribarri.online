@@ -14,8 +14,9 @@
 
 .subtitle {
   user-select: none;
-  max-width: 90%;
-  font-size: 1rem;
+  /* max-width: 90%; */
+  font-size: .8rem;
+  font-weight: 600;
   color: black;
 }
 
@@ -43,23 +44,20 @@
 }
 
 .scrollButton:hover{
-  color: white;
   background-color: var(--app-purple-darker);
 }
 
 .scrollButton.disabled {
   opacity: .4;
   cursor: not-allowed;
-  color: white;
-  /* pointer-events: none; */
 }
 
 .scrollButtonLeft {
-  left: 0.5rem;
+  left: 0.3rem;
 }
 
 .scrollButtonRight {
-  right: 0.5rem;
+  right: 0.3rem;
 }
 
 .sliderContainer {
@@ -111,20 +109,18 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
   transition: all 0.3s ease;
   border: 2px solid lightgray;
   background: white;
 }
 
-.filterButton.active .imageWrapper {
-  border-color: var(--app-purple);
-}
+
 
 .filterButton:hover .imageWrapper {
   /* box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25); */
-  border-color: var(--app-purple);
+  border-color: transparent;
 }
 
 .portrait {
@@ -136,7 +132,7 @@
 }
 
 .filterButton:hover .portrait {
-  transform: scale(1.08);
+  transform: scale(1.07);
 }
 
 .imageOverlay {

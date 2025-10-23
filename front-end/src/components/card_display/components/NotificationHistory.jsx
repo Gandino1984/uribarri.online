@@ -1,5 +1,4 @@
 //update: New notification history component
-import { useState } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { Bell, X } from 'lucide-react';
 import { useUI } from '../../../../src/app_context/UIContext.jsx';
@@ -12,24 +11,19 @@ const NotificationHistory = () => {
     showNotificationHistory,
     setShowNotificationHistory
   } = useUI();
-  
-  const [isOpen, setIsOpen] = useState(false);
-  
+
   const toggleHistory = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    setShowNotificationHistory(newState);
+    setShowNotificationHistory(false);
   };
-  
+
   const handleClearHistory = () => {
     clearCardHistory();
-    setIsOpen(false);
     setShowNotificationHistory(false);
   };
   
   const panelAnimation = useSpring({
-    opacity: isOpen ? 1 : 0,
-    transform: isOpen ? 'translateX(0%)' : 'translateX(100%)',
+    opacity: showNotificationHistory ? 1 : 0,
+    transform: showNotificationHistory ? 'translateX(0%)' : 'translateX(100%)',
     config: {
       mass: 1,
       tension: 280,
@@ -93,23 +87,14 @@ const NotificationHistory = () => {
   
   return (
     <>
-      {/* update: Notification history button */}
-      <button 
-        className={styles.historyButton}
-        onClick={toggleHistory}
-        aria-label="Ver historial de notificaciones"
-      >
-        <Bell size={20} />
-      </button>
-      
       {/* update: History panel */}
-      {isOpen && (
+      {showNotificationHistory && (
         <>
-          <div 
+          <div
             className={styles.overlay}
             onClick={toggleHistory}
           />
-          <animated.div 
+          <animated.div
             className={styles.historyPanel}
             style={panelAnimation}
           >
