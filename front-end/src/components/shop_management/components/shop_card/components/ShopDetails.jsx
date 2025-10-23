@@ -45,6 +45,9 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
       </div>
       
       <div className={styles.scheduleInfo}>
+          <span className={`${styles.openStatus} ${isOpen ? styles.open : styles.closed}`}>
+            {isOpen ? 'Abierto' : 'Cerrado'}
+          </span>
         <p className={styles.shopType}>
           <Store className={styles.icon} />
           {formatShopType}
@@ -55,7 +58,7 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
           {shop?.location_shop}
         </p>
 
-        <div className={styles.scheduleWrapper}>
+        {/* <div className={styles.scheduleWrapper}> */}
           {hasContinuousSchedule ? (
             <span className={styles.scheduleTime}>
               <Clock className={styles.icon} />
@@ -73,10 +76,8 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
               </span>
             </>
           )}
-          <span className={`${styles.openStatus} ${isOpen ? styles.open : styles.closed}`}>
-            {isOpen ? 'Abierto' : 'Cerrado'}
-          </span>
-        </div>
+        
+        {/* </div> */}
 
         <span className={styles.scheduleTime}>
           <Calendar className={styles.icon} />

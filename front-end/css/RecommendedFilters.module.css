@@ -14,8 +14,9 @@
 
 .subtitle {
   user-select: none;
-  max-width: 90%;
-  font-size: 1rem;
+  /* max-width: 90%; */
+  font-size: .8rem;
+  font-weight: 600;
   color: black;
 }
 

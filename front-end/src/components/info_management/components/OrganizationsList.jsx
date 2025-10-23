@@ -259,7 +259,7 @@ const OrganizationsList = ({ onEditOrganization, onViewPublications }) => {
   const getOrganizationImageUrl = (imagePath) => {
     if (!imagePath) return null;
     
-    const baseURL = import.meta.env.VITE_API_URL || 'https://api.uribarri.online';
+    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
     
     const pathSegments = imagePath.split('/');
     const encodedSegments = pathSegments.map(segment => encodeURIComponent(segment));

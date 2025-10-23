@@ -129,6 +129,10 @@
   align-items: center;
   flex-direction: column;
   gap: .5rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Card-based List Header (similar to ShopPackagesList) */
@@ -158,14 +162,21 @@
   border-top-right-radius: 0px;
   gap: 1rem;
   padding: 0 0rem 1rem 0rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .shopCard {
   background-color:  white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: visible;
+  overflow: hidden;
   transition: all 0.3s ease;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 .shopCard:hover {
@@ -179,15 +190,19 @@
 
 .shopCardHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex: 1;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
+  max-width: 100%;
   padding: 1rem;
-  gap: 1rem;
+  gap: 0.75rem;
   border-radius: 6px;
   background-color: white;
   cursor: pointer;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .shopCardHeader:hover {
@@ -195,13 +210,15 @@
 }
 
 .shopMainInfo {
-  padding-left: 1rem;
+  padding-left: 0.5rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: left;
-  gap: 1rem;
+  gap: 0.75rem;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Shop Image Container */
@@ -244,23 +261,29 @@
 .shopInfo {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .shopName {
   font-size: 1.1rem;
   font-weight: 600;
   color: black;
-  margin: 0 0 1rem 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin: 0 0 0.75rem 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.3;
+  max-width: 100%;
 }
 
 .shopMeta {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .shopType {
@@ -307,10 +330,11 @@
 .shopActions {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: auto;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .actionButton {
@@ -499,6 +523,10 @@
   padding: 1rem;
   border-top: 1px solid rgba(229, 231, 235, 0.5);
   animation: slideDown 0.3s ease-out;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 @keyframes slideDown {
@@ -596,123 +624,336 @@
   .container {
     padding: 0.5rem;
     margin-top: 6.5rem;
+    overflow: hidden;
   }
-  
-  
+
   .content {
     gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
-  
+
   .header {
     padding-top: 2rem;
   }
-  
+
   .title {
     font-size: 2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .headerButtons {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .listHeader {
     margin: 0 0.5rem;
     padding: 0.75rem;
   }
-  
+
   .shopsList {
     padding: 0 0.5rem 0.5rem 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
   }
-  
+
+  .shopCard {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
   .shopCardHeader {
     padding: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
-  
+
+  .shopMainInfo {
+    padding-left: 0.25rem;
+    gap: 0.5rem;
+  }
+
   .shopImageContainer {
     width: 60px;
     height: 60px;
   }
-  
+
   .shopName {
     font-size: 1rem;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.3;
   }
-  
+
   .shopMeta {
     gap: 0.5rem;
+    flex-wrap: wrap;
   }
-  
+
+  .shopActions {
+    flex-shrink: 0;
+  }
+
   .active {
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
   }
 }
 
+/* Screens under 700px - portrait/small devices */
+@media (max-width: 699px) {
+  .container {
+    overflow: hidden;
+  }
+
+  .shopsList {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0 0.4rem 0.4rem 0.4rem;
+  }
+
+  .shopCard {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .shopCardHeader {
+    padding: 0.6rem;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .shopMainInfo {
+    padding-left: 0.2rem;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shopInfo {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .shopImageContainer {
+    width: 55px;
+    height: 55px;
+  }
+
+  .shopName {
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.3;
+  }
+
+  .shopMeta {
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .shopActions {
+    flex-shrink: 0;
+    gap: 0.3rem;
+  }
+
+  .actionButton {
+    padding: 0.4rem;
+  }
+}
+
 @media (max-width: 480px) {
   .container {
     margin-top: 6rem;
+    overflow: hidden;
+    padding: 0.25rem;
   }
-  
-  
+
+  .content {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .header {
     gap: 0.75rem;
     padding-top: 1.5rem;
   }
-  
+
   .title {
     font-size: 1.5rem;
   }
-  
+
   .listTitle {
     font-size: 1rem;
   }
-  
+
   .shopsList {
     padding: 0 0.25rem 0.25rem 0.25rem;
     gap: 0.5rem;
+    width: 100%;
+    max-width: 100%;
   }
-  
+
+  .shopCard {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .shopCardHeader {
     padding: 0.5rem;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
-  
+
+  .shopMainInfo {
+    padding-left: 0.15rem;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 0;
+  }
+
   .shopImageContainer {
     width: 50px;
     height: 50px;
   }
-  
+
   .shopName {
     font-size: 0.875rem;
+    margin-bottom: 0.3rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.25;
   }
-  
+
+  .shopMeta {
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+
   .shopType,
   .shopSubtype,
   .shopRating {
     font-size: 0.625rem;
     padding: 0.125rem 0.5rem;
   }
-  
+
   .shopLocation {
     font-size: 0.75rem;
   }
-  
+
   .shopActions {
-    width: 30%;
+    flex-shrink: 0;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    gap: 0.25rem;
   }
-  
+
+  .actionButton {
+    padding: 0.3rem;
+  }
+
   .active,
   .ordersButton {
     padding: 0.5rem;
   }
-  
+
   .notificationBadge {
     top: -6px;
     right: -6px;
     font-size: 0.65rem;
     padding: 0.15rem 0.4rem;
     min-width: 18px;
+  }
+}
+
+/* Portrait mode optimizations */
+@media (orientation: portrait) and (max-width: 699px) {
+  .container {
+    overflow: hidden;
+  }
+
+  .shopsList {
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+    padding: 0 0.3rem 0.3rem 0.3rem;
+  }
+
+  .shopCard {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .shopCardHeader {
+    padding: 0.5rem;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .shopMainInfo {
+    padding-left: 0.1rem;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shopImageContainer {
+    width: 50px;
+    height: 50px;
+  }
+
+  .shopName {
+    font-size: 0.85rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .shopMeta {
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+
+  .shopActions {
+    flex-shrink: 0;
+  }
+
+  .shopDetails {
+    padding: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Additional responsive fix for shopDetails */
+@media (max-width: 699px) {
+  .shopDetails {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shopDetails {
+    padding: 0.5rem 0.3rem;
   }
 }

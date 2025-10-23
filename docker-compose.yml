@@ -9,8 +9,8 @@ services:
     container_name: ${MYSQL_HOST}
     image: mysql:8.0
     restart: unless-stopped
-    # ports:
-    #   - ${MYSQL_PORT}:3306
+    ports:
+      - ${MYSQL_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -19,8 +19,8 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./db/scripts:/docker-entrypoint-initdb.d
-    networks:
-      - uribarri_internal
+    # networks:
+    #   - uribarri_internal
 
   # ===============================================
   # Backend API Service (Node.js/Express)
@@ -29,12 +29,12 @@ services:
     build: .
     container_name: back-end
     restart: unless-stopped
-    # ports:
-    #   - ${APP_PORT}:3000
+    ports:
+      - ${APP_PORT}:3000
     depends_on:
       - db
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
+      - NODE_ENV=${NODE_ENV:-development}
       - MYSQL_PORT=3305
       - MYSQL_HOST=${MYSQL_HOST}
       - FRONTEND_URL=${FRONTEND_URL}
@@ -42,27 +42,27 @@ services:
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
-      - VIRTUAL_HOST=api.uribarri.online
-      - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=api.uribarri.online
-      - LETSENCRYPT_EMAIL=andinogerman@gmail.com
+      # - VIRTUAL_HOST=api.uribarri.online
+      # - VIRTUAL_PORT=3000
+      # - LETSENCRYPT_HOST=api.uribarri.online
+      # - LETSENCRYPT_EMAIL=andinogerman@gmail.com
     volumes:
       - .:/app
       - /app/node_modules
       - ./public:/app/public
       - ./public/images/uploads:/app/public/images/uploads
       - ./back-end/assets:/app/back-end/assets
-    networks:
-      - uribarri_internal
-      - proxy
+    # networks:
+    #   - uribarri_internal
+    #   - proxy
 
 volumes:
   mysql-data:
   node_modules:
 
-networks:
-  uribarri_internal:
-    driver: bridge
-  proxy:
-    name: nginx-proxy
-    external: true
+# networks:
+#   uribarri_internal:
+#     driver: bridge
+#   proxy:
+#     name: nginx-proxy
+#     external: true

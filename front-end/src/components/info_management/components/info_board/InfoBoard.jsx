@@ -32,7 +32,7 @@ const InfoBoard = () => {
   const [selectedPublication, setSelectedPublication] = useState(null);
   const [showReader, setShowReader] = useState(false);
   
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.uribarri.online';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3007';
   
   const fetchPublications = useCallback(async () => {
     console.log('🔄 InfoBoard - fetchPublications called');
