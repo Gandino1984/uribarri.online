@@ -7,6 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+.environment
 .env
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
