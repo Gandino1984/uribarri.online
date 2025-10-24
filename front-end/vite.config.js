@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   //update: Get API URL from environment variable or use default for development
   // In development mode, default to localhost:3007
   // In production mode, proxy isn't used (only for dev server)
-  const apiUrl = env.VITE_API_URL || 'https://api.uribarri.online';
+  const apiUrl = env.VITE_API_URL;
 
   if (env.VITE_API_URL) {
     console.log('VITE_API_URL from env:', env.VITE_API_URL);
