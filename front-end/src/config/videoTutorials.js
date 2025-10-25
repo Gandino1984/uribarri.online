@@ -55,7 +55,7 @@ export const VIDEO_TUTORIALS = {
 
   createShop: {
     title: 'Crear una Nueva Tienda',
-    url: '', // Add YouTube URL here
+    url: 'https://youtu.be/uQP1Y0ThC6U',
     description: 'Cómo registrar tu comercio en la plataforma'
   },
 

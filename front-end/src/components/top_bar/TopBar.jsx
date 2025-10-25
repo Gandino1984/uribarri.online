@@ -403,7 +403,7 @@ function TopBar() {
                 aria-label="Ver tutorial en video"
                 title="Tutorial de ayuda"
               >
-                <PlayCircle size={20} />
+                <PlayCircle size={24} />
               </button>
 
               {/*update: Add notification history button for logged-in users*/}
