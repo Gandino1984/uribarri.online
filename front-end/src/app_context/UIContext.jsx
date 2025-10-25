@@ -144,6 +144,23 @@ export const UIProvider = ({ children }) => {
   
   const [isCardMinimized, setIsCardMinimized] = useState(false);
 
+  // Video tutorial modal states
+  const [showVideoTutorialModal, setShowVideoTutorialModal] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+  const [currentVideoTitle, setCurrentVideoTitle] = useState('');
+
+  const openVideoTutorial = (videoUrl, title) => {
+    setCurrentVideoUrl(videoUrl);
+    setCurrentVideoTitle(title);
+    setShowVideoTutorialModal(true);
+  };
+
+  const closeVideoTutorial = () => {
+    setShowVideoTutorialModal(false);
+    setCurrentVideoUrl('');
+    setCurrentVideoTitle('');
+  };
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -460,7 +477,14 @@ export const UIProvider = ({ children }) => {
         isDeclined, setIsDeclined,
         modalConfirmCallback, setModalConfirmCallback,
         openModal,
-        isCardMinimized, setIsCardMinimized
+        isCardMinimized, setIsCardMinimized,
+
+        // Video tutorial modal exports
+        showVideoTutorialModal,
+        currentVideoUrl,
+        currentVideoTitle,
+        openVideoTutorial,
+        closeVideoTutorial
       }}
     >
       {children}

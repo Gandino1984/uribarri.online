@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from '../../../css/TopBar.module.css';
 import { TopBarUtils } from './TopBarUtils.jsx';
-import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock, Store, Bell } from 'lucide-react';
+import { ArrowLeft, DoorClosed, Menu, X, CircleUserRound, RefreshCw, ShoppingBag, Newspaper, Lock, Store, Bell, PlayCircle } from 'lucide-react';
 import { useShop } from '../../app_context/ShopContext.jsx';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
@@ -12,6 +12,9 @@ import UserInfoCard from '../user_info_card/UserInfoCard.jsx';
 import ChangePassword from '../email_verification/ChangePassword.jsx';
 //update: Import NotificationHistory component
 import NotificationHistory from '../card_display/components/NotificationHistory.jsx';
+//update: Import VideoTutorialModal and configuration
+import VideoTutorialModal from '../video_tutorial/VideoTutorialModal.jsx';
+import { getVideoByContext, hasVideo } from '../../config/videoTutorials.js';
 
 function TopBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +36,8 @@ function TopBar() {
   
   const {
     currentUser,
-    setIsLoggingIn
+    setIsLoggingIn,
+    isLoggingIn
   } = useAuth();
   
   const {
@@ -48,7 +52,13 @@ function TopBar() {
     setShowShopsListBySeller,
     setShowShopManagement,
     showNotificationHistory,
-    setShowNotificationHistory
+    setShowNotificationHistory,
+    //update: Video tutorial modal
+    showVideoTutorialModal,
+    currentVideoUrl,
+    currentVideoTitle,
+    openVideoTutorial,
+    closeVideoTutorial
   } = useUI();
   
   const {
@@ -144,6 +154,58 @@ function TopBar() {
   //update: Handler for toggling notification history
   const handleNotificationHistoryClick = () => {
     setShowNotificationHistory(!showNotificationHistory);
+  };
+
+  //update: Detect current context and open appropriate video tutorial
+  const getCurrentContext = () => {
+    // Check for specific contexts in order of priority
+
+    // Authentication context
+    if (isLoggingIn || (!currentUser && !showShopWindow && !showInfoManagement && !showShopStore)) {
+      return 'loginRegister';
+    }
+
+    if (showProductManagement) {
+      if (isUpdatingProduct) {
+        return 'createProduct';
+      }
+      return 'productManagement';
+    }
+
+    if (showShopsListBySeller) {
+      if (showShopCreationForm) {
+        return 'createShop';
+      }
+      return 'shopManagement';
+    }
+
+    if (showShopStore) {
+      return 'shopStore';
+    }
+
+    if (showShopWindow) {
+      return 'shopWindow';
+    }
+
+    if (showInfoManagement) {
+      return 'infoManagement';
+    }
+
+    if (showRiderManagement) {
+      return 'riderManagement';
+    }
+
+    // Default context
+    return 'default';
+  };
+
+  const handleVideoTutorialClick = () => {
+    const context = getCurrentContext();
+    const video = getVideoByContext(context);
+
+    if (video) {
+      openVideoTutorial(video.url, video.title);
+    }
   };
 
   const handleRefresh = () => {
@@ -334,6 +396,16 @@ function TopBar() {
 
           {(currentUser || (!currentUser && (showShopWindow || showInfoManagement))) && (
             <div className={styles.mobileMenuContainer}>
+              {/*update: Add video tutorial button*/}
+              <button
+                className={styles.videoTutorialButton}
+                onClick={handleVideoTutorialClick}
+                aria-label="Ver tutorial en video"
+                title="Tutorial de ayuda"
+              >
+                <PlayCircle size={20} />
+              </button>
+
               {/*update: Add notification history button for logged-in users*/}
               {currentUser && (
                 <button
@@ -488,6 +560,14 @@ function TopBar() {
 
       {/*update: Add NotificationHistory component*/}
       {currentUser && <NotificationHistory />}
+
+      {/*update: Add VideoTutorialModal component*/}
+      <VideoTutorialModal
+        isOpen={showVideoTutorialModal}
+        onClose={closeVideoTutorial}
+        videoUrl={currentVideoUrl}
+        title={currentVideoTitle}
+      />
     </>
   );
 }

@@ -11,6 +11,9 @@ import { KeyboardSection } from './components/KeyboardSection';
 import { FormActions } from './components/FormActions';
 import { ArrowLeft, KeyRound } from 'lucide-react';
 import styles from '../../../css/LoginRegisterForm.module.css';
+//update: Import FloatingVideoButton for contextual help
+import FloatingVideoButton from '../video_tutorial/FloatingVideoButton.jsx';
+import VideoTutorialModal from '../video_tutorial/VideoTutorialModal.jsx';
 
 // Memoize form content
 const FormContent = React.memo(({ onForgotPassword }) => {
@@ -49,8 +52,8 @@ FormContent.displayName = 'FormContent';
 
 const LoginRegisterForm = () => {
   const { currentUser, email_user } = useAuth();
-  const { 
-    showShopManagement, 
+  const {
+    showShopManagement,
     showLandingPage,
     setShowTopBar,
     showShopStore,
@@ -65,7 +68,12 @@ const LoginRegisterForm = () => {
     setShowShopStore,
     setShowShopWindow,
     //update: Get forgot password state setter
-    setShowForgotPassword
+    setShowForgotPassword,
+    //update: Get video tutorial modal state
+    showVideoTutorialModal,
+    currentVideoUrl,
+    currentVideoTitle,
+    closeVideoTutorial
   } = useUI();
   
   const [isMounted, setIsMounted] = useState(false);
@@ -176,14 +184,14 @@ const LoginRegisterForm = () => {
     return <ShopManagement />;
   }
   
-  return transitions((style, item) => 
+  return transitions((style, item) =>
     item && (
-      <animated.div 
-        className={styles.container} 
+      <animated.div
+        className={styles.container}
         style={style}
-      >     
+      >
         <div className={styles.formContainer}>
-          <button 
+          <button
             onClick={handleBackToLanding}
             className={styles.backButton}
             title="Volver al inicio"
@@ -193,6 +201,17 @@ const LoginRegisterForm = () => {
 
           <FormContent onForgotPassword={handleForgotPassword} />
         </div>
+
+        {/*update: Add floating video help button for login/register context*/}
+        <FloatingVideoButton context="loginRegister" position="bottom-right" />
+
+        {/*update: Add VideoTutorialModal (controlled by UIContext)*/}
+        <VideoTutorialModal
+          isOpen={showVideoTutorialModal}
+          onClose={closeVideoTutorial}
+          videoUrl={currentVideoUrl}
+          title={currentVideoTitle}
+        />
       </animated.div>
     )
   );

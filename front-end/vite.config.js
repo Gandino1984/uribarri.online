@@ -11,12 +11,12 @@ export default defineConfig(({ mode }) => {
   //update: Get API URL from environment variable or use default for development
   // In development mode, default to localhost:3007
   // In production mode, proxy isn't used (only for dev server)
-  const apiUrl = env.VITE_API_URL;
+  const apiUrl = env.VITE_API_URL || 'https://api.uribarri.online';
 
   if (env.VITE_API_URL) {
     console.log('VITE_API_URL from env:', env.VITE_API_URL);
   } else {
-    console.log('Using default API URL for dev server proxy');
+    console.log('Using default API URL for dev server proxy: http://localhost:3007');
   }
 
   console.log('--------------- >>>>   Vite config - API URL:', apiUrl);

@@ -345,7 +345,18 @@ export const LoginRegisterUtils = () => {
         throw new Error(userDetailsResponse.data.error);
       }
 
-      const type = userDetailsResponse.data.data.type_user;
+      // Fix: data.data is an array, get first user
+      const userData = Array.isArray(userDetailsResponse.data.data)
+        ? userDetailsResponse.data.data[0]
+        : userDetailsResponse.data.data;
+
+      if (!userData) {
+        setError(prevError => ({ ...prevError, databaseResponseError: "El usuario no existe" }));
+        console.error('-> LoginRegisterUtils.jsx - handleLogin() - User not found for name_user = ', cleanedUsername);
+        return;
+      }
+
+      const type = userData.type_user;
 
       if (!type) {
         console.error('-> LoginRegisterUtils.jsx - handleLogin() - User type not found for name_user = ', cleanedUsername);
