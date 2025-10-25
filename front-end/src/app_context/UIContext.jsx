@@ -30,7 +30,12 @@ export const UIProvider = ({ children }) => {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  
+
+  //update: Add edit mode state for user profile editing
+  const [isEditMode, setIsEditMode] = useState(false);
+  //update: Store navigation state before entering edit mode
+  const [preEditModeState, setPreEditModeState] = useState(null);
+
   const [showTopBar, setShowTopBar] = useState(() => {
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) return false;
@@ -456,13 +461,19 @@ export const UIProvider = ({ children }) => {
         navigationIntent, setNavigationIntent,
         clearNavigationState,
         
-        showEmailVerification, 
+        showEmailVerification,
         setShowEmailVerification,
         showResetPassword,
         setShowResetPassword,
         showForgotPassword,
         setShowForgotPassword,
-        
+
+        //update: Edit mode exports
+        isEditMode,
+        setIsEditMode,
+        preEditModeState,
+        setPreEditModeState,
+
         showImageModal, setShowImageModal,
         modalImageSrc, setModalImageSrc,
         openImageModal, closeImageModal,

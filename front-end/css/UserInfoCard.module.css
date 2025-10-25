@@ -290,6 +290,45 @@
   letter-spacing: 0.05rem;
 }
 
+/*update: User info header with edit button */
+.userInfoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/*update: Edit profile button */
+.editProfileButton {
+  background: var(--app-purple);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+  margin-top: 0.2rem;
+}
+
+.editProfileButton:hover {
+  background: #7a3fcc;
+  box-shadow: 0 2px 8px rgba(151, 71, 255, 0.4);
+}
+
+.editProfileButton:active {
+  background: #6633b3;
+  box-shadow: 0 1px 4px rgba(151, 71, 255, 0.3);
+}
+
 .userLocation {
   font-size: 0.9rem;
   color: black;

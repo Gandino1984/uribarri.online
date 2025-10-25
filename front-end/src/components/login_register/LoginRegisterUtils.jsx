@@ -18,6 +18,8 @@ export const LoginRegisterUtils = () => {
     currentUser, login, location_user, setLocationUser,
     setShowRepeatPasswordMessage, clearUserSession,
     setPasswordIcons,
+    //update: Import updateUser function for profile updates
+    updateUser,
   } = useAuth();
 
   const {
@@ -34,8 +36,15 @@ export const LoginRegisterUtils = () => {
     setShowShopsListBySeller,
     setShowRiderManagement,
     setShowLandingPage,
+    setShowTopBar,
     navigationIntent,
-    setNavigationIntent
+    setNavigationIntent,
+    //update: Import edit mode state and preEditModeState for restoration
+    isEditMode,
+    setIsEditMode,
+    preEditModeState,
+    setShowProductManagement,
+    setShowOffersBoard,
   } = useUI();
 
   const {
@@ -475,11 +484,214 @@ export const LoginRegisterUtils = () => {
     }
   };
     
+  //update: Add handleUpdate function for user profile updates
+  const handleUpdate = async () => {
+    try {
+      console.log('-> LoginRegisterUtils.jsx - handleUpdate() - Starting user update');
+
+      if (!currentUser?.id_user) {
+        setError(prevError => ({ ...prevError, userError: 'No hay usuario autenticado' }));
+        return;
+      }
+
+      // Validate email format
+      if (!emailRegex.test(email_user)) {
+        setError(prevError => ({ ...prevError, emailError: "El formato del email no es válido" }));
+        return;
+      }
+
+      // Build update payload - only include fields that have been provided
+      const updatePayload = {
+        id_user: currentUser.id_user,
+        name_user: name_user,
+        email_user: email_user,
+        location_user: location_user,
+        type_user: type_user,
+      };
+
+      // Only include password if it was changed (not empty)
+      if (password && password.length === 4) {
+        updatePayload.pass_user = password;
+      }
+
+      console.log('Update payload:', updatePayload);
+
+      const response = await axiosInstance.patch('/user/update', updatePayload);
+
+      console.log('Update response:', response.data);
+
+      if (response.data.error) {
+        //update: More specific error handling based on error type
+        const errorMessage = response.data.error;
+        const errorDetails = response.data.details;
+
+        console.error('Update error:', errorMessage, errorDetails);
+
+        // Handle different types of errors with specific messages
+        if (errorMessage.includes('tiendas') || errorMessage.includes('shop')) {
+          setError(prevError => ({
+            ...prevError,
+            userTypeError: errorMessage,
+            databaseResponseError: 'No se puede cambiar el tipo de usuario'
+          }));
+        } else if (errorMessage.includes('entregas') || errorMessage.includes('rider') || errorMessage.includes('pendiente')) {
+          setError(prevError => ({
+            ...prevError,
+            userTypeError: errorMessage,
+            databaseResponseError: 'No se puede cambiar el tipo de usuario'
+          }));
+        } else if (errorMessage.includes('email') || errorMessage.toLowerCase().includes('correo')) {
+          setError(prevError => ({
+            ...prevError,
+            emailError: errorMessage,
+            databaseResponseError: 'Error con el correo electrónico'
+          }));
+        } else if (errorMessage.includes('validación') || errorMessage.includes('validation')) {
+          setError(prevError => ({
+            ...prevError,
+            userError: errorDetails || errorMessage,
+            databaseResponseError: 'Error de validación de datos'
+          }));
+        } else {
+          // Generic error
+          setError(prevError => ({
+            ...prevError,
+            databaseResponseError: errorMessage,
+            userError: errorDetails || errorMessage
+          }));
+        }
+        return;
+      }
+
+      //update: Check if email was changed to show appropriate message
+      const emailWasChanged = updatePayload.email_user !== currentUser.email_user;
+
+      // Update was successful
+      if (emailWasChanged) {
+        setInfo(prevInfo => ({
+          ...prevInfo,
+          emailVerificationRequired: '✉️ Se ha enviado un correo de verificación a tu nueva dirección de email. Por favor verifica tu email para poder acceder a todas las funciones.'
+        }));
+        setSuccess(prevSuccess => ({
+          ...prevSuccess,
+          userUpdateSuccess: 'Perfil actualizado. Por favor verifica tu nuevo email.'
+        }));
+      } else {
+        setSuccess(prevSuccess => ({
+          ...prevSuccess,
+          userUpdateSuccess: response.data.message || 'Usuario actualizado correctamente'
+        }));
+      }
+
+      // Update local user data
+      const updatedUserData = {
+        ...currentUser,
+        name_user: updatePayload.name_user,
+        email_user: updatePayload.email_user,
+        location_user: updatePayload.location_user,
+        type_user: updatePayload.type_user,
+        //update: If email changed, set email_verified to false
+        email_verified: emailWasChanged ? false : currentUser.email_verified,
+      };
+
+      updateUser(updatedUserData);
+
+      // Clear password fields
+      setPassword('');
+      setPasswordRepeat('');
+      setDisplayedPassword('');
+      setShowPasswordLabel(true);
+      setKeyboardKey((prev) => prev + 1);
+
+      //update: Exit edit mode and restore previous navigation state
+      setIsEditMode(false);
+      setIsLoggingIn(true);
+
+      if (preEditModeState) {
+        setShowLandingPage(preEditModeState.showLandingPage);
+        setShowTopBar(preEditModeState.showTopBar);
+        setShowShopManagement(preEditModeState.showShopManagement);
+        setShowProductManagement(preEditModeState.showProductManagement);
+        setShowShopWindow(preEditModeState.showShopWindow);
+        setShowShopStore(preEditModeState.showShopStore);
+        setShowInfoManagement(preEditModeState.showInfoManagement);
+        setShowShopsListBySeller(preEditModeState.showShopsListBySeller);
+        setShowRiderManagement(preEditModeState.showRiderManagement);
+        setShowOffersBoard(preEditModeState.showOffersBoard);
+      } else {
+        // Fallback if no previous state was saved
+        setShowLandingPage(true);
+        setShowTopBar(false);
+      }
+
+      console.log('User profile updated successfully');
+    } catch (err) {
+      console.error('-> LoginRegisterUtils.jsx - handleUpdate() - Error:', err);
+
+      //update: More specific error messages based on HTTP status and error type
+      let errorMessage = 'Error al actualizar el perfil';
+      let specificError = '';
+
+      if (err.response) {
+        const status = err.response.status;
+        const serverError = err.response.data?.error || '';
+        const serverDetails = err.response.data?.details || '';
+
+        console.error('Server error response:', { status, serverError, serverDetails });
+
+        switch (status) {
+          case 400:
+            errorMessage = 'Datos de actualización inválidos';
+            specificError = serverError || serverDetails || 'Por favor revisa los datos ingresados';
+            break;
+          case 401:
+            errorMessage = 'Sesión expirada';
+            specificError = 'Por favor inicia sesión nuevamente';
+            break;
+          case 403:
+            errorMessage = 'No tienes permisos para realizar esta acción';
+            specificError = serverError || '';
+            break;
+          case 404:
+            errorMessage = 'Usuario no encontrado';
+            specificError = 'Por favor inicia sesión nuevamente';
+            break;
+          case 500:
+            errorMessage = 'Error del servidor';
+            specificError = 'Por favor intenta nuevamente más tarde';
+            break;
+          default:
+            errorMessage = serverError || 'Error al actualizar el perfil';
+            specificError = serverDetails || '';
+        }
+      } else if (err.request) {
+        errorMessage = 'No se pudo conectar con el servidor';
+        specificError = 'Verifica tu conexión a internet';
+      } else {
+        errorMessage = 'Error inesperado';
+        specificError = err.message || '';
+      }
+
+      setError(prevError => ({
+        ...prevError,
+        databaseResponseError: errorMessage,
+        userError: specificError || errorMessage
+      }));
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
       console.log('-> LoginRegisterUtils.jsx - handleFormSubmit() - isLoggingIn:', isLoggingIn);
-      
+      console.log('-> LoginRegisterUtils.jsx - handleFormSubmit() - isEditMode:', isEditMode);
+
+      //update: If in edit mode, call handleUpdate instead
+      if (isEditMode) {
+        await handleUpdate();
+        return;
+      }
+
       if (!isLoggingIn) {
         console.log('************************************');
         console.log('-> LoginRegisterUtils.jsx - handleFormSubmit() - Validación de IP para registro');
@@ -490,14 +702,14 @@ export const LoginRegisterUtils = () => {
           console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Validación de IP fallida. No se permite el registro.');
           return;
         }
-        
+
         if (!emailRegex.test(email_user)) {
           setError(prevError => ({ ...prevError, emailError: "El formato del email no es válido" }));
           console.error('->LoginRegisterUtils.jsx - handleFormSubmit() - Email inválido');
           return;
         }
       }
-  
+
       const { isValid, cleanedUsername, errors } = validateUsername(name_user);
 
       if (!isValid) {
@@ -505,17 +717,17 @@ export const LoginRegisterUtils = () => {
         setError(prevError => ({ ...prevError, userError: "Error en el Nombre de usuari@" }));
         return;
       }
-  
+
       if (isButtonDisabled()) {
         return;
       }
-  
+
       if (!isLoggingIn && currentUser?.id_user) {
         console.error('LoginRegisterUtils.jsx - handleFormSubmit() -> Ya existe un usuario registrado con ese nombre.');
         setError(prevError => ({ ...prevError, userError: 'Ya existe un usuario registrado con ese nombre.' }));
         return;
       }
-  
+
       if (isLoggingIn) {
         console.log('-> Iniciando sesión', { cleanedUsername, type_user });
         await handleLogin(cleanedUsername, password);
@@ -525,7 +737,7 @@ export const LoginRegisterUtils = () => {
       }
     } catch (err) {
       console.error('-> LoginRegisterUtils.jsx - handleFormSubmit() - Error al registrar o iniciar sesión:', err);
-      
+
       setPassword('');
       setPasswordRepeat('');
       setDisplayedPassword('');

@@ -15,22 +15,23 @@ import styles from '../../../css/LoginRegisterForm.module.css';
 import FloatingVideoButton from '../video_tutorial/FloatingVideoButton.jsx';
 import VideoTutorialModal from '../video_tutorial/VideoTutorialModal.jsx';
 
-// Memoize form content
+//update: Memoize form content with edit mode support
 const FormContent = React.memo(({ onForgotPassword }) => {
   const { isLoggingIn } = useAuth();
-  
+  const { isEditMode } = useUI();
+
   return (
     <div className={styles.formContentWrapper}>
       <h1 className={styles.formTitle}>
-        {isLoggingIn ? 'Inicia sesión' : 'Crea tu usuari@ aquí.'}
+        {isEditMode ? 'Editar perfil' : isLoggingIn ? 'Inicia sesión' : 'Crea tu usuari@ aquí.'}
       </h1>
       <FormActions />
       <form className={styles.formContent} onSubmit={(e) => e.preventDefault()}>
         <div className={styles.formFieldsWrapper}>
-          <FormFields />  
-          
+          <FormFields />
+
           {/*update: Add "Forgot Password?" link only when logging in*/}
-          {isLoggingIn && (
+          {isLoggingIn && !isEditMode && (
             <button
               type="button"
               onClick={onForgotPassword}
@@ -41,7 +42,7 @@ const FormContent = React.memo(({ onForgotPassword }) => {
             </button>
           )}
         </div>
-        
+
         <KeyboardSection />
       </form>
     </div>
@@ -51,7 +52,7 @@ const FormContent = React.memo(({ onForgotPassword }) => {
 FormContent.displayName = 'FormContent';
 
 const LoginRegisterForm = () => {
-  const { currentUser, email_user } = useAuth();
+  const { currentUser, email_user, setIsLoggingIn } = useAuth();
   const {
     showShopManagement,
     showLandingPage,
@@ -73,14 +74,21 @@ const LoginRegisterForm = () => {
     showVideoTutorialModal,
     currentVideoUrl,
     currentVideoTitle,
-    closeVideoTutorial
+    closeVideoTutorial,
+    //update: Import isEditMode and preEditModeState for navigation restoration
+    isEditMode,
+    setIsEditMode,
+    preEditModeState,
+    setShowProductManagement,
+    setShowOffersBoard
   } = useUI();
-  
+
   const [isMounted, setIsMounted] = useState(false);
   const [showVerificationPending, setShowVerificationPending] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
-  
-  const shouldShow = !showLandingPage && !showShopManagement && !currentUser && !showShopStore && !showShopWindow && !showVerificationPending;
+
+  //update: Allow form to show when in edit mode even if user is logged in
+  const shouldShow = !showLandingPage && !showShopManagement && (!currentUser || isEditMode) && !showShopStore && !showShopWindow && !showVerificationPending;
   
   useEffect(() => {
     if (shouldShow && !isMounted) {
@@ -97,22 +105,51 @@ const LoginRegisterForm = () => {
     }
   }, [success, email_user]);
 
+  //update: Handle back button - restore previous view or go to landing page
   const handleBackToLanding = useCallback(() => {
-    console.log('Navigating back to LandingPage from LoginRegisterForm');
-    
+    console.log('Navigating back from LoginRegisterForm');
+
     setNavigationIntent(null);
     localStorage.removeItem('navigationIntent');
-    
-    setShowLandingPage(true);
-    setShowTopBar(false);
-    setShowShopManagement(false);
-    setShowShopStore(false);
-    setShowShopWindow(false);
-    setShowInfoManagement(false);
-    setShowShopsListBySeller(false);
-    setShowRiderManagement(false);
-    
-    console.log('Successfully navigated to LandingPage');
+
+    //update: If in edit mode or there's a saved state, restore it
+    if (isEditMode || preEditModeState) {
+      console.log('Restoring previous navigation state:', preEditModeState);
+      setIsEditMode(false);
+      setIsLoggingIn(true);
+
+      if (preEditModeState) {
+        setShowLandingPage(preEditModeState.showLandingPage);
+        setShowTopBar(preEditModeState.showTopBar);
+        setShowShopManagement(preEditModeState.showShopManagement);
+        setShowProductManagement(preEditModeState.showProductManagement);
+        setShowShopWindow(preEditModeState.showShopWindow);
+        setShowShopStore(preEditModeState.showShopStore);
+        setShowInfoManagement(preEditModeState.showInfoManagement);
+        setShowShopsListBySeller(preEditModeState.showShopsListBySeller);
+        setShowRiderManagement(preEditModeState.showRiderManagement);
+        setShowOffersBoard(preEditModeState.showOffersBoard);
+      } else {
+        // Fallback to landing page
+        setShowLandingPage(true);
+        setShowTopBar(false);
+      }
+    } else {
+      // Default behavior: navigate to landing page
+      console.log('No saved state, navigating to LandingPage');
+      setShowLandingPage(true);
+      setShowTopBar(false);
+      setShowShopManagement(false);
+      setShowShopStore(false);
+      setShowShopWindow(false);
+      setShowInfoManagement(false);
+      setShowShopsListBySeller(false);
+      setShowRiderManagement(false);
+      setShowProductManagement(false);
+      setShowOffersBoard(false);
+    }
+
+    console.log('Successfully navigated back');
   }, [
     setShowLandingPage,
     setShowTopBar,
@@ -122,7 +159,13 @@ const LoginRegisterForm = () => {
     setShowInfoManagement,
     setShowShopsListBySeller,
     setShowRiderManagement,
-    setNavigationIntent
+    setNavigationIntent,
+    isEditMode,
+    setIsEditMode,
+    preEditModeState,
+    setIsLoggingIn,
+    setShowProductManagement,
+    setShowOffersBoard
   ]);
 
   //update: Handler for forgot password navigation using UIContext
@@ -175,12 +218,13 @@ const LoginRegisterForm = () => {
   if (showVerificationPending && pendingEmail) {
     return <EmailVerificationPending email={pendingEmail} onBackToLogin={handleBackToLogin} />;
   }
-  
+
   if (showShopStore) {
     return <ShopStore />;
   }
-  
-  if (showShopManagement || currentUser) {
+
+  //update: Don't redirect to ShopManagement when in edit mode
+  if ((showShopManagement || currentUser) && !isEditMode) {
     return <ShopManagement />;
   }
   

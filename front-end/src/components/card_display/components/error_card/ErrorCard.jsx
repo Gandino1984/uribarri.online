@@ -7,21 +7,44 @@ import { MessageCircleX } from 'lucide-react';
 const ErrorCard = () => {
   // State to track the most recent error message
   const [latestError, setLatestError] = useState('');
-  
-  const { 
+
+  const {
     error
   } = useUI();
 
   useEffect(() => {
     const errorEntries = Object.entries(error).filter(([, value]) => value !== '');
     const hasErrors = errorEntries.length > 0;
-    
+
     if (!hasErrors) {
       setLatestError('');
     } else {
-      // Find the latest error message (assuming the last non-empty one is newest)
-      const mostRecentError = errorEntries[errorEntries.length - 1][1];
-      setLatestError(mostRecentError);
+      //update: Prioritize specific errors over generic ones
+      const errorPriority = [
+        'userTypeError',       // Specific user type change errors
+        'emailError',          // Email-specific errors
+        'userError',           // User-specific errors
+        'userlocationError',   // Location errors
+        'ipError',             // IP validation errors
+        'databaseResponseError', // Generic database errors (lowest priority)
+      ];
+
+      // Find the highest priority error that has a value
+      let selectedError = '';
+      for (const errorKey of errorPriority) {
+        const foundError = errorEntries.find(([key]) => key === errorKey);
+        if (foundError && foundError[1]) {
+          selectedError = foundError[1];
+          break;
+        }
+      }
+
+      // If no prioritized error found, use the last one
+      if (!selectedError && errorEntries.length > 0) {
+        selectedError = errorEntries[errorEntries.length - 1][1];
+      }
+
+      setLatestError(selectedError);
     }
   }, [error]);
 

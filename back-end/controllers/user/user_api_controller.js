@@ -99,41 +99,56 @@ async function register(req, res) {
     }
 }
 
+//update: Added password encryption for user updates
 async function update(req, res) {
     const {
-        id_user, 
+        id_user,
         name_user,
         email_user,
-        pass_user, 
-        location_user, 
-        type_user, 
-        image_user, 
+        pass_user,
+        location_user,
+        type_user,
+        image_user,
         calification_user,
         contributor_user,
         age_user,
-        is_manager  
+        is_manager
     } = req.body;
-    
+
     if (calification_user !== undefined && calification_user < 0) {
         return res.status(400).json({
             error: 'La calificación no puede ser negativa'
         });
     }
-    
-    const {error, data, message} = await userController.update(id_user, { 
+
+    //update: Hash password if it's being updated
+    let hashedPassword = pass_user;
+    if (pass_user) {
+        try {
+            hashedPassword = await bcrypt.hash(pass_user, 5);
+        } catch (err) {
+            console.error('Error hashing password during update:', err);
+            return res.status(500).json({
+                error: 'Error al procesar la contraseña'
+            });
+        }
+    }
+
+    //update: Include details field for better error messages
+    const {error, data, message, details} = await userController.update(id_user, {
         name_user,
         email_user,
-        pass_user, 
-        location_user, 
-        type_user, 
+        pass_user: hashedPassword,
+        location_user,
+        type_user,
         image_user,
         calification_user,
         contributor_user,
         age_user,
-        is_manager  
+        is_manager
     });
-    
-    res.json({error, data, message});
+
+    res.json({error, data, message, details});
 }
 
 async function removeById(req, res) {

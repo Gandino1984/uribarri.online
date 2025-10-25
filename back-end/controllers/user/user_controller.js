@@ -800,45 +800,94 @@ async function changePassword(userId, oldPassword, newPassword) {
     }
 }
 
+//update: Enhanced user update with user type change validation
 async function update(id, userData) {
     try {
         if (!id) {
-            return { error: "El ID de usuario es requerido" };
+            return {
+                error: "El ID de usuario es requerido",
+                details: "Falta el identificador del usuario"
+            };
         }
 
         if (Object.keys(userData).length === 0) {
-            return { 
+            return {
                 error: "No hay campos para actualizar",
-                details: "At least one field must be provided for update" 
+                details: "Debes proporcionar al menos un campo para actualizar"
             };
         }
 
         const user = await user_model.findByPk(id);
         if (!user) {
-            return { 
+            return {
                 error: "El usuario no existe",
+                details: "No se encontró un usuario con ese identificador"
             };
         }
-        
+
+        //update: Validate user type change restrictions
+        if (userData.type_user && userData.type_user !== user.type_user) {
+            // If user is a seller, check if they have any shops
+            if (user.type_user === 'seller') {
+                const userShops = await shop_model.findAll({
+                    where: { id_user: id }
+                });
+
+                if (userShops && userShops.length > 0) {
+                    return {
+                        error: "No puedes cambiar tu tipo de usuario mientras tengas tiendas creadas. Por favor, elimina tus tiendas primero.",
+                        details: `Tienes ${userShops.length} tienda(s) activa(s)`
+                    };
+                }
+            }
+
+            // If user is a rider, check for pending deliveries
+            if (user.type_user === 'rider') {
+                const pendingOrders = await order_model.findAll({
+                    where: {
+                        id_rider: id,
+                        order_status: {
+                            [Op.in]: ['confirmed', 'preparing', 'ready', 'in_delivery']
+                        }
+                    }
+                });
+
+                if (pendingOrders && pendingOrders.length > 0) {
+                    return {
+                        error: "No puedes cambiar tu tipo de usuario mientras tengas entregas pendientes. Por favor, completa tus entregas primero.",
+                        details: `Tienes ${pendingOrders.length} entrega(s) pendiente(s)`
+                    };
+                }
+
+                //update: If changing from rider to another type, clear all rider-related data
+                console.log(`User ${id} changing from rider to ${userData.type_user}, clearing rider data...`);
+                await order_model.update(
+                    { id_rider: null },
+                    { where: { id_rider: id } }
+                );
+            }
+        }
+
         if (userData.email_user && userData.email_user !== user.email_user) {
-            const existingEmailType = await user_model.findOne({ 
-                where: { 
+            const existingEmailType = await user_model.findOne({
+                where: {
                     email_user: userData.email_user,
                     type_user: user.type_user,
                     id_user: { [Op.ne]: id }
-                } 
+                }
             });
-            
+
             if (existingEmailType) {
-                return { 
+                return {
                     error: `Ya existe otra cuenta de tipo ${user.type_user} con este email`,
+                    details: "Por favor usa un email diferente o inicia sesión con la cuenta existente"
                 };
             }
 
             userData.email_verified = false;
             const verificationToken = generateVerificationToken();
             const verificationTokenExpires = createExpirationDate(24);
-            
+
             userData.verification_token = verificationToken;
             userData.verification_token_expires = verificationTokenExpires;
 
@@ -865,9 +914,9 @@ async function update(id, userData) {
 
         const validation = validateUserData(fieldsToUpdate);
         if (!validation.isValid) {
-            return { 
-                error: "La validación fallo",
-                details: validation.errors 
+            return {
+                error: "La validación falló",
+                details: validation.errors.join(', ')
             };
         }
 
@@ -875,14 +924,36 @@ async function update(id, userData) {
         await user.save();
 
         console.log("Updated user:", user);
-        return { 
+        return {
             message: userData.email_user ? "Usuario actualizado. Por favor verifica tu nuevo email." : "Usuario actualizado.",
             data: user
         };
     } catch (error) {
         console.error("Error in update:", error);
-        return { 
-            error: "Error de actualización"
+        //update: Return specific error details for better user feedback
+        let errorMessage = "Error de actualización";
+        let errorDetails = "";
+
+        // Try to provide more specific error messages based on error type
+        if (error.name === 'SequelizeValidationError') {
+            errorMessage = "Error de validación de datos";
+            errorDetails = error.errors.map(e => e.message).join(', ');
+        } else if (error.name === 'SequelizeUniqueConstraintError') {
+            errorMessage = "Datos duplicados";
+            errorDetails = "El email o nombre de usuario ya está en uso";
+        } else if (error.name === 'SequelizeDatabaseError') {
+            errorMessage = "Error de base de datos";
+            errorDetails = "Error al guardar los cambios en la base de datos";
+        } else if (error.name === 'SequelizeConnectionError') {
+            errorMessage = "Error de conexión";
+            errorDetails = "No se pudo conectar con la base de datos";
+        } else {
+            errorDetails = error.message || "Error desconocido al actualizar el usuario";
+        }
+
+        return {
+            error: errorMessage,
+            details: errorDetails
         };
     }
 }

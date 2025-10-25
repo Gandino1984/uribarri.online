@@ -245,6 +245,35 @@ export const AuthProvider = ({ children }) => {
     setIsLoggingIn(true);
   };
 
+  //update: Add updateUser function for user profile updates
+  const updateUser = (updatedUserData) => {
+    console.log('=== UPDATE USER FUNCTION CALLED ===');
+    console.log('Updated user data:', updatedUserData);
+
+    // Update localStorage with new data
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      const updatedUser = {
+        ...parsedUser,
+        ...updatedUserData,
+        timestamp: parsedUser.timestamp // Keep original timestamp
+      };
+
+      console.log('Storing updated user in localStorage:', updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+      // Update state
+      setCurrentUser(updatedUser);
+      setNameUser(updatedUser.name_user || '');
+      setEmailUser(updatedUser.email_user || '');
+      setUserType(updatedUser.type_user || '');
+      setLocationUser(updatedUser.location_user || '');
+    }
+
+    console.log('=== UPDATE USER FUNCTION END ===');
+  };
+
   const clearUserSession = () => {
     setNameUser('');
     setEmailUser('');
@@ -294,6 +323,8 @@ export const AuthProvider = ({ children }) => {
     showRepeatPasswordMessage, setShowRepeatPasswordMessage,
     MAX_PASSWORD_LENGTH,
     login, logout,
+    //update: Export updateUser function
+    updateUser,
     checkAndClearUserData,
     clearUserSession,
   };

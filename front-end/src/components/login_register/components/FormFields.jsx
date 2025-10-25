@@ -1,9 +1,9 @@
-//update: Removed organization_manager from user type options
+//update: Added edit mode support to show all fields
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../app_context/AuthContext.jsx';
 import { useUI } from '../../../app_context/UIContext.jsx';
 import { LoginRegisterUtils } from '../../login_register/LoginRegisterUtils.jsx';
-import styles from '../../../../css/LoginRegisterForm.module.css'; 
+import styles from '../../../../css/LoginRegisterForm.module.css';
 
 export const FormFields = () => {
   const {
@@ -14,7 +14,7 @@ export const FormFields = () => {
     location_user,
   } = useAuth();
 
-  const { error } = useUI();
+  const { error, isEditMode } = useUI();
   const usernameError = error.userError;
   const userlocationError = error.userlocationError;
   const emailError = error.emailError;
@@ -45,6 +45,9 @@ export const FormFields = () => {
     }
   }, [email_user, isLoggingIn]);
 
+  //update: Show all fields when in edit mode or registering
+  const showAllFields = !isLoggingIn || isEditMode;
+
   return (
     <div className={styles.inputSection}>
       <div className={styles.formField}>
@@ -58,7 +61,7 @@ export const FormFields = () => {
           required
         />
 
-        {!isLoggingIn && (
+        {showAllFields && (
           <>
             {/*update: Added email input field with validation*/}
             <input
@@ -70,7 +73,7 @@ export const FormFields = () => {
               placeholder="Correo electrónico:"
               required
             />
-            
+
             <input
               id="location_user"
               type="text"
@@ -78,11 +81,11 @@ export const FormFields = () => {
               onChange={handleUserLocationChange}
               className={userlocationError ? styles.inputError : ''}
               placeholder={type_user === 'seller' ? 'Dirección de vendedor:' : 'Dirección de usuari@:'}
-              required 
+              required
             />
 
-            <select 
-              value={type_user} 
+            <select
+              value={type_user}
               onChange={handleUserTypeChange}
               className={type_user ? 'has-value' : ''}
               required

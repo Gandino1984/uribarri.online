@@ -31,14 +31,14 @@ import ForgotPassword from "./components/email_verification/ForgotPassword.jsx";
 import ResetPassword from "./components/email_verification/ResetPassword.jsx";
 
 const AppContent = () => {
-  const { 
-    showTopBar, 
+  const {
+    showTopBar,
     showLandingPage,
     showShopWindow,
     showShopStore,
     selectedShopForStore,
     showShopsListBySeller,
-    showRiderManagement, 
+    showRiderManagement,
     setShowRiderManagement,
     setShowShopsListBySeller,
     setShowLandingPage,
@@ -49,7 +49,9 @@ const AppContent = () => {
     //update: Get password reset states
     showEmailVerification,
     showResetPassword,
-    showForgotPassword
+    showForgotPassword,
+    //update: Get edit mode state to prioritize edit form
+    isEditMode
   } = useUI();
   const { currentUser } = useAuth();
   
@@ -94,25 +96,34 @@ const AppContent = () => {
     console.log('showResetPassword:', showResetPassword);
     console.log('showForgotPassword:', showForgotPassword);
     console.log('showEmailVerification:', showEmailVerification);
-    
+    console.log('isEditMode:', isEditMode);
+    console.log('showShopsListBySeller:', showShopsListBySeller);
+    console.log('showLandingPage:', showLandingPage);
+
     //update: PRIORITY 1 - Password reset pages (highest priority)
     if (showResetPassword) {
       console.log('✅ Rendering: ResetPassword');
       return <ResetPassword />;
     }
-    
+
     if (showForgotPassword) {
       console.log('✅ Rendering: ForgotPassword');
       return <ForgotPassword />;
     }
-    
+
     //update: PRIORITY 2 - Email verification
     if (showEmailVerification) {
       console.log('✅ Rendering: EmailVerification');
       return <EmailVerification />;
     }
-    
-    //update: PRIORITY 3 - Regular app pages
+
+    //update: PRIORITY 3 - Edit mode (must override all other views)
+    if (isEditMode) {
+      console.log('✅ Rendering: LoginRegisterForm (EDIT MODE)');
+      return <LoginRegisterForm />;
+    }
+
+    //update: PRIORITY 4 - Regular app pages
     if (showInfoManagement) {
       console.log('Rendering: InfoManagement (public access allowed)');
       return <InfoManagement />;

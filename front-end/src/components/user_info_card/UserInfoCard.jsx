@@ -1,7 +1,7 @@
 // front-end/src/components/user_info_card/UserInfoCard.jsx
 import { useEffect, useRef, useState } from 'react';
-//update: Added Star and Award icons for contributor and manager badges, ChevronDown for dropdowns
-import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield, Star, Award, ChevronDown } from 'lucide-react';
+//update: Added Edit icon for edit button
+import { Camera, Loader, Eye, User, CircleUserRound, X, Store, Users, Shield, Star, Award, ChevronDown, Edit } from 'lucide-react';
 import { useAuth } from '../../app_context/AuthContext.jsx';
 import { useUI } from '../../app_context/UIContext.jsx';
 import { useShop } from '../../app_context/ShopContext.jsx';
@@ -12,15 +12,44 @@ import { UserInfoCardUtils } from './UserInfoCardUtils.jsx';
 import axiosInstance from '../../utils/app/axiosConfig.js';
 
 const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
-  const { 
-    currentUser 
+  const {
+    currentUser,
+    setNameUser,
+    setEmailUser,
+    setUserType,
+    setLocationUser,
+    setIsLoggingIn,
   } = useAuth();
-  
+
   const {
     uploading,
     setError,
     setInfo,
     openImageModal,
+    //update: Import edit mode state and navigation setters
+    setIsEditMode,
+    setShowLandingPage,
+    setShowTopBar,
+    setShowShopManagement,
+    setShowProductManagement,
+    setShowShopWindow,
+    setShowShopStore,
+    setShowInfoManagement,
+    setShowShopsListBySeller,
+    setShowRiderManagement,
+    setShowOffersBoard,
+    //update: Import preEditModeState to store navigation state
+    setPreEditModeState,
+    showLandingPage,
+    showTopBar,
+    showShopManagement,
+    showProductManagement,
+    showShopWindow,
+    showShopStore,
+    showInfoManagement,
+    showShopsListBySeller,
+    showRiderManagement,
+    showOffersBoard,
   } = useUI();
 
   const {
@@ -178,19 +207,30 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
           const directOrgResponse = await axiosInstance.post('/organization/by-user-id', {
             id_user: displayUser.id_user
           });
-          
+
           if (directOrgResponse.data && !directOrgResponse.data.error) {
-            const orgs = directOrgResponse.data.data || [];
-            console.log('Direct organization fetch:', orgs);
-            
-            // Check if this is the user's managed organization
-            const managedOrgs = orgs.filter(org => 
-              org.id_user === displayUser.id_user || 
-              org.manager?.id_user === displayUser.id_user
-            );
-            
-            if (managedOrgs.length > 0) {
-              setManagedOrganization(managedOrgs[0]);
+            const responseData = directOrgResponse.data.data || {};
+            console.log('Direct organization fetch:', responseData);
+
+            //update: Handle both array and object response formats
+            let orgs = [];
+            if (Array.isArray(responseData)) {
+              orgs = responseData;
+            } else if (responseData.managed || responseData.participating) {
+              // API returns { managed: [], participating: [] }
+              orgs = [...(responseData.managed || []), ...(responseData.participating || [])];
+            }
+
+            if (orgs.length > 0) {
+              // Check if this is the user's managed organization
+              const managedOrgs = orgs.filter(org =>
+                org.id_user === displayUser.id_user ||
+                org.manager?.id_user === displayUser.id_user
+              );
+
+              if (managedOrgs.length > 0) {
+                setManagedOrganization(managedOrgs[0]);
+              }
               setUserOrganizations(orgs);
             }
           }
@@ -222,6 +262,52 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
     if (!uploading && isCurrentUser) {
       setShowButtons(!showButtons);
     }
+  };
+
+  //update: Handle edit button click - pre-fill form with user data
+  const handleEditProfile = () => {
+    console.log('Edit profile clicked for user:', displayUser);
+
+    //update: Save current navigation state before entering edit mode
+    setPreEditModeState({
+      showLandingPage,
+      showTopBar,
+      showShopManagement,
+      showProductManagement,
+      showShopWindow,
+      showShopStore,
+      showInfoManagement,
+      showShopsListBySeller,
+      showRiderManagement,
+      showOffersBoard,
+    });
+
+    // Pre-fill form fields with current user data
+    setNameUser(displayUser.name_user || '');
+    setEmailUser(displayUser.email_user || '');
+    setUserType(displayUser.type_user || '');
+    setLocationUser(displayUser.location_user || '');
+
+    // Set to registration mode (not logging in) so all fields show
+    setIsLoggingIn(false);
+
+    // Enable edit mode
+    setIsEditMode(true);
+
+    //update: Hide all other views to show LoginRegisterForm
+    setShowLandingPage(false);
+    setShowShopManagement(false);
+    setShowProductManagement(false);
+    setShowShopWindow(false);
+    setShowShopStore(false);
+    setShowInfoManagement(false);
+    setShowShopsListBySeller(false);
+    setShowRiderManagement(false);
+    setShowOffersBoard(false);
+    setShowTopBar(true);
+
+    // Close the user info card
+    handleClose();
   };
 
   const handleUploadClick = (e) => {
@@ -477,12 +563,27 @@ const UserInfoCard = ({ onClose, userData = null, isOwnerView = false }) => {
           </div>
           
           <div className={styles.userInfo}>
-            <h2 className={styles.userName}>
-              {displayUser.name_user || 'Usuario'}
-            </h2>
-            <p className={styles.userType}>
-              {getUserTypeDisplay(displayUser.type_user)}
-            </p>
+            <div className={styles.userInfoHeader}>
+              <div>
+                <h2 className={styles.userName}>
+                  {displayUser.name_user || 'Usuario'}
+                </h2>
+                <p className={styles.userType}>
+                  {getUserTypeDisplay(displayUser.type_user)}
+                </p>
+              </div>
+
+              {/*update: Add edit button for current user */}
+              {isCurrentUser && (
+                <button
+                  className={styles.editProfileButton}
+                  onClick={handleEditProfile}
+                  title="Editar perfil"
+                >
+                  <Edit size={18} />
+                </button>
+              )}
+            </div>
 
             {displayUser.location_user && (
               <p className={styles.userLocation}>
