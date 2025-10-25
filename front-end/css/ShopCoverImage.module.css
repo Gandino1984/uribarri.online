@@ -3,10 +3,9 @@
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  aspect-ratio: 3/1;
   flex-shrink: 0;
-  flex-grow: 1;
-  max-height: 250px;
+  flex-grow: 0;
+  height: 160px;
   box-sizing: border-box;
 }
 
@@ -198,8 +197,7 @@
 
 @media (max-width: 639px) {
   .container {
-    aspect-ratio: 2.5/1;
-    max-height: 120px;
+    height: 120px;
   }
 }
 
@@ -212,10 +210,9 @@
   .uploadButtonContainer {
     padding: 14px;
   }
-  
+
   .container {
-    aspect-ratio: 3/1;
-    max-height: 180px;
+    height: 180px;
   }
 }
 
@@ -225,13 +222,13 @@
     width: 24px;
     height: 24px;
   }
-  
+
   .editText {
     font-size: 16px;
   }
-  
+
   .container {
-    max-height: 200px;
+    height: 200px;
   }
 }
 
@@ -240,13 +237,13 @@
   .uploadButtonContainer {
     padding: 16px;
   }
-  
+
   .uploadButton {
     padding: 12px;
   }
-  
+
   .container {
-    max-height: 250px;
+    height: 220px;
   }
 }
 
@@ -272,8 +269,7 @@
 
 @media (orientation: portrait) and (max-width: 639px) {
   .container {
-    aspect-ratio: 2/1;
-    max-height: 100px;
+    height: 100px;
     width: 100%;
     max-width: 100%;
   }

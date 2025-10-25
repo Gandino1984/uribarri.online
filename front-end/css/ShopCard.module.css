@@ -2,10 +2,12 @@
   border-radius: 10px;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   position: relative;
+  box-sizing: border-box;
   /* overflow: hidden; */
 }
 
@@ -30,12 +32,13 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   margin: 0 auto;
   position: relative;
   transition: all 0.2s ease;
   overflow: hidden;
   border-radius: 8px;
-
+  box-sizing: border-box;
 }
 
 .container.minimized {
@@ -58,11 +61,13 @@
 
 .infoContainer {
   width: 100%;
-  height: fit-content;
+  min-height: 180px;
   background-color: white;
   padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
-
 
 .infoContainer:hover {
   background-color: var(--app-purple-transparent);
@@ -77,6 +82,7 @@
   gap: 0.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  padding-top: 0.5rem;
   padding-bottom: .5rem;
   max-width: 100%;
   overflow-x: hidden;
@@ -99,7 +105,7 @@
   font-weight: 700;
   color: black;
   font-size: clamp(0.9rem, 4vw, .5rem);
-  line-height: 1rem;
+  line-height: 1.3;
   /* white-space: normal; */
 }
 
@@ -127,6 +133,17 @@
   margin-top: 2px;
 }
 
+/* Shop type and rating row */
+.shopTypeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 0.5rem;
+}
+
 /* Shop type styling */
 .shopType {
   color: black;
@@ -136,9 +153,10 @@
   font-size: 0.8rem;
   word-break: break-word;
   overflow-wrap: break-word;
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  padding-left: .5rem;
+  margin-bottom: 0;
 }
 
 .shopTypeIcon {
@@ -155,11 +173,14 @@
 .scheduleInfo {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 0.4rem;
   width: 100%;
   max-width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
 }
 
 /* .scheduleInfo p{
@@ -447,17 +468,18 @@
 .starsContainer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: .6rem;
+  justify-content: flex-start;
+  gap: .2rem;
   flex-shrink: 0;
+  padding-right: 0.5rem;
 }
 
 .starIcon {
-  margin-right: -0.125rem;
+  margin-right: 0;
   transition: transform 0.2s ease;
-  width: 1rem;
-  height: 1rem;
-  /* flex-shrink: 0; */
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
 }
 
 .filledStar {
@@ -475,9 +497,7 @@
 }
 
 .starsContainer:hover .starIcon {
-  /* gap: 1rem; */
-  margin-left: .3rem;
-  transform: scale(1.2);
+  transform: scale(1.15);
   transition: all 0.2s ease;
 }
 
@@ -827,8 +847,7 @@
   }
 
   .infoContainer {
-    min-height: 100px;
-    max-height: none;
+    min-height: 140px;
     padding: 0.4rem;
     overflow: visible;
     box-sizing: border-box;
@@ -847,6 +866,11 @@
     font-size: 0.75rem;
     word-break: break-word;
     overflow-wrap: break-word;
+  }
+
+  .shopTypeRow {
+    flex-direction: row;
+    gap: 0.3rem;
   }
 
   .icon {
@@ -950,8 +974,7 @@
   }
 
   .infoContainer {
-    min-height: 160px;
-    max-height: 220px;
+    min-height: 200px;
   }
 
   .shopCardWrapper.withMap {
@@ -982,7 +1005,7 @@
   }
 
   .infoContainer {
-    max-height: 250px;
+    min-height: 220px;
   }
 }
 

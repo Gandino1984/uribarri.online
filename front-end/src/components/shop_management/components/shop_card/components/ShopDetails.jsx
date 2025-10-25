@@ -40,14 +40,15 @@ const ShopDetails = memo(({ shop, formatTime, formatShopType, hasContinuousSched
     <div className={styles.infoContainer}>
       <div className={styles.header}>
         <h2 className={styles.title}>{shop?.name_shop}</h2>
-        
-        <RatingStars rating={shop?.calification_shop} />
       </div>
-      
+
       <div className={styles.scheduleInfo}>
-        <p className={styles.shopType}>
-          {formatShopType}
-        </p>
+        <div className={styles.shopTypeRow}>
+          <p className={styles.shopType}>
+            {formatShopType}
+          </p>
+          <RatingStars rating={shop?.calification_shop} />
+        </div>
 
         <p className={styles.location}>
           <MapPinned className={styles.icon} />
